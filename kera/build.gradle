@@ -18,7 +18,7 @@ android {
         //targetSdkVersion：同样，主工程不能低于库工程
         minSdkVersion 14 //如果不写的话，默认就是1。14 是4.0; 21是5.0;23是6.0;24是7.0;26是8.0
         //targetSdkVersion 27 防止冲突，最好不写。交给主moudle去写。
-        multiDexEnabled true//解决方法数过长过多[主module里面最好也配置一下；不然可能无效。]
+        multiDexEnabled true//fixme 解决方法数过长过多[主module里面最好也配置一下；不然可能无效。]
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         //fixme 如果用到了注解；就必须添加如下配置；不然报错。
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
@@ -41,6 +41,7 @@ android {
 
     //过滤掉提示重复的文件。[如果还报一下文件的错误；那么肯定是依赖重复了，
     //检查一下library和module是否依赖重复，删除重复的即可]；如： implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
+    //fixme 和 multiDexEnabled true 一样；最好在主moudle里配置一下。
     packagingOptions {
         exclude 'META-INF/proguard/androidx-annotations.pro'
     }
