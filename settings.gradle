@@ -1,1 +1,1 @@
-include ':kera', ':sdk_scan'
+include ':kera', ':sdk_scan', ':myapplication'
