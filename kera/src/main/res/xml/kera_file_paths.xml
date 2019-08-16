@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--之前没有加上resources标签，这次补上;还有更名为kera_file_paths.xml防止和第三方的file_paths.xml冲突。-->
+    <paths>
+        //name是这个是根目录名称，可以自定义
+        //path="."点代表所有目录
+        //cache-path对应第三步中的this.getCacheDir，
+        //files-path对应this.getFilesDir()，
+        //external-path对应Environment.getExternalStorageDirectory()
+        <files-path
+            name="files_path"
+            path="." />
+        <cache-path
+            name="cache_path"
+            path="." />
+        <external-path
+            name="external_storage_root"
+            path="." />
+        <!--<external-path-->
+        <!--name="camera_photos"-->
+        <!--path="" />-->
+        <external-files-path
+            name="external_files_path"
+            path="." />
+        <external-cache-path
+            name="external_cache_path"
+            path="." />
+    </paths>
+</resources>

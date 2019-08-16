@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 中间渐变，角度0从左往右，正值为逆时针，270度为从上到下 -->
+    <gradient
+        android:angle="0"
+        android:centerColor="#FF7E62"
+        android:endColor="#FF5F67"
+        android:startColor="#FF9B5D" />
+</shape>

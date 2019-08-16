@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--这个几个颜色添加熬主题里面，可以改变RecycleView的边缘滑动颜色等-->
+    <!--<color name="colorPrimary">#3F51B5</color>-->
+    <!--<color name="colorPrimaryDark">#303F9F</color>-->
+    <!--&lt;!&ndash;<color name="colorAccent">#FF4081</color>&ndash;&gt;-->
+    <!--<color name="colorAccent">#239F93</color>-->
+
+    <!--kcolorPrimary会影响RecyclerView滑动到边缘的颜色,#C0C0C0和#393a3e个人感觉效果不错还行。-->
+    <!--kcolorPrimary也会影响文本输入框光标的颜色哦。-->
+    <!--前面之所以加k;就是防止被主moudle的colorPrimary属性给覆盖了。-->
+    <color name="kcolorPrimary">#C0C0C0</color>
+    <color name="kcolorPrimaryDark">#C0C0C0</color>
+    <color name="kcolorAccent">#C0C0C0</color>
+</resources>

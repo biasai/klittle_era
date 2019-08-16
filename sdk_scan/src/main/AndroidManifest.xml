@@ -1,0 +1,60 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.sdk.scan">
+    <!--Use NFC feature and Permissions-->
+    <uses-permission android:name="android.permission.NFC" />
+    <!--fixme 这个是限制安装权限，只给有nfc功能的手机安装(可选)-->
+    <!--<uses-feature-->
+    <!--android:name="android.hardware.nfc"-->
+    <!--android:required="true" />-->
+
+    <application>
+        <!--NFC读卡功能-->
+        <activity
+            android:name=".act.KNfcActivity"
+            android:launchMode="singleTask">
+            <!--fixme 子类的activity最好也像下面这样配置一下。虽然测试发现没有配置也行。但最好还是配置一下-->
+            <!--fixme 配置了一下信息之后，在系统界面刷卡；系统弹框都会有提示。-->
+            //在activity加上如下标签；nfc系统弹框弹出时；就会显示该信息
+            //android:label="接收"
+            //android:icon="@drawable/logo"
+            //android:launchMode="singleTask" 最好设置成单例；防止刷卡时多次重复跳转。
+            <!--多个intent-filter是可以并列的。直接复制下面的即可-->
+            <!--<intent-filter>-->
+            <!--<action android:name="android.nfc.action.TECH_DISCOVERED" />-->
+            <!--</intent-filter>-->
+            <!--<meta-data-->
+            <!--android:name="android.nfc.action.TECH_DISCOVERED"-->
+            <!--android:resource="@xml/nfc_tech_filter_list" />-->
+            <!--<intent-filter>-->
+            <!--<action android:name="android.nfc.action.TAG_DISCOVERED" />-->
+            <!--<category android:name="android.intent.category.DEFAULT" />-->
+            <!--</intent-filter>-->
+        </activity>
+        <!--竖屏二维码扫描-->
+        <activity
+            android:name="com.sdk.Qr_code.act.CaptureActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus_transparent"></activity>
+        <activity
+            android:name="com.sdk.Qr_code.act.KCaptureActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus_transparent"></activity>
+    </application>
+
+    <!--手机震动-->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!--手电筒-->
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <!--手机存储卡-->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
+    <!--相机，二维码-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!--系统广播-->
+    <protected-broadcast android:name="android.intent.action.SCREEN_OFF" />
+    <protected-broadcast android:name="android.intent.action.SCREEN_ON" />
+    <protected-broadcast android:name="scan.rcv.message" />
+    <protected-broadcast android:name="com.mediatek.action.UNREAD_CHANGED" />
+</manifest>

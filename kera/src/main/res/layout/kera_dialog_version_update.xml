@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/crown_progress"
+        android:layout_width="637px"
+        android:layout_height="200px"
+        android:layout_centerInParent="true"
+        android:background="#ffffff"
+        android:clickable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="35px"
+        android:visibility="invisible">
+
+        <cn.oi.klittle.era.widget.KNumberProgressBar
+            android:id="@+id/numprogressbar"
+            android:layout_width="match_parent"
+            android:layout_height="36px" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/crown_update"
+        android:layout_width="637px"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:background="@drawable/kera_drawable_alert"
+        android:clickable="true"
+        android:orientation="vertical"
+        android:padding="35px">
+
+        <TextView
+            android:id="@+id/crown_txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:letterSpacing="-0.02"
+            android:lineSpacingExtra="38px"
+            android:text="@string/kbanbengenxin"
+            android:textColor="#111111"
+            android:textSize="32px" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="4px"
+            android:layout_marginTop="35px"
+            android:background="@drawable/kera_line_dash"
+            android:layerType="software" />
+
+        <TextView
+            android:id="@+id/crown_txt_version_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35px"
+            android:text="发现新版本：1.0.0.1"
+            android:textColor="#444444"
+            android:textSize="32px" />
+
+        <!--android:gravity="end"-->
+        <!--android:letterSpacing="-0.02"-->
+        <!--android:lineSpacingExtra="38px"-->
+
+        <TextView
+            android:id="@+id/crown_txt_version_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35px"
+            android:text="更新内容我就不告诉你了-。-。。"
+            android:textColor="#444444"
+            android:textSize="32px" />
+
+        <!--android:gravity="end"-->
+        <!--android:letterSpacing="-0.02"-->
+        <!--android:lineSpacingExtra="38px"-->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80px"
+            android:layout_marginTop="35px"
+            android:gravity="right"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/crown_txt_cancel"
+                android:layout_width="100px"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:gravity="center|bottom"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="38px"
+                android:text="取消"
+                android:textColor="#111111"
+                android:textSize="32px" />
+
+            <TextView
+                android:id="@+id/crown_txt_ok"
+                android:layout_width="100px"
+                android:layout_height="match_parent"
+                android:layout_gravity="center"
+                android:layout_marginLeft="35px"
+                android:gravity="center|bottom"
+                android:letterSpacing="-0.02"
+                android:lineSpacingExtra="38px"
+                android:text="更新"
+                android:textColor="#fb605a"
+                android:textSize="32px" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

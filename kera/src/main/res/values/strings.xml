@@ -1,0 +1,193 @@
+<resources>
+
+    <!--fixme values下面的目录是默认目录，如果values-en等其他目录不存在时（或找不到的时候）。就默认读values目录。亲测。-->
+
+    <!--WheelPicker滚轮属性，数组通过  R.array.WheelArrayDefault获取 -->
+    <string-array name="WheelArrayDefault">
+        <item>armastan</item>
+        <item>miłość bracie</item>
+        <item>Liebe</item>
+        <item>Lamour</item>
+        <item>rakastan sinua</item>
+        <item>láska..</item>
+        <item>dragostea.</item>
+        <item>jag älskar</item>
+        <item>ljubezen, brat.</item>
+        <item>ชอบพี่</item>
+        <item>αγάπη μου</item>
+        <item>a szerelem.</item>
+        <item>Amore, fratello.</item>
+    </string-array>
+    <string-array name="WheelArrayWeek">
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+        <item>Sunday</item>
+    </string-array>
+
+    <!--KPermissionUtils权限类中使用-->
+    <string name="perMissionTypeCamera">需要开启相机权限</string>
+    <string name="perMissionTypeStorage">需要开启手机存储权限</string>
+    <string name="perMissionTypeRecording">需要开启手机录音权限</string>
+    <string name="perMissionTypeReadPhoneState">需要开启手机信息权限</string>
+    <string name="perMissionTypeLauncher">需要开启桌面快捷方式权限</string>
+    <string name="perMissionTypeInstallApp">需要开启安装未知应用的权限</string>
+    <string name="perMissionTypeLocation">需要开启定位权限</string>
+    <string name="perMissionTypeWindow">需要开启悬浮窗权限</string>
+    <string name="perMissionTypeWifi">需要开启WIFI权限</string>
+    <string name="perMissionTypeAccount">需要开启手机通讯录权限</string>
+    <string name="perMissionTypeSMS">需要开启手机短信读取权限</string>
+    <string name="perMissionTypeBLUETOOTH">需要开启蓝牙权限</string>
+    <string name="perMissionTypeNFC">需要开启NFC权限</string>
+    <string name="perMissionTypeALL">权限申请失败</string>
+    <string name="ksetting">设置</string>
+    <string name="ksetting2">立即设置</string>
+
+    <string name="kstoragy_not">手机存储卡权限未开启</string>
+
+    <string name="kpermissionmanager">权限管理</string>
+    <string name="kpermissionCanDrawOverlays">是否开启悬浮窗权限?</string>
+    <string name="kkaiqi">开启</string>
+    <string name="kkaiqi2">立即开启</string>
+
+    <string name="KYesterday">昨天</string>
+
+    <!--星座(按阳历计算)-->
+    <string-array name="KConstellation">
+        <item>水瓶座</item>
+        <item>双鱼座</item>
+        <item>白羊座</item>
+        <item>金牛座</item>
+        <item>双子座</item>
+        <item>巨蟹座</item>
+        <item>狮子座</item>
+        <item>处女座</item>
+        <item>天秤座</item>
+        <item>天蝎座</item>
+        <item>射手座</item>
+        <item>摩羯座</item>
+    </string-array>
+
+    <!--生肖(按阴历算)，fixme 因为十二生肖是中国的。所语言配置就只配置中国。-->
+    <string-array name="KZodiacArray">
+        <item>子鼠</item>
+        <item>丑牛</item>
+        <item>寅虎</item>
+        <item>卯兔</item>
+        <item>辰龙</item>
+        <item>巳蛇</item>
+        <item>午马</item>
+        <item>未羊</item>
+        <item>申猴</item>
+        <item>酉鸡</item>
+        <item>戌狗</item>
+        <item>亥猪</item>
+    </string-array>
+
+    <!--星期-->
+    <string-array name="KWeek">
+        <item>星期日</item>
+        <item>星期一</item>
+        <item>星期二</item>
+        <item>星期三</item>
+        <item>星期四</item>
+        <item>星期五</item>
+        <item>星期六</item>
+    </string-array>
+
+    <!--验证码-->
+    <string name="KGetVerificationCode">获取验证码</string>
+    <string name="KVerificationCode">验证码</string>
+    <string name="KNotEmptyOfPhone">手机号不能为空</string>
+    <string name="KPleaseInputCorrectPhone">请输入正确的手机号</string>
+    <string name="KEmptyOfTextPhone">手机文本框为空</string>
+
+    <!--网络相关-->
+    <string name="ktimeout">连接超时</string>
+
+    <!--按钮KButton-->
+    <string name="ktelError">手机号格式不正确</string>
+    <string name="ktelEmptyError">手机号不能为空</string>
+    <string name="kpasswordError">密码格式不正确</string>
+    <string name="kpasswordEmptyError">密码不能为空</string>
+    <string name="kpassword2Error">两次输入的密码不一致</string>
+    <string name="kpassword2EmptyError">确认密码不能为空</string>
+    <string name="kpassword3Error">新密码格式不正确</string>
+    <string name="kpassword3EmptyError">新密码不能为空</string>
+    <string name="kcodeError">验证码不正确</string>
+    <string name="kcodeEmptyError">验证码不能为空</string>
+    <string name="krealCodeEmptyError">请先获取验证码</string>
+    <string name="kidCardError">身份证号格式不正确</string>
+    <string name="kidCardEmptyError">身份证号不能为空</string>
+    <string name="kbankNoError">银行卡号格式不正确</string>
+    <string name="kbankNoEmptyError">银行卡号不能为空</string>
+    <string name="kemailError">邮箱格式不正确</string>
+    <string name="kemailEmptyError">邮箱不能为空</string>
+
+    <!--弹框-->
+    <string name="ktishi">提示</string>
+    <string name="kcancel">取消</string>
+    <string name="kconfirm">确定</string>
+    <string name="kgone">完成</string>
+    <string name="kchoose">请选择</string>
+
+    <!--Toast提示语句-->
+    <string name="kexitInfo">别点了，再点我就要走了</string>
+
+    <!--打印-->
+    <string name="kprint_success">打印成功</string>
+    <string name="kprint_fail">打印失败</string>
+
+    <!--二维码-->
+    <string name="kqr_code">二维码/条码</string>
+    <string name="kaiding">开灯</string>
+    <string name="kguangding">关灯</string>
+    <string name="kqr_timi">将二维码/条码放入框内，即可自动扫描</string>
+    <string name="kqr_fair">未能识别有效二维码</string>
+
+    <string name="kfaxianxinbanben">发现新版本</string>
+
+    <string name="textCopySuccess">复制成功</string>
+    <string name="textCopy">文本已复制</string>
+
+    <!--NFC读卡-->
+    <string name="knfc_no">该设备不支持NFC读卡功能</string>
+    <string name="knf_set">请在系统设置中先启用NFC功能!</string>
+    <string name="kgo_set">去设置</string>
+    <string name="knf_timi">需要开启NFC读卡功能，是否开启？</string>
+
+    <!--分享-->
+    <string name="kdialogTitle">独乐乐不如众乐乐</string>
+    <string name="kinstallqq">请先安装QQ</string>
+    <string name="kinstallww">请先安装微信</string>
+    <string name="kinstallwb">请先安装微博</string>
+    <string name="ksharefile">分享文件</string>
+    <string name="ksharefilenot">分享文件不存在</string>
+
+    <!--文件下载-->
+    <string name="kfiledown">文件已经下载</string>
+    <string name="kappdown">该App已经下载</string>
+    <string name="kappdownfail">下载失败</string>
+    <string name="kfaxianapp">发现App</string>
+    <string name="kshifouxiazai">是否下载?</string>
+    <string name="kbanbengenxin">版本更新</string>
+    <string name="kxiazai">下载</string>
+    <!--下拉刷新，上拉加载更多-->
+    <string name="kloadMore">正在加载...</string>
+    <string name="kloadMoreComplete">没有更多数据了哦。</string>
+    <!--图片选择器-->
+    <string name="kxiangjijiaojuan">相机胶卷</string>
+    <string name="kpreview">预览</string>
+    <string name="kchoose_photo">请选择</string>
+    <string name="kcomplete">已完成</string>
+    <string name="kcamera">拍摄</string>
+    <string name="kmaxSelectNum">你最多可以选择%s张图片</string>
+    <!--多国语言-->
+    <string name="klanguage_zh">中文</string>
+    <string name="klanguage_zh_rCN">中文(简体)</string>
+    <string name="klanguage_zh_rTW">中文(繁体)</string>
+    <string name="klanguage_en">英语</string>
+</resources>

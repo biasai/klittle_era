@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?><!-- 红色圆点，寬和高相等是圓，寬和高不等就是橢圓 -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval"
+    android:useLevel="false">
+
+    <solid android:color="#ffff5151" />
+
+    <padding
+        android:bottom="0.0dip"
+        android:left="0.0dip"
+        android:right="0.0dip"
+        android:top="0.0dip" />
+
+</shape>

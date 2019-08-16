@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/crown_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <cn.oi.klittle.era.widget.DotsView
+        android:id="@+id/dots"
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:layout_alignParentBottom="true" />
+
+</RelativeLayout>

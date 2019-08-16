@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <!--颜色渐变范围-->
+    <gradient
+        android:startColor="#dedede"
+        android:endColor="#44dedede"
+        android:angle="90"/>
+    <!-- 90阴影冲上，－90，阴影冲下-->
+    <!-- 渐变，正值为逆时针,角度0从左往右，90从下往上，180从右往左，270度为从上到下 -->
+</shape>

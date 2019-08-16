@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!--selector可以指向xml也可以指向图片，注意selector最好不要指向图片，因为这个很占内存，selector尽量指向xml。-->
+    <!-- 选中的效果 -->
+    <item android:state_selected="true" android:drawable="@drawable/kera_drawable_click_on_the_blue_button"></item>
+    <!-- 按下去的效果 -->
+    <item android:state_pressed="true" android:drawable="@drawable/kera_drawable_click_on_the_green_button"></item>
+    <!-- 默认 -->
+    <item android:drawable="@drawable/kera_drawable_click_on_the_button"></item>
+
+</selector>

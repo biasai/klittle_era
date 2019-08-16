@@ -1,0 +1,148 @@
+<resources>
+    <!--KPermissionUtils权限类中使用-->
+    <string name="perMissionTypeCamera">Camera permissions need to be turned on</string>
+    <string name="perMissionTypeStorage">Storage permissions need to be turned on</string>
+    <string name="perMissionTypeRecording">Recording permissions need to be enabled</string>
+    <string name="perMissionTypeReadPhoneState">You need to turn on the phone status permission</string>
+    <string name="perMissionTypeLauncher">You need to enable desktop shortcut permissions</string>
+    <string name="perMissionTypeInstallApp">Permission to install unknown applications needs to be opened</string>
+    <string name="perMissionTypeLocation">Location permissions need to be enabled</string>
+    <string name="perMissionTypeWindow">Permission to open suspension window is required</string>
+    <string name="perMissionTypeWifi">WIFI permissions need to be turned on</string>
+    <string name="perMissionTypeAccount">Open the phone address book permissions</string>
+    <string name="perMissionTypeSMS">You need to turn on SMS access</string>
+    <string name="perMissionTypeBLUETOOTH">needs to turn on bluetooth permission</string>
+    <string name="perMissionTypeNFC">needs to turn on NFC permission</string>
+    <string name="perMissionTypeALL">Permission application failed</string>
+    <string name="ksetting">set</string>
+    <string name="ksetting2">Immediately set</string>
+
+    <string name="kstoragy_not">The memory card of the phone is not enabled</string>
+
+    <string name="kpermissionmanager">Rights management</string>
+    <string name="kpermissionCanDrawOverlays">Whether to open suspension window permissions?</string>
+    <string name="kkaiqi">open</string>
+    <string name="kkaiqi2">Immediately open</string>
+
+    <string name="KYesterday">Yesterday</string>
+
+    <!--星座(按阳历计算)-->
+    <string-array name="KConstellation">
+        <item>Aquarius</item>
+        <item>Pisces</item>
+        <item>Aries</item>
+        <item>Taurus</item>
+        <item>Gemini</item>
+        <item>Cancer</item>
+        <item>Leo</item>
+        <item>Virgo</item>
+        <item>Libra</item>
+        <item>Scorpio</item>
+        <item>Sagittarius</item>
+        <item>Capricorn</item>
+    </string-array>
+
+    <!--星期-->
+    <string-array name="KWeek">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
+
+    <!--验证码-->
+    <string name="KGetVerificationCode">Get verification code</string>
+    <string name="KVerificationCode">Verification code</string>
+    <string name="KNotEmptyOfPhone">The cell phone number cannot be empty</string>
+    <string name="KPleaseInputCorrectPhone">Please input the correct mobile phone number</string>
+    <string name="KEmptyOfTextPhone">The phone text box is empty</string>
+
+    <!--网络相关-->
+    <string name="ktimeout">Connection timeout</string>
+
+    <!--按钮KButton-->
+    <string name="ktelError">The phone number format is not correct</string>
+    <string name="ktelEmptyError">The cell phone number cannot be empty</string>
+    <string name="kpasswordError">The password format is incorrect</string>
+    <string name="kpasswordEmptyError">The password cannot be empty</string>
+    <string name="kpassword2Error">The passwords entered do not match</string>
+    <string name="kpassword2EmptyError">Confirm that the password cannot be empty</string>
+    <string name="kpassword3Error">The new password is not formatted correctly</string>
+    <string name="kpassword3EmptyError">The new password cannot be empty</string>
+    <string name="kcodeError">The verification code is not correct</string>
+    <string name="kcodeEmptyError">The verification code cannot be empty</string>
+    <string name="krealCodeEmptyError">Please get the verification code first</string>
+    <string name="kidCardError">Incorrect id number format</string>
+    <string name="kidCardEmptyError">The id number cannot be empty</string>
+    <string name="kbankNoError">The bank card number format is not correct</string>
+    <string name="kbankNoEmptyError">The bank card number cannot be empty</string>
+    <string name="kemailError">The mailbox format is incorrect</string>
+    <string name="kemailEmptyError">The mailbox cannot be empty</string>
+
+    <!--弹框-->
+    <string name="ktishi">prompt</string>
+    <string name="kcancel">cancel</string>
+    <string name="kconfirm">confirm</string>
+    <string name="kgone">complete</string>
+    <string name="kchoose">please select a</string>
+
+    <!--Toast提示语句-->
+    <string name="kexitInfo">Don\'t order any more. I\'m leaving</string>
+
+    <!--打印-->
+    <string name="kprint_success">Print success</string>
+    <string name="kprint_fail">Printing failed</string>
+
+    <!--二维码-->
+    <string name="kqr_code">Qr code/bar code</string>
+    <string name="kaiding">Turn on the light</string>
+    <string name="kguangding">Turn off the lights</string>
+    <string name="kqr_timi">Place the qr code/barcode in the box</string>
+    <string name="kqr_fair">Failed to identify a valid qr code</string>
+
+    <string name="kfaxianxinbanben">Discover new version</string>
+
+    <string name="textCopySuccess">Copy success</string>
+    <string name="textCopy">Text copied</string>
+
+    <!--NFC读卡-->
+    <string name="knfc_no">The device does not support NFC card reading function</string>
+    <string name="knf_set">Please enable NFC function in system Settings first!</string>
+    <string name="kgo_set">to set up</string>
+    <string name="knf_timi">NFC card reading function needs to be enabled. Is it enabled?</string>
+
+    <!--分享-->
+    <string name="kdialogTitle">Le le alone than all le le</string>
+    <string name="kinstallqq">Please install QQ first</string>
+    <string name="kinstallww">Install WeChat first</string>
+    <string name="kinstallwb">Please install weibo first</string>
+    <string name="ksharefile">Share files</string>
+    <string name="ksharefilenot">File sharing does not exist</string>
+
+    <!--文件下载-->
+    <string name="kfiledown">File downloaded</string>
+    <string name="kappdown">The App has been downloaded</string>
+    <string name="kappdownfail">Download failed</string>
+    <string name="kfaxianapp">Find the App</string>
+    <string name="kshifouxiazai">Download it?</string>
+    <string name="kbanbengenxin">Version update</string>
+    <string name="kxiazai">download</string>
+    <!--下拉刷新，上拉加载更多-->
+    <string name="kloadMore">Being loaded...</string>
+    <string name="kloadMoreComplete">No more data。</string>
+    <!--图片选择器-->
+    <string name="kxiangjijiaojuan">CameraRoll</string>
+    <string name="kpreview">preview</string>
+    <string name="kchoose_photo">Please select a</string>
+    <string name="kcomplete">Has been completed</string>
+    <string name="kcamera">Shot</string>
+    <string name="kmaxSelectNum">You can choose up to %s image</string>
+    <!--多国语言-->
+    <string name="klanguage_zh">Chinese</string>
+    <string name="klanguage_zh_rCN">Chinese (simplified)</string>
+    <string name="klanguage_zh_rTW">Chinese (traditional)</string>
+    <string name="klanguage_en">English</string>
+</resources>

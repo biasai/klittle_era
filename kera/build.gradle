@@ -1,0 +1,149 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样
+android {
+    //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
+    compileSdkVersion 27//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
+
+    compileOptions {
+        //fixme 解决java不支持lambda表达式
+        //fixme 注意，类库中添加了以下配置；在moudle也必须添加以下配置。不然项目运行不起来。切记。
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    defaultConfig {
+        //minSdkVersion 主工程的最低版本要求不能低于库工程
+        //targetSdkVersion：同样，主工程不能低于库工程
+        minSdkVersion 14 //如果不写的话，默认就是1。14 是4.0; 21是5.0;23是6.0;24是7.0;26是8.0
+        //targetSdkVersion 27 防止冲突，最好不写。交给主moudle去写。
+        multiDexEnabled true//解决方法数过长过多[主module里面最好也配置一下；不然可能无效。]
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        //fixme 如果用到了注解；就必须添加如下配置；不然报错。
+        javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    sourceSets {
+        main {
+            aidl.srcDirs = ['src/main/java']
+        }
+    }
+
+    //过滤掉提示重复的文件。[如果还报一下文件的错误；那么肯定是依赖重复了，
+    //检查一下library和module是否依赖重复，删除重复的即可]；如： implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0-alpha'
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+
+}
+
+//写在当前moudle下的build.gradle中。公目录下的build.gradle无效。
+//即只对当前moudle有效。
+//强制让所有模块都用相同的支持库版本(v4或v7支持库)
+configurations.all {
+    resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+        def requested = details.requested
+        if (requested.group == 'com.android.support') {
+            if (!requested.name.startsWith("multidex")) {
+                //details.useVersion '26.0.2'//当前引用的版本
+                details.useVersion gradle.sinSupportVersion
+//当前引用的版本；fixme 现在新建工程会报错。不能使用。不过在类库里好像没关系。
+            }
+        }
+    }
+}
+
+ext.anko_version = '0.10.5'
+gradle.ext.sinSupportVersion = '27.1.1'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
+    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
+    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
+    //解决方法数过多
+    api 'com.android.support:multidex:1.0.2'
+    //包含了AppTheme和Appcompat主題。
+    api 'com.android.support:design:' + gradle.sinSupportVersion
+    //约束布局
+    api 'com.android.support.constraint:constraint-layout:1.1.0'
+    api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
+    //集成kotlin的依赖。
+    api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version" //fixme 现在新建工程使用的是：jdk7
+    //协程
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
+    //基本普通依赖,一般这个就够了
+    api "org.jetbrains.anko:anko:$anko_version"
+    //以下依赖根据需求自己添加
+    // RecyclerView-v7
+    api "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
+//    // Appcompat-v7 (only Anko Commons)
+//    api "org.jetbrains.anko:anko-appcompat-v7-commons:$anko_version"
+//    // Appcompat-v7 (Anko Layouts)
+//    api "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
+//    api "org.jetbrains.anko:anko-coroutines:$anko_version"
+//    // CardView-v7
+//    api "org.jetbrains.anko:anko-cardview-v7:$anko_version"
+//    // Design
+//    api "org.jetbrains.anko:anko-design:$anko_version"
+//    api "org.jetbrains.anko:anko-design-coroutines:$anko_version"
+//    // GridLayout-v7
+//    api "org.jetbrains.anko:anko-gridlayout-v7:$anko_version"
+//    // Percent
+//    api "org.jetbrains.anko:anko-percent:$anko_version"
+//    api "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$anko_version"
+//    // Support-v4 (only Anko Commons)
+//    api "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
+//    // Support-v4 (Anko Layouts)
+//    api "org.jetbrains.anko:anko-support-v4:$anko_version"
+//    // ConstraintLayout
+//    api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
+//    fixme 最好使用api；防止主moudle无法正常引用。library和主moudle重复引用基本是不会报错的。
+//    implementation('引用'){
+//        exclude group: 'com.android.support', module: 'appcompat-v7'//fixme exclude是去除的意思。防止冲突。去除对应的包
+//    }
+//    fixme 如：
+//    appcompat-v、support-v4 、v7等多个依赖冲突
+//    implementation('com.allenliu.versionchecklib:library:2.0.5') {
+//        exclude group: 'com.android.support', module: 'appcompat-v7'
+//        exclude group: 'com.android.support', module: 'support-v7'
+//    }
+//    compile ('com.squareup.retrofit2:adapter-rxjava:2.1.0'){
+//
+//        exclude module: 'rxjava'
+//
+//    }
+//    fixme 以下是第三方库
+    implementation files('libs\\dom4j-1.6.1.jar')//fixme 引用jar包；拥有自动生成string.xml文件。
+    //json库
+    api 'com.google.code.gson:gson:2.8.5'
+    //地址(这个比较稳定。)：https://github.com/TooTallNate/Java-WebSocket
+    //必须适使用api;使用implementation的话，在moudle里面就找不到。
+    api "org.java-websocket:Java-WebSocket:1.3.9"
+    //RxJava，安卓引用这个就够了。
+    api 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    //js交互框架（1.0.4就是当前最新的）
+    //api 'com.github.lzyzsd:jsbridge:1.0.4'
+    //最新版(自己copy拷贝过来的，复制的是最新版哦，比1.0.4代码要新)
+    api 'com.gitee.biasia:KJSBridge:v1.0.4'
+    //图片选择器
+    api 'com.gitee.biasia:KPictureSelector:v2.2.4'
+    //图表库
+    api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    //鲁班压缩，github地址：https://github.com/Curzibn/Luban
+    implementation 'top.zibin:Luban:1.1.8'
+}

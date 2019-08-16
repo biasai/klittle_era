@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <!--<gradient-->
+    <!--android:angle="270"-->
+    <!--android:centerColor="#FFFFFF"-->
+    <!--android:endColor="#FFFFFF"-->
+    <!--android:startColor="#FFFFFF" />-->
+
+    <gradient
+        android:angle="270"
+        android:centerColor="#F8F8F8"
+        android:endColor="#F8F8F8"
+        android:startColor="#F8F8F8" />
+
+    <!--<corners-->
+    <!--android:bottomLeftRadius="12dp"-->
+    <!--android:bottomRightRadius="12dp"-->
+    <!--android:topLeftRadius="12dp"-->
+    <!--android:topRightRadius="12dp" />-->
+    <!--最后还是发现，24dp的要比12dp好看；更圆润-->
+    <corners
+        android:bottomLeftRadius="24dp"
+        android:bottomRightRadius="24dp"
+        android:topLeftRadius="24dp"
+        android:topRightRadius="24dp" />
+
+    <padding
+        android:bottom="0dp"
+        android:left="0dp"
+        android:right="0dp"
+        android:top="0dp" />
+
+</shape>
