@@ -203,7 +203,7 @@ public final class ViewfinderView extends View {
             lineRect.top = slideTop;
             lineRect.bottom = slideTop + MIDDLE_LINE_PADDING;
             canvas.drawBitmap(((BitmapDrawable) (getResources()
-                            .getDrawable(R.drawable.scan_line))).getBitmap(), null,
+                            .getDrawable(R.drawable.kera_scan_line))).getBitmap(), null,
                     lineRect, paint);
 
             // 让线动起来，设置中间移动的线的坐标
