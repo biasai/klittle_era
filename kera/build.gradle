@@ -140,9 +140,12 @@ dependencies {
     //js交互框架（1.0.4就是当前最新的）
     //api 'com.github.lzyzsd:jsbridge:1.0.4'
     //最新版(自己copy拷贝过来的，复制的是最新版哦，比1.0.4代码要新)
-    api 'com.gitee.biasia:KJSBridge:v1.0.4'
+    //api 'com.gitee.biasia:KJSBridge:v1.0.4'
+    api 'com.github.lzyzsd:jsbridge:1.0.4'//fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
     //图片选择器
-    api 'com.gitee.biasia:KPictureSelector:v2.2.4'
+    //api 'com.gitee.biasia:KPictureSelector:v2.2.4'
+    //api 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
+    api 'com.github.biasai:PictureSelector:v2.2.3'
     //图表库
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
