@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样
+apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。
 android {
     //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
     compileSdkVersion 27//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
@@ -150,4 +150,7 @@ dependencies {
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
+    //fixme 以下是扫描库
+    api files('libs/scanSDK.jar')//pda扫描库
+    api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；
 }

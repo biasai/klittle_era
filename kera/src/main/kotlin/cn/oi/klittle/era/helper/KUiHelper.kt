@@ -6,6 +6,9 @@ import android.content.Intent
 import android.os.Bundle
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.utils.KPermissionUtils
+import com.sdk.Qr_code.act.KCaptureActivity
+import com.sdk.Qr_code.utils.KZxingUtils
 
 /**
  * Created by 彭治铭 on 2018/4/25.
@@ -60,7 +63,7 @@ object KUiHelper {
     }
 
     private var goTime = 0L
-    var goFastTime=300L
+    var goFastTime = 300L
     //防止极短时间内，重复跳转调用。
     fun goActivity(intent: Intent, nowActivity: Activity? = getActivity()) {
         if (System.currentTimeMillis() - goTime > goFastTime) {
@@ -77,39 +80,53 @@ object KUiHelper {
     var requestCode = 0
     fun goActivityForResult(clazz: Class<*>, nowActivity: Activity? = getActivity()) {
         val intent = Intent(nowActivity, clazz)
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     fun goActivityForResult(clazz: Class<*>, bundle: Bundle, nowActivity: Activity? = getActivity()) {
         val intent = Intent(nowActivity, clazz)
         intent.putExtras(bundle)
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     fun goActivityForResult(intent: Intent, nowActivity: Activity? = getActivity()) {
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     fun goActivityForResult(clazz: Class<*>, nowActivity: Activity? = getActivity(), requestCode: Int) {
         val intent = Intent(nowActivity, clazz)
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     fun goActivityForResult(clazz: Class<*>, bundle: Bundle, nowActivity: Activity? = getActivity(), requestCode: Int) {
         val intent = Intent(nowActivity, clazz)
         intent.putExtras(bundle)
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     fun goActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int) {
-        startActivityForResult(intent,nowActivity, requestCode)
+        startActivityForResult(intent, nowActivity, requestCode)
     }
 
     //防止极短时间内，重复跳转调用。
-    private fun startActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int){
+    private fun startActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int) {
         if (System.currentTimeMillis() - goTime > goFastTime) {
             goTime = System.currentTimeMillis()
             nowActivity?.startActivityForResult(intent, requestCode)
+        }
+    }
+
+    /**
+     * 跳转到 二维码扫描界面
+     */
+    fun goCaptureActivity(nowActivity: Activity? = getActivity()) {
+        //需要相机权限（必须）
+        KPermissionUtils.requestPermissionsCamera {
+            if (it) {
+                goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
+            } else {
+                KPermissionUtils.showFailure()
+            }
         }
     }
 

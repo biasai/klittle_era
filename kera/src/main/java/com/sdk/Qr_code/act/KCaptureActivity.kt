@@ -5,14 +5,13 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Bundle
 import android.view.Gravity
+import cn.oi.klittle.era.R
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.toolbar.KToolbar
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import com.sdk.Qr_code.manager.CameraManager
 import com.sdk.Qr_code.utils.KZxingUtils
 import com.sdk.Qr_code.view.ViewfinderView
-import com.sdk.scan.R
 import org.jetbrains.anko.*
 
 //    /**
@@ -28,6 +27,7 @@ import org.jetbrains.anko.*
 //            }
 //        }
 //    }
+//   KUiHelper.goCaptureActivity()//fixme 跳转到 二维码扫描界面
 //       fixme 最下面有上一个Activity的回调结果案例。
 
 /**
@@ -59,7 +59,8 @@ open class KCaptureActivity : CaptureActivity() {
             }
             KToolbar(this, ctx as Activity)?.apply {
                 contentView?.apply {
-                    backgroundColor = Color.parseColor("#09099F")//标题栏背景颜色
+                    //backgroundColor = Color.parseColor("#09099F")//标题栏背景颜色
+                    backgroundColor = Color.parseColor("#0078D7")
                 }
                 //左边返回文本（默认样式自带一个白色的返回图标）
                 leftTextView?.apply {
@@ -86,13 +87,14 @@ open class KCaptureActivity : CaptureActivity() {
             KTextView(this).apply {
                 radius {
                     all_radius(kpx.x(100f))
-                    bgHorizontalColors(Color.RED, Color.parseColor("#D96550"))
+                    //bgHorizontalColors(Color.RED, Color.parseColor("#D96550"))
+                    bg_color = Color.parseColor("#0078D7")//Color.parseColor("#09099F")
                     strokeColor = Color.WHITE
                     strokeWidth = kpx.x(3f)
                 }
                 gravity = Gravity.CENTER
                 textColor = Color.WHITE
-                textSize = kpx.textSizeX(30)
+                textSize = kpx.textSizeX(38)
                 if (CameraManager.get().judgeLight()) {
                     //开灯
                     text = getString(R.string.kguangding)//"关灯"

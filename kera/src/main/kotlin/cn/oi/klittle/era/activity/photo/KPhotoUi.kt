@@ -10,8 +10,10 @@ import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.toolbar.KToolbar
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk25.coroutines.onClick
 
 open class KPhotoUi : KBaseUi() {
 

@@ -94,7 +94,9 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                     relativeLayout {
                         var layoutParams = RelativeLayout.LayoutParams(wrapContent, wrapContent)
                         setLayoutParams(layoutParams)
-
+                        onClick {
+                            pop?.dismiss()//fixme 防止触摸屏幕外不消失弹窗。
+                        }
                         //左边容器
                         leftView = RelativeLayout(context)?.apply {
                             id = kpx.id("spinnerPop_leftView")
@@ -142,6 +144,9 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                                     width = wrapContent
                                     height = wrapContent
                                 }
+                            }.lparams {
+                                width = wrapContent
+                                height = wrapContent
                             }
                         }?.lparams {
                             width = wrapContent

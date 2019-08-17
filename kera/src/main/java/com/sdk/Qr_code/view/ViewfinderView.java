@@ -19,8 +19,8 @@ import android.view.ViewGroup;
 
 import com.google.zxing.ResultPoint;
 import com.sdk.Qr_code.manager.CameraManager;
-import com.sdk.scan.R;
 
+import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.base.KBaseUi;
 
 /**

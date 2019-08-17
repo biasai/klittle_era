@@ -6,6 +6,7 @@ import cn.oi.klittle.era.activity.photo.entity.KLocalMediaFolder
 import cn.oi.klittle.era.activity.photo.manager.KLocalMediaLoader
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.utils.KFileUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.entity.LocalMediaFolder
@@ -55,7 +56,9 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
                             }
                         }
                     }
-                }catch (e:java.lang.Exception){e.printStackTrace()}
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -65,6 +68,7 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
     private var pathMap = mutableMapOf<String, String>()
     private fun createFolder(it: LocalMediaFolder?, index: Int) {
         try {
+            var imageNum: Int = 0//记录图片真实个数
             pathMap?.clear()
             var folder = KLocalMediaFolder()
             it?.let {
@@ -83,6 +87,7 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
                     if (KFileUtils.getInstance().getFileSize(it.path) > 0) {
                         if (it.path != null && !pathMap.containsKey(it!!.path)) {
                             folder.images?.add(it)//fixme 防止重复添加
+                            imageNum++
                         }
                         it.path?.let {
                             pathMap?.put(it, it)
@@ -103,6 +108,7 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
                             if (it.path != null && !pathMap.containsKey(it!!.path)) {
                                 //folder.images?.add(it)//fixme 防止重复添加
                                 folder.images?.add(0, it)//fixme 添加到第一个。
+                                imageNum++
                             }
                             it.path?.let {
                                 pathMap?.put(it, it)
@@ -112,9 +118,26 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
                 }
             }
 
+            //fixme 相机胶卷显示的是最近拍摄的图片（或下载缓存的图片）
             it?.images?.let {
-                if (it.size > 0) {
+                if (it.size > 0 && imageNum > 0) {
                     KPictureSelector.folders?.add(folder)
+                }
+            }
+            it?.let {
+                if (it.images != null && it.imageNum != imageNum) {
+                    //KLoggerUtils.e("imageNum:\t" + it.images.size + "\t" + imageNum)
+                    folder.imageNum = imageNum//fixme 记录真实的图片个数(亲测有效！)。
+                }
+                it.firstImagePath?.let {
+                    if (KFileUtils.getInstance().getFileSize(it) <= 0) {
+                        folder.images?.let {
+                            if (it.size > 0) {
+                                folder.firstImagePath = it[0].path//fixme 记录真实的第一张图片
+                            }
+                        }
+
+                    }
                 }
             }
         } catch (e: Exception) {

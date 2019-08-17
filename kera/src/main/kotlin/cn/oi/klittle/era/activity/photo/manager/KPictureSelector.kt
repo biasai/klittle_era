@@ -27,6 +27,8 @@ object KPictureSelector {
     var currentSelectNum = 0//当前选中数
     var maxSelectNum = 50//最大选中数
     var isCompress: Boolean = false//是否压缩
+    private var isCamera: Boolean = true//是否有摄像头（默认配置）
+    private var isCamera2: Boolean = true//是否有摄像头（临时配置）
     var minimumCompressSize: Int = 100//单位KB,小于该值不压缩
 
     var type: Int = PictureConfig.TYPE_IMAGE//类型
@@ -82,12 +84,18 @@ object KPictureSelector {
         }
     }
 
+
     //判断是否有相机拍照功能
     fun isCamera(): Boolean {
-        if (checkedFolderIndex == 0 && type != PictureConfig.TYPE_AUDIO) {
+        if (isCamera2 && checkedFolderIndex == 0 && type != PictureConfig.TYPE_AUDIO) {
             return true
         }
         return false
+    }
+
+    fun isCamera(isCamera: Boolean): KPictureSelector {
+        this.isCamera = isCamera
+        return this
     }
 
     private var compressPath: String = KCacheUtils.getCachePath() + "/compress"//fixme 压缩路径（本应用缓存路径）,相机拍照路径是SD存储卡。
@@ -202,6 +210,8 @@ object KPictureSelector {
         checkedFolderIndex = 0
         currentSelectNum = 0
         selectMap?.clear()
+        this.isCamera2 = this.isCamera//是否有摄像头
+        this.isCamera = true//恢复摄像头原有配置
         //selectionMedia2是默认选中的数据。
         selectionMedia2?.let {
             var checkedNum = 1
