@@ -1,11 +1,22 @@
 package cn.oi.klittle.era.activity.photo.entity
 
+import cn.oi.klittle.era.utils.KAssetsUtils
 import java.io.Serializable
 
 /**
  * 图片实体类信息
  */
 open class KLocalMedia : Serializable {
+
+    var key: String? = null//fixme 位图缓存的键值;用于图片释放
+
+    //fixme 图片释放
+    fun recyclerBitmap() {
+        key?.let {
+            KAssetsUtils.getInstance().recycleBitmap(it)
+        }
+    }
+
     //fixme 原图（视频或音频）路径(除了音频Audio没有图片，其他视频gif都有图片。)
     //fixme 路径就算是视频，Glide也能获取到第一帧的位图。Glide能够自动获取到位图。
     //fixme 但是如果是音频Glide就无法获取到位图了（因为音频里没有位图）
@@ -100,6 +111,4 @@ open class KLocalMedia : Serializable {
         }
         return false
     }
-
-    var key: String? = null//位图缓存的键值。
 }

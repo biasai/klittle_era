@@ -9,10 +9,15 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.photo.adapter.KPhotoAdapter
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
+import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.base.KBaseUi.Companion.ktextView
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KFileUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import org.jetbrains.anko.*
 import java.lang.Exception
@@ -26,6 +31,7 @@ import java.lang.Exception
 //                        height = wrapContent
 //                    }
 //                }
+//                fixme 重要方法：getPathes()获取图片路径集合。recyclerBitmap()释放所有位图
 
 /**
  * 图片选择器，图片选中之后的列表显示
@@ -39,27 +45,28 @@ open class KImageItemRecyclerView : KRecyclerView {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
 
-    var spanCount: Int = 4
-    var parentWidth: Int = kpx.screenWidth()
-    var datasSize: Int = 0//记录上一次数据的个数
-    var data:String?=null
+    private var spanCount: Int = 4
+    private var parentWidth: Int = kpx.screenWidth()
+    private var datasSize: Int = 0//记录上一次数据的个数
+    private var data: String? = null
     /**
      * 刷新或初始化
      * @param datas 图片数据
      * @param spanCount 网格列数
      * @param itemViewWidth KRecyclerView的宽度（最好指明一下）
+     * @param isRecyclerBitmap 是否自动释放释放位图
      */
     open fun update(datas: MutableList<KLocalMedia>?, spanCount: Int = 4, parentWidth: Int = kpx.screenWidth()) {
         try {
             //(!datas?.toString()?.trim().equals(data)) 判断两个对象是否相等，不相等就重新初始化
-            if (layoutManager == null || adapter == null || this.spanCount != spanCount || this.parentWidth != parentWidth || datas == null ||(!datas?.toString()?.trim().equals(data))|| datas!!.size <= 0 || datasSize <= 0) {
+            if (layoutManager == null || adapter == null || this.spanCount != spanCount || this.parentWidth != parentWidth || datas == null || (!datas?.toString()?.trim().equals(data)) || datas!!.size <= 0 || datasSize <= 0) {
                 hiddenScroll()
                 setGridLayoutManager(spanCount)
                 adapter = KImageItemAdapter(datas, spanCount, parentWidth)
             }
             this.spanCount = spanCount
             this.parentWidth = parentWidth
-            data=datas?.toString()?.trim()
+            data = datas?.toString()?.trim()
             datas?.let {
                 datasSize = it.size//记录上一次数据个数
             }
@@ -70,8 +77,43 @@ open class KImageItemRecyclerView : KRecyclerView {
                     e.printStackTrace()
                 }
             }
+            this.datas = datas//图片
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    public var datas: MutableList<KLocalMedia>? = null//fixme 图片数据
+    /**
+     * fixme 获取图片路径集合
+     */
+    public fun getPathes(): MutableList<String>? {
+        try {
+            var pathes = arrayListOf<String>()
+            datas?.forEach {
+                var path = it.path//原始路径
+                if (it.isCompressed && it.compressPath != null) {
+                    path = it.compressPath//压缩路径
+                }
+                if (path != null && KFileUtils.getInstance().getFileSize(path) > 0) {
+                    pathes.add(path)
+                }
+            }
+            if (pathes.size > 0) {
+                return pathes
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    /**
+     * fixme 释放所有位图
+     */
+    public fun recyclerBitmap() {
+        datas?.forEach {
+            it?.recyclerBitmap()
         }
     }
 
@@ -107,6 +149,7 @@ open class KImageItemRecyclerView : KRecyclerView {
         open class KImageItemAdapter(var datas: MutableList<KLocalMedia>?, spanCount: Int = 4, parentWidth: Int = kpx.screenWidth()) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var itemWidth = parentWidth / spanCount//单个item的宽度
             var imgWidth = itemWidth / 10 * 8//图片的宽度
+
             override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
                 if (viewType == viewType_empty || viewType == viewType_footView) {
                     //空布局,末尾布局
@@ -210,6 +253,7 @@ open class KImageItemRecyclerView : KRecyclerView {
                                 width = imgWidth
                                 height = width
                                 autoBgFromFile(path, true)
+                                data.key = key//fixme 图片缓存键值
                             }
                             autoBg2 {
                                 //width = imgWidth/3
