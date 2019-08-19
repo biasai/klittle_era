@@ -22,6 +22,7 @@ import cn.oi.klittle.era.widget.compat.*
 import cn.oi.klittle.era.widget.photo.KImageView
 import cn.oi.klittle.era.widget.photo.KPhotoView
 import cn.oi.klittle.era.widget.recycler.KFooterView
+import cn.oi.klittle.era.widget.recycler.KImageItemRecyclerView
 import cn.oi.klittle.era.widget.recycler.KRecyclerView
 import cn.oi.klittle.era.widget.seekbar.KSeekBarProgressBar
 import cn.oi.klittle.era.widget.seekbar.KVerticalSeekBarProgressBar
@@ -319,6 +320,14 @@ abstract class KBaseUi {
 
         inline fun ViewManager.kRecyclerView(init: (@AnkoViewDslMarker KRecyclerView).() -> Unit): KRecyclerView {
             return ankoView({ ctx: Context -> KRecyclerView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kimageItemRecyclerView(init: (@AnkoViewDslMarker KImageItemRecyclerView).() -> Unit): KImageItemRecyclerView {
+            return ankoView({ ctx: Context -> KImageItemRecyclerView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kImageItemRecyclerView(init: (@AnkoViewDslMarker KImageItemRecyclerView).() -> Unit): KImageItemRecyclerView {
+            return ankoView({ ctx: Context -> KImageItemRecyclerView(ctx) }, theme = 0) { init() }
         }
 
         //fixme viewPager
