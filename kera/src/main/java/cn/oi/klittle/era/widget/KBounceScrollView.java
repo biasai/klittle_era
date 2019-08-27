@@ -96,12 +96,16 @@ public class KBounceScrollView extends NestedScrollView {
     public KBounceScrollView(Context context, AttributeSet attrs) {
         super(context, attrs);
         setFillViewport(true);
+        setOverScrollMode(OVER_SCROLL_NEVER);//设置滑动到边缘时无效果模式
+        setVerticalScrollBarEnabled(false);//滚动条隐藏
     }
 
     public KBounceScrollView(@NonNull Context context) {
         super(context);
         //fixme 默认，内部容器的宽和高填充ScrollView的宽和高。即一样大小。
         setFillViewport(true);
+        setOverScrollMode(OVER_SCROLL_NEVER);//fixme 设置滑动到边缘时无效果模式，不然RecyclerView的滑动边缘效果可能会无法隐藏。
+        setVerticalScrollBarEnabled(false);//滚动条隐藏
     }
 
     /***

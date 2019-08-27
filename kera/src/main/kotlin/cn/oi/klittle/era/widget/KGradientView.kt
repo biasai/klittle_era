@@ -38,7 +38,7 @@ open class KGradientView : KBaseView {
     }
 
     /**
-     * fixme 使用KScrimUtil实现更柔和的颜色透明渐变
+     * fixme 使用KScrimUtil实现更柔和的颜色透明渐变;控件高度最好不要超过 height = kpx.x(40)(不然效果也不怎么好，高度太高，颜色分层明显。)
      * @param color 初始颜色值（最后会变成透明色）
      * @param numStops 渐变层数（越大，渐变色越柔和）
      * @param gravity 初始渐变方向

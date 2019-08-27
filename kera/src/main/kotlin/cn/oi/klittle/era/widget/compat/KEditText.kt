@@ -14,6 +14,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
+import org.jetbrains.anko.singleLine
 
 /**
  * 文本输入框相关。
@@ -344,7 +345,7 @@ open class KEditText : KMyEditText {
                             }
                         } else {
                             if (str.length > 1 && str.substring(0, 1).equals("0")) {//首位数为0
-                                if ((isInt != null && isInt!!)||decimalNum<=0) {
+                                if ((isInt != null && isInt!!) || decimalNum <= 0) {
                                     //转整型
                                     replace(it, 0, it.length, str.toDouble().toInt().toString())
                                 } else {
@@ -659,12 +660,19 @@ open class KEditText : KMyEditText {
     //fixme OnEditorActionListener只能监听右下角按钮，其他按键监听不到
     //fixme ==============================================================================================右下角按钮->开始
 
-    //监听输入框右下角完成按钮
-    fun addDone(callbak: (() -> Unit)? = null) {
+    /**
+     * 监听输入框右下角完成按钮
+     * @param isHideSoftKeyboard 是否隐藏软键盘
+     */
+    fun addDone(isHideSoftKeyboard: Boolean = true, callbak: (() -> Unit)? = null) {
         imeOptions = EditorInfo.IME_ACTION_DONE//设置成完成类型
+        singleLine = true//单行才有效
         callbak?.let {
             val onEditorActionListener = OnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_DONE) {//确定/完成
+                    if (isHideSoftKeyboard) {
+                        hideSoftKeyboard()//隐藏软键盘
+                    }
                     it()
                     true
                 } else false
@@ -674,11 +682,15 @@ open class KEditText : KMyEditText {
     }
 
     //监听输入框右下角搜索按钮
-    fun addSearch(callbak: (() -> Unit)? = null) {
+    fun addSearch(isHideSoftKeyboard: Boolean = true, callbak: (() -> Unit)? = null) {
         imeOptions = EditorInfo.IME_ACTION_SEARCH//设置成搜索类型
+        singleLine = true//单行才有效
         callbak?.let {
             val onEditorActionListener = OnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_SEARCH) {//搜索
+                    if (isHideSoftKeyboard) {
+                        hideSoftKeyboard()//隐藏软键盘
+                    }
                     it()
                     true
                 } else false
@@ -688,11 +700,15 @@ open class KEditText : KMyEditText {
     }
 
     //监听输入框右下角发送按钮
-    fun addSend(callbak: (() -> Unit)? = null) {
+    fun addSend(isHideSoftKeyboard: Boolean = true, callbak: (() -> Unit)? = null) {
         imeOptions = EditorInfo.IME_ACTION_SEND//设置成发送类型
+        singleLine = true//单行才有效
         callbak?.let {
             val onEditorActionListener = OnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_SEND) {//发送
+                    if (isHideSoftKeyboard) {
+                        hideSoftKeyboard()//隐藏软键盘
+                    }
                     it()
                     true
                 } else false
@@ -702,11 +718,15 @@ open class KEditText : KMyEditText {
     }
 
     //监听输入框右下角下一步按钮
-    fun addNext(callbak: (() -> Unit)? = null) {
+    fun addNext(isHideSoftKeyboard: Boolean = true, callbak: (() -> Unit)? = null) {
         imeOptions = EditorInfo.IME_ACTION_NEXT//设置下一步类型
+        singleLine = true//单行才有效
         callbak?.let {
             val onEditorActionListener = OnEditorActionListener { textView, actionId, keyEvent ->
                 if (actionId == EditorInfo.IME_ACTION_NEXT) {//下一步
+                    if (isHideSoftKeyboard) {
+                        hideSoftKeyboard()//隐藏软键盘
+                    }
                     it()
                     true
                 } else false

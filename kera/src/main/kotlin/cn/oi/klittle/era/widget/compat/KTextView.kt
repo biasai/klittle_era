@@ -578,7 +578,7 @@ open class KTextView : KView {
             if (it.length <= 0) {
                 txt_press?.text?.let {
                     if (it.length > 0) {
-                        setText(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
                 }
             }
@@ -602,7 +602,7 @@ open class KTextView : KView {
             if (it.length <= 0) {
                 txt_hover?.text?.let {
                     if (it.length > 0) {
-                        setText(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
                 }
             }
@@ -626,7 +626,7 @@ open class KTextView : KView {
             if (it.length <= 0) {
                 txt_focuse?.text?.let {
                     if (it.length > 0) {
-                        setText(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
                 }
             }
@@ -650,7 +650,7 @@ open class KTextView : KView {
             if (it.length <= 0) {
                 txt_selected?.text?.let {
                     if (it.length > 0) {
-                        setText(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
                 }
             }
@@ -685,7 +685,7 @@ open class KTextView : KView {
             if (it.length <= 0) {
                 getmTxt()?.text?.let {
                     if (it.length > 0) {
-                        setText(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
                 }
             }
@@ -697,6 +697,12 @@ open class KTextView : KView {
     }
 
     var texts_model: KTextEntity? = null
+
+    //fixme 必须设置一下文本，防止部分机型没有文本显示。
+    private fun setText2(it: String?) {
+        setText("")
+        invalidate()
+    }
 
     override fun draw(canvas: Canvas?) {
         if (txt != null) {

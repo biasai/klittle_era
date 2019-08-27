@@ -41,6 +41,19 @@ object KLanguageUtil {
     }
 
     /**
+     * fixme 判断当前本应用语言是否为英语(亲测有效)
+     */
+    fun isEngLish(context: Context? = getContext()): Boolean {
+        getCurrentLocale(context)?.language?.let {
+            //KLoggerUtils.e("当前语言：\t" + it + "\t英语：\t" + Locale.ENGLISH.language)//当前语言：	zh	英语：	en
+            if (it.equals(Locale.ENGLISH.language)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
      * 获取获取系统语言。（即是系统的语言，不是应用的。）
      */
     fun getDefaultLocale(): Locale {
