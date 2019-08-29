@@ -82,16 +82,42 @@ open class KMyEditText : KTextView {
          * fixme 强制隐藏软键盘(有效)
          * @param activity
          */
-        fun hideSoftKeyboard(context: Context?) {
+        fun hideSoftKeyboard(context: Context?, view: View? = null) {
             try {
                 if (context != null && context is Activity) {
                     var inputManager: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputManager?.hideSoftInputFromWindow((context as Activity).getCurrentFocus().getWindowToken(), 0); //强制隐藏键盘
+                    inputManager?.hideSoftInputFromWindow((context as Activity).getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
+                    view?.let {
+                        //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
+                        inputManager?.hideSoftInputFromWindow(it.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN)
+                    }
                 }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
         }
+
+        /**
+         * fixme 软键盘交替（亲测可行！）（目前没有判断软键盘是否弹出的方法。）
+         */
+        fun toggleSoftInput(context: Context?) {
+            try {
+                if (context != null && context is Activity) {
+                    var inputManager: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    inputManager?.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0)//软键盘弹出消失交替（没有软键盘会弹出，有软键盘会消失）
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    /**
+     * fixme 软键盘交替（亲测可行！）（目前没有判断软键盘是否弹出的方法。）
+     */
+    fun toggleSoftInput() {
+        KMyEditText.toggleSoftInput(context)
     }
 
     //调出软键盘
@@ -115,7 +141,7 @@ open class KMyEditText : KTextView {
 
     //隐藏软键盘
     fun hideSoftKeyboard() {
-        KMyEditText.hideSoftKeyboard(context)
+        KMyEditText.hideSoftKeyboard(context, this)
     }
 
     //初始化

@@ -428,7 +428,7 @@ public class KBounceScrollView extends NestedScrollView {
                     //fixme 解决与输入文本框的冲突。
                     requestFocus();//fixme 聚焦
                     requestFocusFromTouch();
-                    KMyEditText.Companion.hideSoftKeyboard(getContext());//隐藏软键盘（防止软键盘是不是的冒出来）
+                    KMyEditText.Companion.hideSoftKeyboard(getContext(),this);//隐藏软键盘（防止软键盘是不是的冒出来）
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
