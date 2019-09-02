@@ -94,8 +94,11 @@ public class KBaseSlideLayout extends FrameLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         boolean intercept = false;
-        int x = (int) ev.getX();
-        int y = (int) ev.getY();
+//        int x = (int) ev.getX();
+//        int y = (int) ev.getY();
+        //fixme 使用Raw
+        int x = (int) ev.getRawX();
+        int y = (int) ev.getRawY();
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 intercept = false;
@@ -128,50 +131,65 @@ public class KBaseSlideLayout extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
-        int x = (int) ev.getX();
-        int y = (int) ev.getY();
-        switch (ev.getAction()) {
-            case MotionEvent.ACTION_DOWN:
-                mTouchDownX = x;
-                mLastTouchX = x;
-                mLastTouchY = y;
-                break;
-            case MotionEvent.ACTION_MOVE:
-                int deltaX = x - mLastTouchX;
-                int deltaY = y - mLastTouchY;
-                if (shadowSlidingWidth < 0) {
-                    shadowSlidingWidth = getWidth() / 10;//fixme 控制有效滑动间距
-                }
-                //Log.e("test","mInterceptDownX:\t"+mInterceptDownX+"\tshadowSlidingWidth:\t"+shadowSlidingWidth);
-                if (!isConsumed && mTouchDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY)) {
-                    isConsumed = true;
-                }
-
-                if (isConsumed) {
-                    int rightMovedX = mLastTouchX - (int) ev.getX();
-                    // 左侧即将滑出屏幕
-                    if (getScrollX() + rightMovedX >= 0) {
-                        scrollTo(0, 0);
-                    } else {
-                        scrollBy(rightMovedX, 0);
+        try {
+            //        int x = (int) ev.getX();
+//        int y = (int) ev.getY();
+            //fixme 使用Raw
+            int x = (int) ev.getRawX();
+            int y = (int) ev.getRawY();
+            switch (ev.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    mTouchDownX = x;
+                    mLastTouchX = x;
+                    mLastTouchY = y;
+                    isConsumed = false;
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    int deltaX = x - mLastTouchX;
+                    int deltaY = y - mLastTouchY;
+                    if (mLastTouchX <= 0) {
+                        mLastTouchX = (int) ev.getRawX();//fixme 防止数据异常
                     }
-                }
-                mLastTouchX = x;
-                mLastTouchY = y;
-                break;
-            case MotionEvent.ACTION_UP:
-                isConsumed = false;
-                mTouchDownX = mLastTouchX = mLastTouchY = 0;
-                if (shadowSlidingReboundWidth < 0) {
-                    shadowSlidingReboundWidth = getWidth() / 2;//fixme 控制有效反弹间距
-                }
-                // 根据手指释放时的位置决定回弹还是关闭
-                if (-getScrollX() < shadowSlidingReboundWidth) {
-                    scrollBack();
-                } else {
-                    scrollClose();
-                }
-                break;
+                    if (mLastTouchY <= 0) {
+                        mLastTouchY = (int) ev.getRawY();
+                    }
+                    if (shadowSlidingWidth < 0) {
+                        shadowSlidingWidth = getWidth() / 10;//fixme 控制有效滑动间距
+                    }
+                    //Log.e("test", "mLastTouchX:\t" + mLastTouchX + "\tgetRawX():\t" + ev.getRawX() + "\tdeltaX:\t" + deltaX);
+                    //Log.e("test","mInterceptDownX:\t"+mInterceptDownX+"\tshadowSlidingWidth:\t"+shadowSlidingWidth);
+                    if (!isConsumed && mTouchDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY)) {
+                        isConsumed = true;
+                    }
+                    if (isConsumed) {
+//                    int rightMovedX = mLastTouchX - (int) ev.getX();
+                        int rightMovedX = mLastTouchX - (int) ev.getRawX();
+                        // 左侧即将滑出屏幕
+                        if (getScrollX() + rightMovedX >= 0) {
+                            scrollTo(0, 0);
+                        } else {
+                            scrollBy(rightMovedX, 0);
+                        }
+                    }
+                    mLastTouchX = x;
+                    mLastTouchY = y;
+                    break;
+                case MotionEvent.ACTION_UP:
+                    isConsumed = false;
+                    mTouchDownX = mLastTouchX = mLastTouchY = 0;
+                    if (shadowSlidingReboundWidth < 0) {
+                        shadowSlidingReboundWidth = getWidth() / 2;//fixme 控制有效反弹间距
+                    }
+                    // 根据手指释放时的位置决定回弹还是关闭
+                    if (-getScrollX() < shadowSlidingReboundWidth) {
+                        scrollBack();
+                    } else {
+                        scrollClose();
+                    }
+                    break;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return true;
     }
