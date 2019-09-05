@@ -47,12 +47,14 @@ open class KBaseDialog() {
      * 销毁
      */
     open fun onDestroy() {
-        onShow = null
-        onDismiss = null
-        dialog?.dismiss()
-        dialog = null
-        ctx = null
-        layoutId = null
+        try {
+            onShow = null
+            onDismiss = null
+            dialog?.dismiss()
+            dialog = null
+            ctx = null
+            layoutId = null
+        }catch (e:Exception){e.printStackTrace()}
     }
 
     open var ctx: Context? = null//上下文

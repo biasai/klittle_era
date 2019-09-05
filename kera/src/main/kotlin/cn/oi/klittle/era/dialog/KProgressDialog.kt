@@ -148,14 +148,18 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        https = null
-        disposable?.dispose()
-        observable = null
-        observe = null
-        disposable = null
-        showTime = null
-        timeOutCallback = null
+        try {
+            super.onDestroy()
+            https = null
+            disposable?.dispose()
+            observable = null
+            observe = null
+            disposable = null
+            showTime = null
+            timeOutCallback = null
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
 }
