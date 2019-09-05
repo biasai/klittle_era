@@ -101,28 +101,50 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
         this.timeOutCallback = timeOutCallback
     }
 
+
+    private fun dispose() {
+        try {
+            //使用RxJava完成弹框超时设置。亲测可行。
+            if (observe != null && timeOut > 0) {//timeOut小于等于0不做超时判断
+                showTime = System.currentTimeMillis()//记录显示的时间
+                disposable?.dispose()//旧的回调取消
+                observable?.subscribe(observe)//开启新的回调计时
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    override fun show() {
+        super.show()
+        dispose()//fixme 防止计时不准确，在show()和onShow()里都调用一次。
+    }
+
     open override fun onShow() {
         super.onShow()
-        //使用RxJava完成弹框超时设置。亲测可行。
-        if (observe != null && timeOut > 0) {//timeOut小于等于0不做超时判断
-            showTime = System.currentTimeMillis()//记录显示的时间
+        dispose()
+    }
+
+    private fun dispose2() {
+        try {
+            https?.let {
+                //fixme 超时处理
+                //fixme 移除网络重复请求标志；防止第二次请求时没有反应；
+                KHttp.map.remove(KHttp.getUrlUnique(it))
+                //https?.onDestrory() fixme 不要调用这个销毁方法；这个在KGenericsCallback里面调用；其他地方不要调用
+            }
+            https = null
             disposable?.dispose()//旧的回调取消
-            observable?.subscribe(observe)//开启新的回调计时
+            disposable = null
+            showTime = null
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     override fun onDismiss() {
         super.onDismiss()
-        https?.let {
-            //fixme 超时处理
-            //fixme 移除网络重复请求标志；防止第二次请求时没有反应；
-            KHttp.map.remove(KHttp.getUrlUnique(it))
-            //https?.onDestrory() fixme 不要调用这个销毁方法；这个在KGenericsCallback里面调用；其他地方不要调用
-        }
-        https = null
-        disposable?.dispose()//旧的回调取消
-        disposable = null
-        showTime = null
+        dispose2()
     }
 
     override fun onDestroy() {

@@ -408,7 +408,7 @@ open class KBaseDialog() {
     }
 
     //关闭弹窗
-    fun dismiss() {
+    open fun dismiss() {
         try {
             ctx?.runOnUiThread {
                 dialog?.let {
@@ -424,7 +424,7 @@ open class KBaseDialog() {
     }
 
     //显示窗体
-    fun show() {
+    open fun show() {
         try {
             ctx?.runOnUiThread {
                 if (dialog != null && !dialog!!.isShowing) {
