@@ -18,6 +18,7 @@ import java.util.*
  *
  *
  * fixme 泛型新增，支持String,Boolean，Int,Float类型。
+ * fixme 支持ArrayList<>类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
  *
  * fixme 注意一哈
  * 1485.0 JSONObject 会自动去除0；变成 1485 ；如果是 1485.1 或 s1234.0 任然保存原数据；只会去除纯数字的末尾.0
