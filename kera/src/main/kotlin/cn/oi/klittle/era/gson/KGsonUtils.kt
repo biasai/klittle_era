@@ -25,6 +25,8 @@ import java.util.*
  * 3171.000 也会变成 3171 ；
  * 3171.0010 会变成 3171.001 [fixme 即会去除纯数字类型的末尾0]
  *
+ * fixme 在KBaseEntity类里面有JSON的转换案例。
+ *
  */
 object KGsonUtils {
 
