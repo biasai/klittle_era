@@ -73,4 +73,29 @@ object KLoggerUtils {
         }
     }
 
+    /**
+     * 分段打印所有日志
+     */
+    fun e_long(msg: String?) {
+        if (msg == null) {
+            return
+        }
+        var msg = msg
+        val segmentSize = 3 * 1024
+        val length = msg.length.toLong()
+        // 长度小于等于限制直接打印
+        if (length <= segmentSize) {
+            e(msg)
+        } else {
+            // 循环分段打印日志
+            while (msg!!.length > segmentSize) {
+                val logContent = msg.substring(0, segmentSize)
+                msg = msg.replace(logContent, "")
+                e(logContent)
+            }
+            // 打印剩余日志
+            e(msg)
+        }
+    }
+
 }
