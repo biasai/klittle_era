@@ -73,28 +73,35 @@ object KLoggerUtils {
         }
     }
 
+    fun e_long(msg: String?) {
+        KLoggerUtils.e_long(msg, TAG)
+    }
+
     /**
      * 分段打印所有日志
      */
-    fun e_long(msg: String?) {
-        if (msg == null) {
+    fun e_long(msg: String?, tag: String = TAG) {
+        if (msg == null || !isLOG_ENABLE) {
             return
         }
+        //"\n的前面必须加个空格号换行才有效，不然第一行换行无效。"
+        var ln = " \n" +
+                "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"//换行，这样可以分清打印的数据。
         var msg = msg
         val segmentSize = 3 * 1024
         val length = msg.length.toLong()
         // 长度小于等于限制直接打印
         if (length <= segmentSize) {
-            e(msg)
+            e(ln + msg, tag)
         } else {
             // 循环分段打印日志
             while (msg!!.length > segmentSize) {
                 val logContent = msg.substring(0, segmentSize)
                 msg = msg.replace(logContent, "")
-                e(logContent)
+                e(ln + logContent, tag)
             }
             // 打印剩余日志
-            e(msg)
+            e(ln + msg, tag)
         }
     }
 
