@@ -315,4 +315,30 @@ open class KJsBridgeWebView : BridgeWebView {
         }
     }
 
+    /**
+     * fixme 销毁;最后记得置空。
+     */
+    open fun onDestroy() {
+        try {
+            clearCache(true);
+            //mWebView.loadUrl("about:blank"); // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
+            freeMemory();
+            pauseTimers();
+            //加载null内容
+            loadDataWithBaseURL(null, "", "text/html", "utf-8", null)
+            //清除历史记录
+            clearHistory()
+            //移除WebView
+            if (getParent() != null && getParent() is ViewGroup) {
+                (getParent() as ViewGroup).removeView(this)
+            }
+            //销毁VebView
+            destroy()
+            //WebView置为null
+            //mWebView = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

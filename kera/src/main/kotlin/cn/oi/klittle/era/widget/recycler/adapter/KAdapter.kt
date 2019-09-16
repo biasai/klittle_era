@@ -29,8 +29,18 @@ abstract class KAdapter<VH : RecyclerView.ViewHolder>() : RecyclerView.Adapter<V
     }
 
     override fun onBindViewHolder(holder: VH, position: Int) {
-        if (isOpenAinme()) {
-            onAnime(holder, position)
+        try {
+            if (isOpenAinme()) {
+                onAnime(holder, position)
+            }
+            if (isRecycleView2()) {
+                if (vhMap == null) {
+                    vhMap = linkedMapOf<String, VH?>()
+                }
+                vhMap?.put(position.toString(), holder)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -40,11 +50,49 @@ abstract class KAdapter<VH : RecyclerView.ViewHolder>() : RecyclerView.Adapter<V
     }
 
     override fun onViewRecycled(holder: VH) {
-        super.onViewRecycled(holder)
-        if (isRecycleView()) {
-            holder.itemView?.let {
-                KBaseUi.recycleAutoBgBitmap(it)//fixme (仅仅只释放AutoBg位图)
+        try {
+            super.onViewRecycled(holder)
+            if (isRecycleView()) {
+                holder.itemView?.let {
+                    KBaseUi.recycleAutoBgBitmap(it)//fixme (仅仅只释放AutoBg位图)
+                }
             }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    //fixme 是否开启onViewRecycled2();默认false
+    open fun isRecycleView2(): Boolean {
+        return false
+    }
+
+    private var vhMap: LinkedHashMap<String, VH?>? = null
+    /**
+     * fixme 手动销毁，调用了onDestroy()才会调用。交给子类去实现重写。
+     */
+    open fun onViewRecycled2(holder: VH?) {
+        holder?.let {
+            onViewRecycled(it)
         }
     }
+
+    /**
+     * fixme 销毁,最后记得主动置空
+     */
+    open fun onDestroy() {
+        try {
+            vhMap?.forEach {
+                it.value?.let {
+                    onViewRecycled2(it)
+                }
+            }
+            vhMap?.clear()
+            vhMap = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

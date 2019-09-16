@@ -15,11 +15,12 @@ import cn.oi.klittle.era.widget.compat.K0Widget
 import cn.oi.klittle.era.widget.compat.K1Widget
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundDrawable
+import java.lang.Exception
 
 /**
  * 自定义WebView圆角属性，在真机上测试是有效果的。在模拟器上加载网页好像无效（这个不影响，以真机为标准）。
  */
-open class KRadiusWebView:WebView{
+open class KRadiusWebView : WebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -58,7 +59,8 @@ open class KRadiusWebView:WebView{
         }
     }
 
-    open var w: Int = 0//fixme 真实的宽度,现在设置w或lparams里的width都可以。两个同步了。
+    open var w: Int = 0
+        //fixme 真实的宽度,现在设置w或lparams里的width都可以。两个同步了。
         get() {
             if (field == width && width > 0) {
                 return field
@@ -76,7 +78,8 @@ open class KRadiusWebView:WebView{
                 requestLayout()
             }
         }
-    open var h: Int = 0//fixme 真实的高度。设置h或height都可以。
+    open var h: Int = 0
+        //fixme 真实的高度。设置h或height都可以。
         get() {
             if (field == height && height > 0) {
                 return field
@@ -162,9 +165,10 @@ open class KRadiusWebView:WebView{
 
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var radius: KRadiusEntity? = null
+
     fun gtmRadius(): KRadiusEntity {
-        if (radius==null){
-            radius= KRadiusEntity()
+        if (radius == null) {
+            radius = KRadiusEntity()
         }
         return radius!!
     }
@@ -182,18 +186,20 @@ open class KRadiusWebView:WebView{
     fun resetPaint(): Paint {
         return KBaseView.resetPaint(mPaint)
     }
+
     override fun draw(canvas: Canvas?) {
         canvas?.apply {
-            if (w>0&&h>0){
-                draw2First(this,resetPaint())
+            if (w > 0 && h > 0) {
+                draw2First(this, resetPaint())
                 super.draw(canvas)//fixme 这里面会绘制H5页面。屏蔽了页面就没有内容了。
-                draw2Last(this,resetPaint())
+                draw2Last(this, resetPaint())
             }
         }
     }
+
     //画背景
     fun draw2First(canvas: Canvas, paint: Paint) {
-        if (radius!=null){
+        if (radius != null) {
             model = null
             if (isPressed && radius_press != null) {
                 //按下
@@ -220,14 +226,14 @@ open class KRadiusWebView:WebView{
                     isDrawColor = true
                 }
                 var left = 0f
-                var top = 0f+scrollY
+                var top = 0f + scrollY
                 var right = w + left
                 var bottom = h + top
                 if (it.bgVerticalColors != null) {
                     var shader: LinearGradient? = null
                     if (!it.isBgGradient) {
                         //垂直不渐变
-                        shader = K0Widget.getNotLinearGradient(top, bottom, it.bgVerticalColors!!, true,scrollY)
+                        shader = K0Widget.getNotLinearGradient(top, bottom, it.bgVerticalColors!!, true, scrollY)
                     }
                     //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)
                     if (shader == null) {
@@ -239,7 +245,7 @@ open class KRadiusWebView:WebView{
                     var shader: LinearGradient? = null
                     if (!it.isBgGradient) {
                         //水平不渐变
-                        shader = K0Widget.getNotLinearGradient(left, right, it.bgHorizontalColors!!, false,scrollY)
+                        shader = K0Widget.getNotLinearGradient(left, right, it.bgHorizontalColors!!, false, scrollY)
                     }
                     //水平渐变
                     if (shader == null) {
@@ -249,11 +255,11 @@ open class KRadiusWebView:WebView{
                     isDrawColor = true
                 }
                 if (Build.VERSION.SDK_INT <= 17) {
-                    var h2=h.toFloat()
-                    if (w<h){
-                        h2=w.toFloat()//取小的那一边
+                    var h2 = h.toFloat()
+                    if (w < h) {
+                        h2 = w.toFloat()//取小的那一边
                     }
-                    h2=h2/2
+                    h2 = h2 / 2
                     if (it.left_top > h2) {
                         it.left_top = h2
                     }
@@ -279,6 +285,7 @@ open class KRadiusWebView:WebView{
             }
         }
     }
+
     fun draw2Last(canvas: Canvas, paint: Paint) {
         model?.apply {
             drawRadius(canvas, this, paint)
@@ -313,22 +320,49 @@ open class KRadiusWebView:WebView{
                     strokeGradientOritation = ORIENTATION_VERTICAL
                 }
                 isStrokeGradient = it.isStrokeGradient
-                drawRadius(canvas, phase,scrollX,scrollY)
+                drawRadius(canvas, phase, scrollX, scrollY)
                 //控制虚线流动性
                 if (it.isdashFlow && (dashWidth > 0 && dashGap > 0)) {
-                    if (it.dashSpeed>0){
-                        if (phase>=Float.MAX_VALUE-it.dashSpeed){
-                            phase=0f
+                    if (it.dashSpeed > 0) {
+                        if (phase >= Float.MAX_VALUE - it.dashSpeed) {
+                            phase = 0f
                         }
-                    }else{
-                        if (phase>=Float.MIN_VALUE-it.dashSpeed){
-                            phase=0f
+                    } else {
+                        if (phase >= Float.MIN_VALUE - it.dashSpeed) {
+                            phase = 0f
                         }
                     }
-                    phase+=it.dashSpeed
+                    phase += it.dashSpeed
                     invalidate()
                 }
             }
         }
     }
+
+    /**
+     * fixme 销毁;最后记得置空。
+     */
+    open fun onDestroy() {
+        try {
+            clearCache(true);
+            //mWebView.loadUrl("about:blank"); // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
+            freeMemory();
+            pauseTimers();
+            //加载null内容
+            loadDataWithBaseURL(null, "", "text/html", "utf-8", null)
+            //清除历史记录
+            clearHistory()
+            //移除WebView
+            if (getParent() != null && getParent() is ViewGroup) {
+                (getParent() as ViewGroup).removeView(this)
+            }
+            //销毁VebView
+            destroy()
+            //WebView置为null
+            //mWebView = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }

@@ -348,4 +348,17 @@ open class KRecyclerView : RecyclerView {
         this.loadMore = loadMore
         addLoadMore()
     }
+
+    /**
+     * fixme 销毁,最后记得主动置空
+     */
+    open fun onDestroy() {
+        try {
+            adapter = null
+            removeAllViews()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
 }
