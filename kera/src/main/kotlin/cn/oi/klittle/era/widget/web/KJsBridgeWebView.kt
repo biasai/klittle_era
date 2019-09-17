@@ -71,8 +71,19 @@ open class KJsBridgeWebView : BridgeWebView {
 
     //fixme 注意：loadUrl()必须在主线程中进行。
 
+    private var curl: String? = null
+    private var ctime: Long? = 0L
     override fun loadUrl(url: String?) {
         try {
+            if (ctime == null) {
+                ctime = 0L
+            }
+            if (url != null && url.equals(curl) && System.currentTimeMillis() - ctime!! <= 1000) {
+                return//防止相同的时间内重复加载
+            }
+            curl = url
+            ctime = System.currentTimeMillis()
+            resumeTimers()//fixme 重新开始，防止JS回调无效。
             context?.runOnUiThread {
                 super.loadUrl(url)
             }
@@ -320,6 +331,9 @@ open class KJsBridgeWebView : BridgeWebView {
      */
     open fun onDestroy() {
         try {
+            curl = null
+            ctime = null
+            loadCallBack = null
             clearCache(true);
             //mWebView.loadUrl("about:blank"); // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
             freeMemory();

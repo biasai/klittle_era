@@ -15,12 +15,13 @@ import cn.oi.klittle.era.widget.compat.K0Widget
 import cn.oi.klittle.era.widget.compat.K1Widget
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundDrawable
+import org.jetbrains.anko.runOnUiThread
 import java.lang.Exception
 
 /**
  * 自定义WebView圆角属性，在真机上测试是有效果的。在模拟器上加载网页好像无效（这个不影响，以真机为标准）。
  */
-open class KRadiusWebView : WebView {
+open class KRadiusWebView : KJsBridgeWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -29,7 +30,7 @@ open class KRadiusWebView : WebView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     init {
-        setLayerType(View.LAYER_TYPE_HARDWARE, null)//开启硬件加速,不然圆角没有效果
+        setLayerType(View.LAYER_TYPE_HARDWARE, null)//开启硬件加速,不然圆角没有效果(现在的圆角已经不受硬件加速影响了，都有效)
     }
 
     //fixme 清空原始背景，无法清除button默认的点击阴影
@@ -336,32 +337,6 @@ open class KRadiusWebView : WebView {
                     invalidate()
                 }
             }
-        }
-    }
-
-    /**
-     * fixme 销毁;最后记得置空。
-     */
-    open fun onDestroy() {
-        try {
-            clearCache(true);
-            //mWebView.loadUrl("about:blank"); // clearView() should be changed to loadUrl("about:blank"), since clearView() is deprecated now
-            freeMemory();
-            pauseTimers();
-            //加载null内容
-            loadDataWithBaseURL(null, "", "text/html", "utf-8", null)
-            //清除历史记录
-            clearHistory()
-            //移除WebView
-            if (getParent() != null && getParent() is ViewGroup) {
-                (getParent() as ViewGroup).removeView(this)
-            }
-            //销毁VebView
-            destroy()
-            //WebView置为null
-            //mWebView = null
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
     }
 

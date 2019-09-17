@@ -16,8 +16,8 @@ open class KWebView : KMyWebView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
-    init {
-        setLayerType(View.LAYER_TYPE_HARDWARE, null)//开启硬件加速,不然圆角没有效果
-    }
+//    init {
+//        setLayerType(View.LAYER_TYPE_HARDWARE, null)//开启硬件加速,不然圆角没有效果(现在的圆角已经不受硬件加速影响了，都有效)
+//    }
 
 }
