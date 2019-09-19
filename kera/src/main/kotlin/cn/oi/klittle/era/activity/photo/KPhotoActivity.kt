@@ -7,10 +7,9 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.popu.KPhotoSelectPopu
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.activity.preview.KPreviewActivity
-import cn.oi.klittle.era.base.KBaseAppCompatActivity
+import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KAssetsUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.custom.async
@@ -19,7 +18,7 @@ import java.util.concurrent.TimeUnit
 /**
  * 图片选择器
  */
-open class KPhotoActivity : KBaseAppCompatActivity() {
+open class KPhotoActivity : KBaseActivity() {
 
     var ui: KPhotoUi? = null
     var presenter: KPhotoPresenter? = null
@@ -72,8 +71,8 @@ open class KPhotoActivity : KBaseAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
-            enterAnim = R.anim.kera_from_small_to_large_a5
-            exitAnim = R.anim.kera_from_large_to_small_a3
+//            enterAnim = R.anim.kera_from_small_to_large_a5
+//            exitAnim = R.anim.kera_from_large_to_small_a3
             super.onCreate(savedInstanceState)
             ui = KPhotoUi()
             setContentView(ui?.createView(this))
@@ -160,7 +159,9 @@ open class KPhotoActivity : KBaseAppCompatActivity() {
             } else {
                 isCompleteFinish = false
             }
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     //选中个数回调
@@ -205,10 +206,10 @@ open class KPhotoActivity : KBaseAppCompatActivity() {
                 }
             }
             ui?.destroy(this)//界面销毁
+            overridePendingTransition(0, R.anim.kera_from_large_to_small_a3)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
-        overridePendingTransition(0,exitAnim)
     }
 
 }

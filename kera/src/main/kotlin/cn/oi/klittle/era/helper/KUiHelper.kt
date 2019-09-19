@@ -1,9 +1,13 @@
 package cn.oi.klittle.era.helper
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import cn.oi.klittle.era.R
+import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.utils.KPermissionUtils
@@ -69,6 +73,11 @@ object KUiHelper {
         if (System.currentTimeMillis() - goTime > goFastTime) {
             goTime = System.currentTimeMillis()
             nowActivity?.startActivity(intent)
+            //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
+            //fixme 参数一，目标Activity的动画。参数二，当前Activity的动画效果。
+            //目前动画，左进，右出。
+            //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用
+            nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
         }
     }
 
@@ -112,7 +121,9 @@ object KUiHelper {
     private fun startActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int) {
         if (System.currentTimeMillis() - goTime > goFastTime) {
             goTime = System.currentTimeMillis()
-            nowActivity?.startActivityForResult(intent, requestCode)
+            nowActivity?.startActivity(intent)
+            //参数一，目标Activity的动画。参数二，当前Activity的动画效果。
+            nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
         }
     }
 

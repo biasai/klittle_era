@@ -4,19 +4,20 @@ import android.os.Bundle
 import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
-import cn.oi.klittle.era.base.KBaseAppCompatActivity
+import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.utils.KAssetsUtils
 
 /**
  * 图片预览
  */
-open class KPreviewActivity : KBaseAppCompatActivity() {
+open class KPreviewActivity : KBaseActivity() {
+
 
     var ui: KPreviewUi? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
-            enterAnim = R.anim.kera_from_small_to_large_a5
-            exitAnim = R.anim.kera_from_large_to_small_a3
+//            enterAnim = R.anim.kera_from_small_to_large_a5
+//            exitAnim = R.anim.kera_from_large_to_small_a3
             super.onCreate(savedInstanceState)
             ui = KPreviewUi()
             setContentView(ui?.createView(this))
@@ -52,6 +53,7 @@ open class KPreviewActivity : KBaseAppCompatActivity() {
                 KAssetsUtils.getInstance().recycleBitmap(it.value)//释放位图
             }
             ui?.destroy(this)//界面销毁
+            overridePendingTransition(0, R.anim.kera_from_large_to_small_a3)
         }catch (e:java.lang.Exception){e.printStackTrace()}
     }
 

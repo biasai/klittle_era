@@ -1,8 +1,11 @@
 package cn.oi.klittle.era.activity.photo.manager
 
 import android.app.Activity
+import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
+import android.transition.Fade
+import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.KPhotoActivity
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.entity.KLocalMediaFolder
@@ -228,7 +231,17 @@ object KPictureSelector {
             selectionMedia2 = null//置空，不会影响selectionMedia
         }
         KPictureSelector.selectCallback = selectCallback
+//        activity?.apply {
+//            if (Build.VERSION.SDK_INT>=21){
+//                window?.enterTransition = Fade().setDuration(350)//fixme 使用5.0渐变转场动画。
+//                window?.exitTransition = Fade().setDuration(350)
+//            }
+//        }
         KUiHelper.goActivity(KPhotoActivity::class.java, activity)
+        activity?.apply {
+            overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+        }
+
     }
 
     var previewMeidas: MutableList<KLocalMedia>? = null//图片预览集合
@@ -248,6 +261,9 @@ object KPictureSelector {
                 previewMeidas = meidas
                 KPictureSelector.isCheckable = isCheckable
                 KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
+                activity?.apply {
+                    overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                }
             }
         }
     }

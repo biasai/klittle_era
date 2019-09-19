@@ -6,16 +6,13 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcA;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 
-import cn.oi.klittle.era.base.KBaseAppCompatActivity;
+import cn.oi.klittle.era.base.KBaseActivity;
 import cn.oi.klittle.era.utils.KIntentUtils;
 import cn.oi.klittle.era.utils.KLoggerUtils;
-import cn.oi.klittle.era.utils.KPermissionUtils;
 
 //   fixme 使用案例，子类主要重写以下方法即可
 
@@ -51,7 +48,7 @@ import cn.oi.klittle.era.utils.KPermissionUtils;
  * fixme 注意看看清单AndroidManifest.xml配置。
  * fixme [nfc的权限问题；始终无法动态判断；必须用户手动开启。]
  */
-public class KNfcActivity extends KBaseAppCompatActivity {
+public class KNfcActivity extends KBaseActivity {
 
     //fixme 是否开启NFC;子类可以重写。
     public Boolean isEnableNFC() {

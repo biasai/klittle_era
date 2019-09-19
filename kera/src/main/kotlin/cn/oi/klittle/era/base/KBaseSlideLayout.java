@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +13,6 @@ import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 import cn.oi.klittle.era.R;
-import cn.oi.klittle.era.utils.KLoggerUtils;
 
 
 public class KBaseSlideLayout extends FrameLayout {
@@ -222,11 +220,12 @@ public class KBaseSlideLayout extends FrameLayout {
         } else if (-getScrollX() >= getWidth()) {
             mActivity.overridePendingTransition(0, 0);//滑动关闭原始动画效果（不一定有效果）。
             if (mActivity != null && !mActivity.isFinishing()) {
-                if (mActivity instanceof KBaseAppCompatActivity) {
-                    ((KBaseAppCompatActivity) mActivity).setOpenDefaultAnime2(false);
+                if (mActivity instanceof KBaseActivity) {
                 }
             }
             mActivity.finish();
+            //mActivity.overridePendingTransition(R.anim.kera_show, R.anim.kera_hidden);
+            mActivity.overridePendingTransition(0, 0);
         }
     }
 

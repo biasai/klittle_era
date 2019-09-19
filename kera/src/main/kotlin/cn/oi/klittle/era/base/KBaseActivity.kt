@@ -9,11 +9,17 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AppCompatActivity
-import android.util.Log
+import android.support.v4.app.FragmentActivity
+import android.transition.Explode
+import android.transition.Fade
+import android.transition.Slide
+import android.transition.Transition
+import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.LinearInterpolator
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
@@ -29,7 +35,6 @@ import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.act
-import java.io.File
 
 
 /**
@@ -37,14 +42,15 @@ import java.io.File
  * fixme 注意Frament和Activity的状态栏和导航栏样式是一致的，引用的是同一个Window
  * fixme Dialog是独立的Window。样式和Activity不一样。
  * fixme Activity，Fragment，Dialgo都分别添加了状态栏和导航栏的控制方法。
+ * 不要基础AppCompatActivity（屁事太大，对主题Theme.AppCompat有要求。）
  */
-open class KBaseAppCompatActivity : AppCompatActivity() {
-    open fun getActivity(): KBaseAppCompatActivity {
+open class KBaseActivity : FragmentActivity() {
+    open fun getActivity(): KBaseActivity {
         return this
     }
 
     //直接调用KBaseUi里的静态方法
-    fun ui(block: KBaseUi.Companion.() -> Unit): KBaseAppCompatActivity {
+    fun ui(block: KBaseUi.Companion.() -> Unit): KBaseActivity {
         KBaseUi.apply {
             block(this)
         }
@@ -147,8 +153,14 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
             try {
+                //fixme 防止按home键返回之后，Activity重新加载的问题。
+                if (intent != null && intent.action != null && !this.isTaskRoot) {
+                    if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intent.action == Intent.ACTION_MAIN) {
+                        finish()
+                        return
+                    }
+                }
                 kpx.removeAllKey()//fixme 清除所有键值，防止图片加载不出来。
-                onAnime()//fixme 转场动画
                 super.onCreate(savedInstanceState)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -179,19 +191,6 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
         //setNavigationBarColor(Color.WHITE)//不要设置，最好采用系统默认的样式。因为虚拟键的颜色无法控制。
     }
 
-    var isOpenDefaultAnime: Boolean = true//是否开启Activity转场动画，再加一个变量控制。防止自己新设置的跳转动画无效；
-    fun setOpenDefaultAnime2(isOpenDefaultAnime: Boolean) {
-        this.isOpenDefaultAnime = isOpenDefaultAnime
-    }
-
-    //Activity跳场动画
-    override fun overridePendingTransition(enterAnim: Int, exitAnim: Int) {
-        //如果跳转时设置了新的动画，则取消默认动画。防止新设置的动画无效;
-        //在onResume()里面会恢复。
-        isOpenDefaultAnime = false
-        super.overridePendingTransition(enterAnim, exitAnim)
-    }
-
     //取代的是onCreate()
     override fun onRestart() {
         try {
@@ -211,36 +210,6 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
         }
     }
 
-    //fixme Activity转场动画设置
-    //fixme 转场动画;最好不要在onResume()里执行，防止两个Actvity动画冲突
-    //fixme 就在onCreate和finish()里两个方法里调用即可。（亲测绝大多数都OK）
-    //fixme 一般在  startActivity/finish 之后 调用 overridePendingTransition 方法才有效。
-    open fun onAnime() {
-        try {
-            //KLoggerUtils.e("isopenAnim：\t" + isopenAnim() + "\tisOpenDefaultAnime:\t" + isOpenDefaultAnime)
-            if (isopenAnim() && isOpenDefaultAnime) {
-                //退出动画(app最后一个activity,关闭应用时，无效。即退出应用时无效)
-                if (isopenStartAnim() && isopenEndAnim()) {
-                    //fixme 在极少数设备上，返回键退出时退场动画无效，如PDA上。大多数都有效。
-                    overridePendingTransition(enterAnim, exitAnim)
-                } else if (isopenStartAnim()) {
-                    overridePendingTransition(enterAnim, 0)
-                } else if (isopenEndAnim()) {
-                    overridePendingTransition(0, exitAnim)
-                }
-            } else if (isOpenDefaultAnime) {
-                overridePendingTransition(0, 0)//0表示没有动画效果。
-            } else {
-                //fixme 第一个Activity即主MainActivity(应用最底层的哪个Activity)背景样式不能未透明，不然效果很不友好。会看见桌面背景。
-                overridePendingTransition(0, 0)
-            }
-        } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("动画异常：\t" + e.message)
-            e.printStackTrace()
-        }
-    }
-
-
     override fun onResume() {
         try {
             isOnPause = false
@@ -252,8 +221,6 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
             isBack = false
             //设置状态栏字体颜色
             setStatusBarDrak(isDark())
-            //onAnime() fixme  转场动画;最好不要在onResume()里执行，防止两个Actvity动画冲突
-            isOpenDefaultAnime = true//fixme 要恢复一下原有动画设置。就放在onResume()这里。亲测正常。
             //fixme 开启左滑功能
             if (isEnableSliding()) {
                 //获取上一个Activity的界面位图
@@ -261,7 +228,7 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
                     KBaseApplication.getInstance().recyclePreviousBitmap()
                     if (isEnableSlingBp()) {
                         //开启位图视觉差效果
-                        KBaseApplication.getInstance().getPreviousBitmap(this@KBaseAppCompatActivity)
+                        KBaseApplication.getInstance().getPreviousBitmap(this@KBaseActivity)
                     }
                 }
             } else {
@@ -334,25 +301,6 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-
-    //fixme 只有 isOpenDefaultAnime和isopenAnim()同时为true时才开启动画。
-    //是否开启动画。true开启(默认开启)，false不开启。[子类可以重写]
-    protected open fun isopenAnim(): Boolean {
-        return true
-    }
-
-    //是否开启启动动画。
-    protected open fun isopenStartAnim(): Boolean {
-        return true
-    }
-
-    //是否开启结束动画。
-    protected open fun isopenEndAnim(): Boolean {
-        return true
-    }
-
-    open var enterAnim = R.anim.kera_right_in_without_alpha//进入动画[子类可重写]
-    open var exitAnim = R.anim.kera_right_out_without_alpha//退出动画[子类可重写]
 
     var isCurrentDark = KBaseApplication.getInstance().isDeaultDark//fixme 记录当前状态栏字体的颜色
 
@@ -888,12 +836,10 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
     override fun finish() {
         //KLoggerUtils.e("finish()")
         try {
-            //enterAnim = 0//fixme 防止对上一个Activity有影响。(屏蔽掉，亲测不好。当前Activity的关闭效果都没有了。)
             if (isOnCreateSuper) {//防止Activity还没开始就突然的挂掉。这是个系统的Bug
                 isBack = true
                 try {
                     super.finish()
-                    onAnime()//fixme 转场动画;必须放在 super.finish()之后才有效，放在之前部分机型好像没有效果。
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
@@ -907,6 +853,11 @@ open class KBaseAppCompatActivity : AppCompatActivity() {
                 kprogressbar?.dismiss()
                 kprogressbar?.onDestroy()
                 kprogressbar = null
+                //fixme 退出动画，在finish()之后调用有效，多次调用也有效，后面的会覆盖前面的。
+                //fixme 参数一  上一个Activity的动画效果，参数二当前Activity的动画效果。
+                //目前动画，左进，右出。
+                //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用
+                overridePendingTransition(R.anim.kera_slide_in_left, R.anim.kera_slide_out_right)
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()

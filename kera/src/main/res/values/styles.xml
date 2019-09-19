@@ -5,6 +5,7 @@
         fixme 8.0上设置竖屏时也会闪退（已经在BaseActivity里作了判断修复。）。-->
 
     <!--fixme 第一个Activity即主MainActivity（应用最底层的哪个Activity）背景样式不能未透明，不然效果很不友好。会看见桌面背景。-->
+    <!--fixme 不建议使用透明主题，有很多系统Bug问题，如按home键之后，当前Activity的界面就显示不见了。尽量少用透明主题(可以用，最好少用,启动页可以使用)。-->
 
     <!--
     fixme 跳转的Activity主题样式背景是透明的。则当前Activity跳转则不会执行onStop()方法（没有被遮挡）；
@@ -35,6 +36,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题,true按钮文本默认全部大写。
         //Acitivity背景是透明的。不会有黑色。
+        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
 
         <!-- Customize your theme here. fixme: colorPrimary这个属性控制recyclerView滑动边缘时的颜色色值-->
         <item name="colorPrimary">@color/kcolorPrimary</item>
@@ -54,6 +56,7 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
 
+        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
         <item name="android:windowLayoutInDisplayCutoutMode">
             shortEdges <!-- default, shortEdges, never 适配全面屏齐刘海(齐刘海只对全屏时有影响，有状态栏时没有影响)。有红线提示，允许不会报错，不会影响。 -->
         </item>
@@ -70,9 +73,10 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">true</item>//全屏
         <item name="android:windowIsTranslucent">false</item>//(true透明，false黑色屏)
-        <item name="android:windowBackground">@android:color/black</item>//背景色
+        <item name="android:windowBackground">@android:color/white</item>//背景色
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
 
+        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
         <item name="android:windowLayoutInDisplayCutoutMode">
             shortEdges <!-- default, shortEdges, never 适配全面屏齐刘海(齐刘海只对全屏时有影响，有状态栏时没有影响)。有红线提示，允许不会报错，不会影响。 -->
         </item>
@@ -93,8 +97,9 @@
         <item name="windowActionBar">false</item>
         <item name="android:windowFullscreen">false</item>
         <item name="android:windowIsTranslucent">false</item>
-        <item name="android:windowBackground">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/white</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
+        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
 
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/kcolorPrimary</item>

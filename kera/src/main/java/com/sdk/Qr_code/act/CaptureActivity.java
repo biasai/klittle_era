@@ -4,23 +4,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Vector;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
-import com.luck.picture.lib.PictureSelector;
-import com.luck.picture.lib.config.PictureConfig;
-import com.luck.picture.lib.config.PictureMimeType;
-import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.sdk.Qr_code.manager.CameraManager;
 import com.sdk.Qr_code.code.CaptureActivityHandler;
@@ -30,12 +23,10 @@ import com.google.zxing.Result;
 import com.sdk.Qr_code.utils.KZxingUtils;
 import com.sdk.Qr_code.view.ViewfinderView;
 
-import org.jetbrains.annotations.Nullable;
-
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia;
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector;
-import cn.oi.klittle.era.base.KBaseAppCompatActivity;
+import cn.oi.klittle.era.base.KBaseActivity;
 import cn.oi.klittle.era.comm.KToast;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
@@ -59,7 +50,7 @@ import kotlin.jvm.functions.Function1;
  * 竖屏二维码扫描(二维码，条码都能扫描)
  * 二维码识别率比较高；但是条码识别率就不一定准确(因为条码很容易失真)
  */
-public class CaptureActivity extends KBaseAppCompatActivity implements Callback, OnClickListener {
+public class CaptureActivity extends KBaseActivity implements Callback, OnClickListener {
 
     private CaptureActivityHandler handler;
     private Vector<BarcodeFormat> decodeFormats;
@@ -120,6 +111,7 @@ public class CaptureActivity extends KBaseAppCompatActivity implements Callback,
             e.printStackTrace();
         }
     }
+
 
     @Override
     protected void onDestroy() {
@@ -372,6 +364,10 @@ public class CaptureActivity extends KBaseAppCompatActivity implements Callback,
     @Override
     public void finish() {
         try {
+//            if (surfaceView != null) {
+//                surfaceView.setVisibility(View.GONE);//这里不要隐藏，关闭的时候效果不好。
+//            }
+            surfaceView = null;
             //位图释放
             if (scanBitmap != null && !scanBitmap.isRecycled()) {
                 scanBitmap.recycle();
@@ -387,4 +383,5 @@ public class CaptureActivity extends KBaseAppCompatActivity implements Callback,
         }
         super.finish();
     }
+
 }

@@ -65,7 +65,7 @@
         <activity
             android:name=".activity.photo.KPhotoActivity"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus_transparent" /> <!-- android:name=".base.BaseApplication" -->
+            android:theme="@style/KTheme_Activity_hasStatus" /> <!-- android:name=".base.BaseApplication" -->
         <!-- android:theme="@style/crownBaseActivity" -->
         <!-- <provider -->
         <!-- android:name="android.support.v4.content.FileProvider" -->
@@ -169,11 +169,11 @@
         <activity
             android:name="com.sdk.Qr_code.act.CaptureActivity"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus_transparent"></activity>
+            android:theme="@style/KTheme_Activity_hasStatus"></activity>
         <activity
             android:name="com.sdk.Qr_code.act.KCaptureActivity"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus_transparent"></activity>
+            android:theme="@style/KTheme_Activity_hasStatus"></activity>
     </application>
     <!--手机震动-->
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -185,6 +185,8 @@
     <!--<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
     <!--相机，二维码-->
     <uses-permission android:name="android.permission.CAMERA" />
+    <!--任务栈控制-->
+    <uses-permission android:name="android.permission.REORDER_TASKS"/>
     <!--系统广播-->
     <protected-broadcast android:name="android.intent.action.SCREEN_OFF" />
     <protected-broadcast android:name="android.intent.action.SCREEN_ON" />

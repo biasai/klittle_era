@@ -22,7 +22,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.oi.klittle.era.base.KBaseAppCompatActivity;
 import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.comm.KToast;
 
