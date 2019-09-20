@@ -7,6 +7,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.support.v4.view.ViewPager
 import android.view.*
@@ -17,6 +18,14 @@ import cn.oi.klittle.era.utils.KBitmapUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.runOnUiThread
+import android.opengl.ETC1.getWidth
+import android.opengl.ETC1.getHeight
+import cn.oi.klittle.era.comm.kpx
+import android.opengl.ETC1.getWidth
+import android.opengl.ETC1.getHeight
+import android.R.attr.gravity
+import android.app.AlertDialog
+
 
 //    子类初始化参考
 //    init {
@@ -54,7 +63,9 @@ open class KBaseDialog() {
             dialog = null
             ctx = null
             layoutId = null
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     open var ctx: Context? = null//上下文
@@ -215,11 +226,9 @@ open class KBaseDialog() {
         //都以左上角为标准对齐。没有外区，全部都是Dialog区域。已经确保百分百全屏。所以这个方法已经没有意义
         //dialog.setCanceledOnTouchOutside(true);// 调用这个方法时，按对话框以外的地方不起作用。按返回键还起作用
         window = dialog!!.window
-        if (Build.VERSION.SDK_INT <= 17) {
-            //解决乐视黑屏问题
-            window!!.setFormat(PixelFormat.RGBA_8888)
-            window.setBackgroundDrawable(null)
-        }
+        //彻底解决乐视黑屏问题
+        window!!.setFormat(PixelFormat.RGBA_8888)
+        window.setBackgroundDrawable(null)
         //window.setContentView之前设置
         //window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏,无效。全屏必须到style主题文件里设置才有效
         window!!.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)//状态栏透明,4.4及以上有效
@@ -234,35 +243,24 @@ open class KBaseDialog() {
                 }
             }
         }
-        if (Build.VERSION.SDK_INT >= 19) {
-            if (dialog != null) {
-                ctx?.let {
-                    if (it is Activity && !it.isFinishing) {
-                        dialog!!.show()//防止状态栏的设置无效。一定在设置之后再显示出来。
-                    }
-                }
-            }
-        }
-        //为Window设置动画【Dialog和PopuWindow动画都是Style文件】
-        //window.setWindowAnimations(R.style.CustomDialog);
+        //fixme 为Window设置动画【Dialog和PopuWindow动画都是Style文件】
+        window.setWindowAnimations(R.style.kera_window_samll_large2)//这个放大的动画效果，还不错。
         //popupWindow.setAnimationStyle(R.style.CustomDialog)
-
         //如果是windowIsFloating为false。则以左上角为标准。居中无效。并且触摸外区也不会消失。因为没有外区。整个屏幕都是Dialog区域。
         window.setGravity(Gravity.CENTER)//居中。
-
         //设置状态栏背景透明【亲测有效】
         try {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS)   //去除半透明状态栏
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN  //一般配合fitsSystemWindows()使用, 或者在根部局加上属性android:fitsSystemWindows="true", 使根部局全屏显示
-            if (Build.VERSION.SDK_INT >= 21) {
-                window.statusBarColor = Color.TRANSPARENT
-            }
             val decordView = window.decorView as ViewPager.DecorView     //获取DecorView实例
             val field = ViewPager.DecorView::class.java.getDeclaredField("mSemiTransparentStatusBarColor")  //获取特定的成员变量
             field.isAccessible = true   //设置对此属性的可访问性
             field.setInt(decordView, Color.TRANSPARENT)  //修改属性值
         } catch (e: Exception) {
             //Log.e("test", "状态栏异常:\t" + e.getMessage());
+        }
+        if (Build.VERSION.SDK_INT >= 21) {
+            window.statusBarColor = Color.TRANSPARENT
         }
         //默认设置底部导航栏为白色。
         setNavigationBarColor(Color.WHITE)

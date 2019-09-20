@@ -280,33 +280,40 @@ public class KBaseApplication extends Application {
      * @return
      */
     public static Bitmap snapShotWindow(Activity activity, Boolean hasStatus) {
-        View view = activity.getWindow().getDecorView();//最顶层控件就是DecorView
-        view.setDrawingCacheEnabled(true);//==========================重点掌握
-        view.buildDrawingCache();//=================================
-        Bitmap bmp = view.getDrawingCache();//========================
-        Rect frame = new Rect();
-        activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);//获取View的矩形
-        int statusBarHeight = frame.top;
+        try {
+            if (activity == null || activity.isFinishing()) {
+                return null;
+            }
+            View view = activity.getWindow().getDecorView();//最顶层控件就是DecorView
+            view.setDrawingCacheEnabled(true);//==========================重点掌握
+            view.buildDrawingCache();//=================================
+            Bitmap bmp = view.getDrawingCache();//========================
+            Rect frame = new Rect();
+            activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);//获取View的矩形
+            int statusBarHeight = frame.top;
 
-        int width = (int) KProportionUtils.realWidthPixels;
-        int height = (int) KProportionUtils.realHeightPixels;
-        Bitmap bp = null;
-        if (hasStatus) {
-            //包含状态栏
-            bp = Bitmap.createBitmap(bmp, 0, 0, width, height);
-        } else {
-            //不包含状态栏
-            bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
-                    - statusBarHeight);//对原 Bitmap进行截取，一定要新建Bitmap位图，尽量不要对原有的Bitmap进行操作。
+            int width = (int) KProportionUtils.realWidthPixels;
+            int height = (int) KProportionUtils.realHeightPixels;
+            Bitmap bp = null;
+            if (hasStatus) {
+                //包含状态栏
+                bp = Bitmap.createBitmap(bmp, 0, 0, width, height);
+            } else {
+                //不包含状态栏
+                bp = Bitmap.createBitmap(bmp, 0, statusBarHeight, width, height
+                        - statusBarHeight);//对原 Bitmap进行截取，一定要新建Bitmap位图，尽量不要对原有的Bitmap进行操作。
+            }
+            view.destroyDrawingCache();//=================================要关闭。很好性能。
+            view.setDrawingCacheEnabled(false);
+            return bp;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        view.destroyDrawingCache();//=================================要关闭。很好性能。
-        view.setDrawingCacheEnabled(false);
-        return bp;
-
+        return null;
     }
 
     public static Bitmap snapShotWindow(Context context) {
-        if (context instanceof Activity) {
+        if (context != null && context instanceof Activity) {
             return snapShotWindow((Activity) context);
         }
         return null;
@@ -319,28 +326,33 @@ public class KBaseApplication extends Application {
      * @return
      */
     public static Bitmap snapShotWindow(Activity activity) {
-        if (activity == null || activity.isFinishing()) {
-            return null;
-        }
-        View decorView = activity.getWindow().getDecorView();
-        decorView.destroyDrawingCache();
-        decorView.setDrawingCacheEnabled(false);
-        if (activity.getParent() != null &&
-                activity.getParent().getWindow().getDecorView().getHeight() > decorView.getHeight()) {
-            decorView = activity.getParent().getWindow().getDecorView();
+        try {
+            if (activity == null || activity.isFinishing()) {
+                return null;
+            }
+            View decorView = activity.getWindow().getDecorView();
             decorView.destroyDrawingCache();
             decorView.setDrawingCacheEnabled(false);
+            if (activity.getParent() != null &&
+                    activity.getParent().getWindow().getDecorView().getHeight() > decorView.getHeight()) {
+                decorView = activity.getParent().getWindow().getDecorView();
+                decorView.destroyDrawingCache();
+                decorView.setDrawingCacheEnabled(false);
+            }
+            if (decorView.getRootView() != null) {
+                decorView = decorView.getRootView();
+                decorView.destroyDrawingCache();
+                decorView.setDrawingCacheEnabled(false);
+            }
+            if (decorView instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) decorView;
+                destroyDrawingCache(viewGroup);//fixme 清除位图缓存,获取实时位图！（亲测有效。）
+            }
+            return snapShotView(decorView);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (decorView.getRootView() != null) {
-            decorView = decorView.getRootView();
-            decorView.destroyDrawingCache();
-            decorView.setDrawingCacheEnabled(false);
-        }
-        if (decorView instanceof ViewGroup) {
-            ViewGroup viewGroup = (ViewGroup) decorView;
-            destroyDrawingCache(viewGroup);//fixme 清除位图缓存,获取实时位图！（亲测有效。）
-        }
-        return snapShotView(decorView);
+        return null;
     }
 
     //fixme 清除位图缓存,获取实时位图！（亲测有效。）

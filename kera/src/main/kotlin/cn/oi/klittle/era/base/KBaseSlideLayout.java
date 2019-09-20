@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,8 @@ import android.widget.FrameLayout;
 import android.widget.Scroller;
 
 import cn.oi.klittle.era.R;
+import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 
 public class KBaseSlideLayout extends FrameLayout {
@@ -33,16 +36,12 @@ public class KBaseSlideLayout extends FrameLayout {
     private int mLastTouchY;
     private boolean isConsumed = false;
 
-    public boolean isEnableSlingBp = true;//是否开启位图视觉差效果
-
     /**
      * @param context
-     * @param isEnableSlingBp 是否开启位图视觉差效果
-     * @param mLeftShadowRes  自定义左边阴影效果
+     * @param mLeftShadowRes 自定义左边阴影效果
      */
-    public KBaseSlideLayout(Context context, boolean isEnableSlingBp, int mLeftShadowRes) {
+    public KBaseSlideLayout(Context context, int mLeftShadowRes) {
         this(context, null);
-        this.isEnableSlingBp = isEnableSlingBp;
         if (mLeftShadowRes > 0 && mLeftShadowRes != this.mLeftShadowRes) {
             this.mLeftShadowRes = mLeftShadowRes;
             initView(context);//刷新阴影效果
@@ -176,7 +175,7 @@ public class KBaseSlideLayout extends FrameLayout {
                     isConsumed = false;
                     mTouchDownX = mLastTouchX = mLastTouchY = 0;
                     if (shadowSlidingReboundWidth < 0) {
-                        shadowSlidingReboundWidth = getWidth() / 2;//fixme 控制有效反弹间距
+                        shadowSlidingReboundWidth = getWidth() / 4;//fixme 控制有效反弹间距
                     }
                     // 根据手指释放时的位置决定回弹还是关闭
                     if (-getScrollX() < shadowSlidingReboundWidth) {
@@ -203,11 +202,12 @@ public class KBaseSlideLayout extends FrameLayout {
     }
 
     /**
-     * 滑动关闭
+     * 滑动关闭(关闭当前Activity)
      */
     private void scrollClose() {
         int startX = getScrollX();
-        int dx = -getScrollX() - getWidth() - mShadowWidth;
+        //int dx = -getScrollX() - getWidth() - mShadowWidth;
+        int dx = -getScrollX() - getWidth();
         mScroller.startScroll(startX, 0, dx, 0, 300);
         invalidate();
     }
@@ -218,24 +218,20 @@ public class KBaseSlideLayout extends FrameLayout {
             scrollTo(mScroller.getCurrX(), 0);
             postInvalidate();
         } else if (-getScrollX() >= getWidth()) {
-            mActivity.overridePendingTransition(0, 0);//滑动关闭原始动画效果（不一定有效果）。
-            if (mActivity != null && !mActivity.isFinishing()) {
-                if (mActivity instanceof KBaseActivity) {
-                }
-            }
             mActivity.finish();
-            //mActivity.overridePendingTransition(R.anim.kera_show, R.anim.kera_hidden);
-            mActivity.overridePendingTransition(0, 0);
+            mActivity.overridePendingTransition(0, 0);//滑动关闭原始动画效果(finish后面调用的会之前的动画设置，亲测有效!)。
         }
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        if (isEnableSlingBp) {
+        try {
             drawPreViousBitmap(canvas);
+            super.dispatchDraw(canvas);
+            drawShadow(canvas);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        super.dispatchDraw(canvas);
-        drawShadow(canvas);
     }
 
     /**
@@ -245,17 +241,23 @@ public class KBaseSlideLayout extends FrameLayout {
      */
     private void drawPreViousBitmap(Canvas canvas) {
         Bitmap bitmap = KBaseApplication.getInstance().previousBitmap;
-        //KLoggerUtils.e("test","上一個Activity圖片:\t"+bitmap);
-        if (bitmap != null && !bitmap.isRecycled() && getScrollX() > -getWidth()) {
+        if (bitmap != null && !bitmap.isRecycled()) {
             int moveWidth = (int) (getWidth() / 1.6);//fixme 视差滑动宽度（1.6可以了，微信差不多就是这个值）
             int startX = -getWidth();//起点滑动
             int x = startX + moveWidth;
             int y = 0;
             float p = (float) Math.abs(getScrollX()) / (float) getWidth();
             x = (int) (x - moveWidth * p);
+            if (x <= -getWidth()) {
+                x = -getWidth();
+            }
             canvas.drawBitmap(bitmap, x, y, null);
+            //Log.e("test","x:\t"+x+"\t"+getScrollX());
         }
     }
+
+    int mScrollX = 0;
+    int mWidth2 = 0;
 
     /**
      * 绘制边缘的阴影
@@ -265,6 +267,16 @@ public class KBaseSlideLayout extends FrameLayout {
         canvas.save();
         canvas.translate(-mShadowWidth, 0);
         mLeftShadow.draw(canvas);
+        mScrollX = Math.abs(getScrollX());
+        mWidth2 = getWidth() / 2;
+        if (mScrollX > mWidth2) {
+            float alpha = (float) (mScrollX - mWidth2) / ((float) mWidth2);
+            alpha = 255 - alpha * 255;
+            //Log.e("test","透明度:\t"+alpha);
+            mLeftShadow.setAlpha((int) alpha);//给边缘阴影添加渐变效果。
+        } else {
+            mLeftShadow.setAlpha(255);
+        }
         canvas.restore();
     }
 }

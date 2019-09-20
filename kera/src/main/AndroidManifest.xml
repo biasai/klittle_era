@@ -56,7 +56,7 @@
     <uses-permission android:name="android.permission.NFC" />
 
     <application>
-        <!--图片预览,还是使用透明背景比较好-->
+        <!--图片预览,还是使用透明主题背景比较好-->
         <activity
             android:name=".activity.preview.KPreviewActivity"
             android:launchMode="singleTop"

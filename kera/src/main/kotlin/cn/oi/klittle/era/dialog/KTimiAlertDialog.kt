@@ -204,19 +204,19 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
     private var maxHeight= kpx.maxScreenHeight() - kpx.statusHeight*2 - kpx.navigationBarHeight - mHeight
     override fun onShow() {
         super.onShow()
-        title.setText(txt_title)
-        mession.setText(txt_mession)//先设置文本，再计算高度。
+        title?.setText(txt_title)
+        mession?.setText(txt_mession)//先设置文本，再计算高度。
         var distanceHeight = 0//文本多出控件的高度
         async {
             //新开线程，防止文本框没有初始化完成，宽和高没有获取得到。
             ctx?.runOnUiThread {
-                scrollView.apply {
-                    if (standardHeight <= 0) {
+                scrollView?.apply {
+                    if (standardHeight!=null&&standardHeight <= 0) {
                         standardHeight = height//记录一开始文本正常的高度。
                     }
                 }
                 mession?.apply {
-                    if (standardHeight > 0) {
+                    if (standardHeight!=null&&standardHeight > 0) {
                         distanceHeight = getTextHeight() - standardHeight//实时计算文本多出的高度。
                     }
                 }

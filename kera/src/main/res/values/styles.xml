@@ -6,6 +6,8 @@
 
     <!--fixme 第一个Activity即主MainActivity（应用最底层的哪个Activity）背景样式不能未透明，不然效果很不友好。会看见桌面背景。-->
     <!--fixme 不建议使用透明主题，有很多系统Bug问题，如按home键之后，当前Activity的界面就显示不见了。尽量少用透明主题(可以用，最好少用,启动页可以使用)。-->
+    <!--fixme 透明背景对overridePendingTransition()转场动画也有影响，可能部分设置没有效果。-->
+    <!--fixme 强烈推荐使用非透明主题：android:theme="@style/KTheme_Activity_hasStatus" -->
 
     <!--
     fixme 跳转的Activity主题样式背景是透明的。则当前Activity跳转则不会执行onStop()方法（没有被遮挡）；
@@ -108,25 +110,34 @@
     </style>
 
     <!--弹窗，有状态栏,背景不透明(如果activity没有状态栏，则弹窗也不会有。)。左上角开始布局为标准-->
-    <style name="KTheme_Dialog_hasStatus" parent="@android:style/Theme.DeviceDefault.Dialog">
+    <!--
+    @android:style/Theme.DeviceDefault.Dialog 之前继承的是这个，按home键返回之后，会有边框不好看。
+    parent="android:Theme.Dialog" 状态栏无法透明
+    @android:style/Theme.DeviceDefault.NoActionBar.TranslucentDecor 需要api 19以上。
+    fixme 不需要继承任何主题，这样就行了。很稳定安全(支持输入法，没有问题。)。继承了反而问题多不可靠。
+    fixme transparent透明主题，按home键的时候，可能会闪烁一下，这个不影响，是正常的，所有应用的弹框都是一样的。
+    -->
+    <style name="KTheme_Dialog_hasStatus">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <!--除去title,不去除会影响android.app.AlertDialog位置居中效果-->
         <item name="android:windowFrame">@null</item>
         <!-- 框架画面,会覆盖整个弹出框 -->
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item><!--半透明-->
         <!-- 该项删除时，背景边框会有黑色阴影 -->
         <item name="android:windowIsFloating">false</item>//为了防止Dialog宽和高不能全屏。最好设置成false。以屏幕左上角为标准。
         <!-- true浮现在activity之上(布局居中),false覆盖当前Activity布局，全屏有效(布局以左上角为标准) -->
         <item name="android:backgroundDimEnabled">true</item>
-        <!-- true为 模糊（整个屏幕显半透明状态）        false为不模糊 -->
-        <item name="android:backgroundDimAmount">0.35</item>
+        <!-- true为 模糊（整个屏幕显半透明状态）        false为不模糊, 透明度0.4挺好的，颜色不浅也不深。 -->
+        <item name="android:backgroundDimAmount">0.4</item>
         <!-- 屏幕透明度,只对屏幕背景有效，不影响布局内容(backgroundDimEnabled为true时才有效) -->
         <item name="android:windowFullscreen">false</item><!--true全屏显示,false会保留状态栏-->
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     <!--弹窗，有状态栏,背景透明(如果activity没有状态栏，则弹窗也不会有。)。左上角开始布局为标准 背景透明，即没有半透明效果，完全透明-->
-    <style name="KTheme_Dialog_hasStatus_transparent" parent="@android:style/Theme.DeviceDefault.Dialog">
+    <style name="KTheme_Dialog_hasStatus_transparent">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <!--除去title,不去除会影响android.app.AlertDialog位置居中效果-->
@@ -142,9 +153,10 @@
         <!-- 屏幕透明度,只对屏幕背景有效，不影响布局内容(backgroundDimEnabled为true时才有效) -->
         <item name="android:windowFullscreen">false</item><!--true全屏显示,false会保留状态栏-->
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     <!--弹窗，全屏,背景透明。左上角开始布局为标准 背景透明，即没有半透明效果，完全透明-->
-    <style name="KTheme_Dialog_full_transparent" parent="@android:style/Theme.DeviceDefault.Dialog">
+    <style name="KTheme_Dialog_full_transparent">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <!--除去title,不去除会影响android.app.AlertDialog位置居中效果-->
@@ -162,9 +174,10 @@
         <item name="android:windowFullscreen">true
         </item><!--windowIsFloating设置成false时全屏才有效。true全屏显示不会有状态栏,false会保留状态栏-->
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
+        <item name="android:windowContentOverlay">@null</item>
     </style>
     <!--弹窗，全屏,背景不透明左上角开始布局为标准-->
-    <style name="KTheme_Dialog_full" parent="@android:style/Theme.DeviceDefault.Dialog">
+    <style name="KTheme_Dialog_full">
         <item name="windowActionBar">false</item>
         <item name="android:windowNoTitle">true</item>
         <!--除去title,不去除会影响android.app.AlertDialog位置居中效果-->
@@ -177,11 +190,12 @@
         <!-- true浮现在activity之上(布局居中),false覆盖当前Activity布局，全屏有效(布局以左上角为标准) -->
         <item name="android:backgroundDimEnabled">true</item>
         <!-- true为 模糊（整个屏幕显半透明状态）        false为不模糊 -->
-        <item name="android:backgroundDimAmount">0.35</item>
+        <item name="android:backgroundDimAmount">0.4</item>
         <!-- 屏幕透明度,只对屏幕背景有效，不影响布局内容(backgroundDimEnabled为true时才有效) -->
         <item name="android:windowFullscreen">true
         </item><!--windowIsFloating设置成false时全屏才有效。true全屏显示不会有状态栏,false会保留状态栏-->
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <!-- Window级别 动画，适用于Dialog和PopuWindow (下拉列表动画)-->
@@ -230,6 +244,15 @@
         <item name="android:windowEnterAnimation">@anim/kera_from_small_to_large</item>
         <!--退出，由大到小-->
         <item name="android:windowExitAnimation">@anim/kera_from_large_to_small</item>
+        <!-- 退出动画 -->
+    </style>
+
+    <!-- Window级别 动画，由小到大。目前用于Dialog弹窗动画 -->
+    <style name="kera_window_samll_large2" mce_bogus="1" parent="android:Animation">
+        <!--进入，由小到大-->
+        <item name="android:windowEnterAnimation">@anim/kera_from_small_to_large2</item>
+        <!--退出，由大到小-->
+        <item name="android:windowExitAnimation">@anim/kera_from_large_to_small2</item>
         <!-- 退出动画 -->
     </style>
 

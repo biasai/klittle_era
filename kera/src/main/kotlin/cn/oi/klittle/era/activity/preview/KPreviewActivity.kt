@@ -42,7 +42,9 @@ open class KPreviewActivity : KBaseActivity() {
                 }
             }
             isCompelete = false
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 
@@ -53,8 +55,10 @@ open class KPreviewActivity : KBaseActivity() {
                 KAssetsUtils.getInstance().recycleBitmap(it.value)//释放位图
             }
             ui?.destroy(this)//界面销毁
-            overridePendingTransition(0, R.anim.kera_from_large_to_small_a3)
-        }catch (e:java.lang.Exception){e.printStackTrace()}
+            overridePendingTransition(0, R.anim.kera_from_large_to_small_a3)//对透明主题，动画可能无效。
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
     //完成

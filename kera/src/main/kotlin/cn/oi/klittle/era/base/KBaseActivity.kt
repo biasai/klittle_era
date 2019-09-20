@@ -34,7 +34,9 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.act
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -82,10 +84,6 @@ open class KBaseActivity : FragmentActivity() {
         return false//fixme 默认不开启（节省内存）
     }
 
-    //是否开启左滑位图视觉差效果。默认不开启（节省内存）
-    open fun isEnableSlingBp(): Boolean {
-        return false
-    }
 
     open fun isPortrait(): Boolean {
         return true//是否竖屏。默认就是竖屏。
@@ -125,7 +123,7 @@ open class KBaseActivity : FragmentActivity() {
         return kpx.maxScreenHeight()
     }
 
-    private var isEnableSliding = false
+    private var isEnableSliding = false//判断左滑是否已开启，防止重复执行。
     override fun onAttachedToWindow() {
         try {
             super.onAttachedToWindow()
@@ -135,9 +133,9 @@ open class KBaseActivity : FragmentActivity() {
         try {
             //fixme 之前放在onCreate()方法里，在部分机型，如华为畅享6s就会奔溃。
             //fixme 可能是因为actvity没有初始化完成的原因吧。所以为了保险。放在这里执行。
-            if (isEnableSliding() && !isEnableSliding) {
+            if (!isFinishing() && isEnableSliding() && !isEnableSliding) {
                 //开启左滑移除效果
-                val slideLayout = KBaseSlideLayout(this, isEnableSlingBp(), shadowSlidingDrawable())
+                val slideLayout = KBaseSlideLayout(this, shadowSlidingDrawable())
                 slideLayout.setShadowSlidingWidth(shadowSlidingWidth())//有效滑动距离
                 slideLayout.setShadowSlidingReboundWidth(shadowSlidingReboundWidth())//滑动反弹距离。
                 slideLayout.bindActivity(this)
@@ -225,9 +223,10 @@ open class KBaseActivity : FragmentActivity() {
             if (isEnableSliding()) {
                 //获取上一个Activity的界面位图
                 async {
-                    KBaseApplication.getInstance().recyclePreviousBitmap()
-                    if (isEnableSlingBp()) {
-                        //开启位图视觉差效果
+                    delay(350, TimeUnit.MILLISECONDS)//延迟几秒获取，确保获取的界面尽可能是最新的。立即获取界面可能不是最新的。
+                    if (!isFinishing()) {
+                        KBaseApplication.getInstance().recyclePreviousBitmap()
+                        //开启位图视觉差效果(现在主题不推荐使用透明主题，所以必须开启绘制位图。)
                         KBaseApplication.getInstance().getPreviousBitmap(this@KBaseActivity)
                     }
                 }
