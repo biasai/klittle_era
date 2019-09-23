@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.Stack;
 
 import cn.oi.klittle.era.utils.KAssetsUtils;
@@ -89,6 +90,51 @@ public class KBaseActivityManager {
             return mActivityStack.get(index);
         }
         return null;
+    }
+
+
+    private ArrayList<Activity> allActivity = new ArrayList();
+
+    /**
+     * 获取所有Activity
+     *
+     * @return
+     */
+    public ArrayList<Activity> getStackAllActivity() {
+        if (allActivity == null) {
+            allActivity = new ArrayList();
+        }
+        allActivity.clear();
+        if (mActivityStack != null && mActivityStack.size() > 0) {
+            for (int i = 0; i < mActivityStack.size(); i++) {
+                Activity stack = mActivityStack.get(i);
+                if (stack != null && !stack.isFinishing()) {
+                    allActivity.add(stack);
+                }
+            }
+        }
+        return allActivity;
+    }
+
+    /**
+     * 判断是否包含该Activity
+     *
+     * @param activity
+     * @return
+     */
+    public boolean containsActivity(Activity activity) {
+        if (activity == null || activity.isFinishing()) {
+            return false;
+        }
+        ArrayList<Activity> allActivity = getStackAllActivity();
+        if (allActivity.size() > 0) {
+            for (int i = 0; i < allActivity.size(); i++) {
+                if (activity == allActivity.get(i)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
