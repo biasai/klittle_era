@@ -54,13 +54,13 @@ open class KHttps() {
         open var errorTime = System.currentTimeMillis()//错误时间
         open var errorTimeInterval = 5000//错误间隔时间，单位毫秒；即5秒内不会重复调用。
         //失败回调(一般都服务器连接失败)
-        open var error: ((errStr: String?) -> Unit)? = null
+        open var error: ((errStr: String?, isCacle: Boolean, cacleInfo: String?) -> Unit)? = null
 
         //调用案例：KHttps.onError {}
 
         //fixme 与 onFailure()回调是一样的。唯一的不同就是，onFailure每个实例都有一个，onError只有一个；[即新调用的会覆盖旧调用的。]
         //fixme 即所有网络请求错误，都会执行这个方法；是全局的。[不会置空；必须手动值空。]
-        fun onError(error: ((errStr: String?) -> Unit)? = null) {
+        fun onError(error: ((errStr: String?, isCacle: Boolean, cacleInfo: String?) -> Unit)? = null) {
             this.error = error
         }
     }
@@ -197,6 +197,12 @@ open class KHttps() {
             file.mkdirs()//不存在则创建
         }
         return file
+    }
+
+    open var cacleInfo: String? = null//fixme 是否显示缓存弹窗信息,会返回给onError(); 在onError()里可以根据需求来自定义信息
+    fun cacleInfo(cacleInfo: String? = null): KHttps {
+        this.cacleInfo = cacleInfo
+        return this
     }
 
     open var isCacle: Boolean = false//是否缓存(访问失败的时候,会读取缓存)，默认不缓存

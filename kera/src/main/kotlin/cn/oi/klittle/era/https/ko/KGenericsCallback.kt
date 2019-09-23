@@ -37,7 +37,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
         }
         https?.let {
             //fixme 缓存
-            if (it.isCacle ?: false) {
+            if (it.isCacle) {
                 var isCale = true//是否缓存
                 it.onIsCacle?.let {
                     isCale = it(response)//判断缓存条件
@@ -45,7 +45,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 if (isCale) {
                     var saveTime = it.saveTime
                     var hp = it
-                    KHttp.getUrlUnique(it)?.let {
+                    KHttp.getCacheUnique(it)?.let {
                         if (hp.isJava) {
                             //fixme 缓存保存在java端
                             if (hp.saveTime != null) {
@@ -81,7 +81,9 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             //防止相同的时间段内，重复调用。
             if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
                 KHttps.isFirstError = false
-                it(errStr)
+                if (https != null) {
+                    it(errStr, https!!.isCacle, https!!.cacleInfo)
+                }
                 KHttps.errorTime = System.currentTimeMillis()
             }
         }
@@ -89,8 +91,8 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
         var response: String? = null
         https?.let {
             var hp = it
-            if (it.isCacle ?: false) {
-                KHttp.getUrlUnique(it)?.let {
+            if (it.isCacle) {
+                KHttp.getCacheUnique(it)?.let {
                     if (hp.isJava) {
                         //fixme 读取java端的缓存
                         response = KCacheUtils.getCacheAuto(hp.getJaveCacheFile()).getAsString(it)

@@ -828,7 +828,7 @@ object KHttp {
     //获取网络流（该流可以自己转换成位图图片。）,fixme 最直接的网络请求，没有做任何处理（如重复请求等。）
     //里面的网络请求，需要调用者在子线程调用。
     //fixme Cleartext HTTP traffic to hbimg.b0.upaiyun.com not permitted 错误是该服务器不支持http,可以试试https（一般都可以。）。
-    fun getNetByteArray(url: String?, headers: Map<String, String>?=null, params: Map<String, String>?=null): ByteArray? {
+    fun getNetByteArray(url: String?, headers: Map<String, String>? = null, params: Map<String, String>? = null): ByteArray? {
         url?.let {
             var urlNameString = url
             //fixme 参数 params
@@ -976,7 +976,7 @@ object KHttp {
 
     //获取网络请求唯一标志(url+所有参数集合)
     fun getUrlUnique(https2: KHttps): String {
-        var stringBuffer = StringBuffer("网络请求唯一标志:\t")
+        var stringBuffer = StringBuffer("")
         https2.apply {
             //fixme 防止参数里面有时间戳(当前时间 System.currentTimeMillis())；
             //fixme 所以用参数来判断是否唯一；已经不保险了。还是直接使用url最保险。
@@ -1010,8 +1010,38 @@ object KHttp {
             }
             //Log.e("test", "" + stringBuffer)
         }
-        return stringBuffer.toString()
+        return stringBuffer.toString().trim()
     }
 
+    //获取缓存唯一键值(url+所有参数集合)
+    fun getCacheUnique(https2: KHttps): String {
+        var stringBuffer = StringBuffer("")
+        https2.apply {
+            //缓存唯一标志；包含所有参数。
+            if (headers?.size > 0) {
+                for ((key, value) in headers.entries) {
+                    stringBuffer.append(key)
+                    stringBuffer.append(value)
+                }
+            }
+            if (params?.size > 0) {
+                for ((key, value) in params.entries) {
+                    stringBuffer.append(key)
+                    stringBuffer.append(value)
+                }
+            }
+            if (files?.size > 0) {
+                for ((key, value) in files.entries) {
+                    stringBuffer.append(key)
+                    stringBuffer.append(value)
+                }
+            }
+            body?.let {
+                stringBuffer.append(it)
+            }
+            //Log.e("test", "" + stringBuffer)
+        }
+        return stringBuffer.toString().trim()
+    }
 
 }

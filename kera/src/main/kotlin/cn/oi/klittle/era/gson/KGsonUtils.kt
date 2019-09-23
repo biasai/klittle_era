@@ -414,9 +414,9 @@ object KGsonUtils {
                                             last = 0
                                         }
                                         var list = ArrayList<Any>()
-                                        clazzT?.let {
-                                            var position = index + 2//fixme 注意就这里数组要加2（亲测）
-                                            if (last > 0) {//数据长度必须大于0，不然异常。
+                                        if (jsonArray.length() > 0) {//fixme 数据长度必须大于0，不然异常。
+                                            clazzT?.let {
+                                                var position = index + 2//fixme 注意就这里数组要加2（亲测）
                                                 for (i in 0..last) {
                                                     //Log.e("test", "嵌套数组循环:\t" + jsonArray.getString(i) + "\t下标:\t" + position)
                                                     var m = getObject(jsonArray.getString(i), classes, position)
