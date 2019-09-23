@@ -96,23 +96,19 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
         response?.let {
             if (it.trim().length > 0) {
                 hasCache = true//缓存数据不为空
+                onResponse(it)//fixme 失败也会回调,只要有数据,和成功回调的是同一个方法
             }
         }
-
-        //全局网络错误处理；
+        //全局网络错误处理；放到onResponse(it)的后面。即先处理网络错误。
         KHttps.error?.let {
             //防止相同的时间段内，重复调用。
             if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
                 KHttps.isFirstError = false
                 if (https != null) {
-                    it(errStr, https!!.isCacle, hasCache,https!!.cacleInfo)
+                    it(errStr, https!!.isCacle, hasCache, https!!.cacleInfo)
                 }
                 KHttps.errorTime = System.currentTimeMillis()
             }
-        }
-
-        response?.let {
-            onResponse(it)//fixme 失败也会回调,只要有数据,和成功回调的是同一个方法
         }
         //最后执行
         onFinish()
