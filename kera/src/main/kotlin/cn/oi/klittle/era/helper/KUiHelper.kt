@@ -121,7 +121,7 @@ object KUiHelper {
     private fun startActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int) {
         if (System.currentTimeMillis() - goTime > goFastTime) {
             goTime = System.currentTimeMillis()
-            nowActivity?.startActivity(intent)
+            nowActivity?.startActivityForResult(intent,requestCode)
             //参数一，目标Activity的动画。参数二，当前Activity的动画效果。
             nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
         }
