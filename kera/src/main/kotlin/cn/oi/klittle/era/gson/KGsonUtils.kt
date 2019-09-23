@@ -411,7 +411,7 @@ object KGsonUtils {
                                         var last = jsonArray.length()
                                         last -= 1//最后一个下标
                                         var list = ArrayList<Any>()
-                                        if (last > 0) {//fixme 数据长度必须大于0，不然异常。
+                                        if (last >= 0) {//fixme 数据长度必须大于0，不然异常。
                                             clazzT?.let {
                                                 var position = index + 2//fixme 注意就这里数组要加2（亲测）
                                                 for (i in 0..last) {
