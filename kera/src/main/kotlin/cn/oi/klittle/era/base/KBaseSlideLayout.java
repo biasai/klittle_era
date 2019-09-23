@@ -88,8 +88,13 @@ public class KBaseSlideLayout extends FrameLayout {
         this.shadowSlidingReboundWidth = shadowSlidingReboundWidth;
     }
 
+    public Boolean isEnableSliding = true;//fixme 是否开启滑动，新增变量方便进行手动控制。(亲测有效)
+
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!isEnableSliding) {
+            return false;//不拦截
+        }
         boolean intercept = false;
 //        int x = (int) ev.getX();
 //        int y = (int) ev.getY();
@@ -129,6 +134,9 @@ public class KBaseSlideLayout extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         try {
+            if (!isEnableSliding) {
+                return super.onTouchEvent(ev);//不拦截
+            }
             //        int x = (int) ev.getX();
 //        int y = (int) ev.getY();
             //fixme 使用Raw

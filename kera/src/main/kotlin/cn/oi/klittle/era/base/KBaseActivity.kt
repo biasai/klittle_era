@@ -84,6 +84,13 @@ open class KBaseActivity : FragmentActivity() {
         return false//fixme 默认不开启（节省内存）
     }
 
+    //fixme 是否开启滑动，新增方法方便进行手动控制。(亲测有效)
+    fun setEnableSliding(isEnableSliding: Boolean) {
+        if (isEnableSliding()) {
+            slideLayout?.isEnableSliding = isEnableSliding
+        }
+    }
+
 
     open fun isPortrait(): Boolean {
         return true//是否竖屏。默认就是竖屏。
@@ -124,6 +131,7 @@ open class KBaseActivity : FragmentActivity() {
     }
 
     private var isEnableSliding = false//判断左滑是否已开启，防止重复执行。
+    private var slideLayout: KBaseSlideLayout? = null
     override fun onAttachedToWindow() {
         try {
             super.onAttachedToWindow()
@@ -135,10 +143,12 @@ open class KBaseActivity : FragmentActivity() {
             //fixme 可能是因为actvity没有初始化完成的原因吧。所以为了保险。放在这里执行。
             if (!isFinishing() && isEnableSliding() && !isEnableSliding) {
                 //开启左滑移除效果
-                val slideLayout = KBaseSlideLayout(this, shadowSlidingDrawable())
-                slideLayout.setShadowSlidingWidth(shadowSlidingWidth())//有效滑动距离
-                slideLayout.setShadowSlidingReboundWidth(shadowSlidingReboundWidth())//滑动反弹距离。
-                slideLayout.bindActivity(this)
+                if (slideLayout == null) {
+                    slideLayout = KBaseSlideLayout(this, shadowSlidingDrawable())
+                }
+                slideLayout?.setShadowSlidingWidth(shadowSlidingWidth())//有效滑动距离
+                slideLayout?.setShadowSlidingReboundWidth(shadowSlidingReboundWidth())//滑动反弹距离。
+                slideLayout?.bindActivity(this)
                 isEnableSliding = true//左滑已开启。
             }
         } catch (e: java.lang.Exception) {
@@ -852,6 +862,7 @@ open class KBaseActivity : FragmentActivity() {
                 kprogressbar?.dismiss()
                 kprogressbar?.onDestroy()
                 kprogressbar = null
+                slideLayout = null
                 //fixme 退出动画，在finish()之后调用有效，多次调用也有效，后面的会覆盖前面的。
                 //fixme 参数一  上一个Activity的动画效果，参数二当前Activity的动画效果。
                 //目前动画，左进，右出。

@@ -1017,6 +1017,7 @@ object KHttp {
     fun getCacheUnique(https2: KHttps): String {
         var stringBuffer = StringBuffer("")
         https2.apply {
+            stringBuffer.append(url)
             //缓存唯一标志；包含所有参数。
             if (headers?.size > 0) {
                 for ((key, value) in headers.entries) {
