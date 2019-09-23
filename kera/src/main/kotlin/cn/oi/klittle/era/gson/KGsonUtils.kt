@@ -148,7 +148,7 @@ object KGsonUtils {
                     }
                     //Log.e("test","obj:\t"+obj);
                 } catch (e: Exception) {
-                    KLoggerUtils.e("test", "get()异常:\t" + e.message)
+                    KLoggerUtils.e(msg = "get()异常:\t" + e.message)
                 }
                 // 如果type是类类型，则前面包含"class "，后面跟类名
                 if (type == "class java.lang.String" || type.equals("class java.lang.String")) {
@@ -199,7 +199,7 @@ object KGsonUtils {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e("test", "KGsonUtils实体类转JSON数据异常:\t" + e.message)
+            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message)
         }
         return jsonObject
     }
@@ -341,7 +341,7 @@ object KGsonUtils {
                     }
                 }
             } catch (e: java.lang.Exception) {
-                KLoggerUtils.e("JSONArray转换异常:\t" + e.message)
+                KLoggerUtils.e(msg = "JSONArray转换异常:\t" + e.message)
             }
             return list//直接返回数组
         } else {
@@ -415,12 +415,14 @@ object KGsonUtils {
                                         }
                                         var list = ArrayList<Any>()
                                         clazzT?.let {
-                                            var position = index + 2//fixme 注意就这里数组要加2
-                                            for (i in 0..last) {
-                                                //Log.e("test", "嵌套数组循环:\t" + jsonArray.getString(i) + "\t下标:\t" + position)
-                                                var m = getObject(jsonArray.getString(i), classes, position)
-                                                m?.let {
-                                                    list.add(it as Any)
+                                            var position = index + 2//fixme 注意就这里数组要加2（亲测）
+                                            if (last > 0) {//数据长度必须大于0，不然异常。
+                                                for (i in 0..last) {
+                                                    //Log.e("test", "嵌套数组循环:\t" + jsonArray.getString(i) + "\t下标:\t" + position)
+                                                    var m = getObject(jsonArray.getString(i), classes, position)
+                                                    m?.let {
+                                                        list.add(it as Any)
+                                                    }
                                                 }
                                             }
                                         }
@@ -453,14 +455,14 @@ object KGsonUtils {
                                     }
                                 }
                             } catch (e: Exception) {
-                                KLoggerUtils.e("test", "kGsonUtils嵌套json解析异常:\t" + e.message)
+                                KLoggerUtils.e(msg = "kGsonUtils嵌套json解析异常:\t" + e.message)
                             }
 
                         }
                     }
                 }
             } catch (e: Exception) {
-                KLoggerUtils.e("test", "KGsonUtils转实体类异常:\t" + e.message)
+                KLoggerUtils.e(msg = "KGsonUtils转实体类异常:\t" + e.message)
             }
         }
         return t!!
