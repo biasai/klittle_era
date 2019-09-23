@@ -70,14 +70,18 @@ object KUiHelper {
     var goFastTime = 300L
     //防止极短时间内，重复跳转调用。
     fun goActivity(intent: Intent, nowActivity: Activity? = getActivity()) {
-        if (System.currentTimeMillis() - goTime > goFastTime) {
-            goTime = System.currentTimeMillis()
-            nowActivity?.startActivity(intent)
-            //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
-            //fixme 参数一，目标Activity的动画。参数二，当前Activity的动画效果。
-            //目前动画，左进，右出。
-            //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用
-            nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
+        try {
+            if (System.currentTimeMillis() - goTime > goFastTime) {
+                goTime = System.currentTimeMillis()
+                nowActivity?.startActivity(intent)
+                //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
+                //fixme 参数一，目标Activity的动画。参数二，当前Activity的动画效果。
+                //目前动画，左进，右出。
+                //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用
+                nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -119,11 +123,15 @@ object KUiHelper {
 
     //防止极短时间内，重复跳转调用。
     private fun startActivityForResult(intent: Intent, nowActivity: Activity? = getActivity(), requestCode: Int) {
-        if (System.currentTimeMillis() - goTime > goFastTime) {
-            goTime = System.currentTimeMillis()
-            nowActivity?.startActivityForResult(intent,requestCode)
-            //参数一，目标Activity的动画。参数二，当前Activity的动画效果。
-            nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
+        try {
+            if (System.currentTimeMillis() - goTime > goFastTime) {
+                goTime = System.currentTimeMillis()
+                nowActivity?.startActivityForResult(intent, requestCode)
+                //参数一，目标Activity的动画。参数二，当前Activity的动画效果。
+                nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -131,13 +139,17 @@ object KUiHelper {
      * 跳转到 二维码扫描界面
      */
     fun goCaptureActivity(nowActivity: Activity? = getActivity()) {
-        //需要相机权限（必须）
-        KPermissionUtils.requestPermissionsCamera {
-            if (it) {
-                goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
-            } else {
-                KPermissionUtils.showFailure()
+        try {
+            //需要相机权限（必须）
+            KPermissionUtils.requestPermissionsCamera {
+                if (it) {
+                    goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
+                } else {
+                    KPermissionUtils.showFailure()
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
