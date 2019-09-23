@@ -76,17 +76,6 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
         https?.requestCallback?.failure?.let {
             it(errStr)
         }
-        //全局网络错误处理；
-        KHttps.error?.let {
-            //防止相同的时间段内，重复调用。
-            if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
-                KHttps.isFirstError = false
-                if (https != null) {
-                    it(errStr, https!!.isCacle, https!!.cacleInfo)
-                }
-                KHttps.errorTime = System.currentTimeMillis()
-            }
-        }
 
         var response: String? = null
         https?.let {
@@ -103,6 +92,25 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 }
             }
         }
+        var hasCache = false//判断是否有缓存数据（false缓存数据为空）
+        response?.let {
+            if (it.trim().length > 0) {
+                hasCache = true//缓存数据不为空
+            }
+        }
+
+        //全局网络错误处理；
+        KHttps.error?.let {
+            //防止相同的时间段内，重复调用。
+            if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
+                KHttps.isFirstError = false
+                if (https != null) {
+                    it(errStr, https!!.isCacle, hasCache,https!!.cacleInfo)
+                }
+                KHttps.errorTime = System.currentTimeMillis()
+            }
+        }
+
         response?.let {
             onResponse(it)//fixme 失败也会回调,只要有数据,和成功回调的是同一个方法
         }
