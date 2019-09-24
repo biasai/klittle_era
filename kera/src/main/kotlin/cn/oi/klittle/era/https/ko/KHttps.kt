@@ -252,6 +252,9 @@ open class KHttps() {
         if (https?.isShowLoad ?: false) {
             https?.dismissProgressbar()
         }
+        https?.finish0?.let {
+            it()
+        }
         //结束回调（在进度条关闭之后，再回调。防止进度条和activity同时关闭。）
         https?.finish?.let {
             it()
@@ -355,6 +358,13 @@ open class KHttps() {
 
     fun onFinish(finish: (() -> Unit)? = null): KHttps {
         this.finish = finish
+        return this
+    }
+
+    open var finish0: (() -> Unit)? = null
+
+    fun onFinish0(finish0: (() -> Unit)? = null): KHttps {
+        this.finish0 = finish0
         return this
     }
 
@@ -551,6 +561,7 @@ open class KHttps() {
         success0 = null
         failure = null
         success = null
+        finish0 = null
         finish = null
         requestCallback = null
     }
