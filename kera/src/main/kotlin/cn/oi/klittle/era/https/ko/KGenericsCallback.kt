@@ -29,6 +29,9 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
     //成功
     open fun onSuccess(response: String) {
         var result = https?.onPostResponse(response) ?: ""//对服务器返回数据，在解析之前，优先做处理。如解密等
+        https?.success0?.let {
+            it(result)
+        }
         https?.success?.let {
             it(result)
         }
@@ -70,6 +73,9 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
 
     //失败【基本可以断定是网络异常】
     open fun onFailure(errStr: String?) {
+        https?.failure0?.let {
+            it(errStr)
+        }
         https?.failure?.let {
             it(errStr)
         }

@@ -313,11 +313,27 @@ open class KHttps() {
         return this
     }
 
+    //新增一个回调（多一个，可以防止冲突）（在onSuccess()的前面。）
+    open var success0: ((result: String) -> Unit)? = null
+
+    fun onSuccess0(success0: ((result: String) -> Unit)? = null): KHttps {
+        this.success0 = success0
+        return this
+    }
+
     //fixme 失败回调
     open var failure: ((errStr: String?) -> Unit)? = null
 
     fun onFailure(failure: ((errStr: String?) -> Unit)? = null): KHttps {
         this.failure = failure
+        return this
+    }
+
+    //新增一个回调
+    open var failure0: ((errStr: String?) -> Unit)? = null
+
+    fun onFailure0(failure0: ((errStr: String?) -> Unit)? = null): KHttps {
+        this.failure0 = failure0
         return this
     }
 
@@ -517,6 +533,8 @@ open class KHttps() {
         activity = null
         next = null
         start = null
+        failure0 = null
+        success0 = null
         failure = null
         success = null
         finish = null
