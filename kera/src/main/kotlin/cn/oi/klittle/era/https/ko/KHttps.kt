@@ -15,6 +15,9 @@ import java.io.File
 open class KHttps() {
 
     companion object {
+
+        var isNetting:Boolean=false//fixme 全局，判断网络是否正在进行中。
+
         fun getContext(): Context {
             return KBaseApplication.getInstance()
         }
@@ -239,7 +242,10 @@ open class KHttps() {
         //fixme [放在最前；放在https?.finish之前执行。防止finish()中再次执行网络请求无效。]
         var https: KHttps? = this
         https?.let {
-            KHttp.map.remove(KHttp.getUrlUnique(it))
+            var key=KHttp.getUrlUnique(it)
+            if (KHttp.map.containsKey(key)) {
+                KHttp.map.remove(key)
+            }
             it.urlUniqueParams = null
         }
         //fixme 关闭进度条
@@ -302,6 +308,13 @@ open class KHttps() {
 
     fun onStart(start: (() -> Unit)? = null): KHttps {
         this.start = start
+        return this
+    }
+
+    open var start0: (() -> Unit)? = null
+
+    fun onStart0(start0: (() -> Unit)? = null): KHttps {
+        this.start0 = start0
         return this
     }
 
@@ -532,6 +545,7 @@ open class KHttps() {
         url = null
         activity = null
         next = null
+        start0 = null
         start = null
         failure0 = null
         success0 = null

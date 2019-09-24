@@ -13,6 +13,10 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
 
     //开始
     open fun onStart() {
+        KHttps.isNetting=true//网络正在进行
+        https?.start0?.let {
+            it()
+        }
         https?.start?.let {
             it()
             //https?.start!!()
@@ -28,6 +32,13 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
 
     //成功
     open fun onSuccess(response: String) {
+        KHttps.isNetting=false//网络请求结束
+        https?.let {
+            var key=KHttp.getUrlUnique(it)
+            if (KHttp.map.containsKey(key)) {
+                KHttp.map.remove(key)//fixme 去除网络请求标志
+            }
+        }
         var result = https?.onPostResponse(response) ?: ""//对服务器返回数据，在解析之前，优先做处理。如解密等
         https?.success0?.let {
             it(result)
@@ -73,6 +84,13 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
 
     //失败【基本可以断定是网络异常】
     open fun onFailure(errStr: String?) {
+        KHttps.isNetting=false//网络请求结束
+        https?.let {
+            var key=KHttp.getUrlUnique(it)
+            if (KHttp.map.containsKey(key)) {
+                KHttp.map.remove(key)//fixme 去除网络请求标志
+            }
+        }
         https?.failure0?.let {
             it(errStr)
         }

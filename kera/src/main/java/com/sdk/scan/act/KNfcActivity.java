@@ -55,6 +55,11 @@ public class KNfcActivity extends KBaseActivity {
         return true;//默认开启
     }
 
+    //新增方法，控制NFC回调开关。
+    public Boolean isEnableNF2C() {
+        return true;//默认开启
+    }
+
     /**
      * fixme 处理nfc读取结果回调（isEnableNFC()开启了才会回调）;子类可以重写
      *
@@ -62,6 +67,7 @@ public class KNfcActivity extends KBaseActivity {
      */
     protected void onNfcResult(String cardNo) {
     }
+
 
     /**
      * 设备不支持NFC刷卡功能时调用,在onStart()里调用，只调用一次。
@@ -255,7 +261,9 @@ public class KNfcActivity extends KBaseActivity {
                 String nfcCardNo = hexToDecString(str);
                 //回调
                 if (nfcCardNo != null && nfcCardNo.trim().length() > 0) {
-                    onNfcResult(nfcCardNo);
+                    if (isEnableNF2C()) {
+                        onNfcResult(nfcCardNo);
+                    }
                 }
             }
         } catch (Exception e) {

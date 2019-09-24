@@ -15,6 +15,11 @@ open class KScanActivity : KNfcActivity() {
         return true//默认开启
     }
 
+    //新增一个方法，控制扫描回调开关。
+    open fun isEnableScan2(): Boolean {
+        return true//默认开启
+    }
+
     /**
      * fixme 扫描回调（isEnableScan()开启了才会回调）；交给子类重写
      */
@@ -32,12 +37,16 @@ open class KScanActivity : KNfcActivity() {
             if (isEnableScan()) {
                 KScanUtils.registerReceiver()
                 onScanResult { barcodeType, barcodeStr ->
-                    onScanResult(barcodeType, barcodeStr)
+                    if (isEnableScan2()) {
+                        onScanResult(barcodeType, barcodeStr)
+                    }
                 }
                 //监听扫描
                 KScanUtils.onScanResult(onScanResult)//在finish和onpause里不对它进行回收了；防止没有反应。
             }
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }
