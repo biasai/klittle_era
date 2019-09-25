@@ -68,8 +68,12 @@ object KLocationUtils {
                             //provider 定位方式;
                             //minTime 最短时间间隔（单位毫秒(亲测)，1000是一秒。）;
                             //minDistance最短更新距离
-                            locationManager?.requestLocationUpdates("gps", 0, 0f, getLocationListener())//请求获取最新位置信息（getLastKnownLocation获取的是上一次定位）
-                            locationManager?.requestLocationUpdates("network", 0, 0f, getLocationListener())
+                            //fixme requestLocationUpdates 会不停的请求，minTime是请求的间隔时间。
+                            //locationManager?.requestLocationUpdates("gps", 0, 0f, getLocationListener())//请求获取最新位置信息（getLastKnownLocation获取的是上一次定位）
+                            //locationManager?.requestLocationUpdates("network", 0, 0f, getLocationListener())
+                            //fixme requestSingleUpdate只请求一次。
+                            locationManager?.requestSingleUpdate("gps", getLocationListener(), null)//请求获取最新位置信息（getLastKnownLocation获取的是上一次定位）
+                            locationManager?.requestSingleUpdate("network", getLocationListener(), null)
 
                             val criteria = Criteria()
                             // 获得最好的定位效果
