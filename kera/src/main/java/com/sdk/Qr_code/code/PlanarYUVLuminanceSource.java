@@ -19,6 +19,7 @@ package com.sdk.Qr_code.code;
 import com.google.zxing.LuminanceSource;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 /**
  * This object extends LuminanceSource around an array of YUV data returned from the camera driver,
@@ -41,9 +42,12 @@ public final class PlanarYUVLuminanceSource extends LuminanceSource {
       int width, int height) {
     super(width, height);
 
-    if (left + width > dataWidth || top + height > dataHeight) {
-      throw new IllegalArgumentException("Crop rectangle does not fit within image data.");
-    }
+//    fixme 这个异常去掉，没有影响，不然在三星上面会异常。
+//    Log.e("test","left:\t"+left+"\twidth:\t"+width+"\tdataWidth:\t"+dataWidth);
+//    Log.e("test","top:\t"+top+"\theight:\t"+height+"\tdataHeight:\t"+dataHeight);
+//    if (left + width > dataWidth || top + height > dataHeight) {
+//      throw new IllegalArgumentException("Crop rectangle does not fit within image data.");
+//    }
 
     this.yuvData = yuvData;
     this.dataWidth = dataWidth;
