@@ -44,6 +44,26 @@ import org.jetbrains.anko.*
 //                titleTextView?.apply {
 //                    text = "标题"
 //                }
+
+//                标题的右边文本
+//                titleTextView2?.apply {
+//                    text = "2"
+//                    radius {
+//                        all_radius(100)
+//                        bg_color = Color.RED
+//                        textSize = kpx.textSizeX(24f)
+//                    }
+//                    var w = getTextWidth() + kpx.x(24)
+//                    layoutParams(w, w)
+//                    layoutParams?.let {
+//                        if (it is RelativeLayout.LayoutParams) {
+//                            (it as RelativeLayout.LayoutParams).apply {
+//                                topMargin = kpx.x(18)
+//                            }
+//                        }
+//                    }
+//                }
+
 //                //右边文本
 //                rightTextView?.apply {
 //                    text = "确定"
@@ -187,6 +207,7 @@ open class KToolbar {
     var contentView: KVerticalLayout? = null//内容容器
     var leftTextView: KTextView? = null//返回键
     var titleTextView: KTextView? = null//标题
+    var titleTextView2: KTextView? = null//标题2(在标题的右上角位置)
     var rightTextView: KTextView? = null//右边文本框
     var rightTextView2: KTextView? = null//右边第二个文本框（从右边数,倒数第二个文本框）
     var bottomGradientView: KGradientView? = null//底部渐变横线
@@ -253,6 +274,18 @@ open class KToolbar {
                                 width = wrapContent
                                 height = wrapContent
                                 centerInParent()
+                            }
+
+                            //标题2
+                            titleTextView2 = KTextView(this).apply {
+                                id = kpx.id("txt_center2")
+                                textSize = toolbarTextSize
+                                setTextColor(toolbarTextColor)
+                                gravity = Gravity.CENTER
+                            }.lparams {
+                                width = wrapContent
+                                height = wrapContent
+                                rightOf(kpx.id("txt_center"))
                             }
                             //右边文字或图片
                             //[fixme rightTextView和rightTextView2位置有关联。
