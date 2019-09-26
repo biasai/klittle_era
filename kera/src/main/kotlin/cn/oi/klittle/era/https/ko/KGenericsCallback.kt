@@ -129,7 +129,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
                 KHttps.isFirstError = false
                 if (https != null) {
-                    it(errStr, https!!.isCacle, hasCache, https!!.cacleInfo)
+                    it(https?.url,errStr, https!!.isCacle, hasCache, https!!.cacleInfo)
                 }
                 KHttps.errorTime = System.currentTimeMillis()
             }

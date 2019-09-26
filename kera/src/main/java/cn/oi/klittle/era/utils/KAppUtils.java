@@ -264,8 +264,9 @@ public class KAppUtils {
                 intent.putExtra(Intent.EXTRA_STREAM, fileUri);//必不可少
                 try {
                     context.startActivity(intent);
-                }catch (Exception e){e.printStackTrace();
-                    Log.e("test","安装异常：\t"+e.getMessage());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    Log.e("test", "安装异常：\t" + e.getMessage());
                 }
             } else {
                 //Toast.makeText(context, "安装包解析错误", Toast.LENGTH_LONG).show();
@@ -461,6 +462,34 @@ public class KAppUtils {
     }
 
     /**
+     * 根据包名，获取启动的Intent
+     *
+     * @param context
+     * @param pak
+     * @return
+     */
+    public static Intent getLaunchIntentForPackage(Context context, PackageInfo pak) {
+        if (context != null && pak != null) {
+            return context.getPackageManager().getLaunchIntentForPackage(pak.packageName);
+        }
+        return null;
+    }
+
+    /**
+     * 根据包名，获取启动的Intent
+     *
+     * @param context
+     * @param packageName
+     * @return
+     */
+    public static Intent getLaunchIntentForPackage(Context context, String packageName) {
+        if (context != null && packageName != null) {
+            return context.getPackageManager().getLaunchIntentForPackage(packageName);
+        }
+        return null;
+    }
+
+    /**
      * 获取应用名称
      *
      * @param context
@@ -554,7 +583,9 @@ public class KAppUtils {
                     break;
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return packagename;
     }
 
