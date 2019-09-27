@@ -209,15 +209,23 @@ public class KAppUtils {
     /**
      * 启动应用
      *
-     * @param apply 包名
+     * @param packageName 启动应用包名
+     * @return true 启动成功，false失败
      */
-    public static void startApp(Context context, String apply) {
+    public static boolean startApp(Context context, String packageName) {
         try {
-            Intent intent = context.getPackageManager().getLaunchIntentForPackage(apply);
-            context.startActivity(intent);
+            Intent intent = context.getPackageManager().getLaunchIntentForPackage(packageName);
+            //intent为空的原因
+            //1：没有安装该应用
+            //2：安装了该应用，但是没有配置 <category android:name="android.intent.category.LAUNCHER"/> ；所以也就没有启动项。
+            if (intent != null) {
+                context.startActivity(intent);
+                return true;
+            }
         } catch (Exception e) {
             Log.e("test", "App应用启动失败失败:\t" + e.getMessage());
         }
+        return false;//如果intent为空，还可以通过包名，跳转到该应用的详情页，让用户手动打开。
     }
 
     /**
@@ -318,7 +326,7 @@ public class KAppUtils {
 
 
     /**
-     * 获取apK包名
+     * fixme 获取apK包名
      *
      * @param apk 安装包的完整路径
      * @return

@@ -154,4 +154,34 @@ public class KIntentPersionSettingUtils {
         return localIntent;
     }
 
+    /**
+     * 根据包名（可以是自己应用的包名，也可以是其他第三方应用的包名，即可以跳转到其他应用的详情页。）
+     * 跳转到该应用的详情界面（可以打开该应用，非系统应用还可以卸载，系统应用不能卸载，但是能停用和启动。）。
+     *
+     * @param packageName
+     * @return
+     */
+    public static Intent getAppDetailSettingIntent(String packageName) {
+        if (packageName == null) {
+            return null;
+        }
+        //Intent localIntent = new Intent();
+        Uri packageURI = Uri.parse("package:" + packageName);
+        Intent localIntent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI);
+//        fixme startActivityForResult 不要使用FLAG_ACTIVITY_NEW_TASK，不然无法正常回调
+//        if (context instanceof Activity) {
+//            localIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//Activity才能添加FLAG_ACTIVITY_NEW_TASK;
+//        }
+//        if (Build.VERSION.SDK_INT >= 9) {
+//            //localIntent.setAction("android.settings.APPLICATION_DETAILS_SETTINGS");
+//            //localIntent.setData(Uri.fromParts("package", context.getPackageName(), null));
+//        }
+        if (Build.VERSION.SDK_INT <= 8) {
+            localIntent.setAction(Intent.ACTION_VIEW);
+            localIntent.setClassName("com.android.settings", "com.android.settings.InstalledAppDetails");
+            localIntent.putExtra("com.android.settings.ApplicationPkgName", packageName);
+        }
+        return localIntent;
+    }
+
 }

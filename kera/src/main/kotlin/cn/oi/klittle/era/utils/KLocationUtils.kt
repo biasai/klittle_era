@@ -169,6 +169,7 @@ object KLocationUtils {
                             locationManager?.requestSingleUpdate(LocationManager.GPS_PROVIDER, getLocationListener(), null)
                             locationManager?.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, getLocationListener())
                             //fixme 网络定位，需要服务商的支持。一般的手机一般都自带百度地图的服务(谷歌的用不了在国内)。（如果没有服务，那网络定位是无效的。百度地址的SDK就解决了这个问题）
+                            //fixme 新版的PDA上面有百度的服务,网络位置("com.baidu.map.location");旧版本的没有，所以旧版本无法进行网络定位。
                             locationManager?.requestSingleUpdate(LocationManager.NETWORK_PROVIDER, getLocationListener(), null)
                             locationManager?.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, getLocationListener())
                         }

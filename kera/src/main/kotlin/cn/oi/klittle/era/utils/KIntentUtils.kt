@@ -14,6 +14,8 @@ import android.view.inputmethod.InputMethodManager
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.bluetooth.KBluetoothAdapter
+import android.support.v4.app.ActivityCompat.startActivityForResult
+
 
 object KIntentUtils {
 
@@ -25,7 +27,7 @@ object KIntentUtils {
         return KBaseActivityManager.getInstance().stackTopActivity
     }
 
-    //跳转到权限设置界面
+    //跳转到系统设置界面
     fun goSetting(activity: Activity? = getActivity()) {
         try {
             if (activity != null && !activity.isFinishing) {
@@ -68,7 +70,42 @@ object KIntentUtils {
         }
     }
 
-    //fixme 跳转到应用详情界面
+    /**
+     * 跳转到设置里面的应用列表界面
+     */
+    fun goSettingApps(activity: Activity? = getActivity()) {
+        try {
+            val intent = Intent(Settings.ACTION_APPLICATION_SETTINGS)
+            activity?.startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 根据包名，跳转到其他应用的详情页面（如：PDA上面的网络位置包名是："com.baidu.map.location"）
+     * @param activity
+     * @param packageName 要跳转应用详情页的包名。即第三方应用包名。
+     * @return true 跳转成功，false跳转失败（没有该应用）
+     */
+    fun goAppDetailedSetting(activity: Activity? = getActivity(), packageName: String): Boolean {
+        try {
+            if (activity != null && !activity.isFinishing && packageName != null) {
+                //获取所有应用
+                var hasPackage = KAppUtils.isAppInstalled(activity, packageName)//fixme 判断是否包含该app(即判断是否安装)
+                if (hasPackage) {
+                    var intent = KIntentPersionSettingUtils.getAppDetailSettingIntent(packageName)
+                    activity.startActivity(intent)
+                    return true
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return false
+    }
+
+    //fixme 跳转到本应用详情界面
     fun goAppDetailedSetting(activity: Activity? = getActivity()) {
         try {
             if (activity != null && !activity.isFinishing) {
