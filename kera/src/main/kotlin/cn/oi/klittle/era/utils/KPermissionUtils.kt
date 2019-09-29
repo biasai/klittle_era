@@ -693,10 +693,11 @@ object KPermissionUtils {
             val snackbar = Snackbar.make(it, info, Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.ksetting)) {
                         //立即设置
-                        val packageURI = Uri.parse("package:" + activity!!.getPackageName())
-                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        activity.startActivity(intent)//跳转权限设置界面。基本上通用。小米是肯定行的。android6.0基本都可以。
+//                        val packageURI = Uri.parse("package:" + activity!!.getPackageName())
+//                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                        activity.startActivity(intent)//跳转权限设置界面。基本上通用。小米是肯定行的。android6.0基本都可以。
+                        KIntentUtils.goPermissionsSetting(activity)//fixme 跳转权限设置界面
                     }
             val snackView = snackbar.view
             //int textSize= (int) (UtilProportion.getInstance(this).adapterInt(24) * UtilProportion.getInstance(this).getTextProportion()/ UtilProportion.getInstance(this).getDensity());
