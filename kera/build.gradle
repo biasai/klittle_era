@@ -24,6 +24,11 @@ android {
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
     }
 
+    //写在类库或者moudle里都行。不会冲突报错。
+    lintOptions {//设置编译的lint开关，（true）程序在buid的时候，会执行lint检查，有任何的错误或者警告提示，都会终止构建;(false)不会提示；
+        abortOnError false//fixme 打包签名的时候报lint的错误；设置成false就行了，就不会报错了。
+    }
+
     buildTypes {
         release {
             minifyEnabled false

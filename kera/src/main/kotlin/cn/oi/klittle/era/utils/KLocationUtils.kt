@@ -6,8 +6,17 @@ import android.location.*
 import android.os.Bundle
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.comm.KToast
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import org.jetbrains.anko.runOnUiThread
 import java.lang.Exception
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -181,15 +190,87 @@ object KLocationUtils {
         }
     }
 
+    //被观察者
+    private var observable: Observable<Boolean>? = Observable.create<Boolean> {
+        if (requestLocationUpdate_timeOut > 0) {
+            async {
+                delay(requestLocationUpdate_timeOut, TimeUnit.MILLISECONDS)//等待中
+                it.onComplete()//超时回调
+            }
+        }
+    }
+            .subscribeOn(Schedulers.io())//执行线程在io线程(子线程)
+            .observeOn(AndroidSchedulers.mainThread())//回调线程在主线程
+
+
+    var disposable: Disposable? = null
+    //观察者
+    private var observe: Observer<Boolean>? = object : Observer<Boolean> {
+        override fun onSubscribe(d: Disposable?) {
+            disposable = d
+        }
+
+        override fun onComplete() {
+            //超时回调
+            locationListener?.let {
+                it(null)//超时位置返回为空
+            }
+            locationListener = null//回调监听置空
+        }
+
+        override fun onNext(value: Boolean?) {
+        }
+
+        override fun onError(e: Throwable?) {
+        }
+    }
+
+    //旧的回调取消
+    private fun dispose() {
+        try {
+            //使用RxJava完成弹框超时设置。亲测可行。
+            if (observe != null) {//timeOut小于等于0不做超时判断
+                disposable?.dispose()//旧的回调取消
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //开启新的回调计时
+    private fun subscribe() {
+        try {
+            //使用RxJava完成弹框超时设置。亲测可行。
+            if (observe != null) {//timeOut小于等于0不做超时判断
+                observable?.subscribe(observe)//开启新的回调计时
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private var requestLocationUpdate_timeOut: Long = 15000//超时回调时间15秒。（单位是毫秒）
+    private var requestLocationUpdate_timeOut_default: Long = 15000//超时回调时间15秒（默认参数设置）。（单位是毫秒）
+    private var locationListener: ((location: Location?) -> Unit)? = null//回调监听
     /**
      * fixme 实时监听位置一次(只监听一次。)
+     * @param timeOut fixme 回调超时时间(亲测有效,亲测不会错乱。超时时会回调为空null)
+     * @param locationListener 回调监听
      */
-    fun requestLocationUpdate(activity: Activity? = getActivity(), locationListener: ((location: Location?) -> Unit)? = null) {
+    fun requestLocationUpdate(activity: Activity? = getActivity(), timeOut: Long = requestLocationUpdate_timeOut_default, locationListener: ((location: Location?) -> Unit)? = null) {
+        this.requestLocationUpdate_timeOut = timeOut
+        this.locationListener = locationListener
+        dispose()//旧的回调取消
+        subscribe()//新的回调重新开始计时
         requestLocationUpdates {
             var location = it
             locationListener?.let {
-                it(location)
-                removeUpdates(activity)//fixme 监听完成之后，立即移除监听。
+                if (this.locationListener != null) {
+                    this.locationListener = null//回调监听置空。
+                    dispose()//旧的回调取消
+                    it(location)
+                    removeUpdates(activity)//fixme 监听完成之后，立即移除监听。
+                }
             }
         }
     }
