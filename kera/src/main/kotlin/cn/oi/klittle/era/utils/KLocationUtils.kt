@@ -253,7 +253,7 @@ object KLocationUtils {
     private var requestLocationUpdate_timeOut_default: Long = 15000//超时回调时间15秒（默认参数设置）。（单位是毫秒）
     private var locationListener: ((location: Location?) -> Unit)? = null//回调监听
     /**
-     * fixme 实时监听位置一次(只监听一次。)
+     * fixme 实时监听位置一次(只监听一次。)；正常的一般两三秒就回调了。最迟不会超过10秒。如果超过10秒，基本都是获取不到GPS(比如在室内且网络定位功能没有开启)。
      * @param timeOut fixme 回调超时时间(亲测有效,亲测不会错乱。超时时会回调为空null)
      * @param locationListener 回调监听
      */
