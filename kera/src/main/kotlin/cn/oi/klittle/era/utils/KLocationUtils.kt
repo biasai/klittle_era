@@ -31,31 +31,29 @@ object KLocationUtils {
         return KBaseActivityManager.getInstance().stackTopActivity
     }
 
-    var mlocationListener: LocationListener? = null
-
-    fun getLocationListener(): LocationListener? {
-        if (mlocationListener == null) {
-            mlocationListener = object : LocationListener {
-                override fun onLocationChanged(p0: Location?) {//定位改变监听
-                    //KLoggerUtils.e("定位改变监听:\t" + p0)
-                    locationListenerCallback?.let {
-                        it(p0)//位置实时监听
-                    }
-                }
-
-                override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {//定位状态监听
-                    //KLoggerUtils.e("定位状态监听:\t" + p0)
-                }
-
-                override fun onProviderEnabled(p0: String?) {//定位状态可用监听(gps开启时调用)
-                    //KLoggerUtils.e("定位状态可用监听:\t" + p0)
-                }
-
-                override fun onProviderDisabled(p0: String?) {//定位状态不可用监听（gps关闭时）
-                    //KLoggerUtils.e("定位状态不可用监听:\t" + p0)
-                }
+    //fixme 位置监听就使用这个，不要置空。防止移除位置监听的的时候无效。
+    val mlocationListener: LocationListener? = object : LocationListener {
+        override fun onLocationChanged(p0: Location?) {//定位改变监听
+            //KLoggerUtils.e("定位改变监听:\t" + p0)
+            locationListenerCallback?.let {
+                it(p0)//位置实时监听
             }
         }
+
+        override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {//定位状态监听
+            //KLoggerUtils.e("定位状态监听:\t" + p0)
+        }
+
+        override fun onProviderEnabled(p0: String?) {//定位状态可用监听(gps开启时调用)
+            //KLoggerUtils.e("定位状态可用监听:\t" + p0)
+        }
+
+        override fun onProviderDisabled(p0: String?) {//定位状态不可用监听（gps关闭时）
+            //KLoggerUtils.e("定位状态不可用监听:\t" + p0)
+        }
+    }
+
+    fun getLocationListener(): LocationListener? {
         return mlocationListener
     }
 
@@ -76,6 +74,7 @@ object KLocationUtils {
                             if (locationManager == null) {
                                 return@requestPermissionsLocation
                             }
+                            locationManager?.removeUpdates(getLocationListener())//调用之前移除一下。
                             //fixme 地理位置刷新一下（提高一下准确度）
                             //provider 定位方式;
                             //minTime 最短时间间隔（单位毫秒(亲测)，1000是一秒。）;
@@ -167,6 +166,7 @@ object KLocationUtils {
                             if (locationManager == null) {
                                 return@requestPermissionsLocation
                             }
+                            locationManager?.removeUpdates(getLocationListener())//调用之前移除一下。
                             //fixme 地理位置刷新一下（提高一下准确度）
                             //provider 定位方式;
                             //minTime 最短时间间隔（单位毫秒(亲测)，1000是一秒。）;
@@ -277,31 +277,19 @@ object KLocationUtils {
 
     //fixme 移除位置监听（亲测有效）
     fun removeUpdates(activity: Activity? = getActivity()) {
-        locationListenerCallback = null//监听置空
-        if (mlocationListener != null) {
-            activity?.apply {
-                if (KIntentUtils.isGpsEnable()) {//fixme 需要打开gps定位服务
-                    KPermissionUtils.requestPermissionsLocation(activity) {
-                        try {
-                            //fixme 需要定位权限
-                            if (it) {
-                                if (mlocationListener != null) {
-                                    var locationManager: LocationManager? = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                                    if (locationManager == null) {
-                                        return@requestPermissionsLocation
-                                    }
-                                    locationManager?.removeUpdates(mlocationListener)//异常监听
-                                }
-                                mlocationListener = null
-                            }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+        try {
+            locationListenerCallback = null//监听置空
+            if (mlocationListener != null) {
+                activity?.apply {
+                    if (mlocationListener != null) {
+                        var locationManager: LocationManager? = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                        locationManager?.removeUpdates(mlocationListener)//异常监听
                     }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-
     }
 
 //    fixme 调用案例           只能简单的获取当前的位置，精度并不高。
