@@ -31,6 +31,16 @@ object KLocationUtils {
         return KBaseActivityManager.getInstance().stackTopActivity
     }
 
+    //fixme 也不要置空，和LocationListener一样；防止置空之后，位置监听无法移除的问题。
+    private var locationManager: LocationManager? = null
+
+    private fun getLocationManager(): LocationManager? {
+        if (locationManager == null) {
+            locationManager = KBaseApplication.getInstance().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        }
+        return locationManager
+    }
+
     //fixme 位置监听就使用这个，不要置空。防止移除位置监听的的时候无效。
     val mlocationListener: LocationListener? = object : LocationListener {
         override fun onLocationChanged(p0: Location?) {//定位改变监听
@@ -70,7 +80,7 @@ object KLocationUtils {
                     try {
                         //fixme 需要定位权限
                         if (it) {
-                            var locationManager: LocationManager? = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                            var locationManager: LocationManager? = getLocationManager()
                             if (locationManager == null) {
                                 return@requestPermissionsLocation
                             }
@@ -162,7 +172,7 @@ object KLocationUtils {
                         //fixme 需要定位权限
                         if (it) {
                             locationListenerCallback = locationListener//监听器
-                            var locationManager: LocationManager? = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                            var locationManager: LocationManager? = getLocationManager()
                             if (locationManager == null) {
                                 return@requestPermissionsLocation
                             }
@@ -284,8 +294,9 @@ object KLocationUtils {
             if (mlocationListener != null) {
                 activity?.apply {
                     if (mlocationListener != null) {
-                        var locationManager: LocationManager? = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                        var locationManager: LocationManager? = getLocationManager()
                         locationManager?.removeUpdates(mlocationListener)//异常监听
+                        locationManager = null
                     }
                 }
             }
