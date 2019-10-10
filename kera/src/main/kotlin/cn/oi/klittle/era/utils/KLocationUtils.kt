@@ -166,7 +166,7 @@ object KLocationUtils {
                             if (locationManager == null) {
                                 return@requestPermissionsLocation
                             }
-                            locationManager?.removeUpdates(getLocationListener())//调用之前移除一下。
+                            locationManager?.removeUpdates(getLocationListener())//fixme 调用之前移除一下之前的监听。
                             //fixme 地理位置刷新一下（提高一下准确度）
                             //provider 定位方式;
                             //minTime 最短时间间隔（单位毫秒(亲测)，1000是一秒。）;
@@ -279,6 +279,8 @@ object KLocationUtils {
     fun removeUpdates(activity: Activity? = getActivity()) {
         try {
             locationListenerCallback = null//监听置空
+            locationListener = null
+            dispose()//旧的回调取消
             if (mlocationListener != null) {
                 activity?.apply {
                     if (mlocationListener != null) {
