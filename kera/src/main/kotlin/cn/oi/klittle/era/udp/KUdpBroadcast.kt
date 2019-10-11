@@ -66,7 +66,7 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
      * fixme Close udp socket 关闭
      */
     fun close() {
-        stopReceive()
+        stop()
         isCircleReceive = false//停止接收，不一定结束循环，但是关闭，肯定会接收循环。
         if (socket != null) {
             socket?.close()
@@ -113,10 +113,10 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
     private var isCircleReceive = false
 
     /**
-     * fixme 开始接收;回调返回接收到的数据
+     * fixme 接收;回调返回接收到的数据（会循环不停的接收）
      * @param callback 回调，返回接收到的数据
      */
-    fun startReceive(callback: ((msg: String) -> Unit)?) {
+    fun onMessage(callback: ((msg: String) -> Unit)?) {
         if (socket == null || callback == null || socket!!.isClosed) {
             return
         }
@@ -158,9 +158,9 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
     }
 
     /**
-     * fixme Stop to receive 停止接收
+     * fixme Stop to receive 停止接收（停止接收后，需要重新调用onMessage()进行重新接收）
      */
-    fun stopReceive() {
+    fun stop() {
         isStopedReceive = true
         receiveCallBack = null
     }

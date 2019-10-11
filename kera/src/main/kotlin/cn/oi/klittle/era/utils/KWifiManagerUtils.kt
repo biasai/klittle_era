@@ -213,7 +213,7 @@ object KWifiManagerUtils {
 
     /**
      * 根据wifi名称和密码；获取网络id。如果不存在则返回-1（小于0的数）（不存在时会自动创建和添加该网络，如果返回为负数。一般都是用户拒绝了扫描定位权限）
-     * @param ssid WiFi名称
+     * @param ssid WiFi名称（有没有双引号，无所谓。会自动去除。）
      * @param password 密码，没有密码，可以传空null
      * @param callback 回调返回netWorkId;因为扫描是异步，为了同步，所以使用回调
      */
@@ -227,9 +227,11 @@ object KWifiManagerUtils {
             }
         }
         if (networkId < 0) {//fixme 判断是否存在该网络，防止重复添加。
+            var SSID = KStringUtils.removeMarks(ssid)//去除双引号
             startScan {
                 it?.forEach {
-                    if (it.SSID.equals(ssid)) {
+                    var SSID2 = KStringUtils.removeMarks(it.SSID)//去除双引号
+                    if (SSID.equals(SSID2)) {
                         //fixme 未配置过该网络，不存在。则重新创建该网络配置
                         var configuration = createConfiguration(AccessPoint(it, password))
                         if (configuration != null) {
