@@ -314,54 +314,58 @@ object KBluetoothAdapter {
     }
 
     /**
-     * 扫描设备
+     * 扫描设备(搜索的蓝牙设备如果是休眠或者手机黑屏状态，一般都搜索不到。)
      * @param serviceUuids UUID数组
      * @param delay 预先定义蓝牙停止扫描的时间,单位毫秒
      * @param callback 回调，返回搜索到设备。（不管是已匹配的还是没有匹配的，都会搜索到。即返回所有搜索的设备。）
      */
     fun startLeScan(serviceUuids: MutableList<UUID>? = null, delay: Long = 5000, callback: (bluetoothDevices: MutableList<BluetoothDevice>) -> Unit) {
-        if (isVersion18() && isEnabled() && hasSystemFeature()) {
-            KPermissionUtils.requestPermissionsBlueTooth {
-                if (it) {
-                    //6.0以后需要定位权限，才能搜索蓝牙。亲测，定位权限必不可少！
-                    async {
-                        bluetoothDevices.clear()//清空一下
-                        bluetoothAdapter?.startDiscovery()//fixme 开始扫描，使用广播接收(防止以下方法搜索不到设备，所以加上广播一起搜索。)
-                        isStopSan = false//fixme 开始扫描标志
-                        if (isVersion21()) {
-                            bluetoothAdapter?.bluetoothLeScanner?.startScan(object : ScanCallback() {
-                                override fun onScanResult(callbackType: Int, result: ScanResult?) {
-                                    super.onScanResult(callbackType, result)
-                                    addDevice(result?.device)
+        if (isVersion18() && hasSystemFeature()) {
+            //搜索蓝牙，必须打开蓝牙。
+            enable {
+                KPermissionUtils.requestPermissionsBlueTooth {
+                    if (it) {
+                        //6.0以后需要定位权限，才能搜索蓝牙。亲测，定位权限必不可少！
+                        async {
+                            bluetoothDevices.clear()//清空一下
+                            bluetoothAdapter?.startDiscovery()//fixme 开始扫描，使用广播接收(防止以下方法搜索不到设备，所以加上广播一起搜索。)
+                            isStopSan = false//fixme 开始扫描标志
+                            if (isVersion21()) {
+                                bluetoothAdapter?.bluetoothLeScanner?.startScan(object : ScanCallback() {
+                                    override fun onScanResult(callbackType: Int, result: ScanResult?) {
+                                        super.onScanResult(callbackType, result)
+                                        addDevice(result?.device)
+                                    }
+                                })
+                            } else {
+                                bluetoothAdapter?.startLeScan(serviceUuids?.toTypedArray()) { device, rssi, scanRecord ->
+                                    addDevice(device)
                                 }
-                            })
-                        } else {
-                            bluetoothAdapter?.startLeScan(serviceUuids?.toTypedArray()) { device, rssi, scanRecord ->
-                                addDevice(device)
                             }
                         }
-                    }
-                    async {
-                        if (delay <= 0) {
-                            kotlinx.coroutines.experimental.delay(3500, TimeUnit.MILLISECONDS)
-                        } else {
-                            kotlinx.coroutines.experimental.delay(delay, TimeUnit.MILLISECONDS)
-                        }
-                        kotlinx.coroutines.experimental.delay(100)
-                        // fixme 预先定义停止蓝牙扫描的时间（因为蓝牙扫描需要消耗较多的电量）
-                        stopLeScan()
-                        kotlinx.coroutines.experimental.delay(100, TimeUnit.MILLISECONDS)
-                        isStopSan = true//fixme 结束扫描标志
-                        if (isEnabled()) {
-                            getContext().runOnUiThread {
-                                callback(bluetoothDevices)
+                        async {
+                            if (delay <= 0) {
+                                kotlinx.coroutines.experimental.delay(3500, TimeUnit.MILLISECONDS)
+                            } else {
+                                kotlinx.coroutines.experimental.delay(delay, TimeUnit.MILLISECONDS)
                             }
-                        } else {
-                            bluetoothDevices.clear()
+                            kotlinx.coroutines.experimental.delay(100)
+                            // fixme 预先定义停止蓝牙扫描的时间（因为蓝牙扫描需要消耗较多的电量）
+                            stopLeScan()
+                            kotlinx.coroutines.experimental.delay(100, TimeUnit.MILLISECONDS)
+                            isStopSan = true//fixme 结束扫描标志
+                            if (isEnabled()) {
+                                getContext().runOnUiThread {
+                                    callback(bluetoothDevices)
+                                }
+                            } else {
+                                bluetoothDevices.clear()
+                            }
                         }
                     }
                 }
             }
+
         }
     }
 
@@ -393,13 +397,19 @@ object KBluetoothAdapter {
     private var deviceMap = mutableMapOf<String, KBluetoothDevice?>()
     //fixme 如果3次都连接不上，可能是长时间开启蓝牙的原因，需要关闭蓝牙重启。设备搜索不到。也需要重启蓝牙
     /**
-     * 连接
+     * 连接(fixme 可以重复连接调用)
      * @param device 连接的蓝牙设备
      * @param autoConnect 自动连接
      * @param timeout 连接超时时间，单位毫秒（最好大于2000毫秒，一般都需要2000毫秒左右）
      * @param callback 回调，成功返回KBluetoothDevice，失败返回空null（可以提示用户手动重启蓝牙）
      */
     fun connectBle(device: BluetoothDevice?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+        if (device == null) {
+            callback?.let {
+                it(null)
+            }
+            return
+        }
         if (isVersion18()) {
             //KLoggerUtils.e("开始连接：\t" + device?.name)
             //BLE是低功耗，一般最多只允许重复连接六次，其后就连接不上了。为了防止重复连接。在连接之前，先关闭。防止多次连接之后连接不上。
@@ -425,7 +435,7 @@ object KBluetoothAdapter {
                             //KLoggerUtils.e("连接成功")
                             gatt?.discoverServices()//fixme 会在onServicesDiscovered这个方法中回调
                         } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                            //连接断开(设备断开之后，会回调此方法，自己手动断开的不会回调。)
+                            //fixme 连接断开(设备断开之后，会回调此方法，自己手动断开的不会回调。)
                             //关闭当前新的连接
                             //KLoggerUtils.e("连接断开：\t" + gatt?.device?.name)
                             gatt?.let {
@@ -517,6 +527,19 @@ object KBluetoothAdapter {
         }
     }
 
+    /**
+     * @param deviceName 设备名称，通过设备名称进行连接。
+     */
+    fun connectBle(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+        KBluetoothAdapter.startLeScan {
+            it.forEach {
+                if (it.name.equals(deviceName)) {
+                    KBluetoothAdapter.connectBle(it, autoConnect, timeout, callback)
+                }
+            }
+        }
+    }
+
     //断开连接
     fun disConnectBle(device: BluetoothDevice?) {
         if (isVersion18()) {
@@ -541,7 +564,7 @@ object KBluetoothAdapter {
     }
 
     //断开连接(根据mac地址)
-    fun disConnectBle(address: String?) {
+    fun disConnectBleForAddress(address: String?) {
         if (isVersion18()) {
             address?.let {
                 var mGatt = gattMap.get(address)
@@ -554,6 +577,23 @@ object KBluetoothAdapter {
                 deviceMap?.remove(it)
             }
 
+        }
+    }
+
+    //断开连接(根据设备名称)
+    fun disConnectBleForDeviceName(deviceName: String?) {
+        if (isVersion18()) {
+            var address: String? = null
+            gattMap.forEach {
+                it.value?.device?.let {
+                    if (it.name.equals(deviceName)) {
+                        address = it.address
+                    }
+                }
+            }
+            address?.let {
+                disConnectBleForAddress(it)
+            }
         }
     }
 
