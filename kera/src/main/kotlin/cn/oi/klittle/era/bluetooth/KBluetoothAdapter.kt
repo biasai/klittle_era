@@ -254,6 +254,7 @@ object KBluetoothAdapter {
     private var bluetoothDevices = arrayListOf<BluetoothDevice>()
 
     //根据mac地址获取蓝牙设备；device?.address
+    //BluetoothDevice里的address属性就是mac地址，如：50:8F:4C:15:11:D6
     fun getRemoteDevice(address: String): BluetoothDevice? {
         return bluetoothAdapter?.getRemoteDevice(address)
     }
