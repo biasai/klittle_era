@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.gson
 
+import android.util.Log
 import cn.oi.klittle.era.gson.type.KTypeReference
 import cn.oi.klittle.era.utils.KLoggerUtils
 import org.json.JSONArray
@@ -432,10 +433,18 @@ object KGsonUtils {
                                         //KLoggerUtils.e("嵌套实体类2")
                                     }
                                 } else {
+                                    //Log.e("test", "属性2:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type)
                                     //fixme 嵌套具体实体类[普通实体类不支持数组]
                                     if (!type.contains("java.util.ArrayList")) {
-                                        var position = index + 1
-                                        m?.invoke(t, getObject(value, classes, position))//fixme 非数组
+//                                        Log.e("test", "属性2:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type+"\tclasses:\t"+classes)
+//                                        var position = index + 1
+//                                        m?.invoke(t, getObject(value, classes, position))//fixme 非数组(不行，有问题。)
+
+                                        //fixme 以下方法亲测，百分百可行！
+                                        var classes= arrayListOf<Class<*>>()
+                                        classes.add(Class.forName(type.substring("class ".length).trim()))
+                                        m?.invoke(t, getObject(value, classes, 0))//fixme 非数组
+
                                     } else {
                                         //fixme 数组，如： java.util.ArrayList<com.example.myapplication.model.B>
                                         //[class java.util.ArrayList, class com.example.myapplication.model.C]
