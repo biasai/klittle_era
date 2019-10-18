@@ -916,19 +916,19 @@ object KHttp {
                 if (isJava) {
                     System.out.println("url:==================================================\t" + url)
                 } else {
-                    KLoggerUtils.e("url:==================================================\t" + url)
+                    KLoggerUtils.e_long("url:==================================================\t" + url)
                 }
                 if (headers?.size > 0) {
                     if (isJava) {
                         System.out.println("头部Header=========================================")
                     } else {
-                        KLoggerUtils.e("头部Header=========================================")
+                        KLoggerUtils.e_long("头部Header=========================================")
                     }
                     for ((key, value) in headers.entries) {
                         if (isJava) {
                             System.out.println("key:\t" + key + "\tvalue:\t" + value)
                         } else {
-                            KLoggerUtils.e("key:\t" + key + "\tvalue:\t" + value)
+                            KLoggerUtils.e_long("key:\t" + key + "\tvalue:\t" + value)
                         }
                     }
                 }
@@ -936,13 +936,13 @@ object KHttp {
                     if (isJava) {
                         System.out.println("Params=============================================")
                     } else {
-                        KLoggerUtils.e("Params=============================================")
+                        KLoggerUtils.e_long("Params=============================================")
                     }
                     for ((key, value) in params.entries) {
                         if (isJava) {
                             System.out.println("key:\t" + key + "\tvalue:\t" + value)
                         } else {
-                            KLoggerUtils.e("key:\t" + key + "\tvalue:\t" + value)
+                            KLoggerUtils.e_long("key:\t" + key + "\tvalue:\t" + value)
                         }
                     }
                 }
@@ -950,13 +950,13 @@ object KHttp {
                     if (isJava) {
                         System.out.println("文件===============================================")
                     } else {
-                        KLoggerUtils.e("文件===============================================")
+                        KLoggerUtils.e_long("文件===============================================")
                     }
                     for ((key, value) in files.entries) {
                         if (isJava) {
                             System.out.println("key:\t" + key + "\tvalue:\t" + value?.absoluteFile)
                         } else {
-                            KLoggerUtils.e("key:\t" + key + "\tvalue:\t" + value?.absoluteFile)
+                            KLoggerUtils.e_long("key:\t" + key + "\tvalue:\t" + value?.absoluteFile)
                         }
                     }
                 }
@@ -965,8 +965,8 @@ object KHttp {
                         System.out.println("Body===============================================")
                         System.out.println("body:\t" + body)
                     } else {
-                        KLoggerUtils.e("Body===============================================")
-                        KLoggerUtils.e("body:\t" + body)
+                        KLoggerUtils.e_long("Body===============================================")
+                        KLoggerUtils.e_long("body:\t" + body)
                     }
                 }
             }
