@@ -13,6 +13,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
+import cn.oi.klittle.era.utils.KAppUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import cn.oi.klittle.era.utils.KStringUtils
@@ -21,6 +22,7 @@ import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.runOnUiThread
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 /**
@@ -101,7 +103,7 @@ object KBluetoothAdapter {
                                     BluetoothAdapter.ERROR)
                             when (state) {
                                 BluetoothAdapter.STATE_OFF -> {
-                                    disConnectAllBle()//fixme 蓝牙关闭之后，释放连接的设备资源。
+                                    disConnectAllBluetooth()//fixme 蓝牙关闭之后，释放连接的设备资源。
                                     //手机蓝牙关闭
                                     //KLoggerUtils.e("手机蓝牙关闭:\t"+ isEnabled())
                                     onOff?.let {
@@ -109,7 +111,7 @@ object KBluetoothAdapter {
                                     }
                                 }
                                 BluetoothAdapter.STATE_TURNING_OFF -> {
-                                    disConnectAllBle()
+                                    disConnectAllBluetooth()
                                     //fixme 手机蓝牙正在关闭(关闭过程中，不会重复调用，只会调用一次)
                                     //KLoggerUtils.e("手机蓝牙正在关闭")
                                     onOffing?.let {
@@ -127,7 +129,7 @@ object KBluetoothAdapter {
                                     }
                                 }
                                 BluetoothAdapter.STATE_TURNING_ON -> {
-                                    disConnectAllBle()
+                                    disConnectAllBluetooth()
                                     //fixme 手机蓝牙正在开启(开启过程中，不会重复调用，也只会调用一次)
                                     //KLoggerUtils.e("手机蓝牙正在开启")
                                     onOning?.let {
@@ -404,7 +406,7 @@ object KBluetoothAdapter {
      * @param timeout 连接超时时间，单位毫秒（最好大于2000毫秒，一般都需要2000毫秒左右）
      * @param callback 回调，成功返回KBluetoothDevice，失败返回空null（可以提示用户手动重启蓝牙）
      */
-    fun connectBle(device: BluetoothDevice?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+    fun connectBluetooth(device: BluetoothDevice?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
         if (device == null) {
             callback?.let {
                 it(null)
@@ -414,7 +416,7 @@ object KBluetoothAdapter {
         if (isVersion18()) {
             //KLoggerUtils.e("开始连接：\t" + device?.name)
             //BLE是低功耗，一般最多只允许重复连接六次，其后就连接不上了。为了防止重复连接。在连接之前，先关闭。防止多次连接之后连接不上。
-            disConnectBle(device)
+            disConnectBluetooth(device)
             var isCallBack = false//是否回调
             if (device == null) {
                 //设备为空
@@ -519,7 +521,7 @@ object KBluetoothAdapter {
                     if (!isCallBack) {
                         isCallBack = true
                         callback?.let {
-                            disConnectBle(device)
+                            disConnectBluetooth(device)
                             it(null)
                         }
                     }
@@ -531,18 +533,18 @@ object KBluetoothAdapter {
     /**
      * @param deviceName 设备名称，通过设备名称进行连接。
      */
-    fun connectBle(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+    fun connectBluetooth(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
         KBluetoothAdapter.startLeScan {
             it.forEach {
                 if (it.name.equals(deviceName)) {
-                    KBluetoothAdapter.connectBle(it, autoConnect, timeout, callback)
+                    KBluetoothAdapter.connectBluetooth(it, autoConnect, timeout, callback)
                 }
             }
         }
     }
 
     //断开连接
-    fun disConnectBle(device: BluetoothDevice?) {
+    fun disConnectBluetooth(device: BluetoothDevice?) {
         if (isVersion18()) {
             device?.let {
                 var mGatt = gattMap.get(it.address)
@@ -558,14 +560,14 @@ object KBluetoothAdapter {
         }
     }
 
-    fun disConnectBle(gatt: BluetoothGatt?) {
+    fun disConnectBluetooth(gatt: BluetoothGatt?) {
         if (isVersion18()) {
-            disConnectBle(gatt?.device)
+            disConnectBluetooth(gatt?.device)
         }
     }
 
     //断开连接(根据mac地址)
-    fun disConnectBleForAddress(address: String?) {
+    fun disConnectBluetoothForAddress(address: String?) {
         if (isVersion18()) {
             address?.let {
                 var mGatt = gattMap.get(address)
@@ -582,7 +584,7 @@ object KBluetoothAdapter {
     }
 
     //断开连接(根据设备名称)
-    fun disConnectBleForDeviceName(deviceName: String?) {
+    fun disConnectBluetoothForDeviceName(deviceName: String?) {
         if (isVersion18()) {
             var address: String? = null
             gattMap.forEach {
@@ -593,13 +595,13 @@ object KBluetoothAdapter {
                 }
             }
             address?.let {
-                disConnectBleForAddress(it)
+                disConnectBluetoothForAddress(it)
             }
         }
     }
 
     //断开所有连接
-    fun disConnectAllBle() {
+    fun disConnectAllBluetooth() {
         if (isVersion18()) {
             gattMap?.forEach {
                 var mGatt = it.value
@@ -735,4 +737,77 @@ object KBluetoothAdapter {
         send(bluetoothGattCharacteristic, bluetoothGatt, msg?.toByteArray(), callback)
     }
 
+    /**
+     * 在进行连接之前应该始终调用这个方法，而且调用的时候无需检测是否正在扫描。
+     */
+    fun cancleDiscovery() {
+        bluetoothAdapter?.cancelDiscovery()// 关闭发现设备
+    }
+
+    private var mServerSocket: BluetoothServerSocket? = null
+    private var mServerSockets = ArrayList<BluetoothServerSocket?>()//fixme 保存服务集合
+    var name = KAppUtils.getAppName()
+    var uuid = UUID.fromString("d9bc5194-431d-49ed-b3b6-4a1b72005934")//uuid的格式在 KUniQueUtils里有说明
+    /**
+     * fixme 获取蓝牙服务器
+     * @param name 字符串是我们自己定义的服务的可识别名称，可以直接使用包名。系统会自定将其写入到设备上的新服务发现协议（SDP）数据库条目中。
+     * @param uuid UUID 也在 SDP 中，作为与客户端设备连接协议的匹配规则。只有客户端和这里的UUID 一样了才可以会被连接
+     */
+    fun getBluetoothServerSocket(name: String = this.name, uuid: UUID = this.uuid): BluetoothServerSocket? {
+        if (mServerSocket == null) {
+            mServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(name, uuid)
+            mServerSockets?.add(mServerSocket)
+        }
+        return mServerSocket
+    }
+
+    /**
+     * fixme 开启 BluetoothSocket服务，并返回BluetoothSocket客户端
+     */
+    fun openBluetoothServerSocket(callback: ((bluetoothSocket: BluetoothSocket) -> Unit)?) {
+        isCloseBluetoothSocket = true
+        async {
+            while (true && !isCloseBluetoothSocket) {
+                //阻塞调用，将在连接被接受或者发生异常的时候返回，操作成功后，会返回 BluetoothSocket。
+                var bluetoothSocket = getBluetoothServerSocket()?.accept()
+                if (bluetoothSocket != null) {
+                    callback?.let {
+                        mSockets?.add(bluetoothSocket)
+                        it(bluetoothSocket)
+                    }
+                    //close()会释放服务器套接字及其所有资源，但不会关闭已经连接的 BluetoothSocket。
+                    //与 TCP/IP 不同的是，RFCOMM 一次只允许每个通道有一个已经连接的客户端。
+                    mServerSocket?.close()
+                    mServerSocket = null
+                }
+            }
+        }
+    }
+
+    private var isCloseBluetoothSocket = false
+    /**
+     * fixme 关闭BluetoothSocket服务
+     */
+    fun closeBluetoothServerSocket() {
+        isCloseBluetoothSocket = true
+        mServerSockets?.forEach {
+            it?.close()
+        }
+        mServerSockets?.clear()
+        mServerSocket?.close()
+        mServerSocket = null
+    }
+
+    //fixme 保存记录所有的连接BluetoothSocket
+    var mSockets = ArrayList<BluetoothSocket?>()
+
+    /**
+     * fixme 关闭BluetoothSocket
+     */
+    fun closeBluetoothSocket() {
+        mSockets?.forEach {
+            it?.close()
+        }
+        mSockets?.clear()
+    }
 }

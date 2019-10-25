@@ -3,8 +3,10 @@ package cn.oi.klittle.era.bluetooth
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothGatt
 import android.bluetooth.BluetoothGattCharacteristic
+import android.bluetooth.BluetoothSocket
 import android.os.Build
 import cn.oi.klittle.era.utils.KLoggerUtils
+import kotlinx.coroutines.experimental.async
 import java.lang.Exception
 import java.util.*
 
@@ -101,7 +103,7 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
      */
     fun disConnect() {
         try {
-            KBluetoothAdapter.disConnectBle(gatt)
+            KBluetoothAdapter.disConnectBluetooth(gatt)
             if (KBluetoothAdapter.isVersion18()) {
                 gatt?.disconnect()
                 gatt?.close()
@@ -113,5 +115,37 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
             KLoggerUtils.e("KBluetoothDevice断开异常：\t" + e.message)
         }
 
+    }
+
+    /**
+     * fixme 连接BluetoothSocket服务，并返回BluetoothSocket对象
+     * BluetoothSocket 通过这个 Socket 就可以在这两个设备间传输数据了。
+     * 获取 InputStream 和 OutputStream
+     * 使用 read（byte[]）和 write（byte []）读取或者写入流式传输
+     */
+    fun connectBluetoothServerSocket(uuid: UUID = KBluetoothAdapter.uuid, callback: ((bluetoothSocket: BluetoothSocket) -> Unit)?) {
+        if (device != null) {
+            async {
+                try {
+                    var socket = device?.createRfcommSocketToServiceRecord(uuid)// 这里的 UUID 需要和服务器的一致
+                    try {
+                        if (socket != null) {
+                            KBluetoothAdapter.cancleDiscovery()//关闭发现设备，连接设备的时候，最好每次都调用一下。
+                            socket?.connect()//连接
+                            KBluetoothAdapter.mSockets?.add(socket)//fixme 记录客户端
+                            callback?.let {
+                                it(socket)
+                            }
+                        } else {
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        socket?.close()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
     }
 }
