@@ -118,12 +118,13 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
     }
 
     /**
-     * fixme 连接BluetoothSocket服务，并返回BluetoothSocket对象
+     * fixme 连接BluetoothSocket服务，并返回BluetoothSocket对象；
+     * fixme 注意：第一次进行设备连接时，会弹出蓝牙系统匹配码，匹配过之后，以后就不会弹了。
      * BluetoothSocket 通过这个 Socket 就可以在这两个设备间传输数据了。
      * 获取 InputStream 和 OutputStream
      * 使用 read（byte[]）和 write（byte []）读取或者写入流式传输
      */
-    fun connectBluetoothServerSocket(uuid: UUID = KBluetoothAdapter.uuid, callback: ((bluetoothSocket: BluetoothSocket) -> Unit)?) {
+    fun connectBluetoothServerSocket(uuid: UUID = KBluetoothAdapter.uuid, callback: ((kBluetoothSocket: KBluetoothSocket) -> Unit)?) {
         if (device != null) {
             async {
                 try {
@@ -131,10 +132,13 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
                     try {
                         if (socket != null) {
                             KBluetoothAdapter.cancleDiscovery()//关闭发现设备，连接设备的时候，最好每次都调用一下。
-                            socket?.connect()//连接
-                            KBluetoothAdapter.mSockets?.add(socket)//fixme 记录客户端
+                            socket?.connect()//fixme 连接,第一次连接，会弹出系统匹配码。
+                            var kBluetoothSocket = KBluetoothSocket(socket)
+                            kBluetoothSocket?.address=device?.address
+                            kBluetoothSocket?.name=device?.name
+                            KBluetoothAdapter.addBluetoothSocket(kBluetoothSocket)//fixme 添加客户端
                             callback?.let {
-                                it(socket)
+                                it(kBluetoothSocket)
                             }
                         } else {
                         }

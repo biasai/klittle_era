@@ -62,6 +62,7 @@
 
     <!--网络相关-->
     <string name="ktimeout">Connection timeout</string>
+    <string name="kconnetfailure">The connection fails</string>
 
     <!--按钮KButton-->
     <string name="ktelError">The phone number format is not correct</string>

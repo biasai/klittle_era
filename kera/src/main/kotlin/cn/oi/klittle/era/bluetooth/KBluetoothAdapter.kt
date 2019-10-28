@@ -20,13 +20,15 @@ import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.runOnUiThread
+import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
 /**
- * fixme 蓝牙的基本操作，比如打开关闭等
+ * fixme 蓝牙的基本操作，比如打开关闭,蓝牙连接等
+ * fixme 有些设备搜索不到，需要停留在蓝色设置界面才能搜索到蓝牙，比如PDA
  */
 object KBluetoothAdapter {
     private fun getContext(): Context {
@@ -324,6 +326,9 @@ object KBluetoothAdapter {
      */
     fun startLeScan(serviceUuids: MutableList<UUID>? = null, delay: Long = 5000, callback: (bluetoothDevices: MutableList<BluetoothDevice>) -> Unit) {
         if (isVersion18() && hasSystemFeature()) {
+
+            closeBluetoothSocket()//fixme 关闭客户端，RFCOMM 一次只允许每个通道有一个已经连接的客户端。所以搜索之前，要关闭已经连接的客户端。不然搜索不出来。
+
             //搜索蓝牙，必须打开蓝牙。
             enable {
                 KPermissionUtils.requestPermissionsBlueTooth {
@@ -400,7 +405,7 @@ object KBluetoothAdapter {
     private var deviceMap = mutableMapOf<String, KBluetoothDevice?>()
     //fixme 如果3次都连接不上，可能是长时间开启蓝牙的原因，需要关闭蓝牙重启。设备搜索不到。也需要重启蓝牙
     /**
-     * 连接(fixme 可以重复连接调用)
+     * 连接(fixme 可以重复连接调用;)
      * @param device 连接的蓝牙设备
      * @param autoConnect 自动连接
      * @param timeout 连接超时时间，单位毫秒（最好大于2000毫秒，一般都需要2000毫秒左右）
@@ -744,8 +749,15 @@ object KBluetoothAdapter {
         bluetoothAdapter?.cancelDiscovery()// 关闭发现设备
     }
 
-    private var mServerSocket: BluetoothServerSocket? = null
-    private var mServerSockets = ArrayList<BluetoothServerSocket?>()//fixme 保存服务集合
+    private var mBluetoothServerSocket: BluetoothServerSocket? = null
+    private var mmBluetoothServerSockets = ArrayList<BluetoothServerSocket?>()//fixme 保存服务集合
+    /**
+     * fixme 添加BluetoothServerSocket服务端
+     */
+    fun addBluetoothServerSocket(bluetoothServerSocket: BluetoothServerSocket?) {
+        mmBluetoothServerSockets?.add(bluetoothServerSocket)
+    }
+
     var name = KAppUtils.getAppName()
     var uuid = UUID.fromString("d9bc5194-431d-49ed-b3b6-4a1b72005934")//uuid的格式在 KUniQueUtils里有说明
     /**
@@ -754,31 +766,32 @@ object KBluetoothAdapter {
      * @param uuid UUID 也在 SDP 中，作为与客户端设备连接协议的匹配规则。只有客户端和这里的UUID 一样了才可以会被连接
      */
     fun getBluetoothServerSocket(name: String = this.name, uuid: UUID = this.uuid): BluetoothServerSocket? {
-        if (mServerSocket == null) {
-            mServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(name, uuid)
-            mServerSockets?.add(mServerSocket)
+        if (mBluetoothServerSocket == null) {
+            mBluetoothServerSocket = bluetoothAdapter?.listenUsingRfcommWithServiceRecord(name, uuid)
+            addBluetoothServerSocket(mBluetoothServerSocket)
         }
-        return mServerSocket
+        return mBluetoothServerSocket
     }
 
     /**
      * fixme 开启 BluetoothSocket服务，并返回BluetoothSocket客户端
      */
-    fun openBluetoothServerSocket(callback: ((bluetoothSocket: BluetoothSocket) -> Unit)?) {
-        isCloseBluetoothSocket = true
+    fun openBluetoothServerSocket(callback: ((kBluetoothSocket: KBluetoothSocket) -> Unit)?) {
         async {
-            while (true && !isCloseBluetoothSocket) {
+            isCloseBluetoothSocket = false
+            while (!isCloseBluetoothSocket) {
                 //阻塞调用，将在连接被接受或者发生异常的时候返回，操作成功后，会返回 BluetoothSocket。
-                var bluetoothSocket = getBluetoothServerSocket()?.accept()
+                var bluetoothSocket = getBluetoothServerSocket()?.accept()//fixme 这一步会阻塞
                 if (bluetoothSocket != null) {
+                    var kBluetoothSocket = KBluetoothSocket(bluetoothSocket)
+                    addBluetoothSocket(kBluetoothSocket)
                     callback?.let {
-                        mSockets?.add(bluetoothSocket)
-                        it(bluetoothSocket)
+                        it(kBluetoothSocket)
                     }
                     //close()会释放服务器套接字及其所有资源，但不会关闭已经连接的 BluetoothSocket。
                     //与 TCP/IP 不同的是，RFCOMM 一次只允许每个通道有一个已经连接的客户端。
-                    mServerSocket?.close()
-                    mServerSocket = null
+                    //mBluetoothServerSocket?.close()//fixme 最好不要关闭。
+                    //mBluetoothServerSocket = null
                 }
             }
         }
@@ -789,25 +802,47 @@ object KBluetoothAdapter {
      * fixme 关闭BluetoothSocket服务
      */
     fun closeBluetoothServerSocket() {
-        isCloseBluetoothSocket = true
-        mServerSockets?.forEach {
-            it?.close()
+        async {
+            try {
+                isCloseBluetoothSocket = true
+                mmBluetoothServerSockets?.forEach {
+                    it?.close()
+                }
+                mmBluetoothServerSockets?.clear()
+                mBluetoothServerSocket?.close()
+                mBluetoothServerSocket = null
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-        mServerSockets?.clear()
-        mServerSocket?.close()
-        mServerSocket = null
     }
 
-    //fixme 保存记录所有的连接BluetoothSocket
-    var mSockets = ArrayList<BluetoothSocket?>()
+    //fixme 保存记录所有的连接BluetoothSocket客户端
+    var mBluetoothSockets = ArrayList<KBluetoothSocket?>()
 
     /**
-     * fixme 关闭BluetoothSocket
+     * fixme 添加BluetoothSocket客户端
+     */
+    fun addBluetoothSocket(bluetoothSocket: KBluetoothSocket?) {
+        mBluetoothSockets?.add(bluetoothSocket)
+    }
+
+    /**
+     * fixme 关闭BluetoothSocket客户端
      */
     fun closeBluetoothSocket() {
-        mSockets?.forEach {
-            it?.close()
+        async {
+            try {
+                mBluetoothSockets?.forEach {
+                    it?.close()
+                    it?.name = null
+                    it?.address = null
+                    it?.bluetoothSocket = null
+                }
+                mBluetoothSockets?.clear()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-        mSockets?.clear()
     }
 }

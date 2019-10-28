@@ -13,6 +13,7 @@ import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.async
 import java.io.*
 import java.net.HttpURLConnection
@@ -755,7 +756,7 @@ object KHttp {
                             try {
                                 // 定义 BufferedReader输入流来读取URL的响应
                                 var inputStream: InputStream? = connection.getInputStream()
-                                var b: ByteArray? = InputStreamTOByte(inputStream)
+                                var b: ByteArray? = readToByteArray(inputStream)
                                 inputStream?.close()
                                 inputStream = null
                                 if (requestParams?.optionsRGB_565 ?: false) {
@@ -870,7 +871,7 @@ object KHttp {
                 try {
                     // 定义 BufferedReader输入流来读取URL的响应
                     var inputStream: InputStream? = connection.getInputStream()
-                    var b: ByteArray? = InputStreamTOByte(inputStream)
+                    var b: ByteArray? = readToByteArray(inputStream)
                     inputStream?.close()
                     inputStream = null
                     return b
@@ -888,10 +889,31 @@ object KHttp {
         return null
     }
 
+    /**
+     * fixme InputStream流，读取成字符串(差不多一次只能读取300多个字符)
+     */
+    fun readToString(inputStream: InputStream?): String? {
+        inputStream?.let {
+            //KLoggerUtils.e("读取中...")
+            var buff = ByteArray(1024)//fixme 最大就是1024，多了也是一样的（即设置2048和设置1024是一样的）。大约可以读取370个中文字符。
+            var len = it.read(buff)
+            if (len != -1) {
+                KStringUtils.bytesToString(buff)?.let {
+                    return it
+                }
+            }
+        }
+        return null
+    }
+
+
     internal val BUFFER_SIZE = 4096
 
-    //InputStream转byte字节，使用字节比使用流更省内存。当然测试发现只对网络输入流有效，一般的本地流就不用转了。转一下还浪费效率。
-    fun InputStreamTOByte(inputStream: InputStream?): ByteArray {
+    /**
+     * fixme InputStream转byte字节，使用字节比使用流更省内存。
+     * fixme 当然测试发现只对网络输入流有效，一般的本地流就不用转了。转一下还浪费效率。
+     */
+    fun readToByteArray(inputStream: InputStream?): ByteArray {
         val outStream = ByteArrayOutputStream()
         var data: ByteArray? = ByteArray(BUFFER_SIZE)
         var count = -1
