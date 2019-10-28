@@ -112,7 +112,7 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
                         var input: InputStream? = bluetoothSocket?.getInputStream()
                         input?.let {
                             //KLoggerUtils.e("读取中...")
-                            var buff = ByteArray(1024)//最大就是1024，多了也是一样的（即设置2048和设置1024是一样的）。大约一次可以读取370个中文字符。
+                            var buff = ByteArray(1024)//fixme 最大就是1024，多了也是一样的（即设置2048和设置1024是一样的）。大约一次可以读取370个中文字符。
                             len = it.read(buff)//fixme read(byte[])才能读取成功，其他方法不行。放心能够正确读取。文本过长也能读取，亲测。
                             //KLoggerUtils.e("len：\t"+len)
                             //fixme 注意，len永远都不会为-1，因为read()是阻塞线程的。一定是有数据读取出来，才会返回值。所以不会返回-1
@@ -122,7 +122,7 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
                                     var text = it
                                     //KLoggerUtils.e("读取文本：\t" + text + "\t" + onMessage)
                                     onMessage?.let {
-                                        it(text)
+                                        it(text)//fixme 大约一次可以读取370个中文字符。
                                     }
                                 }
                             }
