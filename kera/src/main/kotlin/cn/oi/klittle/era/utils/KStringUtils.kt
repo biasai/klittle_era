@@ -63,6 +63,14 @@ object KStringUtils {
         return str.trim()
     }
 
+    fun bytesToString(data: MutableList<ByteArray>): String {
+        var stringBuffer = StringBuffer()
+        data?.forEach {
+            stringBuffer.append(KStringUtils.bytesToString(it))
+        }
+        return stringBuffer.toString()
+    }
+
     /**
      * 字节数组转流
      */

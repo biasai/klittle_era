@@ -1,12 +1,14 @@
 package cn.oi.klittle.era.bluetooth
 
 import android.bluetooth.BluetoothSocket
+import android.os.Build
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.socket.KState
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.async
+import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.InputStream
 
@@ -109,12 +111,12 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
                 while (isConnect()) {
                     //无限循环读取
                     try {
-                        var input: InputStream? = bluetoothSocket?.getInputStream()
-                        input?.let {
-                            //KLoggerUtils.e("读取中...")
-                            var buff = ByteArray(1024)//fixme 最大就是1024，多了也是一样的（即设置2048和设置1024是一样的）。大约一次可以读取370个中文字符。
+                        bluetoothSocket?.getInputStream()?.let {
+
+                            //fixme available()获取下一次读取流的长度;如果长度为0，read()读取的时候将被阻塞。
+                            var buff = ByteArray(1024)//fixme 蓝牙Socket流的有效最大长度available()好像是990（大约一次只能读取340个左右的中文字符串）
                             len = it.read(buff)//fixme read(byte[])才能读取成功，其他方法不行(如：readUTF()会一直处于阻塞读取状态，不会返回)，亲测。
-                            //KLoggerUtils.e("len：\t"+len)
+                            //KLoggerUtils.e("len：\t" + len)
                             //fixme 注意，len永远都不会为-1，因为read()是阻塞线程的。一定是有数据读取出来，才会返回值。所以不会返回-1
                             if (len != -1) {
                                 KStringUtils.bytesToString(buff)?.let {
@@ -122,10 +124,11 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
                                     var text = it
                                     //KLoggerUtils.e("读取文本：\t" + text + "\t" + onMessage)
                                     onMessage?.let {
-                                        it(text)//fixme 大约一次可以读取370个中文字符。
+                                        it(text)//fixme 大约一次可以读取340个中文字符左右。 数据太多，蓝牙一次读不完，会分次读取。
                                     }
                                 }
                             }
+
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()

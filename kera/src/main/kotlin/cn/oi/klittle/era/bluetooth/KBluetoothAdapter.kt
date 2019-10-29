@@ -32,11 +32,8 @@ import kotlin.collections.ArrayList
  */
 object KBluetoothAdapter {
     private fun getContext(): Context {
-        return KBaseApplication.getInstance().applicationContext
-    }
-
-    private fun getActivity(): Activity? {
-        return KBaseActivityManager.getInstance().stackTopActivity
+        return KBaseApplication.getInstance()//fixme 使用这个是全局的。
+        //return KBaseApplication.getInstance().applicationContext//fixme 不要使用这个，和Activity差不多。应用退出再进入之后，就无效了。
     }
 
     fun isVersion18(): Boolean {
@@ -158,14 +155,14 @@ object KBluetoothAdapter {
                 }
             }
             var filterFound = IntentFilter(BluetoothDevice.ACTION_FOUND)
-            getActivity()?.registerReceiver(mReceiver, filterFound)
+            getContext()?.registerReceiver(mReceiver, filterFound)
             var filterStart = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED)
-            getActivity()?.registerReceiver(mReceiver, filterStart)
+            getContext()?.registerReceiver(mReceiver, filterStart)
             var filterFinish = IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)
-            getActivity()?.registerReceiver(mReceiver, filterFinish)
+            getContext()?.registerReceiver(mReceiver, filterFinish)
             //蓝牙打开关闭状态监听
             var filterState = IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED)
-            getActivity()?.registerReceiver(mReceiver, filterState)
+            getContext()?.registerReceiver(mReceiver, filterState)
         }
     }
 
@@ -318,6 +315,21 @@ object KBluetoothAdapter {
         startLeScan(serviceUuids, delay, callback)
     }
 
+    var scanCallback: ScanCallback? = null
+    //蓝牙扫描回调监听
+    fun getScanCallBack(): ScanCallback? {
+        bluetoothDevices.clear()//设备清空一下
+        if (scanCallback == null && Build.VERSION.SDK_INT >= 21) {//5.0
+            scanCallback = object : ScanCallback() {
+                override fun onScanResult(callbackType: Int, result: ScanResult?) {
+                    super.onScanResult(callbackType, result)
+                    addDevice(result?.device)
+                }
+            }
+        }
+        return scanCallback
+    }
+
     /**
      * 扫描设备(搜索的蓝牙设备如果是休眠或者手机黑屏状态，一般都搜索不到。)
      * @param serviceUuids UUID数组
@@ -327,6 +339,7 @@ object KBluetoothAdapter {
     fun startLeScan(serviceUuids: MutableList<UUID>? = null, delay: Long = 5000, callback: (bluetoothDevices: MutableList<BluetoothDevice>) -> Unit) {
         if (isVersion18() && hasSystemFeature()) {
 
+            //closeBluetoothServerSocket()//fixme 关闭客户端就行了，不要关闭服务断（不然就无法继续接收客户端连接了）
             closeBluetoothSocket()//fixme 关闭客户端，RFCOMM 一次只允许每个通道有一个已经连接的客户端。所以搜索之前，要关闭已经连接的客户端。不然搜索不出来。
 
             //搜索蓝牙，必须打开蓝牙。
@@ -335,16 +348,11 @@ object KBluetoothAdapter {
                     if (it) {
                         //6.0以后需要定位权限，才能搜索蓝牙。亲测，定位权限必不可少！
                         async {
-                            bluetoothDevices.clear()//清空一下
                             bluetoothAdapter?.startDiscovery()//fixme 开始扫描，使用广播接收(防止以下方法搜索不到设备，所以加上广播一起搜索。)
                             isStopSan = false//fixme 开始扫描标志
                             if (isVersion21()) {
-                                bluetoothAdapter?.bluetoothLeScanner?.startScan(object : ScanCallback() {
-                                    override fun onScanResult(callbackType: Int, result: ScanResult?) {
-                                        super.onScanResult(callbackType, result)
-                                        addDevice(result?.device)
-                                    }
-                                })
+                                //KLoggerUtils.e("开始搜索：\t" + bluetoothAdapter?.bluetoothLeScanner + "\t" + scanCallback)
+                                bluetoothAdapter?.bluetoothLeScanner?.startScan(getScanCallBack())
                             } else {
                                 bluetoothAdapter?.startLeScan(serviceUuids?.toTypedArray()) { device, rssi, scanRecord ->
                                     addDevice(device)
@@ -409,11 +417,11 @@ object KBluetoothAdapter {
      * @param device 连接的蓝牙设备
      * @param autoConnect 自动连接
      * @param timeout 连接超时时间，单位毫秒（最好大于2000毫秒，一般都需要2000毫秒左右）
-     * @param callback 回调，成功返回KBluetoothDevice，失败返回空null（可以提示用户手动重启蓝牙）
+     * @param connetCallback 回调，成功返回KBluetoothDevice，失败返回空null（可以提示用户手动重启蓝牙）
      */
-    fun connectBluetooth(device: BluetoothDevice?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+    fun connectBluetooth(device: BluetoothDevice?, autoConnect: Boolean = false, timeout: Long = 4000, connetCallback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
         if (device == null) {
-            callback?.let {
+            connetCallback?.let {
                 it(null)
             }
             return
@@ -422,30 +430,25 @@ object KBluetoothAdapter {
             //KLoggerUtils.e("开始连接：\t" + device?.name)
             //BLE是低功耗，一般最多只允许重复连接六次，其后就连接不上了。为了防止重复连接。在连接之前，先关闭。防止多次连接之后连接不上。
             disConnectBluetooth(device)
-            var isCallBack = false//是否回调
+            var isCallBack = false//fixme 是否回调
             if (device == null) {
                 //设备为空
                 if (!isCallBack) {
                     isCallBack = true
-                    callback?.let {
+                    connetCallback?.let {
                         it(null)
                     }
                 }
             } else {
+                var callback = connetCallback
                 //设备不为空
                 device?.connectGatt(getContext(), autoConnect, object : BluetoothGattCallback() {
                     //不要执行耗时操作
                     override fun onConnectionStateChange(gatt: BluetoothGatt?, status: Int, newState: Int) {
                         super.onConnectionStateChange(gatt, status, newState)
-                        //KLoggerUtils.e("连接状态：\tstatus:\t"+status+"\tnewState:\t"+newState+"\tgatt:\t"+gatt?.device?.name)
-                        if (newState == BluetoothProfile.STATE_CONNECTED) {
-                            //连接成功
-                            //KLoggerUtils.e("连接成功")
-                            gatt?.discoverServices()//fixme 会在onServicesDiscovered这个方法中回调
-                        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                        //KLoggerUtils.e("连接状态：\tstatus:\t" + status + "\tnewState:\t" + newState + "\tgatt:\t" + gatt?.device?.name)
+                        if (status == BluetoothProfile.GATT_SERVER && newState == BluetoothProfile.STATE_DISCONNECTED && callback == null) {
                             //fixme 连接断开(设备断开之后，会回调此方法，自己手动断开的不会回调。)
-                            //关闭当前新的连接
-                            //KLoggerUtils.e("连接断开：\t" + gatt?.device?.name)
                             gatt?.let {
                                 if (it.device != null) {
                                     gattMap.remove(it.device.address)
@@ -453,12 +456,41 @@ object KBluetoothAdapter {
                                 }
                                 it.close()
                             }
+                        } else if (gatt != null) {
+                            //fixme 注意：这里不管回调的是已经连接还是连接失败，只要gatt对象不为空，都能够进行Socket通信连接。
+                            //fixme 连接成功
+                            if (callback != null) {
+                                onServicesDiscovered(gatt, BluetoothGatt.GATT_SUCCESS)
+                            } else {
+                                gatt?.discoverServices()//fixme 会在onServicesDiscovered这个方法中回调
+                            }
                         }
+//                        if (newState == BluetoothProfile.STATE_CONNECTED || (status == 257 && gatt != null)) {
+//                            //连接成功
+//                            //KLoggerUtils.e("连接成功")
+//                            if (status == 257) {//257特殊处理，发生设备如：PDA
+//                                onServicesDiscovered(gatt, BluetoothGatt.GATT_SUCCESS)
+//                            } else {
+//                                gatt?.discoverServices()//fixme 会在onServicesDiscovered这个方法中回调
+//                            }
+//                        } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+//                            //fixme 连接断开(设备断开之后，会回调此方法，自己手动断开的不会回调。)
+//                            //关闭当前新的连接
+//                            //KLoggerUtils.e("连接断开：\t" + gatt?.device?.name)
+//                            gatt?.let {
+//                                if (it.device != null) {
+//                                    gattMap.remove(it.device.address)
+//                                    deviceMap?.remove(it.device.address)
+//                                }
+//                                it.close()
+//                            }
+//                        }
                     }
 
                     //成功连接
                     override fun onServicesDiscovered(gatt: BluetoothGatt?, status: Int) {
                         super.onServicesDiscovered(gatt, status)
+                        //KLoggerUtils.e("gatt:\t"+gatt+"\tstatus:\t"+status)
                         //fixme 回调之后，设备之间才真正通信连接起来
                         gatt?.let {
                             if (gatt.device != null) {
@@ -478,6 +510,7 @@ object KBluetoothAdapter {
                                     }
                                     it(kBluetoothDevice)
                                 }
+                                callback = null//fixme 防止重复回调
                             }
                         } else {
                             gatt?.let {
@@ -529,6 +562,7 @@ object KBluetoothAdapter {
                             disConnectBluetooth(device)
                             it(null)
                         }
+                        callback = null//fixme 防止重复回调
                     }
                 }
             }
@@ -540,9 +574,17 @@ object KBluetoothAdapter {
      */
     fun connectBluetooth(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
         KBluetoothAdapter.startLeScan {
+            var has = false
             it.forEach {
                 if (it.name.equals(deviceName)) {
+                    has = true
                     KBluetoothAdapter.connectBluetooth(it, autoConnect, timeout, callback)
+                }
+            }
+            //没有发现设备
+            if (!has) {
+                callback?.let {
+                    it(null)
                 }
             }
         }
@@ -790,8 +832,8 @@ object KBluetoothAdapter {
                     }
                     //close()会释放服务器套接字及其所有资源，但不会关闭已经连接的 BluetoothSocket。
                     //与 TCP/IP 不同的是，RFCOMM 一次只允许每个通道有一个已经连接的客户端。
-                    //mBluetoothServerSocket?.close()//fixme 最好不要关闭。
-                    //mBluetoothServerSocket = null
+                    //mBluetoothServerSocket?.close()//fixme 最好不要关闭
+                    //mBluetoothServerSocket = null//fixme 如果关闭了，就要置空。close()之后，mBluetoothServerSocket就已经没有用了。
                 }
             }
         }

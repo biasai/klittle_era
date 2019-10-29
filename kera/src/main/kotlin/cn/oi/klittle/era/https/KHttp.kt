@@ -890,12 +890,16 @@ object KHttp {
     }
 
     /**
-     * fixme InputStream流，读取成字符串(差不多一次只能读取300多个字符)
+     * fixme InputStream流，读取成字符串
      */
     fun readToString(inputStream: InputStream?): String? {
         inputStream?.let {
             //KLoggerUtils.e("读取中...")
-            var buff = ByteArray(1024)//fixme 最大就是1024，多了也是一样的（即设置2048和设置1024是一样的）。大约可以读取370个中文字符。
+            var available = it.available()//读取流的有效长度
+            if (available < 1024) {
+                available = 1024
+            }
+            var buff = ByteArray(available)
             var len = it.read(buff)
             if (len != -1) {
                 KStringUtils.bytesToString(buff)?.let {
