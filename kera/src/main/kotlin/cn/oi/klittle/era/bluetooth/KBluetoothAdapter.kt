@@ -570,13 +570,55 @@ object KBluetoothAdapter {
     }
 
     /**
-     * @param deviceName 设备名称，通过设备名称进行连接。
+     * @param device fixme 设备名称或者设备mac地址，通过设备名称或者mac地址进行蓝牙连接。
      */
-    fun connectBluetooth(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+    fun connectBluetooth(device: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
         KBluetoothAdapter.startLeScan {
             var has = false
-            it.forEach {
-                if (it.name.equals(deviceName)) {
+            it?.forEach {
+                if (it.name != null && it.address != null && (it.name.equals(device) || it.address.equals(device))) {
+                    has = true
+                    KBluetoothAdapter.connectBluetooth(it, autoConnect, timeout, callback)
+                }
+            }
+            //没有发现设备
+            if (!has) {
+                callback?.let {
+                    it(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * @param deviceName 设备名称，通过设备名称进行蓝牙连接。
+     */
+    fun connectBluetoothForName(deviceName: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+        KBluetoothAdapter.startLeScan {
+            var has = false
+            it?.forEach {
+                if (it.name != null && it.name.equals(deviceName)) {
+                    has = true
+                    KBluetoothAdapter.connectBluetooth(it, autoConnect, timeout, callback)
+                }
+            }
+            //没有发现设备
+            if (!has) {
+                callback?.let {
+                    it(null)
+                }
+            }
+        }
+    }
+
+    /**
+     * @param adress 设备mac地址，通过设备mac地址进行蓝牙连接。
+     */
+    fun connectBluetoothForAdress(adress: String?, autoConnect: Boolean = false, timeout: Long = 4000, callback: ((gatt: KBluetoothDevice?) -> Unit)? = null) {
+        KBluetoothAdapter.startLeScan {
+            var has = false
+            it?.forEach {
+                if (it.address != null && it.address.equals(adress)) {
                     has = true
                     KBluetoothAdapter.connectBluetooth(it, autoConnect, timeout, callback)
                 }
@@ -815,13 +857,18 @@ object KBluetoothAdapter {
         return mBluetoothServerSocket
     }
 
+    private var isOpenBluetoothServerSocket = false
     /**
      * fixme 开启 BluetoothSocket服务，并返回BluetoothSocket客户端
      */
     fun openBluetoothServerSocket(callback: ((kBluetoothSocket: KBluetoothSocket) -> Unit)?) {
+        if (isOpenBluetoothServerSocket) {
+            return//防止重复开启服务。
+        }
         async {
             isCloseBluetoothSocket = false
             while (!isCloseBluetoothSocket) {
+                isOpenBluetoothServerSocket = true
                 //阻塞调用，将在连接被接受或者发生异常的时候返回，操作成功后，会返回 BluetoothSocket。
                 var bluetoothSocket = getBluetoothServerSocket()?.accept()//fixme 这一步会阻塞
                 if (bluetoothSocket != null) {
@@ -836,6 +883,7 @@ object KBluetoothAdapter {
                     //mBluetoothServerSocket = null//fixme 如果关闭了，就要置空。close()之后，mBluetoothServerSocket就已经没有用了。
                 }
             }
+            isOpenBluetoothServerSocket = false
         }
     }
 
