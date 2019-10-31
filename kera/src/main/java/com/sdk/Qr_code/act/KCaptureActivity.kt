@@ -8,6 +8,7 @@ import android.view.Gravity
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.toolbar.KToolbar
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import com.sdk.Qr_code.manager.CameraManager
 import com.sdk.Qr_code.utils.KZxingUtils
@@ -133,7 +134,7 @@ open class KCaptureActivity : CaptureActivity() {
         super.onQrScanResult(str, bitmap)//父类的方法最好调用一下。
         //扫描框扫出来的二维码，bitmap一般都不为空；但是扫描本地图片则是空的。（因为扫描本地二维码时，没有传位图）
         //setResult(str)
-        //KLoggerUtils.e("二维码扫描结果：\t" + str)
+        KLoggerUtils.e("二维码扫描结果：\t" + str)
     }
 
     //本地二维码图片识别失败时回调。

@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,6 +46,19 @@ import kotlin.jvm.functions.Function1;
 //        }
 //    }
 //   KUiHelper.goCaptureActivity()//fixme 跳转到 二维码扫描界面
+
+//github地址：https://github.com/zxing/zxing
+//jitpack引用地址：https://jitpack.io/private#zxing/zxing/zxing-3.4.0
+//以下是引用
+//  api 'com.google.zxing:android-core:3.3.0'
+//  api 'com.google.zxing:android-core:3.3.0'
+//  api 'com.google.zxing:core:3.3.2'
+//  api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；
+//  api 'com.github.zxing.zxing:core:zxing-3.4.0'
+
+//fixme 注意，一般都能够识别，如果识别不出来，请换个网站重新生成一下二维码。
+//https://cli.im/text? 草料二维码 ，部分生成的二维码识别不出来，如：564654565645645646 ；111111111191111111234 ；J20190821012001C
+//https://www.liantu.com/ 联图网二维码 这个生成的二维码质量比较好，一般都能识别的出来。
 
 /**
  * 竖屏二维码扫描(二维码，条码都能扫描)
@@ -217,7 +231,7 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
      */
     public void handleDecode(Result obj, Bitmap bitmap) {
         try {
-            //Log.e("test","扫描结果：\t"+obj+"\twidth:\t"+bitmap.getWidth()+"\theight:\t"+bitmap.getHeight());
+            //Log.e("test", "扫描结果：\t" + obj + "\twidth:\t" + bitmap.getWidth() + "\theight:\t" + bitmap.getHeight());
             vibrator();//震动
             if (bitmap != null && !bitmap.isRecycled()) {
                 //显示扫描结果位图
