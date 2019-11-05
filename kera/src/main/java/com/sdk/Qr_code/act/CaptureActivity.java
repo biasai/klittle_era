@@ -50,7 +50,7 @@ import kotlin.jvm.functions.Function1;
 //github地址：https://github.com/zxing/zxing
 //jitpack引用地址：https://jitpack.io/private#zxing/zxing/zxing-3.4.0
 //以下是引用
-//  api 'com.google.zxing:android-core:3.3.0' //这个不需要引用，引用下面其中一个就可以了。
+//  api 'com.google.zxing:android-core:3.3.0' //这个不需要引用（最好不要引用，以防未知的错误），引用下面其中一个就可以了。
 //  api 'com.google.zxing:core:3.3.2'
 //  api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；(fixme 建议使用这个，兼容性和稳定行比较好。)
 //  api 'com.github.zxing.zxing:core:zxing-3.4.0'//7.0以下会崩溃，只支持7.0及以上的版本（api24）
