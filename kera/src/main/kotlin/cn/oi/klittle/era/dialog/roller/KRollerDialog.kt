@@ -172,30 +172,33 @@ open class KRollerDialog<T : KBaseEntity>(ctx: Context, isStatus: Boolean = true
     var itemMap: HashMap<String, T>? = HashMap<String, T>()
     //设置数据
     open fun setItems(items: ArrayList<T>): KRollerDialog<T> {
-        if (itemMap == null) {
-            itemMap = HashMap<String, T>()
-        }
-        itemMap?.clear()
-        var list = ArrayList<String?>()
-        for (i in 0..items.lastIndex) {
-            if (items[i].showName != null) {//fixme 优先读取showName字段
-                list.add(items[i].showName)
-                items[i].showName?.let {
-                    itemMap?.put(it, items[i])
-                }
-            } else {
-                list.add(items[i].name)//fixme 名称
-                items[i].name?.let {
-                    itemMap?.put(it, items[i])
+        try {
+            if (itemMap == null) {
+                itemMap = HashMap<String, T>()
+            }
+            itemMap?.clear()
+            var list = ArrayList<String?>()
+            for (i in 0..items.lastIndex) {
+                if (items[i].showName != null) {//fixme 优先读取showName字段
+                    list.add(items[i].showName)
+                    items[i].showName?.let {
+                        itemMap?.put(it, items[i])
+                    }
+                } else {
+                    list.add(items[i].name)//fixme 名称
+                    items[i].name?.let {
+                        itemMap?.put(it, items[i])
+                    }
                 }
             }
-        }
-        rollerView?.setItems(list)
-        rollerView?.invalidate()
+            rollerView?.setItems(list)
+            rollerView?.invalidate()
 //        //监听
 //        rollerView?.setItemSelectListener { item, position ->
 //            //返回数据和下标
 //        }
+        }catch (e:Exception){e.printStackTrace()}
+
         return this
     }
 

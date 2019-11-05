@@ -265,7 +265,11 @@ open class KBaseDialog() {
         //默认设置底部导航栏为白色。
         setNavigationBarColor(Color.WHITE)
         //==========================================================================================结束
+        initEvent()//初始化事件
     }
+
+
+
 
     //获取xml文件最外层控件。
     fun getParentView(window: Window?): ViewGroup? {
@@ -369,10 +373,12 @@ open class KBaseDialog() {
         return false
     }
 
-    //事件，弹窗每次显示时，都会调用。子类重写
-    open protected fun onShow() {
+    //事件，视图UI初始化完成之后，会调用（初始化只调用一次）。，都会调用。子类重写
+    //在initUi()末尾里调用了。
+    open protected fun initEvent() {}
 
-    }
+    //事件，弹窗每次显示时，都会调用。子类重写
+    open protected fun onShow() {}
 
     private var onShow: (() -> Unit)? = null
     //显示监听。调用着监听

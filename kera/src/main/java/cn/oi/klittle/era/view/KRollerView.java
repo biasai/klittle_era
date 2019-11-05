@@ -174,7 +174,11 @@ public class KRollerView extends WheelPicker {
      * @return
      */
     public KRollerView setCurrentPostion(int position) {
-        setSelectedItemPosition(position);
+        try {
+            setSelectedItemPosition(position);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return this;
     }
 
@@ -185,15 +189,19 @@ public class KRollerView extends WheelPicker {
      * @return
      */
     public KRollerView setCurrentValue(String value) {
-        if (value != null && items != null&&value.trim().length()>0) {
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).trim().equals(value.trim())) {//判断数据是否相等
-                    if (getCurrentPostion() != i) {
-                        setCurrentPostion(i);
+        try {
+            if (value != null && items != null && value.trim().length() > 0) {
+                for (int i = 0; i < items.size(); i++) {
+                    if (items.get(i).trim().equals(value.trim())) {//判断数据是否相等
+                        if (getCurrentPostion() != i) {
+                            setCurrentPostion(i);
+                        }
+                        break;
                     }
-                    break;
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return this;
     }
@@ -205,19 +213,28 @@ public class KRollerView extends WheelPicker {
 
     //获取当前选中的值
     public String getCurrentItemValue() {
-        return items.get(getCurrentItemPosition());
+        try {
+            return items.get(getCurrentItemPosition());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public KRollerView(Context context) {
         super(context);
-        setCurved(true);//设置卷尺效果
-        setCyclic(true);//fixme 默认设置数据滚轮循环显示。
+        try {
+            setCurved(true);//设置卷尺效果
+            setCyclic(true);//fixme 默认设置数据滚轮循环显示。
+        }catch (Exception e){e.printStackTrace();}
     }
 
     public KRollerView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        setCurved(true);//fixme 设置卷尺效果
-        setCyclic(true);//fixme 默认设置数据滚轮循环显示。
+        try {
+            setCurved(true);//fixme 设置卷尺效果
+            setCyclic(true);//fixme 默认设置数据滚轮循环显示。
+        }catch (Exception e){e.printStackTrace();}
     }
 
     @Override
@@ -236,18 +253,20 @@ public class KRollerView extends WheelPicker {
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
-        if (mVisibleItemCount <= 0) {
-            mVisibleItemCount = 5;//item显示个数
-        }
-        int chidHeith = h / mVisibleItemCount;
+        try {
+            if (mVisibleItemCount <= 0) {
+                mVisibleItemCount = 5;//item显示个数
+            }
+            int chidHeith = h / mVisibleItemCount;
 
-        //设置默认字体大小
-        if (textSize <= 0) {
-            int textSize = (int) (chidHeith * 0.72);//字体大小。默认就是这个了。
-            setItemTextSize(textSize);
-        }
-        startLine = mDrawnCenterY - getItemTextSize() - getItemTextSize() / 4;
-        endLine = mDrawnCenterY + getItemTextSize() / 2;
+            //设置默认字体大小
+            if (textSize <= 0) {
+                int textSize = (int) (chidHeith * 0.72);//字体大小。默认就是这个了。
+                setItemTextSize(textSize);
+            }
+            startLine = mDrawnCenterY - getItemTextSize() - getItemTextSize() / 4;
+            endLine = mDrawnCenterY + getItemTextSize() / 2;
+        }catch (Exception e){e.printStackTrace();}
     }
 
 
@@ -261,22 +280,25 @@ public class KRollerView extends WheelPicker {
 
     @Override
     public void draw(Canvas canvas) {
-        if (mData != null && mData.size() > 0) {
-            super.draw(canvas);
-        }
-        paint.setStyle(Paint.Style.STROKE);
-        paint.setColor(lineColor);//线条颜色
-        paint.setStrokeWidth(strokeWidth);//线条宽度
-        //中间两条线
-        if (lineWidth <= 0) {
-            canvas.drawLine(0, startLine - lineOffset, getWidth(), startLine - lineOffset, paint);
-            canvas.drawLine(0, endLine + lineOffset, getWidth(), endLine + lineOffset, paint);
-        } else {
-            int starx = (int) ((getWidth() - lineWidth) / 2);
-            canvas.drawLine(starx, startLine - lineOffset, starx + lineWidth, startLine - lineOffset, paint);
-            canvas.drawLine(starx, endLine + lineOffset, starx + lineWidth, endLine + lineOffset, paint);
-        }
-        paint.setColor(Color.BLACK);
+        try {
+            if (mData != null && mData.size() > 0) {
+                super.draw(canvas);
+            }
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setColor(lineColor);//线条颜色
+            paint.setStrokeWidth(strokeWidth);//线条宽度
+            //中间两条线
+            if (lineWidth <= 0) {
+                canvas.drawLine(0, startLine - lineOffset, getWidth(), startLine - lineOffset, paint);
+                canvas.drawLine(0, endLine + lineOffset, getWidth(), endLine + lineOffset, paint);
+            } else {
+                int starx = (int) ((getWidth() - lineWidth) / 2);
+                canvas.drawLine(starx, startLine - lineOffset, starx + lineWidth, startLine - lineOffset, paint);
+                canvas.drawLine(starx, endLine + lineOffset, starx + lineWidth, endLine + lineOffset, paint);
+            }
+            paint.setColor(Color.BLACK);
+        }catch (Exception e){e.printStackTrace();}
+
     }
 
 
