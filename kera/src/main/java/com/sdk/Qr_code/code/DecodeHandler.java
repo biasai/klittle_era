@@ -50,13 +50,16 @@ final class DecodeHandler extends Handler {
 
 	@Override
 	public void handleMessage(Message message) {
-		int id = message.what;
-		if (id == CaptureActivityHandler.decode) {
-			decode((byte[]) message.obj, message.arg1, message.arg2);
-		}
-		if (id == CaptureActivityHandler.quit2) {
-			Looper.myLooper().quit();
-		}
+		try {
+			int id = message.what;
+			if (id == CaptureActivityHandler.decode) {
+				decode((byte[]) message.obj, message.arg1, message.arg2);
+			}
+			if (id == CaptureActivityHandler.quit2) {
+				Looper.myLooper().quit();
+			}
+		}catch (Exception e){e.printStackTrace();}
+
 	}
 
 	/**
@@ -101,50 +104,55 @@ final class DecodeHandler extends Handler {
 		// it says: "It works for any pixel format where
 		// the Y channel is planar and appears first, including
 		// YCbCr_420_SP and YCbCr_422_SP."
-		byte[] rotatedData = new byte[data.length];
-		for (int y = 0; y < height; y++) {
-			for (int x = 0; x < width; x++)
-				rotatedData[x * height + height - y - 1] = data[x + y * width];
-		}
 
-		long start = System.currentTimeMillis();
-		Result rawResult = null;
-		// PlanarYUVLuminanceSource source =
-		// CameraManager.get().buildLuminanceSource(data, width, height);
-		// PlanarYUVLuminanceSource source =
-		// CameraManager.get().buildLuminanceSource(data, height, width);
-		// switch width and height
-		PlanarYUVLuminanceSource source = CameraManager.get()
-				.buildLuminanceSource(rotatedData, height, width);
+		try{
+			byte[] rotatedData = new byte[data.length];
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < width; x++)
+					rotatedData[x * height + height - y - 1] = data[x + y * width];
+			}
 
-		BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
-		try {
-			rawResult = multiFormatReader.decodeWithState(bitmap);
-		} catch (ReaderException re) {
-			// continue
-		} finally {
-			multiFormatReader.reset();
-		}
+			long start = System.currentTimeMillis();
+			Result rawResult = null;
+			// PlanarYUVLuminanceSource source =
+			// CameraManager.get().buildLuminanceSource(data, width, height);
+			// PlanarYUVLuminanceSource source =
+			// CameraManager.get().buildLuminanceSource(data, height, width);
+			// switch width and height
+			PlanarYUVLuminanceSource source = CameraManager.get()
+					.buildLuminanceSource(rotatedData, height, width);
 
-		if (rawResult != null) {
-			long end = System.currentTimeMillis();
-			Log.d(TAG, "Found barcode (" + (end - start) + " ms):\n"
-					+ rawResult.toString());
-			Message message=null;
-			message = Message.obtain(activity.getHandler(),
-					CaptureActivityHandler.decode_succeeded, rawResult);
-			Bundle bundle = new Bundle();
-			bundle.putParcelable(DecodeThread.BARCODE_BITMAP,
-					source.renderCroppedGreyscaleBitmap());
-			message.setData(bundle);
-			// Log.d(TAG, "Sending decode succeeded message...");
-			message.sendToTarget();
-		} else {
-			Message message;
-			message = Message.obtain(activity.getHandler(),
-					CaptureActivityHandler.decode_failed);
-			message.sendToTarget();
-		}
+			BinaryBitmap bitmap = new BinaryBitmap(new HybridBinarizer(source));
+			try{
+				try {
+					rawResult = multiFormatReader.decodeWithState(bitmap);
+				} catch (ReaderException re) {
+					// continue
+				} finally {
+					multiFormatReader.reset();
+				}
+			}catch (Exception e){e.printStackTrace();}
+
+			if (rawResult != null) {
+				long end = System.currentTimeMillis();
+				Log.d(TAG, "Found barcode (" + (end - start) + " ms):\n"
+						+ rawResult.toString());
+				Message message=null;
+				message = Message.obtain(activity.getHandler(),
+						CaptureActivityHandler.decode_succeeded, rawResult);
+				Bundle bundle = new Bundle();
+				bundle.putParcelable(DecodeThread.BARCODE_BITMAP,
+						source.renderCroppedGreyscaleBitmap());
+				message.setData(bundle);
+				// Log.d(TAG, "Sending decode succeeded message...");
+				message.sendToTarget();
+			} else {
+				Message message;
+				message = Message.obtain(activity.getHandler(),
+						CaptureActivityHandler.decode_failed);
+				message.sendToTarget();
+			}
+		}catch (Exception e){e.printStackTrace();}
 	}
 
 }
