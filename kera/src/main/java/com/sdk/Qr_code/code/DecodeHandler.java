@@ -126,7 +126,7 @@ final class DecodeHandler extends Handler {
 			try{
 				try {
 					rawResult = multiFormatReader.decodeWithState(bitmap);
-				} catch (ReaderException re) {
+				} catch (Exception re) {
 					// continue
 				} finally {
 					multiFormatReader.reset();
