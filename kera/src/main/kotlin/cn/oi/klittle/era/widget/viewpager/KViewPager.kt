@@ -8,16 +8,17 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 /**
  * 禁止滑动的ViewPager,也可以继承VerticalViewPager
  * 手指不可以滑动，但是可以代码调用setCurrentItem
  *
- * setCurrentItem(0,true)//选中第一个。参数二表示是否具备滑动效果。默认就是true.
+ * setCurrentItem(0,true)//选中第一个。参数二表示是否具备滑动效果。默认就是true
  *
  * fixme isScroll 是否滑动，默认禁止滑动，isFastScroll 快速滑动，禁止快速滑动。
  */
-class KViewPager : ViewPager {
+open class KViewPager : ViewPager {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -36,8 +37,8 @@ class KViewPager : ViewPager {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
-    var isScroll: Boolean = false//true 能滑动，false不能滑动。默认不能触摸滑动
-    var isFastScroll: Boolean = false
+    var isScrollEnable: Boolean = true//true 能滑动，false不能滑动。
+    var isFastScrollEnable: Boolean = false
         //true快速滑动[也会禁止掉触摸滑动]，手指轻轻一划。就到下一页。false不能快速滑动
         set(value) {
             if (value) {
@@ -87,10 +88,10 @@ class KViewPager : ViewPager {
         gestureDetectorCompat = GestureDetectorCompat(context, simpleOnGestureListener)
         setOnTouchListener { v, event ->
             var b = false
-            if (isFastScroll) {
+            if (isFastScrollEnable) {
                 gestureDetectorCompat?.onTouchEvent(event)//快速滑动[也会禁止滑动]。
                 b = true
-            } else if (!isScroll) {
+            } else if (!isScrollEnable) {
                 b = true//禁止滑动
             }
             b//false 正常，可以滑动。
@@ -98,9 +99,51 @@ class KViewPager : ViewPager {
         addOnPageChangeListener(pageListener)//fixme addOnPageChangeListener 添加多个滑动监听，不会冲突。
     }
 
+    companion object {
+        var isViewPagerMotionEventing: Boolean = false//fixme 防止和左滑关闭Activity冲突。
+        var currentIteming: Int = 0
+        var counting = 0
+        var isScrolling = true
+        var isFastScrolling=false
+        /**
+         * fixme 判断viewpager是否正在滑动。
+         */
+        fun isMotinEventing(): Boolean {
+            if (isViewPagerMotionEventing&&(isScrolling||isFastScrolling)) {
+                if (currentIteming > 0 && counting > 0) {
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
+
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        currentItem?.let {
+            KViewPager.currentIteming = currentItem//当前选择item下标
+        }
+        childCount?.let {
+            KViewPager.counting = childCount//item总个数。
+        }
+        isScrollEnable?.let {
+            isScrolling = isScrollEnable//能否滑动
+        }
+        isFastScrollEnable?.let {
+            isFastScrolling=isFastScrollEnable//能够快速滑动
+        }
+        //fixme 使用Raw
+        when (ev.action) {
+            MotionEvent.ACTION_DOWN -> {
+                isViewPagerMotionEventing = true//fixme viewpager正在触摸
+            }
+            MotionEvent.ACTION_UP -> {
+                isViewPagerMotionEventing = false
+            }
+        }
+
         // TODO Auto-generated method stub
-        if (isFastScroll) {
+        if (isFastScrollEnable) {
             if (ev.action == MotionEvent.ACTION_DOWN) {
                 if (state != ViewPager.SCROLL_STATE_IDLE) {
                     return true//正在滑动的时候，事件禁止
@@ -125,5 +168,6 @@ class KViewPager : ViewPager {
             //设置滑动时间，必须要手动设置一遍才有效。
             KSpeedScroller.setViewPagerSpeed(this, value)
         }
+
 
 }

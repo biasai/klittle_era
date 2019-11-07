@@ -29,6 +29,7 @@ import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
+import cn.oi.klittle.era.widget.viewpager.KViewPager
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
@@ -72,6 +73,11 @@ open class KBaseActivity : FragmentActivity() {
     //右边滑动的有效位置。子类可以自定义效果。
     open fun shadowSlidingWidth(): Int {
         return -1
+    }
+
+    //右边滑动的有效位置(垂直)。子类可以自定义效果。
+    open fun shadowSlidingHeight(): Int {
+        return kpx.y(200)
     }
 
     //右边滑动反弹的距离。
@@ -147,6 +153,7 @@ open class KBaseActivity : FragmentActivity() {
                     slideLayout = KBaseSlideLayout(this, shadowSlidingDrawable())
                 }
                 slideLayout?.setShadowSlidingWidth(shadowSlidingWidth())//有效滑动距离
+                slideLayout?.setShadowSlidingHeight(shadowSlidingHeight())//有效滑动距离(垂直)
                 slideLayout?.setShadowSlidingReboundWidth(shadowSlidingReboundWidth())//滑动反弹距离。
                 slideLayout?.bindActivity(this)
                 isEnableSliding = true//左滑已开启。
@@ -798,6 +805,13 @@ open class KBaseActivity : FragmentActivity() {
         open fun getBitmapFromFile(filePath: String, isRGB_565: Boolean = false): Bitmap {
             return KAssetsUtils.getInstance().getBitmapFromFile(filePath, isRGB_565)
         }
+
+        open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
+            //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
+            //fixme 对Activity，Dialog都有效。
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        }
+
     }
 
     private var kTimi: KTimiAlertDialog? = null

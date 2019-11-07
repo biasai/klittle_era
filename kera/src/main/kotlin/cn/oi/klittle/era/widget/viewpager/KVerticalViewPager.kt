@@ -17,7 +17,7 @@ import android.view.ViewGroup
  * fixme isScroll 是否滑动，默认禁止滑动，isFastScroll 快速滑动，禁止快速滑动。
  *
  */
-class KVerticalViewPager : VerticalViewPager {
+open class KVerticalViewPager : VerticalViewPager {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

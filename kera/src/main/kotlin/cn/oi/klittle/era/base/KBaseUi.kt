@@ -13,7 +13,6 @@ import android.view.ViewManager
 import android.view.Window
 import android.widget.LinearLayout
 import cn.oi.klittle.era.utils.KAssetsUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
 import cn.oi.klittle.era.widget.book.view.KBookPageView
@@ -412,12 +411,12 @@ abstract class KBaseUi {
         }
 
         //菜单滑动条
-        inline fun ViewManager.ktabLayoutBar(init: (@AnkoViewDslMarker KTabLayoutBar).() -> Unit): KTabLayoutBar {
-            return ankoView({ ctx: Context -> KTabLayoutBar(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kLayoutBar(init: (@AnkoViewDslMarker KLayoutBar).() -> Unit): KLayoutBar {
+            return ankoView({ ctx: Context -> KLayoutBar(ctx) }, theme = 0) { init() }
         }
 
-        inline fun ViewManager.kTabLayoutBar(init: (@AnkoViewDslMarker KTabLayoutBar).() -> Unit): KTabLayoutBar {
-            return ankoView({ ctx: Context -> KTabLayoutBar(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.klayoutBar(init: (@AnkoViewDslMarker KLayoutBar).() -> Unit): KLayoutBar {
+            return ankoView({ ctx: Context -> KLayoutBar(ctx) }, theme = 0) { init() }
         }
 
         //fixme cmpat兼容组件

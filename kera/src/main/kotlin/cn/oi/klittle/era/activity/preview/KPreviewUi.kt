@@ -143,8 +143,8 @@ open class KPreviewUi : KBaseUi() {
                 relativeLayout {
                     viewPager = kviewPager {
                         id = kpx.id("kviewPager")
-                        isScroll = true
-                        isFastScroll = false
+                        isScrollEnable = true
+                        isFastScrollEnable = false
                         if (previewAdapter == null) {
                             KPictureSelector.previewMeidas?.let {
                                 previewAdapter = KPreviewPagerAdapter(it)

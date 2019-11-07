@@ -12,7 +12,7 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KProportionUtils
 
 /**
- * viewpager下移动的圆点
+ * viewpager下移动的圆点;圆点之间的距离会根据控件的大小，自由平均分配。
  */
 class KDotView : KBaseView {
 

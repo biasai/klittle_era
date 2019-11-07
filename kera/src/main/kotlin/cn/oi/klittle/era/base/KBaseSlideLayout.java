@@ -15,9 +15,11 @@ import android.widget.Scroller;
 
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.comm.kpx;
-import cn.oi.klittle.era.utils.KLoggerUtils;
+import cn.oi.klittle.era.widget.viewpager.KViewPager;
 
-
+/**
+ * fixme 左滑关闭Activity;修复了和KViewPager滑动冲突问题。
+ */
 public class KBaseSlideLayout extends FrameLayout {
     // 页面边缘阴影的宽度默认值
     public static final int SHADOW_WIDTH = 16;
@@ -82,6 +84,12 @@ public class KBaseSlideLayout extends FrameLayout {
         this.shadowSlidingWidth = shadowSlidingWidth;
     }
 
+    public int shadowSlidingHeight = kpx.INSTANCE.y(200);//fixme 控制有效滑动垂直间距
+
+    public void setShadowSlidingHeight(int shadowSlidingHeight) {
+        this.shadowSlidingHeight = shadowSlidingHeight;
+    }
+
     public int shadowSlidingReboundWidth = -1;//fixme 控制有效反弹间距；根据手指释放时的位置决定回弹还是关闭
 
     public void setShadowSlidingReboundWidth(int shadowSlidingReboundWidth) {
@@ -89,6 +97,8 @@ public class KBaseSlideLayout extends FrameLayout {
     }
 
     public Boolean isEnableSliding = true;//fixme 是否开启滑动，新增变量方便进行手动控制。(亲测有效)
+
+    private boolean isActionDown2 = false;//判断是否触发了按下事件
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -107,16 +117,28 @@ public class KBaseSlideLayout extends FrameLayout {
                 mInterceptDownX = x;
                 mLastInterceptX = x;
                 mLastInterceptY = y;
+                isActionDown2 = true;
+                KViewPager.Companion.setViewPagerMotionEventing(false);//fixme kviewpager没有滑动
                 break;
             case MotionEvent.ACTION_MOVE:
+                if (!isActionDown2) {//fixme 防止按下事件，没有触发。
+                    mInterceptDownX = x;
+                    mLastInterceptX = x;
+                    mLastInterceptY = y;
+                    isActionDown2 = true;
+                }
                 int deltaX = x - mLastInterceptX;
                 int deltaY = y - mLastInterceptY;
                 if (shadowSlidingWidth < 0) {
                     shadowSlidingWidth = getWidth() / 10;//fixme 控制有效滑动间距
                 }
                 // 手指处于屏幕边缘，且横向滑动距离大于纵向滑动距离时，拦截事件
-                if (mInterceptDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY)) {
-                    intercept = true;
+                if (mInterceptDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 5) {
+                    if (KViewPager.Companion.isMotinEventing()) {//fixme 防止和KViewPager滑动冲突。
+                        intercept = false;
+                    } else {
+                        intercept = true;
+                    }
                 } else {
                     intercept = false;
                 }
@@ -125,11 +147,15 @@ public class KBaseSlideLayout extends FrameLayout {
                 break;
             case MotionEvent.ACTION_UP:
                 intercept = false;
+                isActionDown2 = false;
                 mInterceptDownX = mLastInterceptX = mLastInterceptY = 0;
+                KViewPager.Companion.setViewPagerMotionEventing(false);
                 break;
         }
         return intercept;
     }
+
+    private boolean isActionDown = false;//判断是否触发了按下事件
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
@@ -143,13 +169,22 @@ public class KBaseSlideLayout extends FrameLayout {
             int x = (int) ev.getRawX();
             int y = (int) ev.getRawY();
             switch (ev.getAction()) {
-                case MotionEvent.ACTION_DOWN:
+                case MotionEvent.ACTION_DOWN://fixme 如果点击区域有点击事件，这里就不会触发按下。
                     mTouchDownX = x;
                     mLastTouchX = x;
                     mLastTouchY = y;
                     isConsumed = false;
+                    isActionDown = true;
+                    //Log.e("test","x:\t"+x+"\ty:\t"+y);
+                    //Log.e("test","按下");
                     break;
                 case MotionEvent.ACTION_MOVE:
+                    if (!isActionDown) {//fixme 防止按下事件，没有触发。
+                        mTouchDownX = x;
+                        mLastTouchX = x;
+                        mLastTouchY = y;
+                        isActionDown = true;
+                    }
                     int deltaX = x - mLastTouchX;
                     int deltaY = y - mLastTouchY;
                     if (mLastTouchX <= 0) {
@@ -161,10 +196,12 @@ public class KBaseSlideLayout extends FrameLayout {
                     if (shadowSlidingWidth < 0) {
                         shadowSlidingWidth = getWidth() / 10;//fixme 控制有效滑动间距
                     }
-                    //Log.e("test", "mLastTouchX:\t" + mLastTouchX + "\tgetRawX():\t" + ev.getRawX() + "\tdeltaX:\t" + deltaX);
+                    //Log.e("test", "mLastTouchX:\t" + mLastTouchX + "\tgetRawX():\t" + ev.getRawX() + "\tdeltaX:\t" + deltaX + "\t" + kpx.INSTANCE.screenWidth(false));
                     //Log.e("test","mInterceptDownX:\t"+mInterceptDownX+"\tshadowSlidingWidth:\t"+shadowSlidingWidth);
-                    if (!isConsumed && mTouchDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY)) {
-                        isConsumed = true;
+                    if (!isConsumed && mTouchDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 5) {//fixme 水平滑动限制，deltaX>5 足够了。一般点击事件的偏移都不超过3
+                        if (mLastTouchY > shadowSlidingHeight) {//fixme 垂直滑动限制，触摸Y坐标大于这个高度才有效。
+                            isConsumed = true;
+                        }
                     }
                     if (isConsumed) {
 //                    int rightMovedX = mLastTouchX - (int) ev.getX();
@@ -179,8 +216,9 @@ public class KBaseSlideLayout extends FrameLayout {
                     mLastTouchX = x;
                     mLastTouchY = y;
                     break;
-                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_UP://fixme 这里一定会调用
                     isConsumed = false;
+                    isActionDown = false;
                     mTouchDownX = mLastTouchX = mLastTouchY = 0;
                     if (shadowSlidingReboundWidth < 0) {
                         shadowSlidingReboundWidth = getWidth() / 4;//fixme 控制有效反弹间距
