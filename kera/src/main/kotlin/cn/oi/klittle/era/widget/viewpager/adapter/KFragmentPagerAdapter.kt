@@ -10,6 +10,10 @@ import android.support.v4.app.FragmentPagerAdapter
 //fragments.add(RealNewsFragment())
 //viewpager?.adapter = KFragmentPagerAdapter(fragmentManager, fragments)
 
+//fixme Activity获取FragmentManager
+//supportFragmentManager 这个是 android.support.v4.app.FragmentManager
+//fragmentManager 是android.app.FragmentManager!
+
 /**
  * FragmentPagerAdapter 适配器
  */
