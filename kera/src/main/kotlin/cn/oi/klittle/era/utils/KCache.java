@@ -364,6 +364,27 @@ public class KCache {
     // =======================================
 
     /**
+     * 获取list 大小键
+     *
+     * @param key
+     * @return
+     */
+    private String getListSizeKey(String key) {
+        return key + "_size";
+    }
+
+    /**
+     * 获取list下标键
+     *
+     * @param key
+     * @param postion
+     * @return
+     */
+    private String getListIndexKey(String key, int postion) {
+        return key + "_size_" + postion;
+    }
+
+    /**
      * fixme 保存list数组，注意list里面的实体类必须继承Serializable，
      * fixme 无法保存实体类里面的Bitmap位图。要保存位图，请单独保存。如果实体里面有位图，位图清空即可。
      *
@@ -375,26 +396,44 @@ public class KCache {
         put(key, list, -1);
     }
 
+    public <T> void put(String key, ArrayList<T> list) {
+        put(key, list, -1);
+    }
+
     public <T> void put(String key, List<T> list, int saveTime) {
         if (list.size() > 0) {
-            put(key + "size", list.size() + "");
+            put(getListSizeKey(key), list.size() + "");
             for (int i = 0; i < list.size(); i++) {
                 T t = list.get(i);
-                put(key + "" + i, (Serializable) t, saveTime);
+                put(getListIndexKey(key, i), (Serializable) t, saveTime);
+            }
+        }
+    }
+
+    public <T> void put(String key, ArrayList<T> list, int saveTime) {
+        if (list.size() > 0) {
+            put(getListSizeKey(key), list.size() + "");
+            for (int i = 0; i < list.size(); i++) {
+                T t = list.get(i);
+                put(getListIndexKey(key, i), (Serializable) t, saveTime);
             }
         }
     }
 
     public <T> List<T> getAsList(String key) {
-        String size = getAsString(key + "size");
-        if (size != null) {
-            int last = Integer.valueOf(size);
-            List list = new ArrayList<T>();
-            for (int i = 0; i < last; i++) {
-                T t = (T) getAsObject(key + "" + i);
-                list.add(t);
+        try {
+            String size = getAsString(getListSizeKey(key));
+            if (size != null) {
+                int last = Integer.valueOf(size);
+                List list = new ArrayList<T>();
+                for (int i = 0; i < last; i++) {
+                    T t = (T) getAsObject(getListIndexKey(key, i));
+                    list.add(t);
+                }
+                return list;
             }
-            return list;
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
@@ -611,7 +650,20 @@ public class KCache {
      * @return 是否移除成功
      */
     public boolean remove(String key) {
-        return mCache.remove(key);
+        try {
+            String size = getAsString(getListSizeKey(key));
+            if (size != null) {
+                int last = Integer.valueOf(size);
+                for (int i = 0; i < last; i++) {
+                    mCache.remove(getListIndexKey(key, i));//fixme 移除list集合的
+                }
+                mCache.remove(getListSizeKey(key));
+            }
+            return mCache.remove(key);//fixme 移除普通的。
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 
     /**

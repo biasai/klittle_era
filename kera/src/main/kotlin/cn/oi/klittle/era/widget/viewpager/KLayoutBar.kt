@@ -44,6 +44,8 @@ import cn.oi.klittle.era.utils.KProportionUtils
 //                }
 //               setColor(Color.BLUE)//设置颜色值
 //               all_radius(kpx.x(15f))//设置圆角
+//               xOffset_left= kpx.screenWidth()/2/3/2/2//控制长度半屏幕宽，3个条目，用于居中的间距（自己去细调）
+//               xOffset_right=xOffset_left
 //            }.lparams {
 //                width = matchParent//fixme 会根据控件的宽度和viewpager页面的个数，自动平分item滑动条的宽度。
 //                height = kpx.x(10)
@@ -58,6 +60,43 @@ import cn.oi.klittle.era.utils.KProportionUtils
 //                width = matchParent
 //                height = matchParent
 //            }
+
+//fixme 最新使用说明
+//                linearLayout {
+//                    layoutbar=klayoutBar {
+//                        setColor(Color.BLUE)//设置颜色值
+//                        all_radius(kpx.x(15f))//设置圆角
+//                        //right_top=kpx.x(30f)
+//                        var w=kpx.screenWidth()/2
+//                        xOffset_left= w/3/2//fixme 两个条目居中设置
+//                        xOffset_right=xOffset_left
+//                    }.lparams {
+//                        width = kpx.screenWidth()/2
+//                        height = kpx.x(15)
+//                        topMargin = kpx.x(24)
+//                    }
+//                }.lparams {
+//                    width= matchParent
+//                }
+//                viewPager = kviewPager {
+//                    backgroundColor = Color.WHITE
+//                    datas?.add("")
+//                    datas?.add("")
+//                    adapter = KPagerAdapter<String>(datas)
+//                    layoutbar?.setViewPager(this)//viewPager个数改变时，这个也要手动调用一次
+//                }.lparams {
+//                    width = matchParent
+//                    height = matchParent
+//                }
+//fixme viewPager动态改变个数时。
+//                        viewPager?.apply {
+//                            adapter = KPagerAdapter<String>(datas)//viewPager改变个数，一般都是重制适配器
+//                            layoutbar?.setViewPager(this)//个数改变后，滑动条也要重新设置一次。
+//                            layoutbar?.apply {
+//                                xOffset_left=width/3/2/2 //fixme 3个条目居中
+//                                xOffset_right=xOffset_left
+//                            }
+//                        }
 
 class KLayoutBar : android.support.v7.widget.AppCompatImageView, ViewPager.OnPageChangeListener {
 
@@ -83,7 +122,13 @@ class KLayoutBar : android.support.v7.widget.AppCompatImageView, ViewPager.OnPag
     var w = 0//单个tab的宽度
     var x = 0
     var y = 0
-    var xOffset = 0//x的偏移量，用于图片居中
+    var xOffset = 0//x的偏移量，用于图片居中（限制一般都不用这个变量，一般都使用下面两个变量来控制。比较准确）
+
+    //xOffset_left= kpx.screenWidth()/2/3/2 （两个item，控制长度半屏幕宽）
+    //xOffset_left= kpx.screenWidth()/2/3/2/2 （三个item）
+    //xOffset_right=xOffset_left
+    var xOffset_left = 0//x(控制滑动条与左边的距离)
+    var xOffset_right = 0//x(控制滑动条与右边的距离)
 
     //fixme 设置ViewPager
     internal var viewPager: ViewPager? = null
@@ -199,14 +244,14 @@ class KLayoutBar : android.support.v7.widget.AppCompatImageView, ViewPager.OnPag
                         } else {
                             paint.color = color
                             paint?.strokeWidth?.let {
-                                if (it>0){
+                                if (it > 0) {
                                     strokeWidth = paint.strokeWidth / 2
                                 }
                             }
                             if (strokeWidth < 0) {
                                 strokeWidth = 0f
                             }
-                            val rectF = RectF(x.toFloat() + strokeWidth, 0f + strokeWidth, (x + w).toFloat() - strokeWidth, height.toFloat() - strokeWidth)
+                            val rectF = RectF(x.toFloat() + strokeWidth + xOffset_left, 0f + strokeWidth, (x + w).toFloat() - strokeWidth - xOffset_right, height.toFloat() - strokeWidth)
                             if (left_top > 0 || left_bottom > 0 || right_top > 0 || right_bottom > 0) {
                                 // 矩形弧度
                                 val radian = floatArrayOf(left_top!!, left_top!!, right_top, right_top, right_bottom, right_bottom, left_bottom, left_bottom)
@@ -267,7 +312,7 @@ class KLayoutBar : android.support.v7.widget.AppCompatImageView, ViewPager.OnPag
 //            invalidate()
 //        }
         try {
-            x = (positionOffsetPixels.toFloat() * (width.toFloat() / viewPager!!.width.toFloat()) / count .toFloat()+ (position * w).toFloat() + xOffset.toFloat()).toInt()
+            x = (positionOffsetPixels.toFloat() * (width.toFloat() / viewPager!!.width.toFloat()) / count.toFloat() + (position * w).toFloat() + xOffset.toFloat()).toInt()
             invalidate()
         } catch (e: Exception) {
             e.printStackTrace()
