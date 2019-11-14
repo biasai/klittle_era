@@ -27,6 +27,8 @@ import cn.oi.klittle.era.comm.kpx
  * @param isdashFlow 虚线是否流动。
  * @param dashSpeed 虚线的流动速度,绝对值越大速度越快。正数先左流动(正数逆时针方向)。负数向右流动。即绝对值控制速度。正负控制方向。
  * @param isDST_IN fixme 是否取下面的交集；默认是。
+ * @param textColor 字体颜色；fixme 字体颜色和大小，是新增的。为了弥补按钮没有集成txt{}属性。 阴影控件KShadowView就不要太添加txt{}属性，以免文本颜色大小冲突。
+ * @param textSize 文本大小；fixme set的时候单位是dp，get获取的时候，单位是px。这里的单位是dp,即保存的是 kpx.textSizeX(30f)
  */
 data class KShadowEntity(var left_top: Float = 0f, var left_bottom: Float = 0f, var right_top: Float = 0f, var right_bottom: Float = 0f,
                          var bg_color: Int = Color.WHITE, var shadow_color: Int = Color.BLACK,
@@ -37,7 +39,8 @@ data class KShadowEntity(var left_top: Float = 0f, var left_bottom: Float = 0f, 
                          var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
                          var isBgGradient: Boolean = true, var isStrokeGradient: Boolean = true, var isShadowGradient: Boolean = true,
                          var isdashFlow: Boolean = false, var dashSpeed: Float = kpx.x(1f),
-                         var isDST_IN: Boolean = true) {
+                         var isDST_IN: Boolean = true,
+                         var textColor: Int? = null,var textSize: Float? = null) {
 
     fun all_radius(all_radius: Int) {
         all_radius(all_radius.toFloat())

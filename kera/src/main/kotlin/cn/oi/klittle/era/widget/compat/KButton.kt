@@ -196,7 +196,7 @@ open class KButton : KShadowView {
                 }
             }
         }
-        //可用状态就是选中状态。自己规定的。
+        //fixme 可用状态就是选中状态。自己规定的。(继续保持这个设计，这样能保证按钮可点，可触发错误信息回调onError{})
         isSelected = isEnable
     }
 

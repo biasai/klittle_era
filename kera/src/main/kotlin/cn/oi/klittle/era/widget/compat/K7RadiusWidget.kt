@@ -31,6 +31,19 @@ open class K7RadiusWidget : K6TriangleWidget {
         setLayerType(View.LAYER_TYPE_HARDWARE, null)
     }
 
+    //fixme 不可用状态
+    var radius_enable: KRadiusEntity? = null
+
+    fun radius_enable(block: KRadiusEntity.() -> Unit): K7RadiusWidget {
+        if (radius_enable == null) {
+            radius_enable = gtmRadius().copy()//整个属性全部复制过来。
+        }
+        block(radius_enable!!)
+        invalidate()
+        //requestLayout()
+        return this
+    }
+
     //按下
     var radius_press: KRadiusEntity? = null
 
@@ -138,6 +151,10 @@ open class K7RadiusWidget : K6TriangleWidget {
                 } else if (isSelected && radius_selected != null) {
                     //选中
                     currentRadius = radius_selected
+                }
+                //不可用，优先级最高
+                if (!isEnabled && radius_enable != null) {
+                    currentRadius = radius_enable
                 }
                 //正常
                 if (currentRadius == null) {

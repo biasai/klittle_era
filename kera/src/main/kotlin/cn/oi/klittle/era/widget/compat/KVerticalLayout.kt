@@ -35,6 +35,36 @@ import java.lang.Exception
  * 自所以用线性布局，是因为 .lparams{}默认就是线性布局，方便。
  */
 open class KVerticalLayout : LinearLayout {
+
+    /**
+     * fixme 设置是否可用(可以设置所有子控件哦)
+     * @param isEnabled true 可用(能够接收点击触摸等事件);false 不可用(点击触摸不会有反应)
+     * @param isChild true 所有子控件设置成同样的状态
+     */
+    open fun setEnabled(isEnabled: Boolean, isChild: Boolean, viewGroup: ViewGroup = this) {
+        try {
+            viewGroup?.let {
+                it.isEnabled = isEnabled
+                if (isChild) {
+                    if (it.childCount > 0) {
+                        for (i in 0..it.childCount - 1) {
+                            it.getChildAt(i)?.let {
+                                it.isEnabled = isEnabled
+                                if (it is ViewGroup) {
+                                    if (it.childCount > 0) {
+                                        setEnabled(isEnabled, isChild, it)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -246,7 +276,7 @@ open class KVerticalLayout : LinearLayout {
             destroyDrawingCache()
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("销毁异常:\t"+e.message)
+            KLoggerUtils.e("销毁异常:\t" + e.message)
         }
     }
 

@@ -565,6 +565,30 @@ open class KTextView : KView {
         return super.isFocused()
     }
 
+    //不可用;这个enable一般就表示不可用
+    var txt_enable: KTextEntity? = null
+
+    fun txt_enable(block: KTextEntity.() -> Unit): KTextView {
+        if (txt_enable == null) {
+            txt_enable = getmTxt().copy()//整个属性全部复制过来。
+        }
+        block(txt_enable!!)
+        text?.trim()?.let {
+            //文本获取不会为null最多为空字符串
+            if (it.length <= 0) {
+                txt_enable?.text?.let {
+                    if (it.length > 0) {
+                        setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
+                    }
+                }
+            }
+        }
+        requestLayout()
+        invalidate()
+        postInvalidate()
+        return this
+    }
+
     //按下
     var txt_press: KTextEntity? = null
 
@@ -719,6 +743,10 @@ open class KTextView : KView {
             } else if (isSelected && txt_selected != null) {
                 //选中
                 texts_model = txt_selected
+            }
+            //不可用，优先级最高
+            if (!isEnabled && txt_enable != null) {
+                texts_model = txt_enable
             }
             //正常
             if (texts_model == null) {

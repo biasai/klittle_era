@@ -13,6 +13,7 @@ import android.graphics.Canvas.ALL_SAVE_FLAG
 import android.opengl.ETC1.getHeight
 import android.opengl.ETC1.getWidth
 import cn.oi.klittle.era.utils.KLoggerUtils
+import org.jetbrains.anko.textColor
 
 
 //            KToggleView比KShadowView效果要好；阴影建议使用KToggleView；fixme 现在已经改良，效果不错。可以使用。
@@ -176,9 +177,29 @@ open class KShadowView : K6TriangleWidget {
                 } else {
                     shadowModel = shadow//正常
                 }
+                //不可用，优先级最高
+                if (!isEnabled && shadow_enable != null) {
+                    shadowModel = shadow_enable
+                }
                 //正常
                 if (shadowModel == null) {
                     shadowModel = shadow
+                }
+                shadowModel?.let {
+                    it?.textColor?.let {
+                        //getCurrentTextColor()获取当前文本的颜色值
+                        if (it != getCurrentTextColor()) {
+                            textColor = it//重新设置颜色值
+                        }
+                    }
+                    it.textSize?.let {
+                        if (it > 0) {
+                            var px = kpx.dpToPixel(it)
+                            if (px != textSize) {
+                                textSize = it//fixme 重新设置文本的大小。文本大小，set的时候单位的dp，get获取的时候，单位的px
+                            }
+                        }
+                    }
                 }
                 shadowModel?.apply {
                     var paint = KBaseView.getPaint()
@@ -389,6 +410,19 @@ open class KShadowView : K6TriangleWidget {
                 }
             }
         }
+    }
+
+    //fixme 不可用状态
+    private var shadow_enable: KShadowEntity? = null
+
+    fun shadow_enable(block: KShadowEntity.() -> Unit): KShadowView {
+        if (shadow_enable == null) {
+            shadow_enable = shadow?.copy()//整个属性全部复制过来。
+        }
+        block(shadow_enable!!)
+        invalidate()
+        requestLayout()
+        return this
     }
 
     //按下
