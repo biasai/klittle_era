@@ -21,6 +21,7 @@ import android.support.v4.app.FragmentStatePagerAdapter
 
 /**
  * FragmentStatePagerAdapter 适配器 fixme 这个adapter带有销毁功能,Fragment个数改变时，会自动刷新。亲测。效果杠杠的。
+ * fixme fragment每次切换时候，都会重新加载。即会重新执行 onCreateView()方法。
  */
 open class KFragmentStatePagerAdapter(fm: FragmentManager?, var fragments: MutableList<Fragment>) : FragmentStatePagerAdapter(fm) {
     override fun getItem(position: Int): Fragment {
