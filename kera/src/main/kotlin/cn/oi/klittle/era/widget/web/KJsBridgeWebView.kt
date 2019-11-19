@@ -2,6 +2,7 @@ package cn.oi.klittle.era.widget.web
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.net.http.SslError
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -234,9 +235,19 @@ open class KJsBridgeWebView : BridgeWebView {
                 //KLoggerUtils.e("加载失败:\t"+description)
             }
 
+            override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+                //super.onReceivedSslError(view, handler, error)
+                //handler.cancel();// super中默认的处理方式，WebView变成空白页
+                if (handler != null && isIgnoreSsslError) {
+                    handler.proceed();//fixme 忽略证书的错误继续加载页面内容，不会变成空白页面（比如https://inv-veri.chinatax.gov.cn/）
+                }
+            }
 
         })
     }
+
+    //fixme https://blog.csdn.net/Wang_WY/article/details/86253980 解决https无法认证的问题。但是这样不允许上架谷歌商店。
+    var isIgnoreSsslError = true//fixme 是否忽略ssl错误。http 可以直接加载，但 https 是经过ssl 加密的
 
     //fixme 设置进度回调，和允许弹窗。
     //fixme 即使WebView隐藏（visibility= View.GONE）了；弹窗也不会隐藏。亲测。
