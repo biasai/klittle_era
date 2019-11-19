@@ -190,7 +190,6 @@ object KRegexUtils {
      * 判断字符串是否为纯数字
      *
      * @param str 字符串
-     * @param length   长度
      * @return
      */
     fun isNumber(str: String): Boolean {
