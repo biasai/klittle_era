@@ -240,6 +240,8 @@ open class KJsBridgeWebView : BridgeWebView {
                 //handler.cancel();// super中默认的处理方式，WebView变成空白页
                 if (handler != null && isIgnoreSsslError) {
                     handler.proceed();//fixme 忽略证书的错误继续加载页面内容，不会变成空白页面（比如https://inv-veri.chinatax.gov.cn/）
+                } else {
+                    super.onReceivedSslError(view, handler, error)
                 }
             }
 
