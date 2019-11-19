@@ -186,6 +186,30 @@ object KRegexUtils {
         return false
     }
 
+    /**
+     * 判断字符串是否为纯数字
+     *
+     * @param str 字符串
+     * @param length   长度
+     * @return
+     */
+    fun isNumber(str: String): Boolean {
+        val pattern = Pattern.compile("[0-9]*")
+        if (pattern.matcher(str).matches()) {
+            return true
+        }
+        return false
+    }
+
+    // 判断是否为纯字母
+    fun isLetter(str: String): Boolean {
+        val pattern = Pattern.compile("^[A-Za-z]+")
+        val isNum = pattern.matcher(str)
+        return if (!isNum.matches()) {
+            false
+        } else true
+    }
+
     // 判断是否为数字或（和）字母
     fun isNumberOrLetter(str: String): Boolean {
         val pattern = Pattern.compile("^[A-Za-z0-9]+")
