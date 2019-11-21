@@ -56,6 +56,8 @@ import java.lang.Exception
  * 引用（（1.0.4就是当前最新的）） implementation 'com.github.lzyzsd:jsbridge:1.0.4'
  * 这个BridgeWebView能完美适配手机版网页；比我自己要好很多。
  */
+// var isIgnoreSsslError = true//fixme 是否忽略ssl错误。http 可以直接加载，但 https 是经过ssl 加密的
+// setUseWideViewPort(true)//fixme true完整的显示手机屏幕;false是BridgeWebView默认样式，整个页面会被放大。
 open class KJsBridgeWebView : BridgeWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -171,7 +173,10 @@ open class KJsBridgeWebView : BridgeWebView {
         getSettings().setLoadWithOverviewMode(true)
         getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NORMAL)
         getSettings().setDomStorageEnabled(true)
-        //fixme 自适应手机屏幕，完整的显示页面
+        /**
+         * fixme true 自适应手机屏幕，完整的显示页面;false 是BridgeWebView的默认样式（文本都会放大(整个页面都会放大)）；
+         * fixme 感觉BridgeWebView的默认样式不好，所以默认设置成true。
+         */
         setUseWideViewPort(true)
         //setInitialScale(1)//fixme 屏蔽掉，不要调用；防止BridgeWebView原生的显示异常。
         getSettings().setLoadsImagesAutomatically(true)
@@ -237,7 +242,7 @@ open class KJsBridgeWebView : BridgeWebView {
 
             override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
                 //super.onReceivedSslError(view, handler, error)
-                //handler.cancel();// super中默认的处理方式，WebView变成空白页
+                //handler.cancel();// fixme super中默认的处理方式，WebView变成空白页
                 if (handler != null && isIgnoreSsslError) {
                     handler.proceed();//fixme 忽略证书的错误继续加载页面内容，不会变成空白页面（比如https://inv-veri.chinatax.gov.cn/）
                 } else {
