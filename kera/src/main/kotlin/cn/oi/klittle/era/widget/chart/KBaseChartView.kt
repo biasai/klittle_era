@@ -176,6 +176,19 @@ open class KBaseChartView : KScrollTextView {
         }
     }
 
+    //状态不可用
+    override fun changedEnabled() {
+        super.changedEnabled()
+        currentXAxis = xAxis
+        currentYAxis = yAxis
+        xAxis_enable?.let {
+            currentXAxis = it
+        }
+        yAxis_enable?.let {
+            currentYAxis = it
+        }
+    }
+
     //状态：按下
     override fun changedPressed() {
         super.changedPressed()
@@ -184,7 +197,7 @@ open class KBaseChartView : KScrollTextView {
         xAxis_press?.let {
             currentXAxis = it
         }
-        yAxis_press?.let {
+        yAxis_enable?.let {
             currentYAxis = it
         }
     }
@@ -199,6 +212,18 @@ open class KBaseChartView : KScrollTextView {
     /**
      * fixme x轴
      */
+
+    //不可用
+    private var xAxis_enable: KAxisEntity? = null
+
+    fun xAxis_enable(block: KAxisEntity.() -> Unit): KBaseChartView {
+        if (xAxis_enable == null) {
+            xAxis_enable = getAxis().copy()//整个属性全部复制过来。
+        }
+        block(xAxis_enable!!)
+        invalidate()
+        return this
+    }
 
     //按下
     private var xAxis_press: KAxisEntity? = null
@@ -270,6 +295,17 @@ open class KBaseChartView : KScrollTextView {
     /**
      * fixme y轴
      */
+    //不可用
+    private var yAxis_enable: KAxisEntity? = null
+
+    fun yAxis_enable(block: KAxisEntity.() -> Unit): KBaseChartView {
+        if (yAxis_enable == null) {
+            yAxis_enable = getAxis().copy()//整个属性全部复制过来。
+        }
+        block(yAxis_enable!!)
+        invalidate()
+        return this
+    }
 
     //按下
     private var yAxis_press: KAxisEntity? = null

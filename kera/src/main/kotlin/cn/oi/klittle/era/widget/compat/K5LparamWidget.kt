@@ -13,6 +13,7 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import cn.oi.klittle.era.entity.widget.compat.KLparamEntity
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 /**
  *五：宽高，外补丁控制
@@ -24,6 +25,19 @@ open class K5LparamWidget : K4AutoBgView {
 
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+
+    //按下
+    var param_enable: KLparamEntity? = null
+
+    fun param_enable(block: KLparamEntity.() -> Unit): K5LparamWidget {
+        if (param_enable == null) {
+            param_enable = getmParam().copy()//整个属性全部复制过来。
+        }
+        block(param_enable!!)
+        paramView?.invalidate()
+        paramView?.requestLayout()
+        return this
+    }
 
     //按下
     var param_press: KLparamEntity? = null
@@ -124,6 +138,11 @@ open class K5LparamWidget : K4AutoBgView {
                     //选中
                     lparamModel = param_selected
                 }
+                //不可用，优先级最高
+                if (!isEnabled && param_enable != null) {
+                    lparamModel = param_enable
+                }
+                //KLoggerUtils.e("isPressed:\t"+isPressed+"\tisEnabled:\t"+isEnabled+"\tparam_enable:\t"+param_enable+"\tlparamModel:\t"+lparamModel)
                 //正常
                 if (lparamModel == null) {
                     lparamModel = param
@@ -247,15 +266,15 @@ open class K5LparamWidget : K4AutoBgView {
     //fixme 设置控件的高度和高度;必须要设置具体的数值才有效；matchparent等无效(高度可能无效，测试宽度都正常)
     // matchParent:	-1 wrapContent:	-2
     open fun layoutParams(width: Int = w, height: Int = h): ViewGroup.LayoutParams? {
-        if (viewGroup==null){
-            viewGroup=this
+        if (viewGroup == null) {
+            viewGroup = this
         }
         viewGroup?.apply {
             if (width != w || height != h) {
                 var w = width
                 var h = height
-                if (layoutParams==null){
-                    layoutParams=ViewGroup.LayoutParams(w,h)
+                if (layoutParams == null) {
+                    layoutParams = ViewGroup.LayoutParams(w, h)
                 }
                 viewGroup?.layoutParams?.apply {
                     //设置宽和高
@@ -497,12 +516,13 @@ open class K5LparamWidget : K4AutoBgView {
 
     override fun onDestroy() {
         super.onDestroy()
-        viewGroup=null
+        viewGroup = null
         param = null
         param_focuse = null
         param_hover = null
         param_selected = null
         param_press = null
+        param_enable = null
         paramView = null
         lparamModel = null
     }

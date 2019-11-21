@@ -477,6 +477,17 @@ class KToggleView : KView {
         }
     }
 
+    override fun changedEnabled() {
+        super.changedEnabled()
+        normal()
+        toggle_enable?.let {
+            currentToggle = it
+        }
+        thumb_enable?.let {
+            currentThumb = it
+        }
+    }
+
     //状态：按下
     override fun changedPressed() {
         super.changedPressed()
@@ -513,6 +524,18 @@ class KToggleView : KView {
     /**
      * fixme toggle
      */
+
+    //不可用
+    private var toggle_enable: KToogleEntity? = null
+
+    fun toggle_enable(block: KToogleEntity.() -> Unit): KToggleView {
+        if (toggle_enable == null) {
+            toggle_enable = getToogleEntity().copy()//整个属性全部复制过来。
+        }
+        block(toggle_enable!!)
+        invalidate()
+        return this
+    }
 
     //按下
     private var toggle_press: KToogleEntity? = null
@@ -596,6 +619,18 @@ class KToggleView : KView {
     /**
      * fixme thumb
      */
+
+    //不可用
+    private var thumb_enable: KThumbEntity? = null
+
+    fun thumb_enable(block: KThumbEntity.() -> Unit): KToggleView {
+        if (thumb_enable == null) {
+            thumb_enable = getThumbEntity().copy()//整个属性全部复制过来。
+        }
+        block(thumb_enable!!)
+        invalidate()
+        return this
+    }
 
     //按下
     private var thumb_press: KThumbEntity? = null
@@ -682,12 +717,14 @@ class KToggleView : KView {
         toggle_focuse = null
         toggle_hover = null
         toggle_press = null
+        toggle_enable = null
         toggle_selected = null
         currentToggle = null
         thumb = null
         thumb_focuse = null
         thumb_hover = null
         thumb_press = null
+        thumb_enable = null
         thumb_selected = null
         currentThumb = null
         onChangedListener = null

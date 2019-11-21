@@ -49,6 +49,14 @@ import android.view.ViewGroup
 //    normal()
 //}
 
+//状态：不可用 fixme 重点说明一下；isEnabled=false 不可用状态，只是屏蔽了点击事件，其他触摸状态，如isPressed是不受影响的。影响的仅仅是点击事件的回调。
+//override fun changedEnabled() {
+//    super.changedEnabled()
+//    normal()
+//    border_enable?.let {
+//        currentBorder = it
+//    }
+//}
 
 /**
  * 三：按下，悬浮，聚焦，选中，常态。
@@ -68,6 +76,7 @@ open class K3AStateView : K2GestureWidget {
 
     //fixme 优先级：按下>悬浮>聚焦>选中>常态
     //这几个状态，是用来判断和控制属性动画的。
+    protected var state_enable: Int = 0//不可用状态
     protected var state_press: Int = 1//按下状态
     protected var state_hover: Int = 2//鼠标悬浮状态
     protected var state_focuse: Int = 3//聚焦状态
@@ -77,7 +86,14 @@ open class K3AStateView : K2GestureWidget {
     protected var state_previous: Int = -4//上次状态
     fun drawState(view: View) {
         view.apply {
-            if (isPressed) {
+            if (!isEnabled) {
+                //不可用状态
+                if (state_current != state_enable) {
+                    state_previous = state_current
+                    state_current = state_enable
+                    changedEnabled()
+                }
+            } else if (isPressed) {
                 //按下
                 if (state_current != state_press) {
                     state_previous = state_current
@@ -147,6 +163,18 @@ open class K3AStateView : K2GestureWidget {
         this.changedNormal = changedNormal
     }
 
+    var changedEnabled: (() -> Unit)? = null
+    fun changedEnable(changedEnabled: (() -> Unit)) {
+        this.changedEnabled = changedEnabled
+    }
+
+    //状态改变时，不可用
+    open fun changedEnabled() {
+        changedEnabled?.let {
+            it()
+        }
+    }
+
     //状态改变时，按下
     open fun changedPressed() {
         changedPressed?.let {
@@ -189,6 +217,7 @@ open class K3AStateView : K2GestureWidget {
         changedHovered = null
         changedSelected = null
         changedNormal = null
+        changedEnabled = null
     }
 
 }

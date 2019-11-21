@@ -189,6 +189,27 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         return this
     }
 
+    //不可用
+    var autoBg_enable: KAutoBgEntity? = null
+    //备份真实的,用于实现两个autoBg之间的动画渐变
+    private var autoBg_enable_real: KAutoBgEntity? = null
+
+    fun autoBg_enable(block: KAutoBgEntity.() -> Unit): K4AutoBgView {
+        if (autoBg_enable == null) {
+            autoBg_enable = getmAutoBg().copy()//整个属性全部复制过来。
+        }
+        block(autoBg_enable!!)
+        autoBg_enable_real = null
+        autoBg_enable?.apply {
+            if (isDraw && duration > 0) {
+                autoBg_enable_real = autoBg_enable?.copy()
+            }
+        }
+        autoView?.invalidate()
+        autoView?.requestLayout()
+        return this
+    }
+
     //按下
     var autoBg_press: KAutoBgEntity? = null
     //备份真实的,用于实现两个autoBg之间的动画渐变
@@ -304,7 +325,10 @@ open class K4AutoBgView : K3DragMotionEventWidget {
             //fixme 第一张图片
             if (autoBg != null) {
                 autoBgModel = null
-                if (view.isPressed && autoBg_press != null) {
+                if (!isEnabled && autoBg_enable != null) {
+                    //不可用
+                    autoBgModel = autoBg_enable
+                } else if (view.isPressed && autoBg_press != null) {
                     //按下
                     autoBgModel = autoBg_press
                 } else if (view.isHovered && autoBg_hover != null) {
@@ -343,7 +367,10 @@ open class K4AutoBgView : K3DragMotionEventWidget {
             //fixme 第二张图片
             if (autoBg2 != null) {
                 autoBgModel2 = null
-                if (isPressed && autoBg2_press != null) {
+                if (!isEnabled && autoBg2_enable != null) {
+                    //不可用
+                    autoBgModel2 = autoBg2_enable
+                } else if (isPressed && autoBg2_press != null) {
                     //按下
                     autoBgModel2 = autoBg2_press
                 } else if (isHovered && autoBg2_hover != null) {
@@ -367,7 +394,10 @@ open class K4AutoBgView : K3DragMotionEventWidget {
             //fixme 第三张图片（就搞三种图片，够了）
             if (autoBg3 != null) {
                 autoBgModel3 = null
-                if (isPressed && autoBg3_press != null) {
+                if (!isEnabled && autoBg3_enable != null) {
+                    //不可用
+                    autoBgModel3 = autoBg3_enable
+                } else if (isPressed && autoBg3_press != null) {
                     //按下
                     autoBgModel3 = autoBg3_press
                 } else if (isHovered && autoBg3_hover != null) {
@@ -755,6 +785,26 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //fixme 第二张图片，在第一张的上面
 
+    //不可用
+    var autoBg2_enable: KAutoBgEntity? = null
+    private var autoBg2_enable_real: KAutoBgEntity? = null
+
+    fun autoBg2_enable(block: KAutoBgEntity.() -> Unit): K4AutoBgView {
+        if (autoBg2_enable == null) {
+            autoBg2_enable = getmAutoBg2().copy()//整个属性全部复制过来。
+        }
+        block(autoBg2_enable!!)
+        autoBg2_enable_real = null
+        autoBg2_enable?.apply {
+            if (isDraw && duration > 0) {
+                autoBg2_enable_real = autoBg2_enable?.copy()
+            }
+        }
+        autoView?.invalidate()
+        autoView?.requestLayout()
+        return this
+    }
+
     //按下
     var autoBg2_press: KAutoBgEntity? = null
     private var autoBg2_press_real: KAutoBgEntity? = null
@@ -862,6 +912,25 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //fixme 第三张图片，在第二张图片的上面（暂时就搞三张图片，够了）
 
+    //不可用
+    var autoBg3_enable: KAutoBgEntity? = null
+    private var autoBg3_enable_real: KAutoBgEntity? = null
+    fun autoBg3_enable(block: KAutoBgEntity.() -> Unit): K4AutoBgView {
+        if (autoBg3_enable == null) {
+            autoBg3_enable = getmAutoBg3().copy()//整个属性全部复制过来。
+        }
+        block(autoBg3_enable!!)
+        autoBg3_enable_real = null
+        autoBg3_enable?.apply {
+            if (isDraw && duration > 0) {
+                autoBg3_enable_real = autoBg3_enable?.copy()
+            }
+        }
+        autoView?.invalidate()
+        autoView?.requestLayout()
+        return this
+    }
+
     //按下
     var autoBg3_press: KAutoBgEntity? = null
     private var autoBg3_press_real: KAutoBgEntity? = null
@@ -873,7 +942,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         autoBg3_press_real = null
         autoBg3_press?.apply {
             if (isDraw && duration > 0) {
-                autoBg2_real = autoBg3_press?.copy()
+                autoBg3_enable_real = autoBg3_press?.copy()
             }
         }
         autoView?.invalidate()
@@ -971,6 +1040,16 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         var w = 0
         var h = 0
         if (isAutoBgWH) {
+            autoBg_enable?.autoBg?.apply {
+                if (!isRecycled) {
+                    if (width > w) {
+                        w = width
+                    }
+                    if (height > h) {
+                        h = height
+                    }
+                }
+            }
             autoBg_press?.autoBg?.apply {
                 if (!isRecycled) {
                     if (width > w) {
@@ -1022,6 +1101,16 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                 }
             }
             //fixme 第二张图片
+            autoBg2_enable?.autoBg?.apply {
+                if (!isRecycled) {
+                    if (width > w) {
+                        w = width
+                    }
+                    if (height > h) {
+                        h = height
+                    }
+                }
+            }
             autoBg2_press?.autoBg?.apply {
                 if (!isRecycled) {
                     if (width > w) {
@@ -1073,7 +1162,16 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                 }
             }
             //fixme 第三张图片
-
+            autoBg3_enable?.autoBg?.apply {
+                if (!isRecycled) {
+                    if (width > w) {
+                        w = width
+                    }
+                    if (height > h) {
+                        h = height
+                    }
+                }
+            }
             autoBg3_press?.autoBg?.apply {
                 if (!isRecycled) {
                     if (width > w) {
@@ -1328,7 +1426,12 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         if (autoBg_change == null) {
             autoBg_change = autoBg
         }
-        if (state_previous == state_press) {
+        if (state_previous == state_enable) {
+            //按下->按下
+            autoBg_anime1(autoBg_enable, autoBg_current, autoBg_change) {
+                changeAutoBg(autoBg_change)
+            }
+        } else if (state_previous == state_press) {
             //按下->按下
             autoBg_anime1(autoBg_press, autoBg_current, autoBg_change) {
                 changeAutoBg(autoBg_change)
@@ -1354,6 +1457,15 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                 changeAutoBg(autoBg_change)
             }
         }
+    }
+
+    override fun changedEnabled() {
+        super.changedEnabled()
+        //当前状态
+        autoBg_current = autoBg_enable_real
+        //当前实际状态
+        autoBg_change = autoBg_enable
+        onChangeAutoBg()
     }
 
     override fun changedPressed() {
@@ -1422,6 +1534,28 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //fixme 释放位图;KAutoBgEntity本身会制空。
     fun recycleAutoBg() {
+        autoBg_enable?.onClickCallback = null
+        autoBg_enable?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg_enable?.autoBg = null
+        autoBg_enable?.view = null
+        recycleAutoBg(autoBg_enable)
+        autoBg_enable = null
+
+        autoBg_enable_real?.onClickCallback = null
+        autoBg_enable_real?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg_enable_real?.autoBg = null
+        autoBg_enable_real?.view = null
+        recycleAutoBg(autoBg_enable_real)
+        autoBg_enable_real = null
+
         autoBg_press?.onClickCallback = null
         autoBg_press?.autoBg?.apply {
             if (!isRecycled) {
@@ -1534,6 +1668,28 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         autoBg_real = null
 
         //fixme 第二张
+        autoBg2_enable?.onClickCallback = null
+        autoBg2_enable?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg2_enable?.autoBg = null
+        autoBg2_enable?.view = null
+        recycleAutoBg(autoBg2_enable)
+        autoBg2_enable = null
+
+        autoBg2_enable_real?.onClickCallback = null
+        autoBg2_enable_real?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg2_enable_real?.autoBg = null
+        autoBg2_enable_real?.view = null
+        recycleAutoBg(autoBg2_enable_real)
+        autoBg2_enable_real = null
+
         autoBg2_press?.onClickCallback = null
         autoBg2_press?.autoBg?.apply {
             if (!isRecycled) {
@@ -1645,6 +1801,28 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         autoBg2_real = null
 
         //fixme 第三张
+        autoBg3_enable?.onClickCallback = null
+        autoBg3_enable?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg3_enable?.autoBg = null
+        autoBg3_enable?.view = null
+        recycleAutoBg(autoBg3_enable)
+        autoBg3_enable = null
+
+        autoBg3_enable_real?.onClickCallback = null
+        autoBg3_enable_real?.autoBg?.apply {
+            if (!isRecycled) {
+                recycle()
+            }
+        }
+        autoBg3_enable_real?.autoBg = null
+        autoBg3_enable_real?.view = null
+        recycleAutoBg(autoBg3_enable_real)
+        autoBg3_enable_real = null
+
         autoBg3_press?.onClickCallback = null
         autoBg3_press?.autoBg?.apply {
             if (!isRecycled) {
@@ -1776,6 +1954,8 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //fixme 新加方法；仅仅只是清除AutoBg位图,url等属性。不会对KAutoBgEntity对象本身制空
     fun recycleAutoBgBitmap() {
+        recycleAutoBgBitmap(autoBg_enable)
+        recycleAutoBgBitmap(autoBg_enable_real)
         recycleAutoBgBitmap(autoBg_press)
         recycleAutoBgBitmap(autoBg_press_real)
         recycleAutoBgBitmap(autoBg_hover)
@@ -1786,6 +1966,8 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         recycleAutoBgBitmap(autoBg_selected_real)
         recycleAutoBgBitmap(autoBg)
         recycleAutoBgBitmap(autoBg_real)
+        recycleAutoBgBitmap(autoBg2_enable)
+        recycleAutoBgBitmap(autoBg2_enable_real)
         recycleAutoBgBitmap(autoBg2_press)
         recycleAutoBgBitmap(autoBg2_press_real)
         recycleAutoBgBitmap(autoBg2_hover)
@@ -1796,6 +1978,8 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         recycleAutoBgBitmap(autoBg2_selected_real)
         recycleAutoBgBitmap(autoBg2)
         recycleAutoBgBitmap(autoBg2_real)
+        recycleAutoBgBitmap(autoBg3_enable)
+        recycleAutoBgBitmap(autoBg3_enable_real)
         recycleAutoBgBitmap(autoBg3_press)
         recycleAutoBgBitmap(autoBg3_press_real)
         recycleAutoBgBitmap(autoBg3_hover)

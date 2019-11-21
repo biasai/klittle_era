@@ -229,6 +229,16 @@ open class K3BorderWidget : K3AStateView {
         return this
     }
 
+    var border_enable: KBorderEntity? = null//不可用
+    fun border_enable(block: KBorderEntity.() -> Unit): K3BorderWidget {
+        if (border_enable == null) {
+            border_enable = getBorderEntity().copy()
+        }
+        block(border_enable!!)
+        invalidate()
+        return this
+    }
+
     var border_press: KBorderEntity? = null//按下
     fun border_press(block: KBorderEntity.() -> Unit): K3BorderWidget {
         if (border_press == null) {
@@ -300,6 +310,15 @@ open class K3BorderWidget : K3AStateView {
         }
     }
 
+    //状态：不可用
+    override fun changedEnabled() {
+        super.changedEnabled()
+        normal()
+        border_enable?.let {
+            currentBorder = it
+        }
+    }
+
     //状态：按下
     override fun changedPressed() {
         super.changedPressed()
@@ -322,6 +341,7 @@ open class K3BorderWidget : K3AStateView {
         border_hove = null
         border_focuse = null
         border_selected = null
+        border_enable = null
     }
 
 }

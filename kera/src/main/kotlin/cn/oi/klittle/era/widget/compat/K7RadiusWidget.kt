@@ -440,6 +440,7 @@ open class K7RadiusWidget : K6TriangleWidget {
         kradius = null
         currentRadius = null
         xfermodePaint = null
+        radius_enable=null
     }
 
 }

@@ -823,6 +823,7 @@ open class KTextView : KView {
         txt_focuse = null
         txt_hover = null
         txt_press = null
+        txt_enable = null
         txt_selected = null
         texts_model = null
         watcheres2?.clear()

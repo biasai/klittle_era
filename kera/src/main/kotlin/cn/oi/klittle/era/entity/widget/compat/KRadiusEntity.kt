@@ -25,7 +25,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param isBgGradient 背景色是否渐变,默认是
  * @param isStrokeGradient 边框色是否渐变,默认是
  * @param isdashFlow 虚线是否流动。
- * @param dashSpeed 虚线的流动速度,绝对值越大速度越快。正数先左流动(正数逆时针方向)。负数向右流动。即绝对值控制速度。正负控制方向。
+ * @param dashSpeed 虚线的流动速度,绝对值越大速度越快。正数向左流动(正数逆时针方向)。负数向右流动。即绝对值控制速度。正负控制方向。
  */
 data class KRadiusEntity(var x: Float = 0F, var y: Float = 0F, var width: Int = 0, var height: Int = 0,
                          var left_top: Float = 0f, var left_bottom: Float = 0f, var right_top: Float = 0f, var right_bottom: Float = 0f,

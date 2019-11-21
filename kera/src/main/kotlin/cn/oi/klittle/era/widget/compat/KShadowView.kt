@@ -496,6 +496,7 @@ open class KShadowView : K6TriangleWidget {
         shadow = null
         shadowModel = null
         windowKey = null
+        shadow_enable=null
     }
 
 }
