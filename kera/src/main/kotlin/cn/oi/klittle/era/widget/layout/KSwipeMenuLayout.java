@@ -29,7 +29,7 @@ import android.view.animation.OvershootInterpolator;
 //                        width = kpx.x(200)//fixme 一定要设置宽度；这个是侧滑菜单的内容
 //                        height = matchParent
 //                    }
-//                    isIos = true//感觉没什么用，默认就好。
+//                    isIos = true//设置是否开启IOS阻塞式交互（true）;即有多个侧滑菜单时，只允许操作一个（true会产生阻塞，false不会阻塞）。
 //                    isLeftSwipe = true//true 向左侧滑动，false向右侧滑动
 //                    isSwipeEnable = true//是否开启滑动功能
 //                }.lparams {
