@@ -18,6 +18,7 @@ import cn.oi.klittle.era.widget.MPAndroidChart.*
 import cn.oi.klittle.era.widget.book.view.KBookPageView
 import cn.oi.klittle.era.widget.chart.KBaseChartView
 import cn.oi.klittle.era.widget.compat.*
+import cn.oi.klittle.era.widget.layout.KSwipeMenuLayout
 import cn.oi.klittle.era.widget.photo.KImageView
 import cn.oi.klittle.era.widget.photo.KPhotoView
 import cn.oi.klittle.era.widget.recycler.KFooterView
@@ -57,6 +58,20 @@ import java.lang.Exception
 //                }.lparams {
 //                    width = kpx.x(700)
 //                    height = kpx.x(36)
+//                }
+//            }
+
+//            KBaseUi.apply {
+//                kverticalLayout {
+//                    //fixme 这里面，自定义布局无法正常使用lparams{}属性。
+//                }.apply {
+//                    //fixme 使用apply{}；自定义布局就可以正常的使用lparams{}了
+//                    button {
+//                        text = "你好"
+//                    }.lparams {
+//                        width = kpx.x(300)
+//                        height = wrapContent
+//                    }
 //                }
 //            }
 
@@ -666,6 +681,14 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KRadarChart(ctx) }, theme = 0) { init() }
         }
 
+        //fixme 侧滑菜单布局
+        inline fun ViewManager.KSwipeMenuLayout(init: (@AnkoViewDslMarker KSwipeMenuLayout).() -> Unit): KSwipeMenuLayout {
+            return ankoView({ ctx: Context -> KSwipeMenuLayout(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kSwipeMenuLayout(init: (@AnkoViewDslMarker KSwipeMenuLayout).() -> Unit): KSwipeMenuLayout {
+            return ankoView({ ctx: Context -> KSwipeMenuLayout(ctx) }, theme = 0) { init() }
+        }
     }
 
 }
