@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。
+//apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。
 android {
     //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
     compileSdkVersion 27//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
