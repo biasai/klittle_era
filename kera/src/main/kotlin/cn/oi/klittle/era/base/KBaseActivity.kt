@@ -855,11 +855,46 @@ open class KBaseActivity : FragmentActivity() {
         kprogressbar?.dismiss()
     }
 
+
+    /**
+     * fixme 传递数据(即数据共享，引用的是同一个对象)
+     * @param toActivity 目标Activity,如：Activity::class.java;必须是class.java类型，Activity::class会报类型错误。
+     * @param data 分享数据
+     */
+    open fun putExtraData(toActivity: Class<*>?, data: Any?) {
+        try {
+            data?.let {
+                toActivity?.let {
+                    var key = it.toString()
+                    KBaseApplication.getInstance().put(key, data)
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //fixme 获取传递的数据
+    open fun getExtraData(): Any? {
+        try {
+            var key = this::class.java.toString()//fixme 支持 Activity::class.java
+            KBaseApplication.getInstance().get(key)?.let {
+                return it
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
     //fixme Activity关闭的时候一定会调用，返回键也会调用该方法。
     override fun finish() {
         //KLoggerUtils.e("finish()")
         try {
-            if (isOnCreateSuper) {//防止Activity还没开始就突然的挂掉。这是个系统的Bug
+            //防止Activity还没开始就突然的挂掉。这是个系统的Bug
+            if (isOnCreateSuper) {
+                //fixme 只移除数据，不会对原数据置空，如果要置空，请手动置空。
+                KBaseApplication.getInstance().remove(this::class.java.toString())
                 isBack = true
                 try {
                     super.finish()

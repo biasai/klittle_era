@@ -21,7 +21,7 @@ import java.io.File
 import java.util.*
 
 //fixme 调用案例
-//KPictureSelector.type(PictureConfig.TYPE_ALL).isGif(true).imageSpanCount().maxSelectNum(10).selectionMedia().minimumCompressSize(100).isCompress(true).forResult {}
+//KPictureSelector.type(PictureConfig.TYPE_ALL).isGif(true).isCamera(true).imageSpanCount().maxSelectNum(10).selectionMedia().minimumCompressSize(100).isCompress(true).forResult {}
 /**
  * 图片选择器
  */

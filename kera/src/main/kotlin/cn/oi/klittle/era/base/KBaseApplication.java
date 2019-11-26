@@ -233,6 +233,7 @@ public class KBaseApplication extends Application {
     //退出程序
     public void exit() {
         try {
+            clear();//数据清除
             KBaseActivityManager.getInstance().finishAllActivity();
             android.os.Process.killProcess(android.os.Process.myPid());//杀进程
         } catch (Exception e) {
@@ -242,10 +243,14 @@ public class KBaseApplication extends Application {
 
     //跳转到桌面
     public void goHome() {
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.addCategory(Intent.CATEGORY_HOME);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//防止报错
-        startActivity(intent);
+        try {
+            Intent intent = new Intent(Intent.ACTION_MAIN);
+            intent.addCategory(Intent.CATEGORY_HOME);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);//防止报错
+            startActivity(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -253,23 +258,34 @@ public class KBaseApplication extends Application {
     private Map _objectContainer = new HashMap();
 
     //存储键值
-    public void put(Object key, Object value) {
-        _objectContainer.put(key, value);
+    public void put(String key, Object value) {
+        if (_objectContainer != null && key != null) {
+            _objectContainer.put(key, value);
+        }
     }
 
     //获取键值
-    public Object get(Object key) {
-        return _objectContainer.get(key);
+    public Object get(String key) {
+        if (_objectContainer != null && key != null) {
+            return _objectContainer.get(key);
+        }
+        return null;
     }
 
     //移出键值
-    public void remove(Object key) {
-        _objectContainer.remove(key);
+    public void remove(String key) {
+        if (_objectContainer != null && key != null) {
+            if (_objectContainer.containsKey(key)) {
+                _objectContainer.remove(key);
+            }
+        }
     }
 
     //清楚所有键值
     public void clear() {
-        _objectContainer.clear();
+        if (_objectContainer != null) {
+            _objectContainer.clear();
+        }
     }
 
     /**
