@@ -30,7 +30,6 @@ import cn.oi.klittle.era.widget.video.KVideoView
 import cn.oi.klittle.era.widget.viewpager.*
 import cn.oi.klittle.era.widget.web.KJsBridgeWebView
 import cn.oi.klittle.era.widget.web.KWebView
-import com.liangyue.commonlib.widget.KValidationView
 import kotlinx.android.synthetic.*
 import org.jetbrains.anko.AnkoViewDslMarker
 import org.jetbrains.anko.backgroundDrawable
