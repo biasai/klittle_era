@@ -17,7 +17,7 @@ buildscript {
         classpath 'com.android.tools.build:gradle:3.2.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1' //fixme 现在屏蔽这个也可以发布到jitpack
-        //classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'// fixme 之前基本都是使用的1.3版本，比较稳定；不能和libarary里的 //apply plugin: 'com.github.dcendents.android-maven' 共用。会报错
+        //classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'// fixme 之前基本都是使用的1.3版本，比较稳定；不能和libarary里的 //apply plugin: 'com.github.dcendents.android-maven' 共用。会报错（不建议使用）
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
