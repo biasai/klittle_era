@@ -1,4 +1,4 @@
-package com.liangyue.strategy.moudle.base
+package cn.oi.klittle.era.base
 
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
