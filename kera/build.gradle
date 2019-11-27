@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
-//apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。 fixme 现在屏蔽这个，也可以发布到jitpack。
+apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。 fixme 现在屏蔽这个，也可以发布到jitpack。
 group='com.github.biasai' // 指定group，com.github.<用户名>
 android {
     //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
