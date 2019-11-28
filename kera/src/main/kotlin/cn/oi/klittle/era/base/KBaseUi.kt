@@ -680,13 +680,22 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KRadarChart(ctx) }, theme = 0) { init() }
         }
 
-        //fixme 侧滑菜单布局
+        //侧滑菜单布局
         inline fun ViewManager.KSwipeMenuLayout(init: (@AnkoViewDslMarker KSwipeMenuLayout).() -> Unit): KSwipeMenuLayout {
             return ankoView({ ctx: Context -> KSwipeMenuLayout(ctx) }, theme = 0) { init() }
         }
 
         inline fun ViewManager.kSwipeMenuLayout(init: (@AnkoViewDslMarker KSwipeMenuLayout).() -> Unit): KSwipeMenuLayout {
             return ankoView({ ctx: Context -> KSwipeMenuLayout(ctx) }, theme = 0) { init() }
+        }
+
+        //路径控件(异形控件)
+        inline fun ViewManager.KPathView(init: (@AnkoViewDslMarker KPathView).() -> Unit): KPathView {
+            return ankoView({ ctx: Context -> KPathView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kPathView(init: (@AnkoViewDslMarker KPathView).() -> Unit): KPathView {
+            return ankoView({ ctx: Context -> KPathView(ctx) }, theme = 0) { init() }
         }
     }
 
