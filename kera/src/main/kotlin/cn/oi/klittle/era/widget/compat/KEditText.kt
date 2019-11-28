@@ -113,6 +113,8 @@ import org.jetbrains.anko.singleLine
 //                onTouch { v, event ->
 //                }
 
+//               fixme autoRegex("[^0123.+]",6){}//只允许输入0123.+ 这几个字符，且长度最大为6
+
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -189,6 +191,30 @@ open class KEditText : KMyEditText {
 
     //fixme ==========================================================================校验->开始
 
+
+    //fixme "[^A-Za-z0-9*.,，。+-]" 直接往后面加字符就行了，不包含这些字符
+    /**
+     * fixme 自定义正则表达式
+     * @param autoRegex 正则，如："[^0123]" 正则表示不包含0123这些字符， 但是下面调用了remove()方法。fixme 现在变成了，只包含这些字符。
+     * @param strLength 文本长度
+     * @param callback fixme 文本发生改变时的回调 ,注意isRegex为true时才会回调。
+     */
+    fun autoRegex(autoRegex: String, strLength: Int = 32, callback: ((edt: Editable) -> Unit)? = null) {
+        addTextWatcher2("autoRegex") {
+            if (isRegex) {
+                remove(it, autoRegex.toRegex())//fixme 移除符合条件的，如："[^0123]" 正则表示不包含0123，即移除0123以外的所有字符。
+                var str = it.toString()
+                if (str.length > strLength) {//最大输入长度,现在最长就是32位的。网易的是6-18个字符
+                    //超过总长度，数值不变。
+                    replace(it, beforeText!!)
+                }
+                callback?.apply {
+                    this(it)
+                }
+            }
+        }
+    }
+
     //替换字符，防止事件冲突。所以先移除监听，再添加监听。
     fun replace(edt: Editable, st: Int, en: Int, text: CharSequence) {
         if (st >= 0 && st <= edt.lastIndex && en >= st && en <= edt.length) {
@@ -226,18 +252,24 @@ open class KEditText : KMyEditText {
     }
 
     //去除空字符串
-    fun removeKong(edt: Editable) {
-        remove(edt, REGEX_Has_Empty)
+    fun removeEmpty(edt: Editable? = text) {
+        edt?.let {
+            remove(edt, REGEX_Has_Empty)
+        }
     }
 
     //去除中文
-    fun removeChina(edt: Editable) {
-        remove(edt, REGEX_Has_China.toRegex())
+    fun removeChina(edt: Editable? = text) {
+        edt?.let {
+            remove(edt, REGEX_Has_China.toRegex())
+        }
     }
 
     //去除中文和空格
-    fun removeChinaAndKong(edt: Editable) {
-        remove(edt, REGEX_Has_China_Empty.toRegex())
+    fun removeChinaAndBlankSpace(edt: Editable?) {
+        edt?.let {
+            remove(edt, REGEX_Has_China_Empty.toRegex())
+        }
     }
 
 
@@ -246,7 +278,7 @@ open class KEditText : KMyEditText {
     //fixme ==============================================================================================类型->开始
 
 
-    var isRegex: Boolean = true
+    var isRegex: Boolean = true//fixme 判断是否需要对数据进行校验。
     //fixme 系统的setText(),不能为空,不能为null。只能setText(""),setText()方法是final又不能重写。
     /**
      * @param isRegex 是否需要对数据进行校验。不添加默认值，防止和系统方法冲突。
@@ -750,6 +782,18 @@ open class KEditText : KMyEditText {
         return this
     }
 
+    //不可用
+    var line_enable: KEditLineEntity? = null
+
+    fun line_enable(block: KEditLineEntity.() -> Unit): KEditText {
+        if (line_enable == null) {
+            line_enable = getmLine().copy()//整个属性全部复制过来。
+        }
+        block(line_enable!!)
+        invalidate()
+        return this
+    }
+
     //按下
     var line_press: KEditLineEntity? = null
 
@@ -765,7 +809,7 @@ open class KEditText : KMyEditText {
     //鼠标悬浮
     var line_hover: KEditLineEntity? = null
 
-    fun shadow_hover(block: KEditLineEntity.() -> Unit): KEditText {
+    fun line_hover(block: KEditLineEntity.() -> Unit): KEditText {
         if (line_hover == null) {
             line_hover = getmLine().copy()//整个属性全部复制过来。
         }
@@ -847,7 +891,10 @@ open class KEditText : KMyEditText {
         super.draw2(canvas, paint)
         if (line != null) {
             var model: KEditLineEntity? = null
-            if (isPressed && line_press != null) {
+            if (!isEnabled && line_enable != null) {
+                //不可用
+                model = line_enable
+            } else if (isPressed && line_press != null) {
                 //按下
                 model = line_press
             } else if (isHovered && line_hover != null) {
@@ -957,6 +1004,7 @@ open class KEditText : KMyEditText {
         textWatcher = null
         line = null
         line_bg = null
+        line_enable = null
         line_press = null
         line_focuse = null
         line_selected = null

@@ -197,6 +197,7 @@ object KBluetoothAdapter {
 
     /**
      * 打开蓝牙,成功返回true;fixme 系统自己会弹出询问框（原生系统不会询问，直接就打开了）。不需要动态去申请（也无法动态申请）
+     * fixme KIntentUtils.bluetoothOpen {}这个也是打开蓝牙的方法，而且会有蓝牙打开的弹窗进度动画，效果比较好。推荐使用这个。
      * @param callback 回调，true打开；false没有打开
      */
     fun enable(callback: ((b: Boolean) -> Unit)? = null) {
