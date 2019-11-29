@@ -753,6 +753,10 @@ open class K1Widget : K0Widget {
 
     override fun draw(canvas: Canvas?) {
         try {
+            if (width <= 0 || height <= 0) {
+                return
+            }
+            canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)//画布清除
             //fixme 这里系统传下来的canvas可能每次都是实例化的哦。
             mCamera?.save()//fixme 保存相机初始的状态
             canvas?.apply {

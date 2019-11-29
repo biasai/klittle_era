@@ -15,6 +15,23 @@ import android.widget.RelativeLayout
 import cn.oi.klittle.era.entity.widget.compat.KLparamEntity
 import cn.oi.klittle.era.utils.KLoggerUtils
 
+//                    kPathView {
+//                        param {
+//                            width = kpx.x(600)
+//                            height = kpx.x(500)
+//                            leftMargin = kpx.x(36)
+//                            rightMargin = leftMargin
+//                            topMargin = kpx.x(80)
+//                        }
+//                    }.lparams {
+//                        //fixme 系统的lparams最好也写一下，防止初始化的时候，界面不显示
+//                        width = kpx.x(600)
+//                        height = kpx.x(500)
+//                        leftMargin = kpx.x(36)
+//                        rightMargin = leftMargin
+//                        topMargin = kpx.x(80)
+//                    }
+
 /**
  *五：宽高，外补丁控制
  */
