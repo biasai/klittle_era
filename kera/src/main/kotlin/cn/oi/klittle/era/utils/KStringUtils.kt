@@ -214,63 +214,66 @@ object KStringUtils {
      * @param isMicro 是否保留千位分隔符。（1如：789,012.12399即逗号）只有整数部分有千位分隔符，小数部分没有。
      */
     fun doubleString(d: Double, num: Int = 2, isKeepEnd0: Boolean = true, isMicroSymb: Boolean = false): String? {
-        //DecimalFormatm默认四舍五如，银行家算法：四舍六入五考虑，五后非零就进一，五后为零看奇偶，五前为偶应舍去，五前为奇要进一
-        //DecimalFormatm的四舍五入，这个五考虑规律有点复杂。规律还没完全摸清。
-        val df = DecimalFormat()
-        //这里是保留的小数位，如果末尾是0。会自动去除末尾的0。
-        //fixme （如果数据太大[超过21.4亿左右]，依然会进行四舍五入，因为精度会丢失。）21.4亿以下，小数能完整显示。不会丢失。
-        //fixme 之所以会进行四舍五入，就是因为精度丢失。无法完整显示所有小数。精度丢失，就会自动进行四舍五入。小数位数太长了，也会丢失精度。（即数值太大，小数太长都会丢失精度。）
-        //fixme 多加几位。后面再截取，尽可能不进行四舍五入。
-        df.maximumFractionDigits = num + 8
-        if (isMicroSymb) {
-            df.setGroupingUsed(true)//保留千位分隔符
-        } else {
-            df.setGroupingUsed(false)//去掉数值中的千位分隔符
-        }
-        df.setRoundingMode(RoundingMode.DOWN)
-        //df.setGroupingUsed(true)//保留千位符号
-        //fixme 原则是使用BigDecimal并且一定要用String来够造。这样精度更高。如果本身已经是double类型，就直接传double。不要在转string,因为double转String的时候也会丢失精度。
-        //var bigDecimal = BigDecimal(java.lang.Double.toString(d))//BigDecimal才能完整的显示出来，Double不行。
-        var bigDecimal = BigDecimal(d)//还是直接传double。double转String的时候可能会丢失精度。
-        var str = df.format(bigDecimal).trim()
-        //Log.e("test", "str:\t" + str + "\tnum:\t" + num + "\t" + bigDecimal.toString())
-        //fixme 是否保留小数点末尾的0
-        if (str.contains(".")) {
-            //有小数点
-            str.let {
-                var index = it.indexOf(".")//小数点下标
-                var front = it.substring(0, index)//小数点前面的数
-                var behind = it.substring(index + 1)//小数点后面的数（不包含小数点）
-                //fixme 去除多加的位数。
-                if (behind.length > num && behind.length > 1) {
-                    behind = behind.substring(0, num)
-                }
-                if (isKeepEnd0) {
-                    if (behind.length < num) {
-                        //保留小点末尾的0
-                        var length = num - behind.length
-                        var zero = ""
-                        for (i in 1..length) {
-                            zero += "0"
+        try {
+            //DecimalFormatm默认四舍五如，银行家算法：四舍六入五考虑，五后非零就进一，五后为零看奇偶，五前为偶应舍去，五前为奇要进一
+            //DecimalFormatm的四舍五入，这个五考虑规律有点复杂。规律还没完全摸清。
+            val df = DecimalFormat()
+            //这里是保留的小数位，如果末尾是0。会自动去除末尾的0。
+            //fixme （如果数据太大[超过21.4亿左右]，依然会进行四舍五入，因为精度会丢失。）21.4亿以下，小数能完整显示。不会丢失。
+            //fixme 之所以会进行四舍五入，就是因为精度丢失。无法完整显示所有小数。精度丢失，就会自动进行四舍五入。小数位数太长了，也会丢失精度。（即数值太大，小数太长都会丢失精度。）
+            //fixme 多加几位。后面再截取，尽可能不进行四舍五入。
+            df.maximumFractionDigits = num + 8
+            if (isMicroSymb) {
+                df.setGroupingUsed(true)//保留千位分隔符
+            } else {
+                df.setGroupingUsed(false)//去掉数值中的千位分隔符
+            }
+            df.setRoundingMode(RoundingMode.DOWN)
+            //df.setGroupingUsed(true)//保留千位符号
+            //fixme 原则是使用BigDecimal并且一定要用String来够造。这样精度更高。如果本身已经是double类型，就直接传double。不要在转string,因为double转String的时候也会丢失精度。
+            //var bigDecimal = BigDecimal(java.lang.Double.toString(d))//BigDecimal才能完整的显示出来，Double不行。
+            var bigDecimal = BigDecimal(d)//还是直接传double。double转String的时候可能会丢失精度。
+            var str = df.format(bigDecimal).trim()
+            //Log.e("test", "str:\t" + str + "\tnum:\t" + num + "\t" + bigDecimal.toString())
+            //fixme 是否保留小数点末尾的0
+            if (str.contains(".")) {
+                //有小数点
+                str.let {
+                    var index = it.indexOf(".")//小数点下标
+                    var front = it.substring(0, index)//小数点前面的数
+                    var behind = it.substring(index + 1)//小数点后面的数（不包含小数点）
+                    //fixme 去除多加的位数。
+                    if (behind.length > num && behind.length > 1) {
+                        behind = behind.substring(0, num)
+                    }
+                    if (isKeepEnd0) {
+                        if (behind.length < num) {
+                            //保留小点末尾的0
+                            var length = num - behind.length
+                            var zero = ""
+                            for (i in 1..length) {
+                                zero += "0"
+                            }
+                            behind += zero
                         }
-                        behind += zero
+                    }
+                    if (num > 0) {
+                        str = front + "." + behind
+                    } else {
+                        str = front
                     }
                 }
-                if (num > 0) {
-                    str = front + "." + behind
-                } else {
-                    str = front
+            } else if (isKeepEnd0 && num > 0) {
+                //没有小数点，末尾补上0
+                var zero = ""
+                for (i in 1..num) {
+                    zero += "0"
                 }
+                str = str + "." + zero
             }
-        } else if (isKeepEnd0 && num > 0) {
-            //没有小数点，末尾补上0
-            var zero = ""
-            for (i in 1..num) {
-                zero += "0"
-            }
-            str = str + "." + zero
-        }
-        return str
+            return str
+        }catch (e:Exception){e.printStackTrace()}
+        return null
     }
 
     fun decimalString(str: String?, num: Int = 2): String? {

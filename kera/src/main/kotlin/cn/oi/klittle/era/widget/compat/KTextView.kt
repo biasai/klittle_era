@@ -480,7 +480,9 @@ open class KTextView : KView {
      * @param isMicro 是否保留千位分隔符。（1如：789,012.12399即逗号）只有整数部分有千位分隔符，小数部分没有。
      */
     fun doubleString(d: Double, num: Int = 2, isKeepEnd0: Boolean = true, isMicroSymb: Boolean = false): String {
-        return KStringUtils.doubleString(d, num, isKeepEnd0, isMicroSymb)!!
+        var str = KStringUtils.doubleString(d, num, isKeepEnd0, isMicroSymb)!!
+        setText(str)
+        return str
     }
 
     //人民币符号 ￥
@@ -494,12 +496,14 @@ open class KTextView : KView {
      * @param microSymb 千位分隔符
      */
     fun decimalString(str: String, num: Int = 2, isKeepEnd0: Boolean = true, isKeepEndPoint: Boolean = false, isMicroSymb: Boolean = false, microSymb: String = ","): String {
-        return KStringUtils.decimalString(str, num, isKeepEnd0, isKeepEndPoint, isMicroSymb, microSymb)!!
+        var str = KStringUtils.decimalString(str, num, isKeepEnd0, isKeepEndPoint, isMicroSymb, microSymb)!!
+        setText(str)
+        return str
     }
 
     //fixme 是否设置斜体，true 是。false不是。在5.0以上才有效果。需要api 20及以上。
-    fun isITALIC(isITALIC: Boolean = true) {
-        if (isITALIC) {
+    fun isItalic(isItalic: Boolean = true) {
+        if (isItalic) {
             paint.setTypeface(Typeface.defaultFromStyle(Typeface.ITALIC))
         } else {
             paint.setTypeface(Typeface.defaultFromStyle(Typeface.NORMAL))

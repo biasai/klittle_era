@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.entity.widget.compat.KPathEntity
 
 //                fixme 调用案例，以下设置了两个异形图
+//                fixme 相对布局
 //                relativeLayout {
 //
 //                    kPathView {
@@ -106,6 +107,96 @@ import cn.oi.klittle.era.entity.widget.compat.KPathEntity
 //                }.lparams {
 //                    width= matchParent
 //                    height=kpx.x(700)
+//                }
+
+//                fixme 线性布局(使用负补丁)
+//                linearLayout {
+//                    kPathView {
+//                        //backgroundColor(Color.LTGRAY)
+//                        path {
+//                            //基准宽和高（会根据控件大小，自动适配）
+//                            //baseWidth = kpx.x(600f)
+//                            //baseHeight = kpx.x(600f)
+//                            //path坐标点集合，最后会首尾巴相连。内部调用了path.close()
+//                            addPoint(kpx.x(30), kpx.x(15))
+//                            addPoint(kpx.x(430), kpx.x(15))
+//                            addPoint(kpx.x(230), kpx.x(500))
+//                            addPoint(kpx.x(30), kpx.x(500))
+//                            strokeHorizontalColors(Color.RED, Color.YELLOW, Color.BLUE)
+//                            radius = kpx.x(50f)
+//                            dashGap = kpx.x(15f)
+//                            dashWidth = kpx.x(10f)
+//                            strokeWidth=0f
+//                            isRegionEnable=true//是否做区域判断
+//                            //shadow_color=Color.CYAN//阴影颜色;透明色Color.TRANSPARENT不显示阴影。
+//                        }
+//                        if (Build.VERSION.SDK_INT>=21) {
+//                            z = 100f//默认数值是0；数值越到，越显示在上面。
+//                        }
+//                        onClick {
+//                            KToast.showInfo("区域一")
+//                        }
+//                        param {
+//                            width = kpx.x(480)
+//                            height = kpx.x(550)
+//                        }
+//                        autoBg {
+//                            isAutoCenter=false
+//                            width = kpx.x(640)
+//                            height = kpx.x(795)
+//                            autoBg(R.mipmap.timg)
+//                        }
+//                    }.lparams {
+//                        width = kpx.x(480)
+//                        height = kpx.x(550)
+//                    }
+//
+//                    kPathView {
+//                        //backgroundColor(Color.LTGRAY)
+//                        path {
+//                            //基准宽和高（会根据控件大小，自动适配）
+//                            //baseWidth = kpx.x(600f)
+//                            //baseHeight = kpx.x(600f)
+//                            //path坐标点集合，最后会首尾巴相连。内部调用了path.close()
+//                            addPoint(kpx.x(215), kpx.x(15))
+//                            addPoint(kpx.x(475), kpx.x(15))
+//                            addPoint(kpx.x(275), kpx.x(500))
+//                            addPoint(kpx.x(15), kpx.x(500))
+//                            strokeHorizontalColors(Color.RED, Color.YELLOW, Color.BLUE)
+//                            radius = kpx.x(50f)
+//                            dashGap = kpx.x(15f)
+//                            dashWidth = kpx.x(10f)
+//                            strokeWidth=0f
+//                            isRegionEnable=true//是否做区域判断
+//                            shadow_color=Color.BLACK
+//                        }
+//                        if (Build.VERSION.SDK_INT>=21) {
+//                            z = 100f//默认数值是0；数值越到，越显示在上面。
+//                        }
+//                        onClick {
+//                            KToast.showInfo("区域二")
+//                        }
+//                        param {
+//                            width = kpx.x(550)
+//                            height = kpx.x(550)
+//                            leftMargin=-kpx.x(215)
+//                        }
+//                        autoBg {
+//                            isAutoCenter=false
+//                            width = kpx.x(640)
+//                            height = kpx.x(795)
+//                            autoBg(R.mipmap.timg2)
+//                        }
+//                    }.lparams {
+//                        width = kpx.x(550)
+//                        height = kpx.x(550)
+//                        leftMargin=-kpx.x(215)
+//                    }
+//
+//                }.lparams {
+//                    width= matchParent
+//                    height=kpx.x(700)
+//                    topMargin=kpx.statusHeight
 //                }
 
 /**
