@@ -728,8 +728,10 @@ open class KTextView : KView {
 
     //fixme 必须设置一下文本，防止部分机型没有文本显示。
     private fun setText2(it: String?) {
-        setText("")
-        invalidate()
+        if (it!=null&&it.length>0){
+            setText(it)
+            invalidate()
+        }
     }
 
     override fun draw(canvas: Canvas?) {

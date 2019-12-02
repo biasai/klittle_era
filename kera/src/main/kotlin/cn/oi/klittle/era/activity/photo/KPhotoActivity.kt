@@ -10,6 +10,7 @@ import cn.oi.klittle.era.activity.preview.KPreviewActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.custom.async

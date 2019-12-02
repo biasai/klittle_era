@@ -13,7 +13,7 @@ import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
 
 /**
- * 扫描工具类
+ * 扫描工具类;引用jar包scanSDK.jar;针对PDA品牌alps，型号Alps PL-40L有效。
  * Created by 彭治铭 on 2019/3/12
  */
 object KScanUtils {
@@ -35,6 +35,7 @@ object KScanUtils {
         try {
             //fixme 判断一个类是否存在(亲测有效。)；注意对内部类无效：如;android.os.IScanService.Stub
             var stub = Class.forName("android.os.IScanService")
+            //KLoggerUtils.e("stub:\t" + stub)
             if (stub != null) {
                 stub = null
                 mScanDevice = ScanDevice()
@@ -53,12 +54,12 @@ object KScanUtils {
         } catch (e: Exception) {
             mScanDevice = null
             isScanSupport = false//设备不支持扫描
-            //KLoggerUtils.e("扫描类初始化异常：\t" + e.message)
+            KLoggerUtils.e("扫描类初始化异常：\t" + e.message)
         }
         if (mScanDevice == null) {
             isScanSupport = false
         }
-        //KLoggerUtils.e("是否支持扫描：\t"+ isScanSupport)
+        //KLoggerUtils.e("是否支持扫描：\t" + isScanSupport)
     }
 
     /**

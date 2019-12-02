@@ -388,7 +388,7 @@ open class K1Widget : K0Widget {
                 it?.isSelected = isSelected//选中状态
             }
         }
-        onSelectChangedList.forEach {
+        onSelectChangedList?.forEach {
             it?.let {
                 it(selected)//选中监听
             }

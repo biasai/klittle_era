@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cn.oi.klittle.era.base.KBaseApplication;
+import cn.oi.klittle.era.base.KBaseCallBack;
 import cn.oi.klittle.era.comm.KToast;
 
 
@@ -285,6 +286,24 @@ public class KAppUtils {
         } catch (Exception e) {
             KLoggerUtils.INSTANCE.e("test", "App安装失败:\t" + e.getMessage());
         }
+    }
+
+    /**
+     * 安装Assets里的apk文件(亲测可行)
+     *
+     * @param assetsPath assets 里的文件。如("文件夹/文件名.后缀")
+     */
+    public static void installationFromAssets(String assetsPath) {
+        //fixme 第一步 将Apk复制到SD卡上（这一步速度很快就几秒）
+        KAssetsUtils.getInstance().copyFileFromAssets(assetsPath, KBaseApplication.getInstance().getApplicationContext().getFilesDir().getAbsolutePath(), new KBaseCallBack() {
+            @Override
+            public void onResult(Object o) {
+                if (o != null && o instanceof File) {
+                    //fixme 第二步，安装SD卡上的apk文件。
+                    installation(KBaseApplication.getInstance(), (File) o);
+                }
+            }
+        });
     }
 
     /**

@@ -308,7 +308,7 @@ public class KAssetsUtils {
      *
      * @param assetsPath assets 里的文件。如("文件夹/文件名.后缀")
      * @param path       指定路径 如：context.getApplicationContext().getFilesDir().getAbsolutePath();
-     * @param fileName   文件名
+     * @param fileName   文件名(包括后缀名)；可以为空。如果会空，会自动获取文件名。
      * @param callBack   回调，返回文件
      * @return
      */
