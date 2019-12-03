@@ -226,6 +226,7 @@ object KLocationUtils {
                 it(null)//超时位置返回为空
             }
             locationListener = null//回调监听置空
+            removeUpdates()//fixme 超时也要立即移除监听。
         }
 
         override fun onNext(value: Boolean?) {
@@ -279,7 +280,7 @@ object KLocationUtils {
                     this.locationListener = null//回调监听置空。
                     dispose()//旧的回调取消
                     it(location)
-                    removeUpdates(activity)//fixme 监听完成之后，立即移除监听。
+                    removeUpdates()//fixme 监听完成之后，立即移除监听。
                 }
             }
         }
