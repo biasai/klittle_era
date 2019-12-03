@@ -325,6 +325,11 @@ public class KAssetsUtils {
                     }
                     File fs = new File(path, name);
                     if (!fs.exists()) {//判断文件是否存在，不存在则创建
+                        File dirs = new File(path);
+                        if (!dirs.exists()) {
+                            dirs.mkdirs();//防止目录步存在所以创建
+                        }
+                        dirs = null;
                         InputStream myInput;
                         OutputStream myOutput = new FileOutputStream(fs);
                         myInput = am.open(assetsPath);
@@ -337,6 +342,8 @@ public class KAssetsUtils {
                         myOutput.flush();
                         myInput.close();
                         myOutput.close();
+                        myOutput = null;
+                        myInput = null;
                     }
                     if (callBack != null) {
                         callBack.onResult(fs);
@@ -682,7 +689,7 @@ public class KAssetsUtils {
         Boolean isRepeat = galidMap.get(key);
         galidMap.put(key, true);
         Bitmap bitmap = getCacleBitmap(key);//获取缓存位图
-        try{
+        try {
             if (bitmap != null && !bitmap.isRecycled()) {
                 if (isCache) {
                     //return bitmap;//防止重复加载，浪费内存
@@ -696,7 +703,9 @@ public class KAssetsUtils {
                     bitmap.recycle();//释放
                 }
             }
-        }catch (Exception e){e.printStackTrace();}
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (isRepeat != null && isRepeat && isCache) {
             //重复了。
             new Thread() {
@@ -707,7 +716,7 @@ public class KAssetsUtils {
                         sleep(300);
                         Bitmap bitmap = getCacleBitmap(key);//获取缓存位图
                         if (bitmap != null && !bitmap.isRecycled()) {
-                            try{
+                            try {
                                 if (isCache) {
                                     //return bitmap;//防止重复加载，浪费内存
                                     galidMap.put(key, false);
@@ -719,7 +728,9 @@ public class KAssetsUtils {
                                 } else {
                                     bitmap.recycle();//释放
                                 }
-                            }catch (Exception e){e.printStackTrace();}
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     } catch (Exception e) {
                         e.printStackTrace();

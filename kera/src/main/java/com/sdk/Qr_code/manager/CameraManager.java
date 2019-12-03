@@ -36,6 +36,7 @@ import com.sdk.Qr_code.code.PlanarYUVLuminanceSource;
 import com.sdk.Qr_code.code.PreviewCallback;
 
 import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
  * This object wraps the Camera service object and expects to be the only one
@@ -43,7 +44,7 @@ import cn.oi.klittle.era.comm.kpx;
  * preview-sized images, which are used for both preview and decoding.
  *
  * @author dswitkin@google.com (Daniel Switkin)
- *         fixme 核心管理类；getFramingRect()重要方法
+ * fixme 核心管理类；getFramingRect()重要方法
  */
 public final class CameraManager {
     private static CameraManager cameraManager;
@@ -135,7 +136,34 @@ public final class CameraManager {
     public void openDriver(Context context, SurfaceHolder holder)
             throws IOException {
         if (camera == null) {
-            camera = Camera.open();
+            try {
+                //camera = Camera.open();//打开摄像头(一般默认都是打开后置摄像头)
+                camera = openCamera(BACK);//后置摄像头（建议使用这个）
+            } catch (Exception e) {
+                e.printStackTrace();
+                //异常：Fail to connect to camera service
+                if (camera != null) {
+                    try {
+                        camera.release();
+                    } catch (Exception e2) {
+                        e2.printStackTrace();
+                    }
+                }
+                camera = null;
+                KLoggerUtils.INSTANCE.e("相机后置摄像头调用异常：\t" + e.getMessage());
+            }
+            if (camera == null) {
+                try {
+                    //fixme 如果后置摄像头打开异常，则先调用一次前置摄像头，然后再调用后置摄像头。就可以了。
+                    camera = openCamera(FRONT);//前置摄像头；
+                    if (camera != null) {
+                        camera.release();//释放
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                camera = openCamera(BACK);//后置摄像头
+            }
             if (camera == null) {
                 throw new IOException();
             }
@@ -145,9 +173,35 @@ public final class CameraManager {
             }
             configManager.setDesiredCameraParameters(camera);
             camera.setPreviewDisplay(holder);
-
             FlashlightManager.enableFlashlight();
         }
+    }
+
+    private static final int FRONT = 1;//前置摄像头标记
+    private static final int BACK = 2;//后置摄像头标记
+    private int currentCameraType = -1;//当前打开的摄像头标记
+
+    private Camera openCamera(int type) {
+        int frontIndex = -1;
+        int backIndex = -1;
+        int cameraCount = Camera.getNumberOfCameras();
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        for (int cameraIndex = 0; cameraIndex < cameraCount; cameraIndex++) {
+            Camera.getCameraInfo(cameraIndex, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                frontIndex = cameraIndex;//前置摄像头
+            } else if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                backIndex = cameraIndex;//后置摄像头
+            }
+        }
+
+        currentCameraType = type;
+        if (type == FRONT && frontIndex != -1) {
+            return Camera.open(frontIndex);
+        } else if (type == BACK && backIndex != -1) {
+            return Camera.open(backIndex);
+        }
+        return null;
     }
 
     /**
@@ -236,7 +290,7 @@ public final class CameraManager {
         //int top = 30;
         int top = 40;// 扫描框与屏幕顶部的距离。同上
         Point screenResolution = configManager.getScreenResolution();
-        if (framingRect == null||(framingRect.right-framingRect.left)<=0||(framingRect.bottom-framingRect.top)<=0) {
+        if (framingRect == null || (framingRect.right - framingRect.left) <= 0 || (framingRect.bottom - framingRect.top) <= 0) {
             if (camera == null) {
                 return null;
             }
@@ -260,7 +314,7 @@ public final class CameraManager {
      * fixme 这个区域即是扫描区域；生成的位图也是这个区域的。(不能说生成图和该区域百分百相等，但基本差不多了。)
      */
     public Rect getFramingRectInPreview() {
-        if (framingRectInPreview == null||(framingRectInPreview.right-framingRectInPreview.left)<=0||(framingRectInPreview.bottom-framingRectInPreview.top)<=0) {
+        if (framingRectInPreview == null || (framingRectInPreview.right - framingRectInPreview.left) <= 0 || (framingRectInPreview.bottom - framingRectInPreview.top) <= 0) {
             Rect rect = new Rect(getFramingRect());//获取扫描框的矩形
             //fixme cameraResolution.x相机的高度；cameraResolution.y相机的宽度（因为是竖屏的，所以相机的宽和高切换了。）
             Point cameraResolution = configManager.getCameraResolution();
@@ -352,12 +406,12 @@ public final class CameraManager {
      */
     /*
      * public Point[] convertResultPoints(ResultPoint[] points) { Rect frame =
-	 * getFramingRectInPreview(); int count = points.length; Point[] output =
-	 * new Point[count]; for (int x = 0; x < count; x++) { output[x] = new
-	 * Point(); output[x].x = frame.left + (int) (points[x].getX() + 0.5f);
-	 * output[x].y = frame.top + (int) (points[x].getY() + 0.5f); } return
-	 * output; }
-	 */
+     * getFramingRectInPreview(); int count = points.length; Point[] output =
+     * new Point[count]; for (int x = 0; x < count; x++) { output[x] = new
+     * Point(); output[x].x = frame.left + (int) (points[x].getX() + 0.5f);
+     * output[x].y = frame.top + (int) (points[x].getY() + 0.5f); } return
+     * output; }
+     */
 
     /**
      * A factory method to build the appropriate LuminanceSource object based on

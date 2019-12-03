@@ -140,7 +140,8 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
     private void initCamera(SurfaceHolder surfaceHolder) {
         try {
             try {
-                CameraManager.get().openDriver(this, surfaceHolder);
+                CameraManager cameraManager=CameraManager.get();
+                cameraManager.openDriver(this, surfaceHolder);
             } catch (IOException ioe) {
                 return;
             } catch (RuntimeException e) {

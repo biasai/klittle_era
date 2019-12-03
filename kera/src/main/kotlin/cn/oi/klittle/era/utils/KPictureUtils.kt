@@ -122,6 +122,8 @@ object KPictureUtils {
                                 intent.setPackage(CameraPackName)//指定系统相机（不会再跳选择框了。欧耶！）
                             }
                         }
+                        //fixme 默认一般打开的都是后置摄像机。放心。基本都是打开的后置。
+                        //intent.putExtra("android.intent.extras.CAMERA_FACING", 1);//fixme 前置相机，部分机型有效（小米有效）。不是全部机型都有效(PDA就无效)。
                         activity.startActivityForResult(intent, DEFAULT_KEYS_CAMARA_PHOTO)//自定义相机标志
                         this.cllback = callback2
                     }
