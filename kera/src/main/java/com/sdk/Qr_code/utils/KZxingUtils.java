@@ -26,6 +26,8 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.oi.klittle.era.utils.KLoggerUtils;
+
 /**
  * 二维码；条码生成工具
  * Created by 彭治铭 on 2019/4/13.
@@ -120,16 +122,26 @@ public class KZxingUtils {
     }
 
 
+    public static Bitmap createBarcode(String content, int widthPix, int heightPix) {
+        return createBarcode(content, widthPix, heightPix, BarcodeFormat.CODE_128, false);
+    }
+
+    public static Bitmap createBarcode(String content, int widthPix, int heightPix, BarcodeFormat format) {
+        return createBarcode(content, widthPix, heightPix, format, false);
+    }
+
+
     /**
      * 绘制条形码
      *
      * @param content       要生成条形码包含的内容
      * @param widthPix      条形码的宽度
      * @param heightPix     条形码的高度
-     * @param isShowContent 是否显示条形码包含的内容
+     * @param isShowContent 是否显示条形码包含的内容 fixme 最好不要显示，效果贼差。自己在布局中添加文本就好了。
+     * @param format        条码生成编码格式，如：BarcodeFormat.CODE_128 ；fixme CODE_128效果是最好的。目前好像只支持 CODE_128 和 CODE_39 其他的好像会报错（BarcodeFormat.CODE_93不支持）。 BarcodeFormat.QR_CODE 是二维码
      * @return 返回生成条形的位图
      */
-    public static Bitmap createBarcode(String content, int widthPix, int heightPix, boolean isShowContent) {
+    public static Bitmap createBarcode(String content, int widthPix, int heightPix, BarcodeFormat format, boolean isShowContent) {
         if (TextUtils.isEmpty(content)) {
             return null;
         }
@@ -142,9 +154,10 @@ public class KZxingUtils {
 
         try {
             // 图像数据转换，使用了矩阵转换 参数顺序分别为：编码内容，编码类型，生成图片宽度，生成图片高度，设置参数
-            BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.CODE_128, widthPix, heightPix, hints);
+            //BitMatrix bitMatrix = writer.encode(content, BarcodeFormat.CODE_128, widthPix, heightPix, hints);
+            BitMatrix bitMatrix = writer.encode(content, format, widthPix, heightPix, hints);
             int[] pixels = new int[widthPix * heightPix];
-//             下面这里按照二维码的算法，逐个生成二维码的图片，
+            //下面这里按照二维码的算法，逐个生成二维码的图片，
             // 两个for循环是图片横列扫描的结果
             for (int y = 0; y < heightPix; y++) {
                 for (int x = 0; x < widthPix; x++) {
@@ -161,7 +174,8 @@ public class KZxingUtils {
                 bitmap = showContent(bitmap, content);
             }
             return bitmap;
-        } catch (WriterException e) {
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("生成条码异常：\t" + e.getMessage());
             e.printStackTrace();
         }
 
