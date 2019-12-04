@@ -162,7 +162,7 @@ object KLocationUtils {
 
     private var locationListenerCallback: ((location: Location?) -> Unit)? = null
     /**
-     * fixme 实时监听位置
+     * fixme 定位实时监听位置；需要手动调用KLocationUtils.removeUpdates()移除监听。不然会一直监听。
      */
     fun requestLocationUpdates(activity: Activity? = getActivity(), locationListener: ((location: Location?) -> Unit)? = null) {
         activity?.apply {
@@ -226,7 +226,10 @@ object KLocationUtils {
                 it(null)//超时位置返回为空
             }
             locationListener = null//回调监听置空
-            removeUpdates()//fixme 超时也要立即移除监听。
+            if (isRequestLocationUpdate) {
+                isRequestLocationUpdate = false//只请求一次，要移除监听
+                removeUpdates()//fixme 超时也要立即移除监听。
+            }
         }
 
         override fun onNext(value: Boolean?) {
@@ -263,16 +266,18 @@ object KLocationUtils {
     private var requestLocationUpdate_timeOut: Long = 10000//超时回调时间10秒。（单位是毫秒）
     private var requestLocationUpdate_timeOut_default: Long = 10000//超时回调时间10秒（默认参数设置）。（单位是毫秒）
     private var locationListener: ((location: Location?) -> Unit)? = null//回调监听
+    private var isRequestLocationUpdate = false//是否只请求一次
     /**
      * fixme 实时监听位置一次(只监听一次。)；正常的一般两三秒就回调了。最迟不会超过10秒。如果超过10秒，基本都是获取不到GPS(比如在室内且网络定位功能没有开启)。
      * @param timeOut fixme 回调超时时间(亲测有效,亲测不会错乱。超时时会回调为空null)
-     * @param locationListener 回调监听
+     * @param locationListener 回调监听;fixme 监听完一次之后，会自动移除位置监听。
      */
     fun requestLocationUpdate(activity: Activity? = getActivity(), timeOut: Long = requestLocationUpdate_timeOut_default, locationListener: ((location: Location?) -> Unit)? = null) {
         this.requestLocationUpdate_timeOut = timeOut
         this.locationListener = locationListener
         dispose()//旧的回调取消
         subscribe()//新的回调重新开始计时
+        isRequestLocationUpdate = true
         requestLocationUpdates {
             var location = it
             locationListener?.let {
@@ -281,6 +286,7 @@ object KLocationUtils {
                     dispose()//旧的回调取消
                     it(location)
                     removeUpdates()//fixme 监听完成之后，立即移除监听。
+                    isRequestLocationUpdate = false
                 }
             }
         }

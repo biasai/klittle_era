@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -26,6 +28,7 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.oi.klittle.era.comm.kpx;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -137,7 +140,7 @@ public class KZxingUtils {
      * @param content       要生成条形码包含的内容
      * @param widthPix      条形码的宽度
      * @param heightPix     条形码的高度
-     * @param isShowContent 是否显示条形码包含的内容 fixme 最好不要显示，效果贼差。自己在布局中添加文本就好了。
+     * @param isShowContent 是否显示条形码包含的内容 fixme 显示效果已经做了微调修改，个人感觉还不错。
      * @param format        条码生成编码格式，如：BarcodeFormat.CODE_128 ；fixme CODE_128效果是最好的。目前好像只支持 CODE_128 和 CODE_39 其他的好像会报错（BarcodeFormat.CODE_93不支持）。 BarcodeFormat.QR_CODE 是二维码
      * @return 返回生成条形的位图
      */
@@ -193,29 +196,36 @@ public class KZxingUtils {
         if (TextUtils.isEmpty(content) || null == bCBitmap) {
             return null;
         }
+        if (bCBitmap.isRecycled()||bCBitmap.getWidth()<=0){
+            return null;
+        }
         Paint paint = new Paint();
         paint.setColor(Color.BLACK);
         paint.setAntiAlias(true);
         paint.setStyle(Paint.Style.FILL);//设置填充样式
-        paint.setTextSize(20);
-//        paint.setTextAlign(Paint.Align.CENTER);
+        //paint.setTextSize(kpx.INSTANCE.x(38));
+        int textSize=bCBitmap.getHeight()/5;//fixme 设置文本的大小
+        paint.setTextSize(textSize);
+        paint.setTextAlign(Paint.Align.CENTER);
+        //paint.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));//加粗(不要加粗，感觉不好看)
         //测量字符串的宽度
-        int textWidth = (int) paint.measureText(content);
+        //int textWidth = (int) paint.measureText(content);
         Paint.FontMetrics fm = paint.getFontMetrics();
         //绘制字符串矩形区域的高度
         int textHeight = (int) (fm.bottom - fm.top);
-        // x 轴的缩放比率
-        float scaleRateX = bCBitmap.getWidth() / textWidth;
-        paint.setTextScaleX(scaleRateX);
+        // x 轴的缩放比率（文本会拉升效果很不好）
+        //float scaleRateX = bCBitmap.getWidth() / textWidth;
+        //paint.setTextScaleX(scaleRateX);
         //绘制文本的基线
         int baseLine = bCBitmap.getHeight() + textHeight;
+        int baseOffset= (int) (textHeight*0.3f);//微调一下高度
         //创建一个图层，然后在这个图层上绘制bCBitmap、content
-        Bitmap bitmap = Bitmap.createBitmap(bCBitmap.getWidth(), bCBitmap.getHeight() + 2 * textHeight, Bitmap.Config.ARGB_4444);
+        Bitmap bitmap = Bitmap.createBitmap(bCBitmap.getWidth(), bCBitmap.getHeight() + 2 * textHeight-baseOffset, Bitmap.Config.ARGB_4444);
         Canvas canvas = new Canvas();
         canvas.drawColor(Color.WHITE);
         canvas.setBitmap(bitmap);
         canvas.drawBitmap(bCBitmap, 0, 0, null);
-        canvas.drawText(content, bCBitmap.getWidth() / 10, baseLine, paint);
+        canvas.drawText(content, bCBitmap.getWidth() / 2, baseLine-baseOffset, paint);
         canvas.save(Canvas.ALL_SAVE_FLAG);
         canvas.restore();
         return bitmap;

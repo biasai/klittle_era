@@ -29,7 +29,7 @@ open class KBaseEntity : Serializable {
     //fixme 转换成json数据（第三方）;(父类和子类所有属性都有效。都能够转行。)
     //fixme 反射只能过反射当前的属性；无法反射父类的属性。但是这个toJson()方法；当前类和父类的属性都能够读到，都能转化。
     open fun toJson(): String {
-        //fixme "/0name" 还是 "/0name"；保持原样不会变。
+        //fixme "/0name" 还是 "/0name"；保持原样不会变。不会加上多余的反斜杠！！
         return KGsonJavaUtils.toJson(this)//在java main()方法里也能直接运行。
     }
 

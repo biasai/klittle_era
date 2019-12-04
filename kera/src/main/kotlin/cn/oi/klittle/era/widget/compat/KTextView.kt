@@ -29,6 +29,7 @@ import java.lang.Exception
  *
  * 外补丁只有leftMargin；没有leftMargin
  */
+//fixme setLineSpacing(kpx.x(8f),1.5f) 设置行高之后；lineHeight会自动更新。以下方法能够正确获取文本的实际高度。行间距离是行与行之间垂直距离；不是文字水平间距。
 open class KTextView : KView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

@@ -35,9 +35,9 @@ object KGsonUtils {
 
     /**
      * fixme 将字符串转成JSONObject字符串。(斜杠前面会加上反斜杠); /Date(1557278096000)/ 会变成 \/Date(1557278096000)\/
-     * fixme 注意： GsonUtils.toJson(this); 这个第三方库，(斜杠前面不会加上反斜杠) 。 /Date(1557278096000)/不会变，不会加上反斜杠。
+     * fixme 注意： KGsonJavaUtils.toJson(this); 这个第三方库，(斜杠前面不会加上反斜杠) 。 /Date(1557278096000)/不会变，不会加上反斜杠。
      *
-     * fixme 注意作用就是给斜杠/前面加上反斜杠\;（即 / ->变 \/ ）
+     * fixme 注意作用就是给斜杠/前面加上反斜杠\;（即 / ->变 \/ ）；已经集成到KBaseEntity实体类里面去了。
      */
     fun toJSONObject(str: String?): String? {
         str?.let {
@@ -441,7 +441,7 @@ object KGsonUtils {
 //                                        m?.invoke(t, getObject(value, classes, position))//fixme 非数组(不行，有问题。)
 
                                         //fixme 以下方法亲测，百分百可行！
-                                        var classes= arrayListOf<Class<*>>()
+                                        var classes = arrayListOf<Class<*>>()
                                         classes.add(Class.forName(type.substring("class ".length).trim()))
                                         m?.invoke(t, getObject(value, classes, 0))//fixme 非数组
 

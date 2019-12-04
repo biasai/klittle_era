@@ -71,7 +71,7 @@ public abstract class KGsonJavaUtils {
      * Convert object to json
      *
      * @param object
-     * @return json string
+     * @return json string fixme 这个第三方库，(斜杠前面不会加上反斜杠) 。 /Date(1557278096000)/不会变，不会加上反斜杠。
      */
     public static final String toJson(final Object object) {
         return toJson(object, true);
