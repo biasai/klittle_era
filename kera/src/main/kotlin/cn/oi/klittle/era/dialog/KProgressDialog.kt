@@ -120,7 +120,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
         dispose()//fixme 防止计时不准确，在show()和onShow()里都调用一次。
     }
 
-    open override fun onShow() {
+    override fun onShow() {
         super.onShow()
         dispose()
     }

@@ -2,7 +2,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack引用才会生效；多个库也是一样；github测试好像打包不支持多个库。 fixme 现在屏蔽这个，也可以发布到jitpack。
-group='com.github.biasai' // 指定group，com.github.<用户名>
+group = 'com.github.biasai' // 指定group，com.github.<用户名>
 android {
     //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
     compileSdkVersion 27//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
@@ -151,13 +151,17 @@ dependencies {
     //图片选择器
     //api 'com.gitee.biasia:KPictureSelector:v2.2.4'
     //api 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
-    api 'com.github.biasai:PictureSelector:v2.2.3'//fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
+    api 'com.github.biasai:PictureSelector:v2.2.3'
+    //fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
     //图表库
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
     //fixme 以下是扫描库
     api files('libs/scanSDK.jar')//pda扫描库
+    //fixme PDA RFID读卡器(ID卡)；新版PDA,型号Alps PDA；包含了jniLibs里的libnative-lib.so和libserial_port.so
+    api files('libs/iodev2.jar')//pda读卡器
+    api files('libs/serialport.jar')//pda读卡器
     //api 'com.google.zxing:android-core:3.3.0'//这个不需要引用（最好不要引用，以防未知的错误）,引用下面其中一个就可以了。
     //api 'com.google.zxing:core:3.3.2'
     api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；

@@ -223,6 +223,7 @@
     </style>
 
     <!-- Window级别 动画，适用于Dialog和PopuWindow -->
+    <!--从顶部出来，再从顶部出去-->
     <style name="kera_popuwindow_top" mce_bogus="1" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/kera_popupwindow_slide_in_from_top</item>
         <!-- 进入动画,从上面进来 -->
@@ -231,6 +232,7 @@
     </style>
 
     <!-- Window级别 动画，适用于Dialog和PopuWindow -->
+    <!--从右边进来,再从右边出去-->
     <style name="kera_window_right" mce_bogus="1" parent="android:Animation">
         <item name="android:windowEnterAnimation">@anim/kera_right_in_without_alpha</item>
         <!-- 进入动画,从右边出来 -->

@@ -13,7 +13,7 @@ import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
 
 /**
- * 扫描工具类;引用jar包scanSDK.jar;针对PDA品牌alps，型号Alps PL-40L有效。
+ * 扫描工具类;引用jar包scanSDK.jar;fixme 针对旧版PDA，品牌alps，型号Alps PL-40L有效。
  * Created by 彭治铭 on 2019/3/12
  */
 object KScanUtils {

@@ -22,6 +22,10 @@ import org.jetbrains.anko.singleLine
  * fixme setRawInputType(InputType.TYPE_CLASS_NUMBER)//仅仅只是弹出数字文本框。不会做数据校验。还是需要自己手动去做校验。
  */
 
+//正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
+//fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
+//window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)//fixme 已经集成在了KBaseActivity里了。
+
 // 这个是使用案例：
 ////              底线
 //                line {
@@ -113,7 +117,17 @@ import org.jetbrains.anko.singleLine
 //                onTouch { v, event ->
 //                }
 
-//               fixme autoRegex("[^0123.+]",6){}//只允许输入0123.+ 这几个字符，且长度最大为6
+//    fixme containsRegex("0123.+",6)//只允许输入0123.+ 这几个字符，且长度最大为6
+
+//    //fixme 调用案例/不包含567这三字符
+//    notContainsRegex("567") {
+//        KLoggerUtils.e("文本变化：\t"+it)
+//    }
+//fixme notContainsRegex("\n") {} 不包含换行符，即单行。不允许按回车键换键(亲测有效)。
+
+//fixme 单行设置
+//maxLines=1(无效)
+//singleLine=true (这个有效)
 
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -194,20 +208,40 @@ open class KEditText : KMyEditText {
 
     //fixme "[^A-Za-z0-9*.,，。+-]" 直接往后面加字符就行了，不包含这些字符
     /**
-     * fixme 自定义正则表达式
-     * @param autoRegex 正则，如："[^0123]" 正则表示不包含0123这些字符， 但是下面调用了remove()方法。fixme 现在变成了，只包含这些字符。
+     * fixme 只包含以下字符
+     * @param strs 包含的字符
      * @param strLength 文本长度
      * @param callback fixme 文本发生改变时的回调 ,注意isRegex为true时才会回调。
      */
-    fun autoRegex(autoRegex: String, strLength: Int = 32, callback: ((edt: Editable) -> Unit)? = null) {
-        addTextWatcher2("autoRegex") {
+    fun containsRegex(strs: String, strLength: Int = 32, callback: ((edt: Editable) -> Unit)? = null) {
+        addTextWatcher2("containsRegex") {
             if (isRegex) {
-                remove(it, autoRegex.toRegex())//fixme 移除符合条件的，如："[^0123]" 正则表示不包含0123，即移除0123以外的所有字符。
+                var rege = "[^" + strs + "]"
+                remove(it, rege.toRegex())//fixme 移除符合条件的，如："[^0123]" 正则表示不包含0123，即移除0123以外的所有字符。
                 var str = it.toString()
                 if (str.length > strLength) {//最大输入长度,现在最长就是32位的。网易的是6-18个字符
                     //超过总长度，数值不变。
                     replace(it, beforeText!!)
                 }
+                callback?.apply {
+                    this(it)
+                }
+            }
+        }
+    }
+
+
+    /**
+     * fixme 不包含以下字符
+     * @param strs 不包含的字符 "\n"不允许换行。（亲测有效）;fixme 默认不包含中文，空格和换行(回车键)。
+     * @param callback 文本变化监听
+     */
+    fun notContainsRegex(strs: String = "\u4E00-\u9FA5\u0020\n\r", callback: ((edt: Editable) -> Unit)? = null) {
+        addTextWatcher2("notContainsRegex") {
+            if (isRegex) {
+                var rege = "[" + strs + "]"
+                remove(it, rege.toRegex())//fixme 移除符合条件的（有效）
+                //remove(it, "["+strs+"]".toRegex())//fixme 无效，必须新建变量才有效。即 变量.toRegex()才有效。亲测。
                 callback?.apply {
                     this(it)
                 }

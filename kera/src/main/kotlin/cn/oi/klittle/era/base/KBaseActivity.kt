@@ -808,7 +808,7 @@ open class KBaseActivity : FragmentActivity() {
 
         open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
             //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
-            //fixme 对Activity，Dialog都有效。
+            //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
 
