@@ -137,6 +137,7 @@
 
     <!--Toast提示语句-->
     <string name="kexitInfo">别点了，再点我就要走了</string>
+    <string name="kexitInfo2">再按一次退出!</string>
 
     <!--打印-->
     <string name="kprint_success">打印成功</string>

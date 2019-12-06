@@ -56,15 +56,17 @@ open class KBaseDialog() {
      * 销毁
      */
     open fun onDestroy() {
-        try {
-            onShow = null
-            onDismiss = null
-            dialog?.dismiss()
-            dialog = null
-            ctx = null
-            layoutId = null
-        } catch (e: Exception) {
-            e.printStackTrace()
+        if (dialog != null && ctx != null) {
+            try {
+                dismiss()
+                onShow = null
+                onDismiss = null
+                layoutId = null
+                dialog = null
+                ctx = null
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -163,6 +165,40 @@ open class KBaseDialog() {
         dialog?.getWindow()?.addFlags(
                 WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
         return this
+    }
+
+    /**
+     *fixme 不拦截按键事件(如：返回键)和触摸点击事件
+     */
+    open fun setNotFocusableAndNotTouchable() {
+        var window = dialog?.window
+        var layoutParams = window?.getAttributes();
+        //layoutParams!!.flags兼容之前的设置，不然会覆盖之前的设置。
+        //WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE 不拦截按键（如返回键）
+        //WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE 不拦截触摸点击事件，即Dialog里所有控件都不具备点击能力了。
+        layoutParams?.flags = layoutParams!!.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE//fixme 核心代码是这个属性。
+        window?.setAttributes(layoutParams);
+        window?.setDimAmount(0f);
+        dialog?.setCanceledOnTouchOutside(false);
+        window = null
+        layoutParams = null
+    }
+
+    /**
+     * fixme 不拦截按键事件（如：返回键）；任然具备触摸点击事件。（会拦截触摸点击事件）
+     */
+    open fun setNotFocusable() {
+        var window = dialog?.window
+        var layoutParams = window?.getAttributes();
+        //layoutParams!!.flags兼容之前的设置，不然会覆盖之前的设置。
+        //WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE 不拦截按键（如返回键）
+        layoutParams?.flags = layoutParams!!.flags or WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE//fixme 核心代码是这个属性。
+        window?.setAttributes(layoutParams);
+        window?.setDimAmount(0f);
+        dialog?.setCanceledOnTouchOutside(false);
+        window?.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)   //fixme 去除不拦截触摸点击事件(亲测有效)；即具备触摸点击事件能力。
+        window = null
+        layoutParams = null
     }
 
     //初始化视图
@@ -264,12 +300,19 @@ open class KBaseDialog() {
         }
         //默认设置底部导航栏为白色。
         setNavigationBarColor(Color.WHITE)
+        //Activity关闭回调
+        try {
+            if (ctx != null && ctx is KBaseActivity) {
+                ctx?.addFinishCallBack {
+                    onDestroy()//fixme Activity关闭之前要弹窗进行销毁（不然会弹框会异常，关闭了就不会了。）
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
         //==========================================================================================结束
         initEvent()//初始化事件
     }
-
-
-
 
     //获取xml文件最外层控件。
     fun getParentView(window: Window?): ViewGroup? {
@@ -415,33 +458,54 @@ open class KBaseDialog() {
 
     //关闭弹窗
     open fun dismiss() {
-        try {
-            ctx?.runOnUiThread {
-                dialog?.let {
-                    if (it.isShowing) {
-                        it.dismiss()//关闭
+        if (dialog != null && ctx != null) {
+            try {
+                ctx?.runOnUiThread {
+                    try {
+                        if (ctx != null && this is Activity) {
+                            if (!isFinishing) {
+                                dialog?.let {
+                                    if (it.isShowing) {
+                                        it.dismiss()//关闭
+                                    }
+                                }
+                                System.gc()//垃圾内存回收
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        KLoggerUtils.e("dialog关闭异常：\t" + e.message)
                     }
                 }
-                System.gc()//垃圾内存回收
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
     //显示窗体
     open fun show() {
-        try {
-            ctx?.runOnUiThread {
-                if (dialog != null && !dialog!!.isShowing) {
-                    //显示窗体，必须在window.setContentView之前调用一次。其后就可随便调show()了。
-                    dialog!!.show()
+        if (dialog != null && ctx != null) {
+            try {
+                ctx?.runOnUiThread {
+                    try {
+                        if (ctx != null && this is Activity) {
+                            if (!isFinishing) {
+                                if (dialog != null && !dialog!!.isShowing) {
+                                    //显示窗体，必须在window.setContentView之前调用一次。其后就可随便调show()了。
+                                    dialog?.show()
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        KLoggerUtils.e("dialog显示异常：\t" + e.message)
+                    }
                 }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
-
     }
 
     // 两次点击按钮之间的点击间隔不能少于1000毫秒（即1秒）

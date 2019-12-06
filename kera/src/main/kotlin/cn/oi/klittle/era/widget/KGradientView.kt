@@ -41,7 +41,7 @@ open class KGradientView : KBaseView {
      * fixme 使用KScrimUtil实现更柔和的颜色透明渐变;控件高度最好不要超过 height = kpx.x(40)(不然效果也不怎么好，高度太高，颜色分层明显。)
      * @param color 初始颜色值（最后会变成透明色）
      * @param numStops 渐变层数（越大，渐变色越柔和）
-     * @param gravity 初始渐变方向
+     * @param gravity 初始渐变方向;Gravity.TOP从上往下渐变；Gravity.BOTTOM 从下往上渐变;Gravity.LEFT 从左往右渐变。
      */
     open fun gradientColor(color: Int, numStops: Int = 8, gravity: Int = Gravity.TOP) {
         //要求版本号大于16

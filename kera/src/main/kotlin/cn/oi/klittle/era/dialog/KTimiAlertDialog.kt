@@ -241,5 +241,10 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
         super.onDismiss()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mession?.onDestroy()
+    }
+
 
 }

@@ -27,6 +27,7 @@ import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
+import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
 import cn.oi.klittle.era.widget.viewpager.KViewPager
@@ -428,12 +429,13 @@ open class KBaseActivity : FragmentActivity() {
     var exitIntervalTime: Long = 2000//结束间隔时间
     //open var exitInfo = "再按一次退出"//退出提示信息[子类可以重写]
     open fun getExitInfo(): String {
-        return getString(R.string.kexitInfo)//"别点了，再点我就要走了"
+        //return getString(R.string.kexitInfo)//"别点了，再点我就要走了"
+        return getString(R.string.kexitInfo2)//再按一次退出!
     }
 
     //退出时，提示语句。子类可重写。
     open fun onShowExit() {
-        KToast.show(getExitInfo())
+        KToast.showInfo(getExitInfo())
     }
 
     private var onBackPressed1: (() -> Unit)? = null
@@ -837,6 +839,29 @@ open class KBaseActivity : FragmentActivity() {
         return null
     }
 
+    private var kTopTimi: KTopTimiDialog? = null
+    /**
+     * 显示弹窗信息
+     */
+    open fun showTopMsg(mession: String?): KTopTimiDialog? {
+        try {
+            if (!isOnPause && !isFinishing && mession != null && mession?.trim().length > 0) {
+                //判断界面是否暂停；防止页面跳转或已经消失了，调用。
+                if (kTopTimi == null) {
+                    kTopTimi = KTopTimiDialog(this)
+                }
+                kTopTimi?.apply {
+                    mession(mession?.trim())
+                    show()
+                }
+                return kTopTimi
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
     var kprogressbar: KProgressDialog? = null
     /**
      * 显示进度条
@@ -887,12 +912,37 @@ open class KBaseActivity : FragmentActivity() {
         return null
     }
 
+    //fixme Activity关闭回调监听;比如说Activity退出前，必须先要关闭弹窗，不然会异常的。
+    private var finishCallBackes: MutableList<(() -> Unit)?>? = null
+
+    //在KBaseDialog初始的时候调用了。
+    fun addFinishCallBack(finishCallBack: (() -> Unit)?) {
+        if (finishCallBackes == null) {
+            finishCallBackes = mutableListOf()
+        }
+        finishCallBackes?.add(finishCallBack)
+    }
+
     //fixme Activity关闭的时候一定会调用，返回键也会调用该方法。
     override fun finish() {
         //KLoggerUtils.e("finish()")
         try {
             //防止Activity还没开始就突然的挂掉。这是个系统的Bug
             if (isOnCreateSuper) {
+
+                //完成回调
+                finishCallBackes?.forEach {
+                    it?.let {
+                        try {
+                            it()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+                finishCallBackes?.clear()
+                finishCallBackes = null
+
                 //fixme 只移除数据，不会对原数据置空，如果要置空，请手动置空。
                 KBaseApplication.getInstance().remove(this::class.java.toString())
                 isBack = true
@@ -906,12 +956,16 @@ open class KBaseActivity : FragmentActivity() {
                 kTimi?.dismiss()
                 kTimi?.onDestroy()
                 kTimi = null
+                kTopTimi?.dismiss()
+                kTopTimi?.onDestroy()
+                kTopTimi = null
                 mSelectListCallback = null
                 mSelectListCallback2 = null
                 kprogressbar?.dismiss()
                 kprogressbar?.onDestroy()
                 kprogressbar = null
                 slideLayout = null
+                //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
                 //fixme 退出动画，在finish()之后调用有效，多次调用也有效，后面的会覆盖前面的。
                 //fixme 参数一  上一个Activity的动画效果，参数二当前Activity的动画效果。
                 //目前动画，左进，右出。

@@ -826,29 +826,32 @@ open class KTextView : KView {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        txt = null
-        txt_focuse = null
-        txt_hover = null
-        txt_press = null
-        txt_enable = null
-        txt_selected = null
-        texts_model = null
-        watcheres2?.clear()
-        watcheres2 = null
-        watcher = null
-        watcherMap?.clear()
-        watcherMap = null
-        if (textWatcher != null) {
-            try {
-                setOnFocusChangeListener(null)
-                removeTextChangedListener(textWatcher)
-            } catch (e: Exception) {
-                e.printStackTrace()
+        try {
+            super.onDestroy()
+            txt = null
+            txt_focuse = null
+            txt_hover = null
+            txt_press = null
+            txt_enable = null
+            txt_selected = null
+            texts_model = null
+            watcheres2?.clear()
+            watcheres2 = null
+            watcher = null
+            watcherMap?.clear()
+            watcherMap = null
+            if (textWatcher != null) {
+                try {
+                    setOnFocusChangeListener(null)
+                    removeTextChangedListener(textWatcher)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
-        }
-        textWatcher = null
-        setText(null)//文本清空
+            textWatcher = null
+            setText(null)//文本清空
+        }catch (e:Exception){e.printStackTrace()}
+
     }
 
 }

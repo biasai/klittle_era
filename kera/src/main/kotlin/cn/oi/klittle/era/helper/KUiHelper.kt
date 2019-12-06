@@ -75,6 +75,7 @@ object KUiHelper {
                 goTime = System.currentTimeMillis()
                 nowActivity?.startActivity(intent)
                 //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
+                //fixme 退出动画，在finish()之后调用有效，多次调用也有效，后面的会覆盖前面的。
                 //fixme 参数一，目标Activity的动画。参数二，当前Activity的动画效果。
                 //目前动画，左进，右出。
                 //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用

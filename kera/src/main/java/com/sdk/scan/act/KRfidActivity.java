@@ -78,7 +78,9 @@ public class KRfidActivity extends KNfcActivity {
         super.finish();
         try {
             if (lf != null) {
+                lf.stopRead();
                 lf.close();//关闭读卡器
+                lf.setHandler(null);
                 lf = null;
             }
             if (handler != null) {

@@ -4,14 +4,18 @@ import android.content.Context
 import android.graphics.Color
 import android.os.Build
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
+import android.view.WindowManager
 import android.widget.ScrollView
 import android.widget.TextView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
+import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.KGradientScrollView
+import cn.oi.klittle.era.widget.KGradientView
 import cn.oi.klittle.era.widget.compat.KScrollTextView
 import cn.oi.klittle.era.widget.compat.KShadowView
 import cn.oi.klittle.era.widget.compat.KTextView
@@ -20,18 +24,21 @@ import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.*
+import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.TimeUnit
 
 //        val alert: KTopTimiDialog by lazy { KTopTimiDialog(this) }
 //        alert.mession("提示").show()
 /**
- * fixme 顶部提示框
+ * fixme 顶部提示框（从顶部出来，从顶部消失）
  */
 open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = true) : KBaseDialog(ctx, isStatus = isStatus, isTransparent = isTransparent) {
 
     override fun initEvent() {
         super.initEvent()
         setWindowAnimations(R.style.kera_popuwindow_top)
+        setNotFocusable()//不拦截按键（如：返回键）
+        isDismiss(true)//点击会消失。
     }
 
     override fun onCreateView(context: Context): View? {
@@ -39,6 +46,8 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
             verticalLayout {
                 gravity = Gravity.CENTER_HORIZONTAL
                 isClickable = false
+                isFocusable = false
+                isFocusableInTouchMode = false
                 //内容
                 KTextView(this).apply {
                     id = kpx.id("crown_txt_mession")
@@ -46,18 +55,31 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
                     textColor = Color.WHITE
                     textSize = kpx.textSizeX(36)
                     gravity = Gravity.CENTER_VERTICAL
-                    topPadding = kpx.x(24) + kpx.statusHeight
-                    bottomPadding = kpx.x(24)
+                    //fixme 高度盖过KToolbar的高度比较好看，所以设置成30
+                    topPadding = kpx.x(30) + kpx.statusHeight
+                    bottomPadding = kpx.x(30)
                     radius {
-                        bgVerticalColors(Color.RED, Color.parseColor("#DD5246"))
+                        //bgVerticalColors(Color.parseColor("#DC5A4F"), Color.parseColor("#FF8080"))//备份一下，这个淡红色效果还不错。
+                        bgVerticalColors(Color.parseColor("#DC5A4F"), Color.parseColor("#FF8080"))
                     }
                     gravity = Gravity.CENTER
                 }.lparams {
                     width = matchParent
                     height = wrapContent
                 }
+                KGradientView(this).apply {
+                    id = kpx.id("shadow_view_bottom")
+                    gradientColor(Color.parseColor("#FF8080"), kpx.x(24), Gravity.TOP)//使用KScrimUtil实现更柔和的渐变色。效果不错。
+                }.lparams {
+                    width = matchParent
+                    height = kpx.x(24)
+                }
             }
-        }.view
+        }.view.apply {
+            isClickable = false
+            isFocusable = false
+            isFocusableInTouchMode = false
+        }
     }
 
     //信息文本
@@ -68,10 +90,8 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
         return this
     }
 
-
-    init {
-        isDismiss(true)//默认不消失
-    }
+    //阴影线
+    val shadowLine: KGradientView by lazy { findViewById<KGradientView>(kpx.id("shadow_view_bottom")) }
 
 
     var job: Deferred<Any?>? = null
@@ -88,6 +108,17 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
 
     override fun onDismiss() {
         super.onDismiss()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        try {
+            job?.cancel()//取消协程
+            job = null
+            mession?.onDestroy()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 

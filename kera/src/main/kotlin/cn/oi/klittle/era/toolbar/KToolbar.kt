@@ -334,7 +334,7 @@ open class KToolbar {
                             //backgroundDrawable = resources?.getDrawable(R.drawable.kera_drawable_bottom_shadow)
                             //就使用#60000000这个颜色值，这个颜色值在低分辨率和高分辨率效果都不错。
                             //numStops渐变层为10，个人感觉效果不错。
-                            gradientColor(toolbarShadowColor, 10)//使用KScrimUtil实现更柔和的渐变色。效果不错。
+                            gradientColor(toolbarShadowColor, toolbarShadowHeight)//使用KScrimUtil实现更柔和的渐变色。效果不错。
                         }.lparams {
                             width = matchParent
                             height = toolbarShadowHeight
