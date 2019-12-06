@@ -10,6 +10,8 @@ import com.sdk.scan.RFID.KUtil;
 
 import org.jetbrains.annotations.Nullable;
 
+import cn.oi.klittle.era.base.KBaseActivityManager;
+import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.utils.KAppUtils;
 
 /**
@@ -44,14 +46,18 @@ public class KRfidActivity extends KNfcActivity {
                         @Override
                         public void handleMessage(Message msg) {
                             try {
-                                if (msg.what == KLF125KTagReadThread.MSG_RESULT) {
-                                    long id = msg.getData().getLong("id");
-                                    //int country = msg.getData().getInt("country");
-                                    //Log.e("MainActivity", "id = " + Long.valueOf(id) + "; country = " + country);
-                                    KUtil.play(1);
-                                    if (isEnableNF2C()) {
-                                        //fixme 回调和NFC回调统一。
-                                        onNfcResult(String.valueOf(id));
+                                //fixme 只对当前Activity进行回调。（防止多个Activity冲突）
+                                //getActivity()会获取到子类实际对象
+                                if (KBaseActivityManager.getInstance().getStackTopActivity() == getActivity()) {
+                                    if (msg.what == KLF125KTagReadThread.MSG_RESULT) {
+                                        long id = msg.getData().getLong("id");
+                                        //int country = msg.getData().getInt("country");
+                                        //Log.e("MainActivity", "id = " + Long.valueOf(id) + "; country = " + country);
+                                        KUtil.play(1);
+                                        if (isEnableNF2C()) {
+                                            //fixme 回调和NFC回调统一。
+                                            onNfcResult(String.valueOf(id).trim());
+                                        }
                                     }
                                 }
                             } catch (Exception e) {
@@ -65,11 +71,27 @@ public class KRfidActivity extends KNfcActivity {
                     lf = new KLF125KTagReadThread();
                     lf.setHandler(handler);
                     lf.init();
-                    lf.startRead();//启动读取卡
+                    //lf.startRead();//启动读取卡;在onResume()里启动
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (lf != null) {
+            lf.stopRead();//停止读卡（最好停用一下，防止多个Activity同时开启冲突）
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (lf != null) {
+            lf.startRead();//启动读取卡
         }
     }
 

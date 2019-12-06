@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.utils.KAppUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import com.sdk.scan.utils.KScanReader
@@ -64,6 +65,20 @@ open class KScanActivity : KRfidActivity() {
         }
     }
 
+    override fun onPause() {
+        super.onPause()
+        if (scanReader != null) {
+            scanReader?.stopScan()//停止扫描(关闭扫描灯)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        if (scanReader != null) {
+//            scanReader?.startScan()//启动扫描（会开启扫描灯的）
+//        }
+    }
+
     /**
      * 新版PDA扫描接收
      */
@@ -81,11 +96,14 @@ open class KScanActivity : KRfidActivity() {
                     resultReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context, intent: Intent) {
                             try {
-                                var barcode = intent.getByteArrayExtra(KScanReader.SCAN_RESULT)
-                                //Log.e("MainActivity", "barcode = " + String(barcode!!))
-                                if (barcode != null) {
-                                    onScanResult?.let {
-                                        it(0, KStringUtils.bytesToString(barcode))
+                                //fixme 只对当前Activity进行回调。
+                                if (KBaseActivityManager.getInstance().stackTopActivity === getActivity()) {
+                                    var barcode = intent.getByteArrayExtra(KScanReader.SCAN_RESULT)
+                                    //Log.e("MainActivity", "barcode = " + String(barcode!!))
+                                    if (barcode != null) {
+                                        onScanResult?.let {
+                                            it(0, KStringUtils.bytesToString(barcode).trim())
+                                        }
                                     }
                                 }
                             } catch (e: Exception) {
@@ -112,6 +130,7 @@ open class KScanActivity : KRfidActivity() {
                     unregisterReceiver(resultReceiver)
                     resultReceiver = null
                 }
+                scanReader = null
             }
         } catch (e: Exception) {
             e.printStackTrace()
