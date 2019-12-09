@@ -96,6 +96,9 @@ open class KScanActivity : KRfidActivity() {
                     resultReceiver = object : BroadcastReceiver() {
                         override fun onReceive(context: Context, intent: Intent) {
                             try {
+                                if (isFastScan()) {
+                                    return//fixme 防止重复扫描
+                                }
                                 //fixme 只对当前Activity进行回调。
                                 if (KBaseActivityManager.getInstance().stackTopActivity === getActivity()) {
                                     var barcode = intent.getByteArrayExtra(KScanReader.SCAN_RESULT)
@@ -136,6 +139,23 @@ open class KScanActivity : KRfidActivity() {
             e.printStackTrace()
         }
 
+    }
+
+    companion object {
+        // 两次扫描之间的点击间隔不能少于200毫秒
+        var MIN_CLICK_DELAY_TIME_scan: Long = 200
+        var lastClickTime_scan = 0L//记录最后一次刷卡时间
+
+        //判断是否超快速，重复扫描
+        fun isFastScan(): Boolean {
+            var flag = false
+            val curClickTime = System.currentTimeMillis()
+            if (curClickTime - lastClickTime_scan <= MIN_CLICK_DELAY_TIME_scan) {
+                flag = true//快速点击
+            }
+            lastClickTime_scan = curClickTime
+            return flag
+        }
     }
 
 }

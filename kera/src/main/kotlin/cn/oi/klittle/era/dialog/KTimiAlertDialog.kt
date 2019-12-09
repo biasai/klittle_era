@@ -141,30 +141,30 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
         }.view
     }
 
-    val container: View by lazy { findViewById<View>(kpx.id("crown_alert_parent")) }//最外层容器
+    val container: View? by lazy { findViewById<View>(kpx.id("crown_alert_parent")) }//最外层容器
     //标题栏文本
     var txt_title: String? = getString(R.string.ktishi)//提示
-    val title: TextView by lazy { findViewById<TextView>(kpx.id("crown_txt_title")) }
+    val title: TextView? by lazy { findViewById<TextView>(kpx.id("crown_txt_title")) }
     open fun title(title: String? =  getString(R.string.ktishi)): KTimiAlertDialog {
         txt_title = title
         return this
     }
 
-    val scrollView: ScrollView by lazy { findViewById<ScrollView>(kpx.id("crown_scrollView")) }
+    val scrollView: ScrollView? by lazy { findViewById<ScrollView>(kpx.id("crown_scrollView")) }
 
     //信息文本
     var txt_mession: String? = ""
-    val mession: KTextView by lazy { findViewById<KTextView>(kpx.id("crown_txt_mession")) }
+    val mession: KTextView? by lazy { findViewById<KTextView>(kpx.id("crown_txt_mession")) }
     open fun mession(mession: String? = null): KTimiAlertDialog {
         txt_mession = mession
         return this
     }
 
-    val negative: TextView by lazy { findViewById<TextView>(kpx.id("crown_txt_Negative")) }
+    val negative: TextView? by lazy { findViewById<TextView>(kpx.id("crown_txt_Negative")) }
     //左边，取消按钮
     open fun negative(negative: String? = getString(R.string.kcancel), callback: (() -> Unit)? = null): KTimiAlertDialog {
-        this.negative.setText(negative)
-        this.negative.setOnClickListener {
+        this.negative?.setText(negative)
+        this.negative?.setOnClickListener {
             callback?.run {
                 this()
             }
@@ -173,11 +173,11 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
         return this
     }
 
-    val positive: TextView by lazy { findViewById<TextView>(kpx.id("crown_txt_Positive")) }
+    val positive: TextView? by lazy { findViewById<TextView>(kpx.id("crown_txt_Positive")) }
     //右边，确定按钮
     open fun positive(postive: String? = getString(R.string.kconfirm), callback: (() -> Unit)? = null): KTimiAlertDialog {
-        this.positive.setText(postive)
-        this.positive.setOnClickListener {
+        this.positive?.setText(postive)
+        this.positive?.setOnClickListener {
             callback?.run {
                 this()
             }
@@ -188,11 +188,11 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
 
     init {
         //取消
-        negative.setOnClickListener {
+        negative?.setOnClickListener {
             dismiss()
         }
         //确定
-        positive.setOnClickListener {
+        positive?.setOnClickListener {
             dismiss()
         }
         isDismiss(false)//默认不消失

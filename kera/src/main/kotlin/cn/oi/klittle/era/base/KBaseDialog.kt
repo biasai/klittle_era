@@ -452,33 +452,46 @@ open class KBaseDialog() {
 
 
     //获取控件
-    fun <T : View?> findViewById(id: Int): T {
-        return dialog!!.findViewById<T>(id)
+    fun <T : View?> findViewById(id: Int): T? {
+        if (dialog != null && ctx != null) {
+            try {
+                return dialog?.findViewById<T?>(id)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                KLoggerUtils.e("dialog控件获取异常：\t" + e.message)
+            }
+        }
+        return null
     }
 
     //关闭弹窗
     open fun dismiss() {
         if (dialog != null && ctx != null) {
-            try {
-                ctx?.runOnUiThread {
+            dialog?.let {
+                if (it.isShowing) {
+                    //关闭
                     try {
-                        if (ctx != null && this is Activity) {
-                            if (!isFinishing) {
-                                dialog?.let {
-                                    if (it.isShowing) {
-                                        it.dismiss()//关闭
+                        ctx?.runOnUiThread {
+                            try {
+                                if (ctx != null && this is Activity) {
+                                    if (!isFinishing) {
+                                        dialog?.let {
+                                            if (it.isShowing) {
+                                                it.dismiss()//关闭
+                                            }
+                                        }
+                                        System.gc()//垃圾内存回收
                                     }
                                 }
-                                System.gc()//垃圾内存回收
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                KLoggerUtils.e("dialog关闭异常：\t" + e.message)
                             }
                         }
-                    } catch (e: Exception) {
+                    } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                        KLoggerUtils.e("dialog关闭异常：\t" + e.message)
                     }
                 }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
             }
         }
     }

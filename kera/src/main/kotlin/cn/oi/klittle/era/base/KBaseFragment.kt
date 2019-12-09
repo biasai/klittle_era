@@ -12,6 +12,7 @@ import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.KAssetsUtils
 import org.jetbrains.anko.act
 import org.jetbrains.anko.support.v4.act
+import java.lang.Exception
 
 /**
  * 继承本Fragment，主构造函数传入一个布局id或者一个View即可。然后就可以像Activity一样使用了。
@@ -51,10 +52,15 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
         return null
     }
 
-    //获取控件
+    //通过ID获取控件
     fun <T> findViewById(id: Int): T? {
-        var view = content?.findViewById<View>(id)
-        return view as? T
+        try {
+            var view = content?.findViewById<View>(id)
+            return view as? T
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
     }
 
     override fun onResume() {
@@ -160,7 +166,7 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
 
     //默认就从Res目录下读取
     open fun getString(id: Int, formatArgs: String? = null): String {
-        return getStringFromResources(id,formatArgs)
+        return getStringFromResources(id, formatArgs)
     }
 
     /**
@@ -203,31 +209,31 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     }
 
     open fun startActivity(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivity(clazz, bundle,act)
+        KUiHelper.goActivity(clazz, bundle, act)
     }
 
     open fun goActivity(clazz: Class<*>) {
-        KUiHelper.goActivity(clazz,act)
+        KUiHelper.goActivity(clazz, act)
     }
 
     open fun goActivity(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivity(clazz, bundle,act)
+        KUiHelper.goActivity(clazz, bundle, act)
     }
 
     open fun goActivity(intent: Intent) {
-        KUiHelper.goActivity(intent,act)
+        KUiHelper.goActivity(intent, act)
     }
 
     open fun goActivityForResult(clazz: Class<*>) {
-        KUiHelper.goActivityForResult(clazz,act)
+        KUiHelper.goActivityForResult(clazz, act)
     }
 
     open fun goActivityForResult(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivityForResult(clazz, bundle,act)
+        KUiHelper.goActivityForResult(clazz, bundle, act)
     }
 
     open fun goActivityForResult(intent: Intent) {
-        KUiHelper.goActivityForResult(intent,act)
+        KUiHelper.goActivityForResult(intent, act)
     }
 
     companion object {

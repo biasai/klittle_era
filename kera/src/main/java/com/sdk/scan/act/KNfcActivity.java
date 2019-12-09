@@ -55,6 +55,11 @@ public class KNfcActivity extends KBaseActivity {
         return true;//默认开启
     }
 
+    //fixme 是否开启了RFID功能；默认不开启，如果开启了，NFC就不会开启了。优先级比NFC高；RFID和NFC不可兼容。即硬件目前只支持其中一种；不能同时支持。
+    public Boolean isEnableRFID() {
+        return false;//默认不开启
+    }
+
     //新增方法，控制NFC回调开关。
     public Boolean isEnableNF2C() {
         return true;//默认开启
@@ -102,6 +107,10 @@ public class KNfcActivity extends KBaseActivity {
      * 关闭nfc读卡功能【nfc实际功能没有关闭，只是当前页不再监听nfc读卡】
      */
     public void disableNfc() {
+        if (isEnableRFID()) {
+            //fixme 如果开了RFID扫描；NFC就不开。
+            return;
+        }
         try {
             if (mNfcAdapter != null) {
                 mNfcAdapter.disableForegroundDispatch(this);// 取消调度
@@ -115,6 +124,10 @@ public class KNfcActivity extends KBaseActivity {
      * 开启nfc读卡功能【当前页面继续监听nfc读卡功能】
      */
     public void enableNfc() {
+        if (isEnableRFID()) {
+            //fixme 如果开了RFID扫描；NFC就不开。
+            return;
+        }
         try {
             if (mNfcAdapter != null && mNfcAdapter.isEnabled()) {
                 if (pendingIntent == null) {
@@ -155,8 +168,13 @@ public class KNfcActivity extends KBaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isEnableNFC()) {
-            initNfc();
+        try {
+            if (isEnableNFC()) {
+                initNfc();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("NFC初始化异常：\t" + e.getMessage());
         }
     }
 
@@ -171,6 +189,10 @@ public class KNfcActivity extends KBaseActivity {
 
     //初始化nfc配置
     private void initNfc() {
+        if (isEnableRFID()) {
+            //fixme 如果开了RFID扫描；NFC就不开。
+            return;
+        }
         try {
             if (mNfcAdapter == null) {
                 mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
@@ -252,6 +274,9 @@ public class KNfcActivity extends KBaseActivity {
 
     private void readFromNfc(Intent intent) {
         try {
+            if (isFastNfc()) {
+                return;//fixme 防止快速刷卡
+            }
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             if (null != tag) {
                 byte[] tagId = tag.getId();
@@ -299,4 +324,20 @@ public class KNfcActivity extends KBaseActivity {
         mNfcAdapter = null;
         pendingIntent = null;
     }
+
+    // 两次刷卡之间的点击间隔不能少于1000毫秒（即1秒）
+    static long MIN_CLICK_DELAY_TIME_nfc = 1000;
+    static long lastClickTime_nfc = 0;//记录最后一次刷卡时间
+
+    //判断是否快速刷卡
+    static boolean isFastNfc() {
+        boolean flag = false;
+        long curClickTime = System.currentTimeMillis();
+        if ((curClickTime - lastClickTime_nfc) <= MIN_CLICK_DELAY_TIME_nfc) {
+            flag = true;//快速点击
+        }
+        lastClickTime_nfc = curClickTime;
+        return flag;
+    }
+
 }

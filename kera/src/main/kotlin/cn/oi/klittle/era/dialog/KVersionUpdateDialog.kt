@@ -22,7 +22,7 @@ import java.lang.Exception
  */
 open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = true) : KBaseDialog(ctx, R.layout.kera_dialog_version_update, isStatus, isTransparent) {
     //进度条
-    val numprogressbar: KNumberProgressBar by lazy { findViewById<KNumberProgressBar>(R.id.numprogressbar) }
+    val numprogressbar: KNumberProgressBar? by lazy { findViewById<KNumberProgressBar>(R.id.numprogressbar) }
     //apk下载链接
     var url: String? = null
     //文件名，包括后缀。如果为null或""空，会自动获取网络上的名称。
@@ -43,11 +43,11 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
             KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
         }
         //取消
-        findViewById<View>(R.id.crown_txt_cancel).setOnClickListener {
+        findViewById<View>(R.id.crown_txt_cancel)?.setOnClickListener {
             dismiss()
         }
         //更新
-        findViewById<View>(R.id.crown_txt_ok).setOnClickListener {
+        findViewById<View>(R.id.crown_txt_ok)?.setOnClickListener {
             loadDown()
         }
         findViewById<TextView>(R.id.crown_txt_version_name)?.setText(getString(R.string.kfaxianxinbanben) + ":" + KBaseApplication.getInstance().versionName)//"发现新版本："
@@ -123,10 +123,10 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                     if (isForceLoad) {
                         //强制下载
                         isLocked(true)//屏蔽返回键
-                        findViewById<View>(cn.oi.klittle.era.R.id.crown_txt_cancel).visibility = View.INVISIBLE//取消按钮不显示。
+                        findViewById<View>(cn.oi.klittle.era.R.id.crown_txt_cancel)?.visibility = View.INVISIBLE//取消按钮不显示。
                     } else {
                         isLocked(false)//不屏蔽返回键
-                        findViewById<View>(cn.oi.klittle.era.R.id.crown_txt_cancel).visibility = View.VISIBLE//显示取消按钮。
+                        findViewById<View>(cn.oi.klittle.era.R.id.crown_txt_cancel)?.visibility = View.VISIBLE//显示取消按钮。
                     }
                 }
             }

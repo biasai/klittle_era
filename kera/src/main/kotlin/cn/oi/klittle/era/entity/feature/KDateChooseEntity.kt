@@ -9,10 +9,10 @@ import cn.oi.klittle.era.utils.KLoggerUtils
  */
 open class KDateChooseEntity {
 
-    var yyyy: String//年
-    var MM: String//月
+    var yyyy: String?//年
+    var MM: String?//月
 
-    var dd: String//日
+    var dd: String?//日
 
     init {
         //初始化，年月日，以当前时间为标准
@@ -23,15 +23,25 @@ open class KDateChooseEntity {
 
     //默认格式 yyyy-MM-dd
     open override fun toString(): String {
-        var M=MM
-        if(M.length<2){
-            M="0"+M
+        try {
+            if (MM != null && dd != null) {
+                var M = MM
+                if (M!!.length < 2) {
+                    M = "0" + M
+                }
+                var d = dd
+                if (d!!.length < 2) {
+                    d = "0" + d
+                }
+                return yyyy + "-" + M + "-" + d//返回年月日
+            }
+            yyyy?.let {
+                return it//返回年
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        var d=dd
-        if(d.length<2){
-            d="0"+d
-        }
-        return yyyy + "-" + M + "-" + d
+        return ""
     }
 
 }

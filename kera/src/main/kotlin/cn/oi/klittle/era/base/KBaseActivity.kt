@@ -450,20 +450,6 @@ open class KBaseActivity : FragmentActivity() {
         this.onBackPressed2 = onBackPressed2
     }
 
-    // 两次点击按钮之间的点击间隔不能少于1000毫秒（即1秒）
-    var MIN_CLICK_DELAY_TIME = 1000
-    var lastClickTime: Long = System.currentTimeMillis()//记录最后一次点击时间
-
-    //判断是否快速点击，true是快速点击，false不是
-    open fun isFastClick(): Boolean {
-        var flag = false
-        var curClickTime = System.currentTimeMillis()
-        if ((curClickTime - lastClickTime) <= MIN_CLICK_DELAY_TIME) {
-            flag = true//快速点击
-        }
-        lastClickTime = curClickTime
-        return flag
-    }
 
     //fixme 自定义点击事件，可以添加多个点击事情。互不影响
     open fun onClick(view: View?, onClick: () -> Unit) {
@@ -793,29 +779,6 @@ open class KBaseActivity : FragmentActivity() {
         KUiHelper.goActivityForResult(intent, act, requestCode)
     }
 
-    companion object {
-
-        //获取位图
-        open fun getBitmapFromAssets(filePath: String, isRGB_565: Boolean = false): Bitmap {
-            return KAssetsUtils.getInstance().getBitmapFromAssets(filePath, isRGB_565)
-        }
-
-        open fun getBitmapFromResource(resID: Int, isRGB_565: Boolean = false): Bitmap {
-            return KAssetsUtils.getInstance().getBitmapFromResource(resID, isRGB_565)
-        }
-
-        open fun getBitmapFromFile(filePath: String, isRGB_565: Boolean = false): Bitmap {
-            return KAssetsUtils.getInstance().getBitmapFromFile(filePath, isRGB_565)
-        }
-
-        open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
-            //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
-            //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
-            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
-        }
-
-    }
-
     private var kTimi: KTimiAlertDialog? = null
     /**
      * 显示弹窗信息
@@ -993,6 +956,44 @@ open class KBaseActivity : FragmentActivity() {
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+    }
+
+    companion object {
+
+        // 两次点击按钮之间的点击间隔不能少于1000毫秒（即1秒）
+        var MIN_CLICK_DELAY_TIME = 1000
+        var lastClickTime: Long = 0//记录最后一次点击时间
+
+        //判断是否快速点击，true是快速点击，false不是
+        open fun isFastClick(): Boolean {
+            var flag = false
+            var curClickTime = System.currentTimeMillis()
+            if ((curClickTime - lastClickTime) <= MIN_CLICK_DELAY_TIME) {
+                flag = true//快速点击
+            }
+            lastClickTime = curClickTime
+            return flag
+        }
+
+        //获取位图
+        open fun getBitmapFromAssets(filePath: String, isRGB_565: Boolean = false): Bitmap {
+            return KAssetsUtils.getInstance().getBitmapFromAssets(filePath, isRGB_565)
+        }
+
+        open fun getBitmapFromResource(resID: Int, isRGB_565: Boolean = false): Bitmap {
+            return KAssetsUtils.getInstance().getBitmapFromResource(resID, isRGB_565)
+        }
+
+        open fun getBitmapFromFile(filePath: String, isRGB_565: Boolean = false): Bitmap {
+            return KAssetsUtils.getInstance().getBitmapFromFile(filePath, isRGB_565)
+        }
+
+        open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
+            //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
+            //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        }
+
     }
 
 }

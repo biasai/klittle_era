@@ -248,14 +248,16 @@ abstract class KBaseUi {
 
         //获取Activity最外层的容器
         fun getContentView(activity: Activity? = getActivity()): View? {
-            var window: Window? = activity?.window
-            window?.let {
-                var decorView = it.decorView//布局里面的最顶层控件，本质上是FrameLayout(帧布局)，FrameLayout.LayoutParams
-                var contentView = decorView.findViewById<View>(android.R.id.content) as ViewGroup//我们的布局文件。就放在contentView里面。contentView本质上也是FrameLayout(帧布局)，FrameLayout.LayoutParams
-                if (contentView.childCount > 0) {
-                    return contentView.getChildAt(0)//这就是我们xml布局文件最外层的那个父容器控件。
+            try {
+                var window: Window? = activity?.window
+                window?.let {
+                    var decorView = it.decorView//布局里面的最顶层控件，本质上是FrameLayout(帧布局)，FrameLayout.LayoutParams
+                    var contentView = decorView.findViewById<View>(android.R.id.content) as ViewGroup//我们的布局文件。就放在contentView里面。contentView本质上也是FrameLayout(帧布局)，FrameLayout.LayoutParams
+                    if (contentView.childCount > 0) {
+                        return contentView.getChildAt(0)//这就是我们xml布局文件最外层的那个父容器控件。
+                    }
                 }
-            }
+            }catch (e:Exception){e.printStackTrace()}
             return null
         }
 

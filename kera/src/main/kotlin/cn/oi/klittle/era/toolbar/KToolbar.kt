@@ -138,7 +138,7 @@ open class KToolbar {
         //获取阴影线高度
         fun getShadowHeight(): Int {
             //KLoggerUtils.e("分辨率宽度：\t" + kpx.screenWidth())
-            if (kpx.screenWidth() > 720) {
+            if (kpx.screenWidth() >= 720) {
                 //现在主流分辨率基本都是1080x1920的。720都是很老的了。
                 return kpx.x(24)//分辨率高的设备上，阴影大一点效果较好。太大了也不好。24刚刚好。
             } else {
@@ -148,7 +148,7 @@ open class KToolbar {
 
         //获取阴影颜色
         fun getShadowColor(): Int {
-            if (kpx.screenWidth() > 720) {
+            if (kpx.screenWidth() >= 720) {
                 return Color.parseColor("#70000000")//高分辨率下，颜色稍微深一点。
             } else {
                 return Color.parseColor("#50000000")//低分辨率颜色浅一点较好。

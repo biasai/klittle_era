@@ -13,6 +13,7 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.toolbar.KToolbar
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.KGradientScrollView
 import cn.oi.klittle.era.widget.KGradientView
@@ -69,10 +70,10 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
                 }
                 KGradientView(this).apply {
                     id = kpx.id("shadow_view_bottom")
-                    gradientColor(Color.parseColor("#FF8080"), kpx.x(24), Gravity.TOP)//使用KScrimUtil实现更柔和的渐变色。效果不错。
+                    gradientColor(KToolbar.getShadowColor(), KToolbar.getShadowHeight(), Gravity.TOP)//使用KScrimUtil实现更柔和的渐变色。效果不错。
                 }.lparams {
                     width = matchParent
-                    height = kpx.x(24)
+                    height = KToolbar.getShadowHeight()//获取阴影线高度（使用KToolbar统一一下比较好）
                 }
             }
         }.view.apply {
@@ -84,14 +85,14 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
 
     //信息文本
     var txt_mession: String? = ""
-    val mession: KTextView by lazy { findViewById<KTextView>(kpx.id("crown_txt_mession")) }
+    val mession: KTextView? by lazy { findViewById<KTextView>(kpx.id("crown_txt_mession")) }
     open fun mession(mession: String? = null): KTopTimiDialog {
         txt_mession = mession
         return this
     }
 
     //阴影线
-    val shadowLine: KGradientView by lazy { findViewById<KGradientView>(kpx.id("shadow_view_bottom")) }
+    val shadowLine: KGradientView? by lazy { findViewById<KGradientView>(kpx.id("shadow_view_bottom")) }
 
 
     var job: Deferred<Any?>? = null

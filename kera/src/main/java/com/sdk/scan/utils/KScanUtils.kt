@@ -9,6 +9,7 @@ import android.device.ScanDevice
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.utils.KLoggerUtils
+import com.sdk.scan.act.KScanActivity
 import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
 
@@ -223,6 +224,9 @@ object KScanUtils {
     private val mScanReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
             try {
+                if (KScanActivity.isFastScan()) {
+                    return
+                }
                 val barocode = intent.getByteArrayExtra("barocode")
                 val length = intent.getIntExtra("length", 0)
                 val barcodeType = intent.getByteExtra("barcodeType", 0.toByte())

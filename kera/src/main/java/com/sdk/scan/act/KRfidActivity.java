@@ -11,7 +11,6 @@ import com.sdk.scan.RFID.KUtil;
 import org.jetbrains.annotations.Nullable;
 
 import cn.oi.klittle.era.base.KBaseActivityManager;
-import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.utils.KAppUtils;
 
 /**
@@ -29,6 +28,18 @@ public class KRfidActivity extends KNfcActivity {
             return true;
         }
         return false;
+    }
+
+    /**
+     * fixme 判断是否开启ID卡扫描；如果开启了RFID;NFC就不会开启；RFID优先级高。
+     * @return
+     */
+    @Override
+    public Boolean isEnableRFID() {
+        if (isNewPdA_Alpas()) {
+            return true;//开启ID卡扫描
+        }
+        return super.isEnableRFID();
     }
 
     private Handler handler = null;
@@ -50,6 +61,9 @@ public class KRfidActivity extends KNfcActivity {
                                 //getActivity()会获取到子类实际对象
                                 if (KBaseActivityManager.getInstance().getStackTopActivity() == getActivity()) {
                                     if (msg.what == KLF125KTagReadThread.MSG_RESULT) {
+                                        if (isFastNfc()) {
+                                            return;//fixme 防止快速刷卡
+                                        }
                                         long id = msg.getData().getLong("id");
                                         //int country = msg.getData().getInt("country");
                                         //Log.e("MainActivity", "id = " + Long.valueOf(id) + "; country = " + country);
