@@ -7,12 +7,14 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.jetbrains.annotations.Nullable;
 
 import cn.oi.klittle.era.base.KBaseActivity;
 import cn.oi.klittle.era.utils.KIntentUtils;
 import cn.oi.klittle.era.utils.KLoggerUtils;
+import cn.oi.klittle.era.utils.KStringUtils;
 
 //   fixme 使用案例，子类主要重写以下方法即可
 
@@ -296,6 +298,7 @@ public class KNfcActivity extends KBaseActivity {
         }
     }
 
+    //原厂的
     private String bytesToHexString(byte[] bArray) {
         StringBuilder sb = new StringBuilder(bArray.length);
         String sTemp;
@@ -308,14 +311,36 @@ public class KNfcActivity extends KBaseActivity {
         return sb.toString();
     }
 
+    //原厂的
     private String hexToDecString(String hex) {
-        int before = (int) Long.parseLong(hex, 16); //大于Integer.MAX_VALUE时出现截断，估计就不对了
-        int r24 = before >> 24 & 0x000000FF;
-        int r8 = before >> 8 & 0x0000FF00;
-        int l8 = before << 8 & 0x00FF0000;
-        int l24 = before << 24 & 0xFF000000;
+        try {
+            int before = (int) Long.parseLong(hex, 16); //大于Integer.MAX_VALUE时出现截断，估计就不对了
+            int r24 = before >> 24 & 0x000000FF;
+            int r8 = before >> 8 & 0x0000FF00;
+            int l8 = before << 8 & 0x00FF0000;
+            int l24 = before << 24 & 0xFF000000;
+            return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));//Long类型；会去除前面的0；如：0758694741 会变成 758694741
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("NFC读卡异常：\t" + e.getMessage());
+        }
+        return "";
+    }
 
-        return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));
+    //和bytesToHexString效果是一样的。
+    private String ByteArrayToHexString(byte[] inarray) {
+        int i, j, in;
+        String[] hex = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A",
+                "B", "C", "D", "E", "F"};
+        String out = "";
+        for (j = 0; j < inarray.length; ++j) {
+            in = (int) inarray[j] & 0xff;
+            i = (in >> 4) & 0x0f;
+            out += hex[i];
+            i = in & 0x0f;
+            out += hex[i];
+        }
+        return out;
     }
 
     @Override
