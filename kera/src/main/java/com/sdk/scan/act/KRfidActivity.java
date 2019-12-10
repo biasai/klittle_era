@@ -32,6 +32,7 @@ public class KRfidActivity extends KNfcActivity {
 
     /**
      * fixme 判断是否开启ID卡扫描；如果开启了RFID;NFC就不会开启；RFID优先级高。
+     *
      * @return
      */
     @Override
@@ -48,7 +49,7 @@ public class KRfidActivity extends KNfcActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (isEnableNFC() && isNewPdA_Alpas()) {
+        if (isEnableNFC() && isNewPdA_Alpas() && isEnableRFID()) {
             try {
                 if (handler == null) {
                     //fixme 接收消息
