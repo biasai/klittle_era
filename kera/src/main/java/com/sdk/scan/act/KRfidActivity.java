@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 import cn.oi.klittle.era.base.KBaseActivityManager;
 import cn.oi.klittle.era.utils.KAppUtils;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
  * fixme RFID ID卡读取；针对：新版PDA扫描；品牌：alps；型号：Alps PDA
@@ -65,7 +66,7 @@ public class KRfidActivity extends KNfcActivity {
                                         if (isFastNfc()) {
                                             return;//fixme 防止快速刷卡
                                         }
-                                        long id = msg.getData().getLong("id");
+                                        long id = msg.getData().getLong("id");//fixme 只有long类型；没有String类型,getString()获取为空。
                                         //int country = msg.getData().getInt("country");
                                         //Log.e("MainActivity", "id = " + Long.valueOf(id) + "; country = " + country);
                                         KUtil.play(1);
@@ -76,6 +77,7 @@ public class KRfidActivity extends KNfcActivity {
                                     }
                                 }
                             } catch (Exception e) {
+                                KLoggerUtils.INSTANCE.e("读卡异常：\t" + e.getMessage());
                                 e.printStackTrace();
                             }
                         }

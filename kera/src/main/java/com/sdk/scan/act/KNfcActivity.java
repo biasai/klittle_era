@@ -284,8 +284,10 @@ public class KNfcActivity extends KBaseActivity {
                 byte[] tagId = tag.getId();
                 // 15AF503D
                 String str = bytesToHexString(tagId);
+                //KLoggerUtils.INSTANCE.e("STR:\t"+str);
                 // 363810877
                 String nfcCardNo = hexToDecString(str);
+                //KLoggerUtils.INSTANCE.e("nfcCardNo:\t"+nfcCardNo);
                 //回调
                 if (nfcCardNo != null && nfcCardNo.trim().length() > 0) {
                     if (isEnableNF2C()) {
@@ -319,7 +321,9 @@ public class KNfcActivity extends KBaseActivity {
             int r8 = before >> 8 & 0x0000FF00;
             int l8 = before << 8 & 0x00FF0000;
             int l24 = before << 24 & 0xFF000000;
-            return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));//Long类型；会去除前面的0；如：0758694741 会变成 758694741
+            //fixme Long类型；会去除前面的0；如：0758694741 会变成 758694741
+            //fixme 所以，如果首字符是0；本来是十位，读取的时候就是九位了；位数就发生变化了。（目前没办法知道前面是否带0，且带了几个0）
+            return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));
         } catch (Exception e) {
             e.printStackTrace();
             KLoggerUtils.INSTANCE.e("NFC读卡异常：\t" + e.getMessage());
