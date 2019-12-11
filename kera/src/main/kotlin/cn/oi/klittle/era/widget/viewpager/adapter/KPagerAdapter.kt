@@ -46,4 +46,19 @@ open class KPagerAdapter<T>(var datas: MutableList<T>? = null) : PagerAdapter() 
         //所以为了安全，最好将getCount()一开始就初始化固定。
         return mCount
     }
+
+    //标题
+    override fun getPageTitle(position: Int): CharSequence? {
+        datas?.let {
+            if (it.size > position) {
+                it[position]?.let {
+                    if (it is String) {
+                        return it
+                    }
+                }
+            }
+        }
+        return super.getPageTitle(position)
+    }
+
 }

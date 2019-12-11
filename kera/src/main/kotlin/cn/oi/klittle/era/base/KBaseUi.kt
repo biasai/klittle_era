@@ -6,6 +6,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.support.design.widget.TabLayout
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -257,7 +258,9 @@ abstract class KBaseUi {
                         return contentView.getChildAt(0)//这就是我们xml布局文件最外层的那个父容器控件。
                     }
                 }
-            }catch (e:Exception){e.printStackTrace()}
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
             return null
         }
 
@@ -426,13 +429,22 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KDotView(ctx) }, theme = 0) { init() }
         }
 
-        //菜单滑动条
+        //菜单滑动条(自定义)
         inline fun ViewManager.kLayoutBar(init: (@AnkoViewDslMarker KLayoutBar).() -> Unit): KLayoutBar {
             return ankoView({ ctx: Context -> KLayoutBar(ctx) }, theme = 0) { init() }
         }
 
         inline fun ViewManager.klayoutBar(init: (@AnkoViewDslMarker KLayoutBar).() -> Unit): KLayoutBar {
             return ankoView({ ctx: Context -> KLayoutBar(ctx) }, theme = 0) { init() }
+        }
+
+        //菜单滑动条(系统原生：android.support.design.widget.TabLayout)
+        inline fun ViewManager.kTabLayout(init: (@AnkoViewDslMarker KTabLayout).() -> Unit): KTabLayout {
+            return ankoView({ ctx: Context -> KTabLayout(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.ktabLayout(init: (@AnkoViewDslMarker KTabLayout).() -> Unit): KTabLayout {
+            return ankoView({ ctx: Context -> KTabLayout(ctx) }, theme = 0) { init() }
         }
 
         //fixme cmpat兼容组件

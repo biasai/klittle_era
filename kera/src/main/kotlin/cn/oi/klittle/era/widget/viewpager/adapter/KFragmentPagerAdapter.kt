@@ -28,4 +28,10 @@ open class KFragmentPagerAdapter(fm: FragmentManager?, var fragments: MutableLis
         //所以为了安全，最好将getCount()一开始就初始化固定。
         return mCount
     }
+
+    //获取标题
+    override fun getPageTitle(position: Int): CharSequence? {
+        return super.getPageTitle(position)
+    }
+
 }
