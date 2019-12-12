@@ -306,12 +306,12 @@ public class KFileLoadUtils {
                                         public void run() {
                                             //主线程回调
                                             if (requestCallBack2 != null) {
-                                                requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), file);//下载失败
+                                                requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail)+":\t"+ResponseCode, file);//下载失败
                                             }
                                         }
                                     });
                                 } else {
-                                    requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), file);//下载失败
+                                    requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail)+":\t"+ResponseCode, file);//下载失败
                                 }
                             }
                         }

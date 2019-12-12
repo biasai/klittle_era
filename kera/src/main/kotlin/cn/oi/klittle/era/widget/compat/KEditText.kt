@@ -117,6 +117,13 @@ import org.jetbrains.anko.singleLine
 //                onTouch { v, event ->
 //                }
 
+//                            //fixme 只允许输入数值类型，比如003会自动转成3；00也会自动转成0，(会自动去除前面的0,会自动转成Long类型再转String类型)
+//                            //fixme isInt=true 文本输入框会变成数值文本输入框。set()方法里设置了 setRawInputType(InputType.TYPE_CLASS_NUMBER)
+//                            isInt=true
+
+//                            minDecimal(0)//最大值
+//                            maxDecimal(100)//最小值
+
 //    fixme containsRegex("0123.+",6)//只允许输入0123.+ 这几个字符，且长度最大为6
 
 //    //fixme 调用案例/不包含567这三字符

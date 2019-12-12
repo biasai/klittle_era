@@ -11,6 +11,7 @@ import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.widget.KNumberProgressBar
 import cn.oi.klittle.era.utils.KAppUtils
 import cn.oi.klittle.era.utils.KFileLoadUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KProportionUtils
 import org.jetbrains.anko.runOnUiThread
 import java.io.File
@@ -77,7 +78,11 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                                         KAppUtils.installation(ctx, file)
                                     }
                                 } else {
-                                    KToast.showError(getString(R.string.kappdownfail))//下载失败
+                                    if (result != null) {
+                                        KToast.showError(result)
+                                    } else {
+                                        KToast.showError(getString(R.string.kappdownfail))//下载失败
+                                    }
                                 }
                             }
                         }

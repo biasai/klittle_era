@@ -247,7 +247,15 @@ open class KTextView : KView {
     var inputStart: Int = 0//fixme 输入文本的下标
     private var preDecimalText: String? = null//记录上一次正确的Double类型的文本
 
-    var isInt: Boolean? = null//fixme 是否为整形（整数。）;toDouble().toInt().toString()//有小数点不能直接转Int，先转Double，再转Int
+    var isInt: Boolean? = null
+        //fixme 是否为整形（整数。）;toDouble().toInt().toString()//有小数点不能直接转Long，先转Double，再转Long类型
+        set(value) {
+            if (value != null && value) {
+                setRawInputType(InputType.TYPE_CLASS_NUMBER)//只允许输入数值类型
+            }
+            field = value
+        }
+
     //fixme 最大值，最小值判断
     fun maxMinDecimal(mWatcher: Editable): Boolean {
         //fixme 最小值(先判断最小值)
@@ -327,11 +335,11 @@ open class KTextView : KView {
                     mWatcher?.let {
                         if (mWatcher != null && mWatcher.trim().length > 0 && isInt != null && isInt!!) {
                             //fixme 整数;text.toString().toDouble().toInt().toString()，有小数必须先转成浮点型，不能直接转int；不然报错异常。
-                            if ((!it.toString().equals(text.toString().toDouble().toInt().toString()))) {
-                                mWatcher?.replace(0, mWatcher.length, text.toString().toDouble().toInt().toString())//fixme 防止异常不相等，以时间text为准。（修复，亲测有效）
+                            if ((!it.toString().equals(text.toString().toDouble().toLong().toString()))) {
+                                mWatcher?.replace(0, mWatcher.length, text.toString().toDouble().toLong().toString())//fixme 防止异常不相等，以时间text为准。（修复，亲测有效）
                             }
-                            if (!text.toString().equals(text.toString().toDouble().toInt().toString())) {
-                                setText(text.toString().toDouble().toInt().toString())
+                            if (!text.toString().equals(text.toString().toDouble().toLong().toString())) {
+                                setText(text.toString().toDouble().toLong().toString())
                                 return@let
                             }
                         } else {
@@ -730,7 +738,7 @@ open class KTextView : KView {
 
     //fixme 必须设置一下文本，防止部分机型没有文本显示。
     private fun setText2(it: String?) {
-        if (it!=null&&it.length>0){
+        if (it != null && it.length > 0) {
             setText(it)
             invalidate()
         }
@@ -850,7 +858,9 @@ open class KTextView : KView {
             }
             textWatcher = null
             setText(null)//文本清空
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
