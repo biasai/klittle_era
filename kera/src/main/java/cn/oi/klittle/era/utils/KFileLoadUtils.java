@@ -68,7 +68,7 @@ import cn.oi.klittle.era.base.KBaseUi;
 public class KFileLoadUtils {
     private static KFileLoadUtils fileDown;
     private ThreadPoolExecutor threadPoolExecutor;
-    //文件下载目录
+    //fixme 文件下载目录
     public String cacheDir;
     //判断该uri是否正在下载
     private Map<String, Boolean> mapLoad;
@@ -76,18 +76,34 @@ public class KFileLoadUtils {
 
     //构造函数
     private KFileLoadUtils() {
-        Context context = KBaseApplication.getInstance();
-        //this.cacheDir = context.getApplicationContext().getFilesDir().getAbsolutePath();//这个地址，文件无法分享。(内部位置无法分享出去),不需要权限
-        this.cacheDir = context.getApplicationContext().getExternalCacheDir().getAbsolutePath();//这个位置，可以分享。（SD卡的东西可以分享出去）,不需要权限。推荐使用这个
-        //this.cacheDir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();//需要SD卡权限
-        mapLoad = new HashMap<>();
-        mapCallback = new HashMap<>();
-        int corePoolSize = Runtime.getRuntime().availableProcessors() + 2;
-        int maxinumPoolSize = corePoolSize * 2 + 1;
-        long keepAliveTime = 10;
-        TimeUnit unit = TimeUnit.SECONDS;
-        BlockingQueue<Runnable> workQueue = new LinkedBlockingDeque<>();
-        threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maxinumPoolSize, keepAliveTime, unit, workQueue);
+        try {
+            Context context = KBaseApplication.getInstance();
+            //this.cacheDir = context.getApplicationContext().getFilesDir().getAbsolutePath();//这个地址，文件无法分享。(内部位置无法分享出去),不需要权限
+            this.cacheDir = context.getApplicationContext().getExternalCacheDir().getAbsolutePath();//这个位置，可以分享。（SD卡的东西可以分享出去）,不需要权限。推荐使用这个
+            //this.cacheDir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();//需要SD卡权限
+
+            try {
+                String cacheDir2 = cacheDir + "/down";//fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
+                new File(cacheDir2).mkdirs();//fixme 创建目录
+                cacheDir = cacheDir2;
+            } catch (Exception e) {
+                e.printStackTrace();
+                KLoggerUtils.INSTANCE.e("下载文件目录创建失败：\t" + e.getMessage());
+            }
+
+
+            mapLoad = new HashMap<>();
+            mapCallback = new HashMap<>();
+            int corePoolSize = Runtime.getRuntime().availableProcessors() + 2;
+            int maxinumPoolSize = corePoolSize * 2 + 1;
+            long keepAliveTime = 10;
+            TimeUnit unit = TimeUnit.SECONDS;
+            BlockingQueue<Runnable> workQueue = new LinkedBlockingDeque<>();
+            threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maxinumPoolSize, keepAliveTime, unit, workQueue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("KFileLoadUtils初始异常：\t" + e.getMessage());
+        }
     }
 
     //初始化
@@ -96,6 +112,29 @@ public class KFileLoadUtils {
             fileDown = new KFileLoadUtils();
         }
         return fileDown;
+    }
+
+    /**
+     * fixme 删除下载目录的所有文件。
+     *
+     * @return
+     */
+    public boolean delLoadDownAll() {
+        return KFileUtils.getInstance().delAllFiles(cacheDir, null);
+    }
+
+
+//    async {
+//        KFileLoadUtils.getInstance().delLoadDownApk() fixme  (建议：可以在应用第一次启动的时候调用删除；这样就能删除上一个版本的安装包。)
+//    }
+
+    /**
+     * fixme 删除下载目录的所有APK安装包。(建议：可以在应用第一次启动的时候调用删除；这样就能删除上一个版本的安装包。)
+     *
+     * @return
+     */
+    public boolean delLoadDownApk() {
+        return KFileUtils.getInstance().delAllFiles(cacheDir, ".apk");
     }
 
     //回调接口
@@ -161,13 +200,20 @@ public class KFileLoadUtils {
                     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(3500);//连接超时设置，绝对有效。一般50毫秒即可连接成功。
                     conn.setRequestMethod("GET");
-                    String fileName = srcFileName;
+                    String fileName = srcFileName;//fixme 传入的文件名
                     if (fileName == null || (fileName != null && fileName.trim().equals(""))) {
                         fileName = getConnFileName(conn).trim().toLowerCase();//转小写
                     }
+                    if (fileName == null || fileName.trim().length() <= 0) {
+                        fileName = System.currentTimeMillis() + ".apk";//fixme 防止文件名为空，默认作为app安装包处理。
+                    }
+                    if (!fileName.contains(".")) {
+                        fileName = fileName + ".apk";//fixme 没有后缀，也默认作为app安装包处理。防止文件名为空。
+                    }
                     fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
                     final File file = new File(fileName);
-                    //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName +"\t文件大小：\t"+ file.length());
+                    //file.getName()//fixme 文件名(包含.后缀)
+                    //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName+"\t"+file.getName());
                     if (file.exists() && file.length() >= 100 && context != null) {//文件已经存在;file.length() >= 100 下载的文件应该不存在小于100B的文件吧。(B单位是字节)
                         if (fileName.contains(".apk") || fileName.contains(".APK")) {//判断下载文件是否是apk包
                             if (getUninatllApkInfo(context, fileName)) {//判断本地apk包是否完整
@@ -197,7 +243,7 @@ public class KFileLoadUtils {
                         String RANGE = "bytes=" + (file.length()) + "-";
                         conn.setRequestProperty("RANGE", RANGE);
                     } else {
-                        new File(cacheDir).mkdirs();//新建文件夹(可以多级创建,mkdir不能多级创建),没有才创建，不会覆盖原有文件夹
+                        new File(cacheDir).mkdirs();//fixme 新建文件夹(可以多级创建,mkdir不能多级创建),没有才创建，不会覆盖原有文件夹
                         file.createNewFile();//新建文件,没有则创建，有，则不会创建，即不会覆盖原有文件
                     }
                     if (mapCallback.get(uri) != null) {
@@ -375,8 +421,17 @@ public class KFileLoadUtils {
     public String getConnFileName(HttpURLConnection conn) {
         try {
             String fileName = conn.getURL().getFile();//conn.getURL()真实的URL
-            fileName = fileName
-                    .substring(fileName.lastIndexOf("/") + 1);// fixme 通过最真实的url获取文件的真实名称(能够获取文件名后缀)
+            if (fileName == null || fileName.trim().length() <= 0) {
+                fileName = conn.getURL().toString();//fixme 防止低版本为空。（5.0系统，getURL().getFile()可能返回为空。）
+            }
+            if (fileName.contains("/")) {
+                fileName = fileName
+                        .substring(fileName.lastIndexOf("/") + 1);// fixme 通过最真实的url获取文件的真实名称(能够获取文件名后缀)
+            }
+            if (fileName.contains("\\")) {
+                fileName = fileName
+                        .substring(fileName.lastIndexOf("\\") + 1);
+            }
             //去除不合法的字符，以免本地文件生成失败
             fileName = fileName.replace('/', '0');
             fileName = fileName.replace('\\', '0');

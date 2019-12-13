@@ -15,6 +15,7 @@ import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.bluetooth.KBluetoothAdapter
 import android.support.v4.app.ActivityCompat.startActivityForResult
+import cn.oi.klittle.era.utils.KAppUtils.getPackageName
 
 
 object KIntentUtils {
@@ -129,6 +130,21 @@ object KIntentUtils {
             e.printStackTrace()
         }
     }
+
+    //跳转到安装未知应用权限设置界面; KPermissionUtils.requestCanRequestPackageInstalls {  } 这个是判断未知安装权限。
+    fun goUnKnownAppSources(activity: Activity? = getActivity()) {
+        try {
+            if (activity != null && !activity.isFinishing) {
+                var packageURI = Uri.parse("package:" + activity.getPackageName())
+                //注意这个是8.0新API
+                var intent = Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, packageURI);
+                activity.startActivity(intent);
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     //跳转到声音设置界面
     fun goSoundSetting(activity: Activity? = getActivity()) {
@@ -435,7 +451,7 @@ object KIntentUtils {
         }
     }
 
-    val BLUTOOTH_REQUESTCODE_DISCOVER = 256
+    val BLUTOOTH_REQUESTCODE_DISCOVER = 357
     //fixme 回调。(在BaseActivity的onActivityResult方法中已经配置好)
     var BluetoothDiscoverCallback: ((isOpen: Boolean) -> Unit)? = null
 

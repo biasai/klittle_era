@@ -261,6 +261,7 @@ public class KAppUtils {
             String path = apk.getAbsolutePath();
             if (isAppComplete(context, path)) {//判斷apk安裝包是否完整
                 /* apk安装界面跳转 */
+                //fixme 这个直接跳转到安装界面；需要安装未知应用权限（这个权限，安装的时候，系统会自动去申请，不需要手动申请，亲测！）
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 Uri fileUri = Uri.fromFile(apk);
                 if (Build.VERSION.SDK_INT >= 23) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
@@ -298,7 +299,7 @@ public class KAppUtils {
      */
     public static void installationFromAssets(String assetsPath) {
         //fixme 第一步 将Apk复制到SD卡上（这一步速度很快就几秒）
-        KAssetsUtils.getInstance().copyFileFromAssets(assetsPath, KBaseApplication.getInstance().getApplicationContext().getFilesDir().getAbsolutePath(), new KBaseCallBack() {
+        KAssetsUtils.getInstance().copyFileFromAssets(assetsPath, KFileLoadUtils.getInstance().cacheDir, new KBaseCallBack() {
             @Override
             public void onResult(Object o) {
                 if (o != null && o instanceof File) {

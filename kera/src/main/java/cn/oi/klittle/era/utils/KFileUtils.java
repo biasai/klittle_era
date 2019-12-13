@@ -230,16 +230,31 @@ public class KFileUtils {
 
     }
 
+    //删除某个文件夹下的所有文件夹和文件
+    public boolean delAllFiles(String delpath) {
+        return delAllFiles(delpath, null);
+    }
+
     /**
      * 删除某个文件夹下的所有文件夹和文件
      *
      * @param delpath 文件夹路径
+     * @param suffix  fixme 后缀(如: .apk 包含点.) 删除对应该格式的文件。如果为空;则删除所有类型的文件。
      */
-    public boolean delAllFiles(String delpath) {
+    public boolean delAllFiles(String delpath, String suffix) {
         try {
+            if (delpath == null || delpath.length() <= 0) {
+                return false;
+            }
+            if (suffix!=null&&suffix.length()>0) {
+                suffix = suffix.toLowerCase().trim();//.后缀
+            }
             File file = new File(delpath);
+            //isDirectory()判断是否为目录
             if (!file.isDirectory()) {
-                file.delete();
+                if (containSuffix(file.getName(), suffix)) {
+                    file.delete();//fixme 删除文件
+                }
             } else if (file.isDirectory()) {
                 String[] filelist = file.list();
                 for (int i = 0; i < filelist.length; i++) {
@@ -247,17 +262,40 @@ public class KFileUtils {
                     //Log.e("test","文件路径:\t"+delfile.getPath()+"\t名称:\t"+delfile.getName()+"\t"+filelist[i]);
                     if (!delfile.isDirectory()) {
                         //Log.e("test","删除:\t"+delfile.getName());
-                        delfile.delete();
+                        if (containSuffix(delfile.getName(), suffix)) {
+                            delfile.delete();//fixme 删除文件
+                        }
                     } else if (delfile.isDirectory()) {
-                        delAllFiles(delpath + "/" + filelist[i]);
+                        delAllFiles(delpath + "/" + filelist[i], suffix);//fixme 闭合
                     }
                 }
-                file.delete();
+                filelist=null;
+                if (suffix == null || suffix.length() <= 0) {
+                    file.delete();//fixme 删除目录
+                }
             }
         } catch (Exception e) {
             Log.e("test", "删除所有文件异常:\t" + e.getMessage());
         }
         return true;
+    }
+
+    //fixme file.getName() 文件名(包含.后缀)
+
+    /**
+     * 判断文件名是否包含该后缀；即判断该文件是否属于该格式
+     *
+     * @param fileName 文件名
+     * @param suffix   fixme 后缀(如: .apk 包含点.)
+     * @return
+     */
+    public boolean containSuffix(String fileName, String suffix) {
+        if (fileName != null && fileName.length() > 0) {
+            if (suffix == null || suffix.length() <= 0 || fileName.toLowerCase().trim().contains(suffix.toLowerCase().trim())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

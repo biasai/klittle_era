@@ -90,7 +90,7 @@ object KPermissionUtils {
     val DANGEROUS_PERMISSION_GET_ACCOUNTS = arrayOf(Manifest.permission.GET_ACCOUNTS, Manifest.permission.READ_CONTACTS)//通讯录权限（读取手机号码）
     val DANGEROUS_PERMISSION_RECEIVE_SMS = arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS)//读取手机短信的权限
     val DANGEROUS_PERMISSION_BLUE_TOOTH = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)//打开关闭，蓝牙的权限
-    val DANGEROUS_PERMISSION_NFC = arrayOf(Manifest.permission.NFC,Manifest.permission.BIND_NFC_SERVICE)//NFC的权限
+    val DANGEROUS_PERMISSION_NFC = arrayOf(Manifest.permission.NFC, Manifest.permission.BIND_NFC_SERVICE)//NFC的权限
     // requestCode 权限请求码(统一使用这个)[fixme 数字标志为 0~6万，负数会奔溃，高于7万也会奔溃。]
     val READ_PHONE_STATE_REQUEST_CODE = 3820//权限请求标志
 
@@ -665,6 +665,22 @@ object KPermissionUtils {
                 onRequestPermissionsResult2?.let {
                     it(true)
                 }
+            }
+        }
+    }
+
+    //fixme 判断安装未知应用权限(亲测有效)。 KIntentUtils.goUnKnownAppSources()跳转未知应用安装权限界面
+    fun requestCanRequestPackageInstalls(activity: Activity? = getActivity(), onRequestPermissionsResult2: ((isAllow: Boolean) -> Unit)? = null) {
+        if (Build.VERSION.SDK_INT >= 26) {//8.0系统才需要开启未知应用安装权限。
+            KBaseApplication.getInstance().getPackageManager().canRequestPackageInstalls()?.let {
+                var isAllow = it
+                onRequestPermissionsResult2?.let {
+                    it(isAllow)
+                }
+            }
+        } else {
+            onRequestPermissionsResult2?.let {
+                it(true)
             }
         }
     }
