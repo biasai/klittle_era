@@ -22,8 +22,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.base.KBaseCallBack;
+import cn.oi.klittle.era.base.KBaseUi;
 import cn.oi.klittle.era.comm.KToast;
 
 
@@ -279,12 +281,13 @@ public class KAppUtils {
                 }
             } else {
                 //Toast.makeText(context, "安装包解析错误", Toast.LENGTH_LONG).show();
-                KToast.INSTANCE.showError("安装包解析错误", null, null);
+                String msg = KBaseUi.Companion.getString(R.string.kapkFailr);//安装包解析错误
+                KToast.INSTANCE.showError(msg, null, null);
                 // 删除安装包
                 KFileUtils.getInstance().delFile(apk.getAbsolutePath(), null, null);
             }
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("test", "App安装失败:\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("App安装失败:\t" + e.getMessage());
         }
     }
 

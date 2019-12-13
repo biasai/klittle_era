@@ -56,7 +56,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
     }
 
     //下载
-    fun loadDown() {
+    open fun loadDown() {
         try {
             ctx?.runOnUiThread {
                 isLoading = true
@@ -67,7 +67,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                             //开始下载
                         }
 
-                        override fun onFailure(isLoad: Boolean?, result: String?, file: File?) {
+                        override fun onFailure(isLoad: Boolean?, result: String?, code: Int, file: File?) {
                             isLoading = false
                             dismiss()
                             ctx?.runOnUiThread {
@@ -79,9 +79,11 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                                     }
                                 } else {
                                     if (result != null) {
-                                        KToast.showError(result)
+                                        //KToast.showError(result)
+                                        showError(result, code)
                                     } else {
-                                        KToast.showError(getString(R.string.kappdownfail))//下载失败
+                                        //KToast.showError(getString(R.string.kappdownfail))//下载失败
+                                        showError(getString(R.string.kappdownfail), code)
                                     }
                                 }
                             }
@@ -117,6 +119,12 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
             e.printStackTrace()
             dismiss()
         }
+    }
+
+    //显示错误信息
+    open fun showError(result: String, code: Int) {
+        //下载失败；错误代码：code
+        KToast.showError(result + ";" + getString(R.string.kerror_code) + ":\t" + code)
     }
 
     var isForceLoad = false//是否强制下载

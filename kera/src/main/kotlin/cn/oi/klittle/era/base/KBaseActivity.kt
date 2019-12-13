@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.transition.Explode
 import android.transition.Fade
@@ -662,6 +663,15 @@ open class KBaseActivity : FragmentActivity() {
                 KPictureSelector.openExternalPreview(this, position, it, isCheckable = false)
             }
         }
+    }
+
+    /**
+     * fixme 切换Fragment
+     * @param id 控件id(一般都是frameLayout控件;用来装载Fragment)
+     * @param fragment 要切换的Fragment
+     */
+    open fun replace(id: Int, fragment: Fragment) {
+        supportFragmentManager.beginTransaction().replace(id, fragment).commit()//即可
     }
 
     /**

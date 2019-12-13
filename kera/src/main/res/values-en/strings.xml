@@ -132,6 +132,8 @@
     <string name="kshifouxiazai">Download it?</string>
     <string name="kbanbengenxin">Version update</string>
     <string name="kxiazai">download</string>
+    <string name="kerror_code">The error code</string>
+    <string name="kapkFailr">Installation package parsing error</string>
     <!--下拉刷新，上拉加载更多-->
     <string name="kloadMore">Being loaded...</string>
     <string name="kloadMoreComplete">No more data。</string>

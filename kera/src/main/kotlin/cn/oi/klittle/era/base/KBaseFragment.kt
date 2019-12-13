@@ -15,9 +15,9 @@ import org.jetbrains.anko.support.v4.act
 import java.lang.Exception
 
 /**
- * 继承本Fragment，主构造函数传入一个布局id或者一个View即可。然后就可以像Activity一样使用了。
- * Activity中加载说明：supportFragmentManager.beginTransaction().replace(px.id("frameLayoutID"),Myfragment()).commit()即可
- * Fragment中最好使用：childFragmentManager.beginTransaction()
+ * 继承本Fragment，主构造函数传入一个布局id或者一个View即可(一般都是frameLayout控件)。然后就可以像Activity一样使用了。
+ * Activity中加载说明：supportFragmentManager.beginTransaction().replace(px.id("frameLayoutID"),Myfragment()).commit()即可;已经集成到KBaseActivity里面去了。replace()方法。
+ * Fragment中最好使用：childFragmentManager.beginTransaction()；fixme 也已经集成到KBaseFragment里面去了，replace()方法。
  * Created by 彭治铭 on 2018/4/20.
  */
 abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null) : Fragment() {
@@ -129,6 +129,15 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
                 onClick()//点击事件
             }
         }
+    }
+
+    /**
+     * fixme 切换Fragment
+     * @param id 控件id(一般都是frameLayout控件;用来装载Fragment)
+     * @param fragment 要切换的Fragment
+     */
+    open fun replace(id: Int, fragment: Fragment) {
+        childFragmentManager.beginTransaction().replace(id, fragment).commit()//即可
     }
 
     /**

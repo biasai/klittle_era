@@ -126,9 +126,10 @@ public class KFileLoadUtils {
          *
          * @param isLoad true 文件已经下载，false文件没有下载
          * @param result 失败原因
+         * @param code   错误代码;没有错误代码时，返回的是0(自己加的)
          * @param file   下载的文件
          */
-        public void onFailure(Boolean isLoad, String result, File file);
+        public void onFailure(Boolean isLoad, String result, int code, File file);
     }
 
 
@@ -162,12 +163,13 @@ public class KFileLoadUtils {
                     conn.setRequestMethod("GET");
                     String fileName = srcFileName;
                     if (fileName == null || (fileName != null && fileName.trim().equals(""))) {
-                        fileName = getConnFileName(conn).trim().toLowerCase();
+                        fileName = getConnFileName(conn).trim().toLowerCase();//转小写
                     }
                     fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
                     final File file = new File(fileName);
-                    if (file.exists() && context != null) {//文件已经存在
-                        if (fileName.contains(".apk")) {//判断下载文件是否是apk包
+                    //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName +"\t文件大小：\t"+ file.length());
+                    if (file.exists() && file.length() >= 100 && context != null) {//文件已经存在;file.length() >= 100 下载的文件应该不存在小于100B的文件吧。(B单位是字节)
+                        if (fileName.contains(".apk") || fileName.contains(".APK")) {//判断下载文件是否是apk包
                             if (getUninatllApkInfo(context, fileName)) {//判断本地apk包是否完整
                                 RequestCallBack requestCallBack1 = mapCallback.get(uri);//fixme 子所以新建变量，防止线程跳转之后，mapCallback被清空。
                                 if (requestCallBack1 != null && context != null && context instanceof Activity) {
@@ -176,13 +178,13 @@ public class KFileLoadUtils {
                                         public void run() {
                                             //主线程回调
                                             if (requestCallBack1 != null) {
-                                                requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), file);//"apk已經下載"
+                                                requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
                                             }
                                         }
                                     });
                                 } else {
                                     if (requestCallBack1 != null) {
-                                        requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), file);//"apk已經下載"
+                                        requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
                                     }
                                 }
                                 conn.disconnect();//断开链接
@@ -290,12 +292,12 @@ public class KFileLoadUtils {
                                     public void run() {
                                         //主线程回调
                                         if (requestCallBack2 != null) {
-                                            requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), file);//"文件已經下載"
+                                            requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
                                         }
                                     }
                                 });
                             } else {
-                                requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), file);//"文件已經下載"
+                                requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
                             }
                         } else {
                             //其他连接状态
@@ -306,12 +308,12 @@ public class KFileLoadUtils {
                                         public void run() {
                                             //主线程回调
                                             if (requestCallBack2 != null) {
-                                                requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail)+":\t"+ResponseCode, file);//下载失败
+                                                requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
                                             }
                                         }
                                     });
                                 } else {
-                                    requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail)+":\t"+ResponseCode, file);//下载失败
+                                    requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
                                 }
                             }
                         }
@@ -326,12 +328,12 @@ public class KFileLoadUtils {
                                     public void run() {
                                         //主线程回调
                                         if (requestCallBack1 != null) {
-                                            requestCallBack1.onFailure(false, e.getMessage(), null);
+                                            requestCallBack1.onFailure(false, e.getMessage(), 0, null);
                                         }
                                     }
                                 });
                             } else {
-                                requestCallBack1.onFailure(false, e.getMessage(), null);
+                                requestCallBack1.onFailure(false, e.getMessage(), 0, null);
                             }
                         }
                     } catch (Exception e2) {
