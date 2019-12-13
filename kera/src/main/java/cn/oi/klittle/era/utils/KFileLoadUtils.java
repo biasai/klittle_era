@@ -34,7 +34,7 @@ import cn.oi.klittle.era.base.KBaseUi;
 //                    KLoggerUtils.e("开始下载")
 //                }
 //
-//                override fun onFailure(isLoad: Boolean?, result: String?, file: File?) {
+//                override fun onFailure(isLoad: Boolean?, result: String?,code:Int, file: File?) {
 //                    //下载失败（关闭弹窗）
 //                    if (isLoad!!) {
 //                        //已经下载(进行安装)
@@ -197,6 +197,7 @@ public class KFileLoadUtils {
                 try {
                     mapLoad.put(uri, true);//标志正在下载
                     URL url = new URL(uri);
+                    //KLoggerUtils.INSTANCE.e("URI:\t"+uri);
                     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(3500);//连接超时设置，绝对有效。一般50毫秒即可连接成功。
                     conn.setRequestMethod("GET");
