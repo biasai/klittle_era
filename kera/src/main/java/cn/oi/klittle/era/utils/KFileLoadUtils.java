@@ -195,8 +195,10 @@ public class KFileLoadUtils {
             @Override
             public void run() {
                 try {
-                    mapLoad.put(uri, true);//标志正在下载
-                    URL url = new URL(uri);
+                    //fixme 修复低版本，如5.0；不识别斜杠\;需要转换成放斜杠才有效，亲测有效。
+                    String uri2 = uri.replace("\\", "/");
+                    mapLoad.put(uri2, true);//标志正在下载
+                    URL url = new URL(uri2);
                     //KLoggerUtils.INSTANCE.e("URI:\t"+uri);
                     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(3500);//连接超时设置，绝对有效。一般50毫秒即可连接成功。
@@ -422,6 +424,10 @@ public class KFileLoadUtils {
     public String getConnFileName(HttpURLConnection conn) {
         try {
             String fileName = conn.getURL().getFile();//conn.getURL()真实的URL
+            //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName);
+            //fixme 一般都能获取成功；(如果uri包含了斜杠，则无法识别。也无法获取网络名称了。)；就是因为包含了斜杠，无法识别uri；所以文件名才获取为空的。
+            //fixme 修复低版本，如5.0；不识别斜杠\;需要转换成放斜杠才有效，亲测有效。
+            //fixme String uri2=uri.replace("\\", "/");
             if (fileName == null || fileName.trim().length() <= 0) {
                 fileName = conn.getURL().toString();//fixme 防止低版本为空。（5.0系统，getURL().getFile()可能返回为空。）
             }
