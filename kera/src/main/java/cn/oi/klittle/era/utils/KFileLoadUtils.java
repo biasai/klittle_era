@@ -195,7 +195,7 @@ public class KFileLoadUtils {
             @Override
             public void run() {
                 try {
-                    //fixme 修复低版本，如5.0；不识别斜杠\;需要转换成放斜杠才有效，亲测有效。
+                    //fixme 修复低版本，如5.0；不识别反斜杠\;需要转换成斜杠才有效，亲测有效。
                     String uri2 = uri.replace("\\", "/");
                     mapLoad.put(uri2, true);//标志正在下载
                     URL url = new URL(uri2);

@@ -28,7 +28,7 @@ object KHttp {
     var map: MutableMap<String, String> = mutableMapOf()
 
     fun Get2(url: String?, requestParams: KHttps?, requestCallBack: KGenericsCallback? = null, timeOut: Int = 3000) {
-        var url= url?.replace("\\", "/");//不识别斜杠；只识别反斜杠。
+        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         url?.let {
             requestParams?.let {
                 if (!it.isRepeatRequest) {
@@ -253,7 +253,7 @@ object KHttp {
     }
 
     fun Post2(url: String?, requestParams: KHttps?, requestCallBack: KGenericsCallback? = null, timeOut: Int = 3000) {
-        var url= url?.replace("\\", "/");//不识别斜杠；只识别反斜杠。
+        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         url?.let {
             requestParams?.let {
                 if (!it.isRepeatRequest) {
@@ -603,7 +603,7 @@ object KHttp {
      * fixme 图片地址多几个斜杠/是没有关系的，是可以正常访问的。亲测可行。如：http://test.app.bwg2017.com///photo/201905/10863/20190517134844_0.jpg
      */
     fun GetNetBitmap(url: String?, activity: Activity? = null, requestParams: KBitmaps?, requestCallBack: KBitmapCallback? = null, timeOut: Int = 3000, width: Int = 0, height: Int = 0) {
-        var url= url?.replace("\\", "/");//不识别斜杠；只识别反斜杠。
+        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         var w = width
         var h = height
         async {
