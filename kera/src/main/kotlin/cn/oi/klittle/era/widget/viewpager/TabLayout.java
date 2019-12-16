@@ -134,6 +134,7 @@ import static android.support.v4.view.ViewPager.SCROLL_STATE_SETTLING;
 
 /**
  * fixme 复制系统android.support.design.widget.TabLayout的源码。自己做点改动。
+ * fixme 内部类，SlidingTabStrip是画底部横线的。
  */
 @ViewPager.DecorView
 public class TabLayout extends HorizontalScrollView {
@@ -2017,24 +2018,27 @@ public class TabLayout extends HorizontalScrollView {
         public void draw(Canvas canvas) {
             super.draw(canvas);
 
+            /**
+             * fixme 画底部滑动的横线。
+             */
             // Thick colored underline below the current selection
             if (mIndicatorLeft >= 0 && mIndicatorRight > mIndicatorLeft) {
                 // 矩形弧度
                 if (line_radius > 0) {
-                    RectF rectF = new RectF(mIndicatorLeft+line_offset, getHeight() - mSelectedIndicatorHeight,
-                            mIndicatorRight-line_offset, getHeight());
+                    RectF rectF = new RectF(mIndicatorLeft + line_offset, getHeight() - mSelectedIndicatorHeight,
+                            mIndicatorRight - line_offset, getHeight());
                     canvas.drawRoundRect(rectF, line_radius, line_radius, mSelectedIndicatorPaint);
                 } else {
                     //正常
-                    canvas.drawRect(mIndicatorLeft+line_offset, getHeight() - mSelectedIndicatorHeight,
-                            mIndicatorRight-line_offset, getHeight(), mSelectedIndicatorPaint);
+                    canvas.drawRect(mIndicatorLeft + line_offset, getHeight() - mSelectedIndicatorHeight,
+                            mIndicatorRight - line_offset, getHeight(), mSelectedIndicatorPaint);
                 }
             }
         }
     }
 
     public float line_radius = 0f;//tab下划线的圆角度数。
-    public float line_offset=0f;//横线的偏移量。可以控制横线的缩进宽度
+    public float line_offset = 0f;//横线的偏移量。可以控制横线的缩进宽度
 
     private static ColorStateList createColorStateList(int defaultColor, int selectedColor) {
         final int[][] states = new int[2][];
