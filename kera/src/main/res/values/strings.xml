@@ -189,6 +189,7 @@
     <string name="kcomplete">已完成</string>
     <string name="kcamera">拍摄</string>
     <string name="kmaxSelectNum">你最多可以选择%s张图片</string>
+    <string name="ksubmit">提交中</string>
     <!--多国语言-->
     <string name="klanguage_zh">中文</string>
     <string name="klanguage_zh_rCN">中文(简体)</string>

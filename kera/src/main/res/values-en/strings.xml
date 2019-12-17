@@ -144,6 +144,7 @@
     <string name="kcomplete">Has been completed</string>
     <string name="kcamera">Shot</string>
     <string name="kmaxSelectNum">You can choose up to %s image</string>
+    <string name="ksubmit">submit</string>
     <!--多国语言-->
     <string name="klanguage_zh">Chinese</string>
     <string name="klanguage_zh_rCN">Chinese (simplified)</string>

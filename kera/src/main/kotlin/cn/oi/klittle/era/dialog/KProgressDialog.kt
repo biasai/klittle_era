@@ -67,12 +67,16 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
                 if (System.currentTimeMillis() - it >= timeOut) {
                     dismiss()//fixme 弹框超时关闭
                     ctx?.runOnUiThread {
-                        if (timeOutCallback == null) {
-                            KToast.showError(timeOutInfo)//连接超时
-                        } else {
-                            timeOutCallback?.let {
-                                it(timeOutInfo)//超时事件回调。
+                        try {
+                            if (timeOutCallback == null) {
+                                KToast.showError(timeOutInfo)//连接超时
+                            } else {
+                                timeOutCallback?.let {
+                                    it(timeOutInfo)//超时事件回调。
+                                }
                             }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
                     }
                 }

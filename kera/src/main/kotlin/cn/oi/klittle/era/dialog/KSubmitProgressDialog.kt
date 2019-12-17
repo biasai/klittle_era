@@ -4,12 +4,23 @@ import android.content.Context
 import android.graphics.Color
 import android.view.Gravity
 import android.view.View
+import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
+import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.view.KProgressCircleView
 import org.jetbrains.anko.*
 import cn.oi.klittle.era.widget.KToggleView
 import cn.oi.klittle.era.widget.compat.KTextView
+import io.reactivex.Observable
+import io.reactivex.Observer
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import java.util.concurrent.TimeUnit
 
 //调用案例
 //KSubmitProgressDialog(this).apply {
@@ -58,7 +69,8 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
                         textColor = Color.WHITE
                         textSize = kpx.textSizeX(34f)
                         gravity = Gravity.CENTER
-                        text = "1/1\t提交中..."
+                        //text = "1/1\t提交中..."
+                        text = "1/1\t" + getString(R.string.ksubmit) + "..."
                     }.lparams {
                         alignParentLeft()
                         centerVertically()
@@ -83,16 +95,119 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
         this.mession?.setText(mession)
     }
 
+    //被观察者
+    private var observable: Observable<Boolean>? = Observable.create<Boolean> {
+        async {
+            delay(timeOut, TimeUnit.MILLISECONDS)
+            it.onComplete()
+        }
+    }
+            .subscribeOn(Schedulers.io())//执行线程在io线程(子线程)
+            .observeOn(AndroidSchedulers.mainThread())//回调线程在主线程
+
+
+    var disposable: Disposable? = null
+    //观察者
+    private var observe: Observer<Boolean>? = object : Observer<Boolean> {
+        override fun onSubscribe(d: Disposable?) {
+            disposable = d
+        }
+
+        override fun onComplete() {
+            showTime?.let {
+                if (System.currentTimeMillis() - it >= timeOut) {
+                    dismiss()//fixme 弹框超时关闭
+                    ctx?.runOnUiThread {
+                        try {
+                            if (timeOutCallback == null) {
+                                //KToast.showError(timeOutInfo)//连接超时
+                            } else {
+                                timeOutCallback?.let {
+                                    it(timeOutInfo)//超时事件回调。
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onNext(value: Boolean?) {
+        }
+
+        override fun onError(e: Throwable?) {
+        }
+    }
+
+    private var showTime: Long? = 0//记录显示的时间
+    var timeOut: Long = 100000//fixme 弹框超时时间默认设置为100秒;单位是毫秒。
+    var timeOutInfo = getString(R.string.ktimeout)//连接超时信息设置。
+    fun timeOut(timeOut: Long): KSubmitProgressDialog {
+        this.timeOut = timeOut
+        return this
+    }
+
+    //超时事件回调(会在主线程中回调);返回timeOutInfo超时设置信息
+    var timeOutCallback: ((timeOutInfo: String) -> Unit)? = null
+
+    fun timeOutCallback(timeOutCallback: ((timeOutInfo: String) -> Unit)? = null) {
+        this.timeOutCallback = timeOutCallback
+    }
+
+
+    private fun dispose() {
+        try {
+            //使用RxJava完成弹框超时设置。亲测可行。
+            if (observe != null && timeOut > 0) {//timeOut小于等于0不做超时判断
+                showTime = System.currentTimeMillis()//记录显示的时间
+                disposable?.dispose()//旧的回调取消
+                observable?.subscribe(observe)//开启新的回调计时
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun dispose2() {
+        try {
+            disposable?.dispose()//旧的回调取消
+            disposable = null
+            showTime = null
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    override fun show() {
+        super.show()
+        dispose()//fixme 防止计时不准确，在show()和onShow()里都调用一次。
+    }
+
     open override fun onShow() {
         super.onShow()
+        dispose()//fixme 防止计时不准确，在show()和onShow()里都调用一次。
     }
 
     override fun onDismiss() {
         super.onDismiss()
+        dispose2()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        try {
+            super.onDestroy()
+            disposable?.dispose()
+            observable = null
+            observe = null
+            disposable = null
+            showTime = null
+            timeOutCallback = null
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
 }
