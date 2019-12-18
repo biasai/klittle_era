@@ -278,13 +278,15 @@ public class KAppUtils {
                     context.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    Log.e("test", "安装异常：\t" + e.getMessage());
+                    KLoggerUtils.INSTANCE.e("安装异常：\t" + e.getMessage());
                 }
             } else {
                 //Toast.makeText(context, "安装包解析错误", Toast.LENGTH_LONG).show();
                 String msg = KBaseUi.Companion.getString(R.string.kapkFailr);//安装包解析错误
                 KToast.INSTANCE.showError(msg, null, null);
-                // 删除安装包
+                //KLoggerUtils.INSTANCE.e("安装包大小(下载完成)：\t" + apk.length() + "\t路径：\t" + apk.getAbsolutePath());
+                //安装包大小：	150	路径：	/storage/emulated/0/Android/data/com.example.myapplication/cache/down/201912171237498776.apk
+                //fixme 删除安装包(错误的安装包一定要删除;错误的原因是下载不完整导致的，或者网络下载链接获取网络文件实际大小错误。)
                 KFileUtils.getInstance().delFile(apk.getAbsolutePath(), null, null);
             }
         } catch (Exception e) {

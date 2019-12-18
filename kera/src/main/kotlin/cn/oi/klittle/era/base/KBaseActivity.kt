@@ -169,16 +169,19 @@ open class KBaseActivity : FragmentActivity() {
     private var isOnCreateSuper = false//防止Activity还没执行oncreate就突然的挂掉（系统有这个Bug）
     override fun onCreate(savedInstanceState: Bundle?) {
         try {
+            //fixme 为了防止异常(app重启时可能会异常)；基类的super.onCreate()必须要放在第一行，必须要先执行(调用finish()之前)。
+            //fixme 为了安全，就放在第一行(最先执行)；
+            super.onCreate(savedInstanceState)
             try {
                 //fixme 防止按home键返回之后，Activity重新加载的问题。
                 if (intent != null && intent.action != null && !this.isTaskRoot) {
                     if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intent.action == Intent.ACTION_MAIN) {
-                        finish()
+                        finish()//fixme 调用finish()之前；一定要先调用super.onCreate();不然会直接异常崩溃的。(之前重启异常，就是因为这个。)
                         return
                     }
                 }
                 kpx.removeAllKey()//fixme 清除所有键值，防止图片加载不出来。
-                super.onCreate(savedInstanceState)
+                //super.onCreate(savedInstanceState)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }

@@ -194,210 +194,225 @@ public class KFileLoadUtils {
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                try {
-                    //fixme 修复低版本，如5.0；不识别反斜杠\;需要转换成斜杠才有效，亲测有效。
-                    String uri2 = uri.replace("\\", "/");
-                    mapLoad.put(uri2, true);//标志正在下载
-                    URL url = new URL(uri2);
-                    //KLoggerUtils.INSTANCE.e("URI:\t"+uri);
-                    final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setConnectTimeout(3500);//连接超时设置，绝对有效。一般50毫秒即可连接成功。
-                    conn.setRequestMethod("GET");
-                    String fileName = srcFileName;//fixme 传入的文件名
-                    if (fileName == null || (fileName != null && fileName.trim().equals(""))) {
-                        fileName = getConnFileName(conn).trim().toLowerCase();//转小写
-                    }
-                    if (fileName == null || fileName.trim().length() <= 0) {
-                        fileName = System.currentTimeMillis() + ".apk";//fixme 防止文件名为空，默认作为app安装包处理。
-                    }
-                    if (!fileName.contains(".")) {
-                        fileName = fileName + ".apk";//fixme 没有后缀，也默认作为app安装包处理。防止文件名为空。
-                    }
-                    fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
-                    final File file = new File(fileName);
-                    //file.getName()//fixme 文件名(包含.后缀)
-                    //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName+"\t"+file.getName());
-                    if (file.exists() && file.length() >= 100 && context != null) {//文件已经存在;file.length() >= 100 下载的文件应该不存在小于100B的文件吧。(B单位是字节)
-                        if (fileName.contains(".apk") || fileName.contains(".APK")) {//判断下载文件是否是apk包
-                            if (getUninatllApkInfo(context, fileName)) {//判断本地apk包是否完整
-                                RequestCallBack requestCallBack1 = mapCallback.get(uri);//fixme 子所以新建变量，防止线程跳转之后，mapCallback被清空。
-                                if (requestCallBack1 != null && context != null && context instanceof Activity) {
-                                    ((Activity) context).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //主线程回调
-                                            if (requestCallBack1 != null) {
-                                                requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    if (requestCallBack1 != null) {
-                                        requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
-                                    }
-                                }
-                                conn.disconnect();//断开链接
-                                return;
-                            }
-                        }
-                        // 设置 User-Agent,这个设不设置没有影响
-                        conn.setRequestProperty("User-Agent", "NetFox");
-                        // 设置断点续传的开始位置,这个是关键，末尾必须加"-"。会返回206
-                        String RANGE = "bytes=" + (file.length()) + "-";
-                        conn.setRequestProperty("RANGE", RANGE);
-                    } else {
-                        new File(cacheDir).mkdirs();//fixme 新建文件夹(可以多级创建,mkdir不能多级创建),没有才创建，不会覆盖原有文件夹
-                        file.createNewFile();//新建文件,没有则创建，有，则不会创建，即不会覆盖原有文件
-                    }
-                    if (mapCallback.get(uri) != null) {
-                        RequestCallBack requestCallBack1 = mapCallback.get(uri);
-                        if (context != null && context instanceof Activity) {
+                downLoad2(context, uri, srcFileName, requestCallBack, 0);
+            }
+        });
+    }
+
+
+    private void downLoad2(Context context, final String uri, final String srcFileName, RequestCallBack requestCallBack, int downCount) {
+        try {
+            //fixme 修复低版本，如5.0；不识别反斜杠\;需要转换成斜杠才有效，亲测有效。
+            String uri2 = uri.replace("\\", "/");
+            mapLoad.put(uri2, true);//标志正在下载
+            URL url = new URL(uri2);
+            //KLoggerUtils.INSTANCE.e("URI:\t"+uri);
+            final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setConnectTimeout(5000);//连接超时设置，绝对有效。一般50毫秒即可连接成功。fixme （亲测五秒效果最好(之前是3.5秒)，时间太短了，获取网络文件大小可能会不对。）
+            conn.setRequestMethod("GET");
+            String fileName = srcFileName;//fixme 传入的文件名
+            if (fileName == null || (fileName != null && fileName.trim().equals(""))) {
+                fileName = getConnFileName(conn).trim().toLowerCase();//转小写
+            }
+            if (fileName == null || fileName.trim().length() <= 0) {
+                fileName = System.currentTimeMillis() + ".apk";//fixme 防止文件名为空，默认作为app安装包处理。
+            }
+            if (!fileName.contains(".")) {
+                fileName = fileName + ".apk";//fixme 没有后缀，也默认作为app安装包处理。防止文件名为空。
+            }
+            fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
+            final File file = new File(fileName);
+            //file.getName()//fixme 文件名(包含.后缀)
+            //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName+"\t"+file.getName());
+            if (file.exists() && file.length() > 0 && context != null) {//文件已经存在;file.length() >= 100 下载的文件应该不存在小于100B的文件吧。(B单位是字节)
+                if (fileName.contains(".apk") || fileName.contains(".APK")) {//判断下载文件是否是apk包
+                    if (file.length() > 100 && getUninatllApkInfo(context, fileName)) {//判断本地apk包是否完整
+                        RequestCallBack requestCallBack1 = mapCallback.get(uri);//fixme 子所以新建变量，防止线程跳转之后，mapCallback被清空。
+                        if (requestCallBack1 != null && context != null && context instanceof Activity) {
                             ((Activity) context).runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     //主线程回调
                                     if (requestCallBack1 != null) {
-                                        requestCallBack1.onStart();//fixme 开始下载回调。
+                                        requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
                                     }
                                 }
                             });
                         } else {
-                            requestCallBack1.onStart();
-                        }
-                    }
-                    int ResponseCode = conn.getResponseCode();//一旦调用了get函数，就不能再设置参数了。
-                    //file.length()和conn.getContentLength()是对等。都是一个文件的实际大小。
-                    long max = conn.getContentLength();//文件总大小,一旦调用了这个方法，就不能再设置参数了【如：setRequestProperty】
-                    //判断文件是否存在，以及大小是否相当。避免重复下载。
-                    if ((ResponseCode == 200 || ResponseCode == 206) && file.length() != max) {
-                        if (conn.getResponseCode() == 206) {//200连接成功，206断点续传。
-                            max = file.length() + max;
-                        }
-                        InputStream inputStream = conn.getInputStream();
-                        //下载主要耗时就是花费在对流的读写操作上。
-                        //持久化操作，将流转化为本地文件
-                        OutputStream output = new FileOutputStream(file, true);//参数二 true,在文件末尾继续写，否则会覆盖原有文件
-                        byte[] buffer = new byte[4 * 1024];
-                        int iLen = 0;
-                        long currentTimeMillis = 0;
-                        while ((iLen = inputStream.read(buffer)) != -1) {
-                            //耗时操作都在这里。
-                            output.write(buffer, 0, iLen);
-                            if (mapCallback.get(uri) != null && (System.currentTimeMillis() - currentTimeMillis) > 1000) {
-                                float current = file.length();
-                                int bias = (int) (current / max * 100);
-                                RequestCallBack requestCallBack2 = mapCallback.get(uri);
-                                if (requestCallBack2 != null) {
-                                    if (context != null && context instanceof Activity) {
-                                        long finalMax = max;
-                                        ((Activity) context).runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                //主线程回调
-                                                if (requestCallBack2 != null) {
-                                                    requestCallBack2.onLoad((int) current, finalMax, bias);
-                                                }
-                                            }
-                                        });
-                                    } else {
-                                        requestCallBack2.onLoad((int) current, max, bias);
-                                    }
-                                }
-                                currentTimeMillis = System.currentTimeMillis();
+                            if (requestCallBack1 != null) {
+                                requestCallBack1.onFailure(true, KBaseUi.Companion.getString(R.string.kappdown), 0, file);//"apk已經下載"
                             }
                         }
-                        output.flush();
-                        output.close();
+                        conn.disconnect();//断开链接
+                        return;
+                    }
+                }
+                // 设置 User-Agent,这个设不设置没有影响
+                conn.setRequestProperty("User-Agent", "NetFox");
+                //fixme 设置断点续传的开始位置,这个是关键，末尾必须加"-"。会返回206
+                String RANGE = "bytes=" + (file.length()) + "-";
+                conn.setRequestProperty("RANGE", RANGE);
+            } else {
+                new File(cacheDir).mkdirs();//fixme 新建文件夹(可以多级创建,mkdir不能多级创建),没有才创建，不会覆盖原有文件夹
+                file.createNewFile();//新建文件,没有则创建，有，则不会创建，即不会覆盖原有文件
+            }
+            //KLoggerUtils.INSTANCE.e("文件大小：\t" + file.length() + "\t路径：\t" + file.getAbsolutePath());
+            if (mapCallback.get(uri) != null) {
+                RequestCallBack requestCallBack1 = mapCallback.get(uri);
+                if (context != null && context instanceof Activity) {
+                    ((Activity) context).runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            //主线程回调
+                            if (requestCallBack1 != null) {
+                                requestCallBack1.onStart();//fixme 开始下载回调。
+                            }
+                        }
+                    });
+                } else {
+                    requestCallBack1.onStart();
+                }
+            }
+            int ResponseCode = conn.getResponseCode();//一旦调用了get函数，就不能再设置参数了。
+            //file.length()和conn.getContentLength()是对等。都是一个文件的实际大小。
+            long max = conn.getContentLength();//文件总大小,一旦调用了这个方法，就不能再设置参数了【如：setRequestProperty】//fixme 安装包异常，就是这个获取网络文件实际大小错误导致的。239，150可能就是获取错误(偶尔会发生！)。
+            //KLoggerUtils.INSTANCE.e("下载文件总大小：\t" + max + "\t本地已存文件总大小:\t" + file.length() + "\tRANGE:\t" + conn.getRequestProperty("RANGE") + "\tResponseCode:\t" + ResponseCode + "\tdownCount:\t" + downCount);
+            if (max > 0 && max <= 600 && downCount <= 3) {//小于600B;下载文件不肯能这么小，估计获取异常了。
+                //if (downCount < 3) {//测试(亲测没问题)
+                //KLoggerUtils.INSTANCE.e("进来了");
+                conn.disconnect();//断开链接
+                downCount++;
+                downLoad2(context, uri, srcFileName, requestCallBack, downCount);//fixme 文件大小获取错误，重新获取，亲测有效。
+                return;
+            }
+            //判断文件是否存在，以及大小是否相当。避免重复下载。
+            if ((ResponseCode == 200 || ResponseCode == 206) && file.length() != max) {
+                if (conn.getResponseCode() == 206) {//200连接成功，206断点续传。
+                    max = file.length() + max;
+                }
+                InputStream inputStream = conn.getInputStream();
+                //下载主要耗时就是花费在对流的读写操作上。
+                //持久化操作，将流转化为本地文件
+                OutputStream output = new FileOutputStream(file, true);//参数二 true,在文件末尾继续写，否则会覆盖原有文件
+                byte[] buffer = new byte[4 * 1024];
+                int iLen = 0;
+                long currentTimeMillis = 0;
+                while ((iLen = inputStream.read(buffer)) != -1) {
+                    //耗时操作都在这里。
+                    output.write(buffer, 0, iLen);
+                    if (mapCallback.get(uri) != null && (System.currentTimeMillis() - currentTimeMillis) > 1000) {
+                        float current = file.length();
+                        int bias = (int) (current / max * 100);
                         RequestCallBack requestCallBack2 = mapCallback.get(uri);
                         if (requestCallBack2 != null) {
                             if (context != null && context instanceof Activity) {
-                                long finalMax1 = max;
-                                ((Activity) context).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //主线程回调
-                                        if (requestCallBack2 != null && file != null) {
-                                            requestCallBack2.onLoad(finalMax1, finalMax1, 100);
-                                            requestCallBack2.onSuccess(file);
-                                        }
-                                    }
-                                });
-                            } else {
-                                mapCallback.get(uri).onLoad(max, max, 100);
-                                mapCallback.get(uri).onSuccess(file);
-                            }
-                        }
-                        inputStream.close();
-                        inputStream = null;
-                        System.gc();
-                    } else {
-                        //Log.e("test", "其他状态ResponseCode:\t" + ResponseCode);
-                        //416文件已经下载
-                        RequestCallBack requestCallBack2 = mapCallback.get(uri);
-                        if (ResponseCode == 416 && requestCallBack2 != null) {
-                            if (context != null && context instanceof Activity) {
+                                long finalMax = max;
                                 ((Activity) context).runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
                                         //主线程回调
                                         if (requestCallBack2 != null) {
-                                            requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
+                                            requestCallBack2.onLoad((int) current, finalMax, bias);
                                         }
                                     }
                                 });
                             } else {
-                                requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
+                                requestCallBack2.onLoad((int) current, max, bias);
                             }
-                        } else {
-                            //其他连接状态
-                            if (requestCallBack2 != null) {
-                                if (context != null && context instanceof Activity) {
-                                    ((Activity) context).runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            //主线程回调
-                                            if (requestCallBack2 != null) {
-                                                requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
-                                            }
-                                        }
-                                    });
-                                } else {
-                                    requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
+                        }
+                        currentTimeMillis = System.currentTimeMillis();
+                    }
+                }
+                output.flush();
+                output.close();
+                RequestCallBack requestCallBack2 = mapCallback.get(uri);
+                if (requestCallBack2 != null) {
+                    if (context != null && context instanceof Activity) {
+                        long finalMax1 = max;
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //主线程回调
+                                if (requestCallBack2 != null && file != null) {
+                                    requestCallBack2.onLoad(finalMax1, finalMax1, 100);
+                                    requestCallBack2.onSuccess(file);
                                 }
                             }
-                        }
+                        });
+                    } else {
+                        mapCallback.get(uri).onLoad(max, max, 100);
+                        mapCallback.get(uri).onSuccess(file);
                     }
-                } catch (Exception e) {
-                    try {
-                        RequestCallBack requestCallBack1 = mapCallback.get(uri);
-                        if (requestCallBack1 != null) {
-                            if (context != null && context instanceof Activity) {
-                                ((Activity) context).runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        //主线程回调
-                                        if (requestCallBack1 != null) {
-                                            requestCallBack1.onFailure(false, e.getMessage(), 0, null);
-                                        }
-                                    }
-                                });
-                            } else {
-                                requestCallBack1.onFailure(false, e.getMessage(), 0, null);
+                }
+                inputStream.close();
+                inputStream = null;
+                System.gc();
+            } else {
+                //Log.e("test", "其他状态ResponseCode:\t" + ResponseCode);
+                //416文件已经下载
+                RequestCallBack requestCallBack2 = mapCallback.get(uri);
+                if (ResponseCode == 416 && requestCallBack2 != null) {
+                    if (context != null && context instanceof Activity) {
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //主线程回调
+                                if (requestCallBack2 != null) {
+                                    requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
+                                }
                             }
-                        }
-                    } catch (Exception e2) {
-                        e2.printStackTrace();
+                        });
+                    } else {
+                        requestCallBack2.onFailure(true, KBaseUi.Companion.getString(R.string.kfiledown), ResponseCode, file);//"文件已經下載"
                     }
-                    KLoggerUtils.INSTANCE.e("下载失败异常:\t" + e.getMessage());
-                } finally {
-                    //标志下载结束
-                    mapLoad.put(uri, false);
-                    mapLoad.remove(uri);
-                    mapCallback.remove(uri);
-                    //Log.e("test", "结束");
+                } else {
+                    //其他连接状态
+                    if (requestCallBack2 != null) {
+                        if (context != null && context instanceof Activity) {
+                            ((Activity) context).runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //主线程回调
+                                    if (requestCallBack2 != null) {
+                                        requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
+                                    }
+                                }
+                            });
+                        } else {
+                            requestCallBack2.onFailure(false, KBaseUi.Companion.getString(R.string.kappdownfail), ResponseCode, file);//下载失败
+                        }
+                    }
                 }
             }
-        });
+        } catch (Exception e) {
+            try {
+                RequestCallBack requestCallBack1 = mapCallback.get(uri);
+                if (requestCallBack1 != null) {
+                    if (context != null && context instanceof Activity) {
+                        ((Activity) context).runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                //主线程回调
+                                if (requestCallBack1 != null) {
+                                    requestCallBack1.onFailure(false, e.getMessage(), 0, null);
+                                }
+                            }
+                        });
+                    } else {
+                        requestCallBack1.onFailure(false, e.getMessage(), 0, null);
+                    }
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+            KLoggerUtils.INSTANCE.e("下载失败异常:\t" + e.getMessage());
+        } finally {
+            //标志下载结束
+            mapLoad.put(uri, false);
+            mapLoad.remove(uri);
+            mapCallback.remove(uri);
+            //Log.e("test", "结束");
+        }
     }
 
     /**

@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit
 //}
 
 /**
- * 提交网络进度条（系统进度条+带文本）
+ * 提交网络进度条（系统进度条+带文本）；fixme timeOut 超时设置，默认是100秒；单位是毫秒。
  * Created by 彭治铭 on 2018/6/24.
  */
 open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = false) : KBaseDialog(ctx, isStatus = isStatus, isTransparent = isTransparent) {
@@ -120,7 +120,7 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
                     ctx?.runOnUiThread {
                         try {
                             if (timeOutCallback == null) {
-                                //KToast.showError(timeOutInfo)//连接超时
+                                showTimeOutInfo()//显示超时错误信息
                             } else {
                                 timeOutCallback?.let {
                                     it(timeOutInfo)//超时事件回调。
@@ -143,16 +143,31 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
 
     private var showTime: Long? = 0//记录显示的时间
     var timeOut: Long = 100000//fixme 弹框超时时间默认设置为100秒;单位是毫秒。
-    var timeOutInfo = getString(R.string.ktimeout)//连接超时信息设置。
     fun timeOut(timeOut: Long): KSubmitProgressDialog {
         this.timeOut = timeOut
         return this
     }
 
-    //超时事件回调(会在主线程中回调);返回timeOutInfo超时设置信息
-    var timeOutCallback: ((timeOutInfo: String) -> Unit)? = null
+    var timeOutInfo: String? = null//fixme 默认为空；getString(R.string.ktimeout)//连接超时信息设置。
+    fun timeOutInfo(timeOutInfo: String?): KSubmitProgressDialog {
+        this.timeOutInfo = timeOutInfo
+        return this
+    }
 
-    fun timeOutCallback(timeOutCallback: ((timeOutInfo: String) -> Unit)? = null) {
+    //显示超时错误提示信息
+    open fun showTimeOutInfo():KSubmitProgressDialog{
+        timeOutInfo?.trim()?.let {
+            if (it.length > 0) {
+                KToast.showError(timeOutInfo)//连接超时
+            }
+        }
+        return this
+    }
+
+    //超时事件回调(会在主线程中回调);返回timeOutInfo超时设置信息
+    var timeOutCallback: ((timeOutInfo: String?) -> Unit)? = null
+
+    fun timeOutCallback(timeOutCallback: ((timeOutInfo: String?) -> Unit)? = null) {
         this.timeOutCallback = timeOutCallback
     }
 

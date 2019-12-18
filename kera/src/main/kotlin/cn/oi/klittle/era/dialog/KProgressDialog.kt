@@ -69,7 +69,8 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
                     ctx?.runOnUiThread {
                         try {
                             if (timeOutCallback == null) {
-                                KToast.showError(timeOutInfo)//连接超时
+                                //KToast.showError(timeOutInfo)//连接超时
+                                showTimeOutInfo()//显示超时错误提示信息
                             } else {
                                 timeOutCallback?.let {
                                     it(timeOutInfo)//超时事件回调。
@@ -92,16 +93,31 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
 
     private var showTime: Long? = 0//记录显示的时间
     var timeOut: Long = 35000//fixme 弹框超时时间默认设置为35秒;单位是毫秒。
-    var timeOutInfo = getString(R.string.ktimeout)//连接超时信息设置。
+    var timeOutInfo: String? = getString(R.string.ktimeout)//连接超时信息设置。
     fun timeOut(timeOut: Long): KProgressDialog {
         this.timeOut = timeOut
         return this
     }
 
-    //超时事件回调(会在主线程中回调);返回timeOutInfo超时设置信息
-    var timeOutCallback: ((timeOutInfo: String) -> Unit)? = null
+    fun timeOutInfo(timeOutInfo: String?): KProgressDialog {
+        this.timeOutInfo = timeOutInfo
+        return this
+    }
 
-    fun timeOutCallback(timeOutCallback: ((timeOutInfo: String) -> Unit)? = null) {
+    //显示超时错提示信息
+    open fun showTimeOutInfo():KProgressDialog {
+        timeOutInfo?.trim()?.let {
+            if (it.length > 0) {
+                KToast.showError(timeOutInfo)//连接超时
+            }
+        }
+        return this
+    }
+
+    //超时事件回调(会在主线程中回调);返回timeOutInfo超时设置信息
+    var timeOutCallback: ((timeOutInfo: String?) -> Unit)? = null
+
+    fun timeOutCallback(timeOutCallback: ((timeOutInfo: String?) -> Unit)? = null) {
         this.timeOutCallback = timeOutCallback
     }
 
