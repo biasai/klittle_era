@@ -583,10 +583,10 @@ open class KBasePx {
     var textSizeXScale = 1f
     var textSizeYScale = 1f
 
-    private var textSizeScale_max_default = 38f//最大缩放文本，默认大小
-    private var textSizeScale_min_default = 8f//最小缩放文本，默认大小
+    private var textSizeScale_max_default = 38f//最大缩放文本，默认值
+    private var textSizeScale_min_default = 8f//最小缩放文本，默认值
 
-    //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理；(等于不进行缩放。)
+    //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理(该区间才会缩放)；(等于不进行缩放。)
     var textSizeXScale_max = textSizeX(textSizeScale_max_default, false)//缩放之后的最大字体；超过这个大小，不进行缩放
     var textSizeXScale_min = textSizeX(textSizeScale_min_default, false)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
 
