@@ -578,25 +578,120 @@ open class KBasePx {
     }
 
     /**
+     * fixme 控制文本大小缩放倍率。(等于1时，不会进行缩放处理。)
+     */
+    var textSizeXScale = 1f
+    var textSizeYScale = 1f
+
+    //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理；(等于不进行缩放。)
+    var textSizeXScale_max = textSizeX(38)//缩放之后的最大字体；超过这个大小，不进行缩放
+    var textSizeXScale_min = textSizeX(8)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
+
+    var textSizeYScale_max = textSizeY(38)
+    var textSizeYScale_min = textSizeY(8)
+
+    fun textSizeXScale(textSizeXScale: Float = 1f) {
+        this.textSizeXScale = textSizeXScale
+    }
+
+    fun textSizeXScale(textSizeXScale: Int = 1) {
+        this.textSizeXScale = textSizeXScale.toFloat()
+    }
+
+    fun textSizeYScale(textSizeYScale: Float = 1f) {
+        this.textSizeYScale = textSizeYScale
+    }
+
+    fun textSizeYScale(textSizeYScale: Int = 1) {
+        this.textSizeYScale = textSizeYScale.toFloat()
+    }
+
+    fun textSizeXScale_max(textSizeXScale_max: Int = textSizeX(38).toInt()) {
+        this.textSizeXScale_max = textSizeXScale_max.toFloat()
+    }
+
+    fun textSizeXScale_max(textSizeXScale_max: Float = textSizeX(38)) {
+        this.textSizeXScale_max = textSizeXScale_max
+    }
+
+    fun textSizeXScale_min(textSizeXScale_min: Int = textSizeX(8).toInt()) {
+        this.textSizeXScale_min = textSizeXScale_min.toFloat()
+    }
+
+    fun textSizeXScale_min(textSizeXScale_min: Float = textSizeX(8)) {
+        this.textSizeXScale_min = textSizeXScale_min
+    }
+
+
+    fun textSizeYScale_max(textSizeYScale_max: Int = textSizeX(38).toInt()) {
+        this.textSizeYScale_max = textSizeYScale_max.toFloat()
+    }
+
+    fun textSizeYScale_max(textSizeYScale_max: Float = textSizeY(38)) {
+        this.textSizeYScale_max = textSizeYScale_max
+    }
+
+    fun textSizeYScale_min(textSizeYScale_min: Int = textSizeY(8).toInt()) {
+        this.textSizeYScale_min = textSizeYScale_min.toFloat()
+    }
+
+    fun textSizeYScale_min(textSizeYScale_min: Float = textSizeX(8)) {
+        this.textSizeYScale_min = textSizeYScale_min
+    }
+
+
+    /**
      * fixme 设置文字大小。以X为标准
      */
     fun textSizeX(x: Float): Float {
-        return pixelToDp(x(x))//textView.setTextSize单位是dp,且是float类型。设置文字大小。
+        pixelToDp(x(x)).let {
+            if (textSizeXScale != 1F && it > textSizeXScale_min && it < textSizeXScale_max) {
+                (it * textSizeXScale).let {
+                    if (it < textSizeXScale_min) {
+                        return textSizeXScale_min//fixme 最小文本
+                    } else if (it > textSizeXScale_max) {
+                        return textSizeXScale_max//fixme 最大文本
+                    } else {
+                        return it//fixme 缩放文本
+                    }
+                }
+            } else {
+                return it//fixme 正常文本
+            }
+        }
+        //return pixelToDp(x(x)) * textSizeXScale//textView.setTextSize单位是dp,且是float类型。设置文字大小。
     }
 
     fun textSizeX(x: Int): Float {
-        return pixelToDp(x(x.toFloat()))
+        return textSizeX(x.toFloat())
+        //return pixelToDp(x(x.toFloat())) * textSizeXScale
     }
 
     /**
      * fixme 设置文字大小。以Y为标准
      */
     fun textSizeY(y: Float): Float {
-        return pixelToDp(y(y))//textView.setTextSize单位是dp,且是float类型。设置文字大小。
+        pixelToDp(y(y))?.let {
+            if (textSizeYScale != 1F && it > textSizeYScale_min && it < textSizeYScale_max) {
+                (it * textSizeYScale).let {
+                    if (it < textSizeYScale_min) {
+                        return textSizeYScale_min//fixme 最小文本
+                    } else if (it > textSizeYScale_max) {
+                        return textSizeYScale_max//fixme 最大文本
+                    } else {
+                        return it//fixme 缩放文本
+                    }
+                }
+            } else {
+                return it//fixme 正常文本
+            }
+        }
+        //return pixelToDp(y(y)) * textSizeYScale//textView.setTextSize单位是dp,且是float类型。设置文字大小。
     }
 
     fun textSizeY(y: Int): Float {
-        return pixelToDp(y(y.toFloat()))
+        return textSizeY(y.toFloat())
+        //return pixelToDp(y(y.toFloat())) * textSizeYScale
     }
 
     //与屏幕边缘左边的距离

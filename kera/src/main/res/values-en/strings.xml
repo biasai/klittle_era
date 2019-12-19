@@ -135,6 +135,7 @@
     <string name="kxiazai">download</string>
     <string name="kerror_code">The error code</string>
     <string name="kapkFailr">Installation package parsing error</string>
+    <string name="kapkFailr2">Download failed, please download again!</string>
     <!--下拉刷新，上拉加载更多-->
     <string name="kloadMore">Being loaded...</string>
     <string name="kloadMoreComplete">No more data。</string>

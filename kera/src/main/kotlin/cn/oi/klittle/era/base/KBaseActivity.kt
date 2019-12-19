@@ -172,12 +172,16 @@ open class KBaseActivity : FragmentActivity() {
             //fixme 为了防止异常(app重启时可能会异常)；基类的super.onCreate()必须要放在第一行，必须要先执行(调用finish()之前)。
             //fixme 为了安全，就放在第一行(最先执行)；
             super.onCreate(savedInstanceState)
+            isOnCreateSuper = true//是否执行了onCreate的super方法。
             try {
                 //fixme 防止按home键返回之后，Activity重新加载的问题。
                 if (intent != null && intent.action != null && !this.isTaskRoot) {
                     if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && intent.action == Intent.ACTION_MAIN) {
-                        finish()//fixme 调用finish()之前；一定要先调用super.onCreate();不然会直接异常崩溃的。(之前重启异常，就是因为这个。)
-                        return
+                        if (!KIntentUtils.isGoRest) {//fixme 判断是否为手动重启，不是手动重启，就关闭。
+                            KIntentUtils.isGoRest = false
+                            finish()//fixme 调用finish()之前；一定要先调用super.onCreate();不然会直接异常崩溃的。(之前重启异常，就是因为这个。)
+                            return
+                        }
                     }
                 }
                 kpx.removeAllKey()//fixme 清除所有键值，防止图片加载不出来。
@@ -185,7 +189,6 @@ open class KBaseActivity : FragmentActivity() {
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
-            isOnCreateSuper = true//是否执行了onCreate的super方法。
             //fixme 在8.0(api 26)系统的时候，Actvity透明和锁屏（横屏或竖屏）只能存在一个。这个Bug，8.1已经修复了。
             //fixme 这个Bug在 targetSdkVersion >= 27时，且系统是8.0才会出现 Only fullscreen activities can request orientation
             //这个情况会崩溃，不能横竖屏。是系统Bug
@@ -901,11 +904,10 @@ open class KBaseActivity : FragmentActivity() {
 
     //fixme Activity关闭的时候一定会调用，返回键也会调用该方法。
     override fun finish() {
-        //KLoggerUtils.e("finish()")
+        //KLoggerUtils.e("finish():\t" + isOnCreateSuper)
         try {
             //防止Activity还没开始就突然的挂掉。这是个系统的Bug
             if (isOnCreateSuper) {
-
                 //完成回调
                 finishCallBackes?.forEach {
                     it?.let {

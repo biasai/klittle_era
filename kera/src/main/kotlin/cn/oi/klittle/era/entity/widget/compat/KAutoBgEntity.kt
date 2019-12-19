@@ -194,7 +194,7 @@ data class KAutoBgEntity(var view: View?,
                     }
                 }
             } else if (url != null) {
-                autoCount++//fixme 网络才计数
+                autoCount++//fixme 网络才计数（在autoBgFromUrl()方法，图片加载成功后，会自动恢复autoCount=0）
                 if (isGlide) {
                     autoBgFromUrl(url, false, isRepeat, isRGB_565)
                 } else {
@@ -492,8 +492,14 @@ data class KAutoBgEntity(var view: View?,
                         //新开协程
                         job_url = KGlideUtils.getBitmapFromUrl(url, width, height, headers, params, isCenterCrop = isCenterCrop) { key, bitmap ->
                             autoBg = bitmap
+                            autoBg?.let {
+                                if (!it.isRecycled) {
+                                    autoCount = 0//fixme 图片获取成功，计数恢复0。
+                                    urlCount = 0
+                                    requestLayout()
+                                }
+                            }
                             this@KAutoBgEntity.key = key
-                            requestLayout()
                             isAutoBging = false
                             job_url?.cancel()
                             job_url = null
@@ -536,6 +542,8 @@ data class KAutoBgEntity(var view: View?,
                             }
                             if (activity != null && !activity!!.isFinishing && autoBg != null && !autoBg!!.isRecycled) {
                                 activity?.runOnUiThread {
+                                    autoCount = 0//fixme 图片获取成功，计数恢复0。
+                                    urlCount = 0
                                     view?.invalidate()//防止requestLayout()无效。
                                     view?.requestLayout()//主线程重新布局
                                     finish?.let {
@@ -583,6 +591,8 @@ data class KAutoBgEntity(var view: View?,
                             if (activity != null && !activity!!.isFinishing && autoBg != null && !autoBg!!.isRecycled) {
                                 //跳转到主线程
                                 activity?.runOnUiThread {
+                                    autoCount = 0//fixme 图片获取成功，计数恢复0。
+                                    urlCount = 0
                                     view?.invalidate()//防止requestLayout()无效。
                                     view?.requestLayout()//主线程重新布局
                                     finish?.let {
@@ -595,6 +605,8 @@ data class KAutoBgEntity(var view: View?,
                                     activity = null
                                 }
                             } else if (autoBg != null && !autoBg!!.isRecycled) {
+                                autoCount = 0//fixme 图片获取成功，计数恢复0。
+                                urlCount = 0
                                 requestLayout()
                                 //次线程
                                 finish?.let {
@@ -609,7 +621,16 @@ data class KAutoBgEntity(var view: View?,
                                 view?.let {
                                     if (it.visibility == View.VISIBLE) {
                                         urlCount++//fixme 以防万一；防止异常死循环。
-                                        view?.postInvalidateDelayed(postInvalidateDelayed)//fixme 自动延迟刷新(单位毫秒),防止网络图片加载失败。
+                                        view?.let {
+                                            if (it is K1Widget) {
+                                                if (!it.isOnDestroy) {
+                                                    view?.postInvalidateDelayed(postInvalidateDelayed)//fixme 自动延迟刷新(单位毫秒),防止网络图片加载失败。
+                                                } else {
+                                                }
+                                            } else {
+                                                view?.postInvalidateDelayed(postInvalidateDelayed)//fixme 自动延迟刷新(单位毫秒),防止网络图片加载失败。
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -626,7 +647,7 @@ data class KAutoBgEntity(var view: View?,
     }
 
     private var urlCount: Int = 0//fixme 以防万一；防止异常死循环刷新。记录当前网络请求次数
-    private var maxUrlCount = 5
+    private var maxUrlCount = 10
     private var postInvalidateDelayed = 200L
 
     //fixme 重新布局

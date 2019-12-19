@@ -180,6 +180,7 @@
     <string name="kxiazai">下载</string>
     <string name="kerror_code">错误代码</string>
     <string name="kapkFailr">安装包解析错误</string>
+    <string name="kapkFailr2">下载失败，请重新下载！</string>
     <!--下拉刷新，上拉加载更多-->
     <string name="kloadMore">正在加载...</string>
     <string name="kloadMoreComplete">没有更多数据了哦。</string>

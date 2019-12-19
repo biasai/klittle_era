@@ -997,9 +997,11 @@ open class K1Widget : K0Widget {
         }
     }
 
+    var isOnDestroy: Boolean = false//fixme 判断是否销毁了。
     //fixme 销毁
     open fun onDestroy() {
         try {
+            isOnDestroy = true
             try {
                 backgroundDrawable = null
                 if (Build.VERSION.SDK_INT >= 16) {

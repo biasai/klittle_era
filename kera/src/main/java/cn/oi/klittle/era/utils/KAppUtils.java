@@ -282,7 +282,8 @@ public class KAppUtils {
                 }
             } else {
                 //Toast.makeText(context, "安装包解析错误", Toast.LENGTH_LONG).show();
-                String msg = KBaseUi.Companion.getString(R.string.kapkFailr);//安装包解析错误
+                //String msg = KBaseUi.Companion.getString(R.string.kapkFailr);//安装包解析错误
+                String msg = KBaseUi.Companion.getString(R.string.kapkFailr2);//下载失败，请重新下载！
                 KToast.INSTANCE.showError(msg, null, null);
                 //KLoggerUtils.INSTANCE.e("安装包大小(下载完成)：\t" + apk.length() + "\t路径：\t" + apk.getAbsolutePath());
                 //安装包大小：	150	路径：	/storage/emulated/0/Android/data/com.example.myapplication/cache/down/201912171237498776.apk

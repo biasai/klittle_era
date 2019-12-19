@@ -520,12 +520,14 @@ object KIntentUtils {
         }
     }
 
+    var isGoRest: Boolean = false//fixme 判断是否为手动重启
     //App重启
     fun goRest(activity: Activity? = getActivity()) {
         try {
             if (activity != null && !activity.isFinishing) {
                 var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
                 activity.startActivity(intent)
             }
         } catch (e: java.lang.Exception) {

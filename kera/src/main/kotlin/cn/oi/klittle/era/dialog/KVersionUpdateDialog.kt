@@ -80,12 +80,6 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                                 } else {
                                     if (result != null) {
                                         //KToast.showError(result)
-                                        var result = result
-                                        result?.let {
-                                            if (it.contains("recvfrom failed") || it.contains("Connection timed out") || it.toLowerCase().contains("failed to connect")) {
-                                                result = getString(R.string.kconnetfailure_filedown)//下载失败，网络连接超时
-                                            }
-                                        }
                                         showError(result, code)
                                     } else {
                                         //KToast.showError(getString(R.string.kappdownfail))//下载失败

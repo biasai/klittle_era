@@ -388,18 +388,23 @@ public class KFileLoadUtils {
             try {
                 RequestCallBack requestCallBack1 = mapCallback.get(uri);
                 if (requestCallBack1 != null) {
+                    String errorMsg=e.getMessage();
+                    if (errorMsg!=null&&(errorMsg.contains("recvfrom failed") || errorMsg.contains("Connection timed out") || errorMsg.toLowerCase().contains("failed to connect"))){
+                        errorMsg = KBaseUi.Companion.getString(R.string.kconnetfailure_filedown);//下载失败，网络连接超时
+                    }
                     if (context != null && context instanceof Activity) {
+                        String finalErrorMsg = errorMsg;
                         ((Activity) context).runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 //主线程回调
                                 if (requestCallBack1 != null) {
-                                    requestCallBack1.onFailure(false, e.getMessage(), 0, null);
+                                    requestCallBack1.onFailure(false, finalErrorMsg, 0, null);
                                 }
                             }
                         });
                     } else {
-                        requestCallBack1.onFailure(false, e.getMessage(), 0, null);
+                        requestCallBack1.onFailure(false, errorMsg, 0, null);
                     }
                 }
             } catch (Exception e2) {
