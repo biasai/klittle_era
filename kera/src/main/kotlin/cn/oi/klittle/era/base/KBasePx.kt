@@ -583,12 +583,15 @@ open class KBasePx {
     var textSizeXScale = 1f
     var textSizeYScale = 1f
 
-    //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理；(等于不进行缩放。)
-    var textSizeXScale_max = textSizeX(38f, false)//缩放之后的最大字体；超过这个大小，不进行缩放
-    var textSizeXScale_min = textSizeX(8f, false)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
+    private var textSizeScale_max_default = 38f//最大缩放文本，默认大小
+    private var textSizeScale_min_default = 8f//最小缩放文本，默认大小
 
-    var textSizeYScale_max = textSizeY(38f, false)
-    var textSizeYScale_min = textSizeY(8f, false)
+    //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理；(等于不进行缩放。)
+    var textSizeXScale_max = textSizeX(textSizeScale_max_default, false)//缩放之后的最大字体；超过这个大小，不进行缩放
+    var textSizeXScale_min = textSizeX(textSizeScale_min_default, false)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
+
+    var textSizeYScale_max = textSizeY(textSizeScale_max_default, false)
+    var textSizeYScale_min = textSizeY(textSizeScale_min_default, false)
 
     fun textSizeXScale(textSizeXScale: Float = 1f) {
         this.textSizeXScale = textSizeXScale
@@ -609,39 +612,39 @@ open class KBasePx {
     /**
      * fixme 设置缩放最大字体；单位像素
      */
-    fun textSizeXScale_max(textSizeXScale_max: Int = 38) {
+    fun textSizeXScale_max(textSizeXScale_max: Int = textSizeScale_max_default.toInt()) {
         this.textSizeXScale_max = textSizeX(textSizeXScale_max, false)//fixme 像素会自动转dp
     }
 
-    fun textSizeXScale_max(textSizeXScale_max: Float = 38f) {
+    fun textSizeXScale_max(textSizeXScale_max: Float = textSizeScale_max_default) {
         this.textSizeXScale_max = textSizeX(textSizeXScale_max, false)
     }
 
     /**
      * fixme 设置缩放最小字体；单位像素
      */
-    fun textSizeXScale_min(textSizeXScale_min: Int = 8) {
+    fun textSizeXScale_min(textSizeXScale_min: Int = textSizeScale_min_default.toInt()) {
         this.textSizeXScale_min = textSizeX(textSizeXScale_min, false)//fixme 像素自动转dp
     }
 
-    fun textSizeXScale_min(textSizeXScale_min: Float = 8f) {
+    fun textSizeXScale_min(textSizeXScale_min: Float = textSizeScale_min_default) {
         this.textSizeXScale_min = textSizeX(textSizeXScale_min, false)
     }
 
 
-    fun textSizeYScale_max(textSizeYScale_max: Int = 38) {
+    fun textSizeYScale_max(textSizeYScale_max: Int = textSizeScale_max_default.toInt()) {
         this.textSizeYScale_max = textSizeY(textSizeYScale_max, false)
     }
 
-    fun textSizeYScale_max(textSizeYScale_max: Float = 38f) {
+    fun textSizeYScale_max(textSizeYScale_max: Float = textSizeScale_max_default) {
         this.textSizeYScale_max = textSizeY(textSizeYScale_max, false)
     }
 
-    fun textSizeYScale_min(textSizeYScale_min: Int = 8) {
+    fun textSizeYScale_min(textSizeYScale_min: Int = textSizeScale_min_default.toInt()) {
         this.textSizeYScale_min = textSizeY(textSizeYScale_min, false)
     }
 
-    fun textSizeYScale_min(textSizeYScale_min: Float = 8f) {
+    fun textSizeYScale_min(textSizeYScale_min: Float = textSizeScale_min_default) {
         this.textSizeYScale_min = textSizeY(textSizeYScale_min, false)
     }
 
