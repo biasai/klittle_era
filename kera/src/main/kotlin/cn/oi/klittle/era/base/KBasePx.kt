@@ -584,11 +584,11 @@ open class KBasePx {
     var textSizeYScale = 1f
 
     //fixme 大于textSizeXScale_min并且小于textSizeXScale_max才会进行缩放处理；(等于不进行缩放。)
-    var textSizeXScale_max = textSizeX(38)//缩放之后的最大字体；超过这个大小，不进行缩放
-    var textSizeXScale_min = textSizeX(8)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
+    var textSizeXScale_max = textSizeX(38f, false)//缩放之后的最大字体；超过这个大小，不进行缩放
+    var textSizeXScale_min = textSizeX(8f, false)//缩放之后的最小字体；小于这个大小，也不进行缩放处理。
 
-    var textSizeYScale_max = textSizeY(38)
-    var textSizeYScale_min = textSizeY(8)
+    var textSizeYScale_max = textSizeY(38f, false)
+    var textSizeYScale_min = textSizeY(8f, false)
 
     fun textSizeXScale(textSizeXScale: Float = 1f) {
         this.textSizeXScale = textSizeXScale
@@ -606,46 +606,58 @@ open class KBasePx {
         this.textSizeYScale = textSizeYScale.toFloat()
     }
 
-    fun textSizeXScale_max(textSizeXScale_max: Int = textSizeX(38).toInt()) {
-        this.textSizeXScale_max = textSizeXScale_max.toFloat()
+    /**
+     * fixme 设置缩放最大字体；单位像素
+     */
+    fun textSizeXScale_max(textSizeXScale_max: Int = 38) {
+        this.textSizeXScale_max = textSizeX(textSizeXScale_max, false)//fixme 像素会自动转dp
     }
 
-    fun textSizeXScale_max(textSizeXScale_max: Float = textSizeX(38)) {
-        this.textSizeXScale_max = textSizeXScale_max
+    fun textSizeXScale_max(textSizeXScale_max: Float = 38f) {
+        this.textSizeXScale_max = textSizeX(textSizeXScale_max, false)
     }
 
-    fun textSizeXScale_min(textSizeXScale_min: Int = textSizeX(8).toInt()) {
-        this.textSizeXScale_min = textSizeXScale_min.toFloat()
+    /**
+     * fixme 设置缩放最小字体；单位像素
+     */
+    fun textSizeXScale_min(textSizeXScale_min: Int = 8) {
+        this.textSizeXScale_min = textSizeX(textSizeXScale_min, false)//fixme 像素自动转dp
     }
 
-    fun textSizeXScale_min(textSizeXScale_min: Float = textSizeX(8)) {
-        this.textSizeXScale_min = textSizeXScale_min
+    fun textSizeXScale_min(textSizeXScale_min: Float = 8f) {
+        this.textSizeXScale_min = textSizeX(textSizeXScale_min, false)
     }
 
 
-    fun textSizeYScale_max(textSizeYScale_max: Int = textSizeX(38).toInt()) {
-        this.textSizeYScale_max = textSizeYScale_max.toFloat()
+    fun textSizeYScale_max(textSizeYScale_max: Int = 38) {
+        this.textSizeYScale_max = textSizeY(textSizeYScale_max, false)
     }
 
-    fun textSizeYScale_max(textSizeYScale_max: Float = textSizeY(38)) {
-        this.textSizeYScale_max = textSizeYScale_max
+    fun textSizeYScale_max(textSizeYScale_max: Float = 38f) {
+        this.textSizeYScale_max = textSizeY(textSizeYScale_max, false)
     }
 
-    fun textSizeYScale_min(textSizeYScale_min: Int = textSizeY(8).toInt()) {
-        this.textSizeYScale_min = textSizeYScale_min.toFloat()
+    fun textSizeYScale_min(textSizeYScale_min: Int = 8) {
+        this.textSizeYScale_min = textSizeY(textSizeYScale_min, false)
     }
 
-    fun textSizeYScale_min(textSizeYScale_min: Float = textSizeX(8)) {
-        this.textSizeYScale_min = textSizeYScale_min
+    fun textSizeYScale_min(textSizeYScale_min: Float = 8f) {
+        this.textSizeYScale_min = textSizeY(textSizeYScale_min, false)
     }
 
+
+    fun textSizeX(x: Float): Float {
+        return textSizeX(x, true)//fixme 默认进行缩放
+    }
 
     /**
      * fixme 设置文字大小。以X为标准
+     * @param x 文本大小，单位是像素
+     * @param isScale fixme 是否进行textSizeXScale进行缩放。
      */
-    fun textSizeX(x: Float): Float {
+    fun textSizeX(x: Float, isScale: Boolean): Float {
         pixelToDp(x(x)).let {
-            if (textSizeXScale != 1F && it > textSizeXScale_min && it < textSizeXScale_max) {
+            if (isScale && textSizeXScale != 1F && it > textSizeXScale_min && it < textSizeXScale_max) {
                 (it * textSizeXScale).let {
                     if (it < textSizeXScale_min) {
                         return textSizeXScale_min//fixme 最小文本
@@ -663,16 +675,27 @@ open class KBasePx {
     }
 
     fun textSizeX(x: Int): Float {
-        return textSizeX(x.toFloat())
+        return textSizeX(x, true)
         //return pixelToDp(x(x.toFloat())) * textSizeXScale
+    }
+
+    fun textSizeX(x: Int, isScale: Boolean): Float {
+        return textSizeX(x.toFloat(), isScale)
+        //return pixelToDp(x(x.toFloat())) * textSizeXScale
+    }
+
+    fun textSizeY(y: Float): Float {
+        return textSizeY(y, true)//fixme 默认进行缩放
     }
 
     /**
      * fixme 设置文字大小。以Y为标准
+     * @param y 文本大小，单位是像素
+     * @param isScale fixme 是否进行textSizeXScale进行缩放。
      */
-    fun textSizeY(y: Float): Float {
+    fun textSizeY(y: Float, isScale: Boolean): Float {
         pixelToDp(y(y))?.let {
-            if (textSizeYScale != 1F && it > textSizeYScale_min && it < textSizeYScale_max) {
+            if (isScale && textSizeYScale != 1F && it > textSizeYScale_min && it < textSizeYScale_max) {
                 (it * textSizeYScale).let {
                     if (it < textSizeYScale_min) {
                         return textSizeYScale_min//fixme 最小文本
@@ -690,47 +713,70 @@ open class KBasePx {
     }
 
     fun textSizeY(y: Int): Float {
-        return textSizeY(y.toFloat())
+        return textSizeY(y, true)
+        //return pixelToDp(y(y.toFloat())) * textSizeYScale
+    }
+
+    fun textSizeY(y: Int, isScale: Boolean): Float {
+        return textSizeY(y.toFloat(), isScale)
         //return pixelToDp(y(y.toFloat())) * textSizeYScale
     }
 
     //与屏幕边缘左边的距离
-    fun left(view: View): Int {
-        //获取现对于整个屏幕的位置。
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-        return location[0]
+    fun left(view: View?): Int {
+        if (view != null) {
+            //获取现对于整个屏幕的位置。
+            val location = IntArray(2)
+            view.getLocationOnScreen(location)
+            return location[0]
+        }
+        return 0
     }
 
     //与屏幕边缘右边的距离
-    fun right(view: View): Int {
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-        return (screenWidth - location[0] - view.width).toInt()
+    fun right(view: View?): Int {
+        if (view != null) {
+            val location = IntArray(2)
+            view.getLocationOnScreen(location)
+            return (screenWidth - location[0] - view.width).toInt()
+        }
+        return 0
     }
 
     //与屏幕边缘上边的距离
-    fun top(view: View): Int {
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-        return location[1]
+    fun top(view: View?): Int {
+        if (view != null) {
+            val location = IntArray(2)
+            view.getLocationOnScreen(location)
+            return location[1]
+        }
+        return 0
     }
 
     //与屏幕边缘下边的距离
-    fun bottom(view: View): Int {
-        val location = IntArray(2)
-        view.getLocationOnScreen(location)
-        return (screenHeight - location[1] - view.height).toInt()
+    fun bottom(view: View?): Int {
+        if (view != null) {
+            val location = IntArray(2)
+            view.getLocationOnScreen(location)
+            return (screenHeight - location[1] - view.height).toInt()
+        }
+        return 0
     }
 
     //测量两个View之间的X坐标间距
-    fun distanceX(view1: View, view2: View): Float {
-        return view2.x - view1.x
+    fun distanceX(view1: View?, view2: View?): Float {
+        if (view1 != null && view2 != null) {
+            return view2.x - view1.x
+        }
+        return 0f
     }
 
     //测量两个View之间的Y坐标间距
-    fun distanceY(view1: View, view2: View): Float {
-        return view2.y - view1.y
+    fun distanceY(view1: View?, view2: View?): Float {
+        if (view1 != null && view2 != null) {
+            return view2.y - view1.y
+        }
+        return 0f
     }
 
     //获取文本居中Y坐标,height：以这个高度进行对其。即对其高度
