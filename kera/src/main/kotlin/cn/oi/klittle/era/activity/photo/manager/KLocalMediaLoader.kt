@@ -1,14 +1,8 @@
 package cn.oi.klittle.era.activity.photo.manager
 
-import android.app.Activity
-import android.database.Cursor
-import android.os.Bundle
 import android.support.v4.app.FragmentActivity
-import android.support.v4.app.LoaderManager
-import android.support.v4.content.Loader
-import com.luck.picture.lib.PictureSelector
-import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.model.LocalMediaLoader
+import cn.oi.klittle.era.activity.photo.config.PictureConfig
+import cn.oi.klittle.era.activity.photo.model.LocalMediaLoader
 
 /**
  * 图片加载管理类，继承LocalMediaLoader(PictureSelector类库里的)

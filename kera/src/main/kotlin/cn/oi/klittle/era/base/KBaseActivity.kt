@@ -11,17 +11,11 @@ import android.os.Bundle
 import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
-import android.transition.Explode
-import android.transition.Fade
-import android.transition.Slide
-import android.transition.Transition
-import android.view.Gravity
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.LinearInterpolator
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.photo.config.PictureConfig
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.comm.KToast
@@ -31,11 +25,6 @@ import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
-import cn.oi.klittle.era.widget.viewpager.KViewPager
-import com.luck.picture.lib.PictureSelector
-import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.config.PictureMimeType
-import com.luck.picture.lib.entity.LocalMedia
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.act
@@ -514,103 +503,12 @@ open class KBaseActivity : FragmentActivity() {
                     KPermissionUtils.onRequestPermissionsResult(Settings.canDrawOverlays(getApplicationContext()))
                 }
             } else if (resultCode === Activity.RESULT_OK) {
-                when (requestCode) {
-                    PictureConfig.CHOOSE_REQUEST -> {
-                        // 图片选择结果回调
-                        mSelectList = PictureSelector.obtainMultipleResult(data)?.toMutableList()
-                        var pathes = ArrayList<String>()
-                        mSelectList?.forEach {
-                            var path = it.path//原图路径
-                            if (it.isCut) {
-                                path = it.cutPath//剪切路径
-                            }
-                            //fixme 逻辑：先剪切；最后再压缩。压缩是在原图或者剪切图的基础上最后进行的压缩。
-                            if (it.isCompressed) {
-                                path = it.compressPath//压缩后路径；最后进行。
-                            }
-                            pathes.add(path)
-                        }
-                        if (pathes.size > 0 && mSelectList != null) {
-                            mSelectListCallback?.let {
-                                it(pathes)//回调图片路径集合
-                            }
-                            mSelectListCallback = null
-                            mSelectListCallback2?.let {
-                                it(mSelectList!!)//回调MutableList集合
-                            }
-                            mSelectListCallback2 = null
-                        }
-                    }
-                }
             }
-            this.mSelectListCallback = null
-            this.mSelectListCallback2 = null
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-
-    private var mSelectList: MutableList<LocalMedia>? = null
-    private var mSelectListCallback: ((path: ArrayList<String>) -> Unit)? = null
-    private var mSelectListCallback2: ((mSelectList: MutableList<LocalMedia>) -> Unit)? = null
-    /**
-     * 图片选择器
-     * @param maxSelectNum 图片选择最大张数；不要设置默认参数，防止和子类方法冲突
-     * @param imageSpanCount 图片选择器列表每行的个数
-     * @param callback 图片回调(返回图片路径)，不要设置默认参数，防止和子类方法冲突。
-     */
-    open fun pictrueSelectorForPath(maxSelectNum: Int = 1, imageSpanCount: Int = 4, medias: List<LocalMedia>? = mSelectList, isCompress: Boolean = true, enableCrop: Boolean = false, aspect_ratio_x: Int = 1, aspect_ratio_y: Int = 1, callback: ((path: ArrayList<String>) -> Unit)?) {
-        this.mSelectListCallback = callback
-        this.mSelectListCallback2 = null
-        PictureSelector.create(act)
-                .openGallery(PictureMimeType.ofImage()).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum)
-                .compress(isCompress)//是否压缩；true压缩;fixme 测试发现 宽和高直接压一半。
-                .enableCrop(enableCrop)//是否裁剪
-                .withAspectRatio(aspect_ratio_x, aspect_ratio_y)//裁剪比例（宽高比例）
-                .selectionMedia(medias)//选中默认的
-                .minimumCompressSize(100)// 小于100kb的图片不压缩
-                .forResult(PictureConfig.CHOOSE_REQUEST)
-    }
-
-    /**
-     * fixme PictureSelector图片选择器默认主题都是AppTheme；如果裁剪报主题错误，
-     * fixme 在AppTheme(主moudle里的同名主题会覆盖类库Library)里添加如下两行即可：
-     * fixme <item name="windowActionBar">false</item>
-     * fixme <item name="windowNoTitle">true</item>
-     */
-
-    /**
-     * 图片选择器
-     * @param maxSelectNum 图片选择最大张数；
-     * @param imageSpanCount 图片选择器列表每行的个数
-     * @param callback 图片回调(返回LocalMedia对象集合)，
-     */
-    open fun pictrueSelectorForLocalMedia(maxSelectNum: Int = 1, imageSpanCount: Int = 4, medias: List<LocalMedia>? = mSelectList, isCompress: Boolean = true, enableCrop: Boolean = false, aspect_ratio_x: Int = 1, aspect_ratio_y: Int = 1, callback: ((medias: List<LocalMedia>) -> Unit)?) {
-        this.mSelectListCallback = null
-        this.mSelectListCallback2 = callback
-        PictureSelector.create(act)
-                .openGallery(PictureMimeType.ofImage()).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum)
-                .compress(isCompress)//是否压缩；true压缩;fixme 测试发现 宽和高直接压一半。
-                .enableCrop(enableCrop)//是否裁剪
-                .withAspectRatio(aspect_ratio_x, aspect_ratio_y)//裁剪比例（宽高比例）
-                .selectionMedia(medias)//选中默认的
-                .minimumCompressSize(100)// 小于100kb的图片不压缩
-                .forResult(PictureConfig.CHOOSE_REQUEST)
-    }
-
-    /**
-     * 图片预览
-     * @param position 当前预览图片下标
-     * @param medias 预览图片集合
-     */
-    open fun pictruePreview(position: Int = 0, medias: List<LocalMedia>? = mSelectList) {
-        medias?.let {
-            if (it.lastIndex >= position) {
-                PictureSelector.create(act).themeStyle(R.style.picture_default_style).openExternalPreview(position, medias);
-            }
-        }
-    }
 
     /**
      * fixme 自己的图片选择器
@@ -623,7 +521,7 @@ open class KBaseActivity : FragmentActivity() {
      * @param imageSpanCount 图片选择器列表每行的个数
      * @param selectCallback 图片选中回调(返回以及选中的KLocalMedia对象集合)
      */
-    open fun pictrueSelectorForLocalMedia2(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((selectDatas: MutableList<KLocalMedia>) -> Unit)? = null) {
+    open fun pictrueSelectorForLocalMedia(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((selectDatas: MutableList<KLocalMedia>) -> Unit)? = null) {
         KPictureSelector.type(type).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
             var data = it
             selectCallback?.let { it(data) }
@@ -636,7 +534,7 @@ open class KBaseActivity : FragmentActivity() {
      * @param imageSpanCount 图片选择器列表每行的个数
      * @param selectDatas 图片回调(返回图片路径)，不要设置默认参数，防止和子类方法冲突。
      */
-    open fun pictrueSelectorForPath2(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((path: ArrayList<String>) -> Unit)? = null) {
+    open fun pictrueSelectorForPath(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((path: ArrayList<String>) -> Unit)? = null) {
         KPictureSelector.type(type).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
             var pathes = ArrayList<String>()
             it?.forEach {
@@ -663,7 +561,7 @@ open class KBaseActivity : FragmentActivity() {
      * @param position 当前预览图片下标
      * @param medias 预览图片集合
      */
-    open fun pictruePreview2(position: Int = 0, medias: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia) {
+    open fun pictruePreview(position: Int = 0, medias: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia) {
         medias?.let {
             if (it.lastIndex >= position) {
                 KPictureSelector.openExternalPreview(this, position, it, isCheckable = false)
@@ -937,8 +835,6 @@ open class KBaseActivity : FragmentActivity() {
                 kTopTimi?.dismiss()
                 kTopTimi?.onDestroy()
                 kTopTimi = null
-                mSelectListCallback = null
-                mSelectListCallback2 = null
                 kprogressbar?.dismiss()
                 kprogressbar?.onDestroy()
                 kprogressbar = null

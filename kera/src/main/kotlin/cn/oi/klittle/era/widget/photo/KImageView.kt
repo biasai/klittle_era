@@ -6,8 +6,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.ImageView
-import cn.oi.klittle.era.utils.KLoggerUtils
-import com.luck.picture.lib.photoview.PhotoView
 
 /**
  * 普通的ImageView，防止内部图片为空

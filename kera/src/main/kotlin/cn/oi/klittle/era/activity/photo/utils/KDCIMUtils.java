@@ -5,10 +5,10 @@ import android.content.ContentResolver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
-import com.luck.picture.lib.tools.DateUtils;
-import com.luck.picture.lib.tools.PictureFileUtils;
+import cn.oi.klittle.era.activity.photo.tools.DateUtils;
+import cn.oi.klittle.era.activity.photo.tools.PictureFileUtils;
+
 
 public class KDCIMUtils {
     /**

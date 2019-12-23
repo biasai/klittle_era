@@ -5,15 +5,14 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.photo.config.PictureConfig
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.popu.KSpinnerPop
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.compat.KView
-import com.luck.picture.lib.config.PictureConfig
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 

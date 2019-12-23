@@ -15,7 +15,6 @@ import android.view.View.OnClickListener;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
-import com.luck.picture.lib.tools.PictureFileUtils;
 import com.sdk.Qr_code.manager.CameraManager;
 import com.sdk.Qr_code.code.CaptureActivityHandler;
 import com.sdk.Qr_code.code.InactivityTimer;
@@ -27,6 +26,7 @@ import com.sdk.Qr_code.view.ViewfinderView;
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia;
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector;
+import cn.oi.klittle.era.activity.photo.tools.PictureFileUtils;
 import cn.oi.klittle.era.base.KBaseActivity;
 import cn.oi.klittle.era.comm.KToast;
 import kotlin.Unit;

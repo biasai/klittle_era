@@ -90,7 +90,6 @@ dependencies {
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
     api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
-    //implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version" //fixme 现在新建工程使用的是：jdk7
     //协程
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
     //基本普通依赖,一般这个就够了
@@ -98,43 +97,7 @@ dependencies {
     //以下依赖根据需求自己添加
     // RecyclerView-v7
     api "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
-//    // Appcompat-v7 (only Anko Commons)
-//    api "org.jetbrains.anko:anko-appcompat-v7-commons:$anko_version"
-//    // Appcompat-v7 (Anko Layouts)
-//    api "org.jetbrains.anko:anko-appcompat-v7:$anko_version"
-//    api "org.jetbrains.anko:anko-coroutines:$anko_version"
-//    // CardView-v7
-//    api "org.jetbrains.anko:anko-cardview-v7:$anko_version"
-//    // Design
-//    api "org.jetbrains.anko:anko-design:$anko_version"
-//    api "org.jetbrains.anko:anko-design-coroutines:$anko_version"
-//    // GridLayout-v7
-//    api "org.jetbrains.anko:anko-gridlayout-v7:$anko_version"
-//    // Percent
-//    api "org.jetbrains.anko:anko-percent:$anko_version"
-//    api "org.jetbrains.anko:anko-recyclerview-v7-coroutines:$anko_version"
-//    // Support-v4 (only Anko Commons)
-//    api "org.jetbrains.anko:anko-support-v4-commons:$anko_version"
-//    // Support-v4 (Anko Layouts)
-//    api "org.jetbrains.anko:anko-support-v4:$anko_version"
-//    // ConstraintLayout
-//    api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
-//    fixme 最好使用api；防止主moudle无法正常引用。library和主moudle重复引用基本是不会报错的。
-//    implementation('引用'){
-//        exclude group: 'com.android.support', module: 'appcompat-v7'//fixme exclude是去除的意思。防止冲突。去除对应的包
-//    }
-//    fixme 如：
-//    appcompat-v、support-v4 、v7等多个依赖冲突
-//    implementation('com.allenliu.versionchecklib:library:2.0.5') {
-//        exclude group: 'com.android.support', module: 'appcompat-v7'
-//        exclude group: 'com.android.support', module: 'support-v7'
-//    }
-//    compile ('com.squareup.retrofit2:adapter-rxjava:2.1.0'){
-//
-//        exclude module: 'rxjava'
-//
-//    }
-//    fixme 以下是第三方库
+    //fixme 以下是第三方库
     implementation files('libs\\dom4j-1.6.1.jar')//fixme 引用jar包；拥有自动生成string.xml文件。
     //json库
     api 'com.google.code.gson:gson:2.8.5'
@@ -148,10 +111,7 @@ dependencies {
     //最新版(自己copy拷贝过来的，复制的是最新版哦，比1.0.4代码要新)
     //api 'com.gitee.biasia:KJSBridge:v1.0.4'
     api 'com.github.lzyzsd:jsbridge:1.0.4'//这个稳定一点(建议使用这个)，自己复制拷贝过来的不稳定。
-    //图片选择器
-    //api 'com.gitee.biasia:KPictureSelector:v2.2.4'
-    //api 'com.github.LuckSiege.PictureSelector:picture_library:v2.2.3'
-    api 'com.github.biasai:PictureSelector:v2.2.3'
+    api 'com.github.bumptech.glide:glide:4.5.0'//Glide图片加载
     //fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
     //图表库
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'

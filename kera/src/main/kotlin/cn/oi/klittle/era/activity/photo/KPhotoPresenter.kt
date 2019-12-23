@@ -1,15 +1,14 @@
 package cn.oi.klittle.era.activity.photo
 
 import android.support.v4.app.FragmentActivity
+import cn.oi.klittle.era.activity.photo.config.PictureConfig
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.entity.KLocalMediaFolder
+import cn.oi.klittle.era.activity.photo.entity.LocalMedia
+import cn.oi.klittle.era.activity.photo.entity.LocalMediaFolder
 import cn.oi.klittle.era.activity.photo.manager.KLocalMediaLoader
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.utils.KFileUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
-import com.luck.picture.lib.config.PictureConfig
-import com.luck.picture.lib.entity.LocalMedia
-import com.luck.picture.lib.entity.LocalMediaFolder
 import java.io.File
 
 open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {

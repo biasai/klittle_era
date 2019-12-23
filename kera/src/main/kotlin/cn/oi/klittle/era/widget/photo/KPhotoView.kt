@@ -5,8 +5,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.util.AttributeSet
 import android.view.ViewGroup
-import cn.oi.klittle.era.utils.KLoggerUtils
-import com.luck.picture.lib.photoview.PhotoView
+import cn.oi.klittle.era.widget.photoview.PhotoView
 
 /**
  * 照片图片控件；这个PhotoView在图片选择器的引用中。

@@ -147,6 +147,13 @@
     <string name="kcamera">Shot</string>
     <string name="kmaxSelectNum">You can choose up to %s image</string>
     <string name="ksubmit">submit</string>
+    <string name="kpicture_error">The picture is corrupted</string>
+    <string name="kpicture_video_error">The video is corrupted</string>
+    <string name="kpicture_audio_error">The audio is corrupted</string>
+    <string name="kpicture_all_audio">All audio</string>
+    <string name="kpicture_camera_roll">CameraRoll</string>
+    <string name="kpicture_empty_title">No video or photos\n</string>
+    <string name="kpicture_empty_audio_title">No audio file\n</string>
     <!--多国语言-->
     <string name="klanguage_zh">Chinese</string>
     <string name="klanguage_zh_rCN">Chinese (simplified)</string>

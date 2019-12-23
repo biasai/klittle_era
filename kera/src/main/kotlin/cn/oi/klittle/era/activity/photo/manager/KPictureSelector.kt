@@ -7,6 +7,7 @@ import android.text.TextUtils
 import android.transition.Fade
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.KPhotoActivity
+import cn.oi.klittle.era.activity.photo.config.PictureConfig
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.entity.KLocalMediaFolder
 import cn.oi.klittle.era.activity.preview.KPreviewActivity
@@ -14,7 +15,6 @@ import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
-import com.luck.picture.lib.config.PictureConfig
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File

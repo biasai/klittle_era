@@ -15,22 +15,9 @@ import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KGlideUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KView
 import cn.oi.klittle.era.widget.photo.KPhotoView
 import cn.oi.klittle.era.widget.video.KVideoView
-import com.bumptech.glide.Glide
-import com.bumptech.glide.Priority
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.load.resource.gif.GifDrawable
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.SimpleTarget
-import com.bumptech.glide.request.target.Target
-import com.bumptech.glide.request.transition.Transition
-import com.luck.picture.lib.photoview.PhotoView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
