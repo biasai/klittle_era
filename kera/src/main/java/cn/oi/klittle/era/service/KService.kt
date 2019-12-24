@@ -7,13 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.service.aidl.KAidlInterface
 import cn.oi.klittle.era.utils.KLoggerUtils
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import java.util.concurrent.TimeUnit
 
 
 /**
+ * fixme 和应用同进程服务。
  * fixme startService()重复执行， 不会再执行onCreate()；只会执行onStartCommand()再执行onStart()方法；
  * fixme 重复绑定服务onBind()只会重复执行onServiceConnected()方法；因为每次bindService()都是新建一个连接绑定。
  * fixme startService()和bindService()可以同时使用。
@@ -45,6 +50,12 @@ open class KService : Service() {
                     var mIntent = Intent(action)
                     mIntent.setComponent(mCompontName)
                     startService(mIntent)
+//                    if (Build.VERSION.SDK_INT >= 26) {
+//                        //8.0 开启前台进程。优先级高。
+//                        startForegroundService(mIntent)//fixme 建议不要使用，很容易崩溃。开启服务之后，不一会就崩溃了。
+//                    } else {
+//                        startService(mIntent)
+//                    }
                 }
             }
         }

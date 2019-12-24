@@ -869,6 +869,14 @@ open class KBaseActivity : FragmentActivity() {
         }
     }
 
+    /**
+     * fixme 获取当前进程Id(是当前调用者所在的进程)
+     * fixme 作为普通方法，不要作为静态方法
+     */
+    fun getPid(): Int {
+        return android.os.Process.myPid()
+    }
+
     companion object {
 
         // 两次点击按钮之间的点击间隔不能少于1000毫秒（即1秒）
@@ -904,6 +912,7 @@ open class KBaseActivity : FragmentActivity() {
             //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
+
 
     }
 

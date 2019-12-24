@@ -7,16 +7,18 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
-import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.service.aidl.KAidlCallback
 import cn.oi.klittle.era.service.aidl.KAidlInterface
 import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
+import java.util.concurrent.TimeUnit
 
 
 /**
+ * fixme 跨进程服务
  * fixme startService()重复执行， 不会再执行onCreate()；只会执行onStartCommand()再执行onStart()方法；
  * fixme 重复绑定服务onBind()只会重复执行onServiceConnected()方法；因为每次bindService()都是新建一个连接绑定。
  * fixme startService()和bindService()可以同时使用。
@@ -26,9 +28,10 @@ open class KAidlService : Service() {
 
     companion object {
 
-        private fun getActivity(): Activity? {
-            return KBaseActivityManager.getInstance().stackTopActivity
-        }
+//        fixme 因为是跨进程，所以这里是无法获取到Activity的。
+//        private fun getActivity(): Activity? {
+//            return KBaseActivityManager.getInstance().stackTopActivity
+//        }
 
         private val action: String = "android.intent.action.kera.service.KAidlService"
         private val serviceClassName = KAidlService::class.java.name
@@ -38,10 +41,10 @@ open class KAidlService : Service() {
          * 开启服务
          * @param isRepeat 是否允许服务重复开启。true允许；false不允许重复开启（默认）。
          */
-        fun startService(activity: Activity? = getActivity(), isRepeat: Boolean = false) {
+        fun startService(activity: Activity?, isRepeat: Boolean = false) {
             activity?.apply {
                 if (!this.isFinishing) {
-                    if (!isRepeat && isServiceExisted()) {
+                    if (!isRepeat && isServiceExisted(activity)) {
                         return
                     }
                     var mCompontName = ComponentName(this, serviceClazz)//上下文 ，Service类
@@ -53,7 +56,7 @@ open class KAidlService : Service() {
         }
 
         //关闭服务
-        fun stopService(activity: Activity? = getActivity()): Boolean {
+        fun stopService(activity: Activity?): Boolean {
             activity?.apply {
                 if (!this.isFinishing) {
                     var mCompontName = ComponentName(this, serviceClazz)//上下文 ，Service类
@@ -92,7 +95,7 @@ open class KAidlService : Service() {
         private var serviceConnectiones = arrayListOf<ServiceConnection?>()
         //绑定服务；activity默认参数最好放在最后，方便调用。
         //每一次的bindService()都是一次新的连接;一个新的对象,一个新的绑定。
-        fun bindService(serviceConnection: ServiceConnection, activity: Activity? = getActivity()) {
+        fun bindService(activity: Activity?, serviceConnection: ServiceConnection) {
             activity?.apply {
                 if (!this.isFinishing) {
                     serviceConnectiones.add(serviceConnection)
@@ -109,29 +112,40 @@ open class KAidlService : Service() {
         //bindService()和unbindServie()参数ServiceConnection必须要一致。不然奔溃
         //只有所有的binder都解除之后；服务才会结束。
         // stopService()和unbindService()都无效。必须关闭所有绑定的Activity
-        fun unbindService(serviceConnection: ServiceConnection?, activity: Activity? = getActivity()) {
+        fun unbindService(activity: Activity?, serviceConnection: ServiceConnection?) {
             activity?.apply {
                 if (!this.isFinishing) {
                     if (serviceConnection != null) {
                         unbindService(serviceConnection)
-                        serviceConnectiones.remove(serviceConnection)
+                        serviceConnectiones?.remove(serviceConnection)
                     }
                 }
             }
         }
 
         //解除所有的绑定
-        fun unbindAllService() {
-            if (serviceConnectiones.size > 0) {
-                unbindService(serviceConnectiones[0])
+        fun unbindAllService(activity: Activity?) {
+            activity?.apply {
+                if (!this.isFinishing) {
+                    if (serviceConnectiones != null && serviceConnectiones.size > 0) {
+                        serviceConnectiones?.let {
+                            if (it.size > 0) {
+                                unbindService(activity, it[0])
+                            }
+                        }
+                        serviceConnectiones?.let {
+                            if (it.size > 0) {
+                                unbindAllService(activity)//fixme 闭合继续移除。
+                            }
+                        }
+                    }
+                }
             }
-            if (serviceConnectiones.size > 0) {
-                unbindAllService()
-            }
+
         }
 
         //判断当前Servicer是否已经开启；true开启；false为开启；fixme 亲测有效。
-        fun isServiceExisted(activity: Activity? = getActivity(), className: String = serviceClassName): Boolean {
+        fun isServiceExisted(activity: Activity?, className: String = serviceClassName): Boolean {
             activity?.apply {
                 var activityManager = this
                         .getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
@@ -154,11 +168,31 @@ open class KAidlService : Service() {
         }
     }
 
+    /**
+     * fixme 获取当前进程Id(是当前调用者所在的进程)
+     * fixme 作为普通方法，不要作为静态方法
+     */
+    fun getPid(): Int {
+        return android.os.Process.myPid()
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+//        KLoggerUtils.e("onCreate()\t服务进程：\t" + android.os.Process.myPid())
+//        async {
+//            for (i in 0..1000) {
+//                KLoggerUtils.e("i:\t" + i)
+//                delay(1000, TimeUnit.MILLISECONDS)
+//            }
+//        }
+    }
+
     var aidlInterface: KAidlInterface.Stub? = null
 
     // bindService(Intent service, ServiceConnection conn, int flags)会调用onBind()方法。
     //第一次绑定bindService()的时候，会执行；其后再绑定只会执行onServiceConnected()方法
     override fun onBind(intent: Intent?): IBinder? {
+        //KLoggerUtils.e("onBind()")
         if (aidlInterface == null) {
             aidlInterface = object : KAidlInterface.Stub() {
                 var aidlCallback: KAidlCallback? = null
@@ -193,7 +227,12 @@ open class KAidlService : Service() {
         return super.onUnbind(intent)
     }
 
+    /**
+     * fixme 所有的ServiceConnection断开之后，会自动销毁。
+     * fixme 当Activity销毁时，所创建的ServiceConnection也会自动断开。
+     */
     override fun onDestroy() {
+//        KLoggerUtils.e("onDestroy()")
         serviceConnectiones.clear()
         aidlInterface = null
         super.onDestroy()
