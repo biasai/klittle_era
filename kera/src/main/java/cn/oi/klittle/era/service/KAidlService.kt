@@ -49,6 +49,7 @@ open class KAidlService : Service() {
                     }
                     var mCompontName = ComponentName(this, serviceClazz)//上下文 ，Service类
                     var mIntent = Intent(action)
+                    mIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     mIntent.setComponent(mCompontName)
                     startService(mIntent)
                 }
@@ -178,14 +179,15 @@ open class KAidlService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-//        KLoggerUtils.e("onCreate()\t服务进程：\t" + android.os.Process.myPid())
-//        async {
-//            for (i in 0..1000) {
-//                KLoggerUtils.e("i:\t" + i)
-//                delay(1000, TimeUnit.MILLISECONDS)
-//            }
-//        }
+        KLoggerUtils.e("onCreate()\t服务进程：\t" + android.os.Process.myPid())
+        async {
+            for (i in 0..1000) {
+                KLoggerUtils.e("i:\t" + i)
+                delay(1000, TimeUnit.MILLISECONDS)
+            }
+        }
     }
+
 
     var aidlInterface: KAidlInterface.Stub? = null
 
@@ -232,7 +234,7 @@ open class KAidlService : Service() {
      * fixme 当Activity销毁时，所创建的ServiceConnection也会自动断开。
      */
     override fun onDestroy() {
-//        KLoggerUtils.e("onDestroy()")
+        KLoggerUtils.e("onDestroy()")
         serviceConnectiones.clear()
         aidlInterface = null
         super.onDestroy()
