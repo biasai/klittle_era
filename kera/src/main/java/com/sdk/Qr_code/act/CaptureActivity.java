@@ -29,6 +29,7 @@ import cn.oi.klittle.era.activity.photo.manager.KPictureSelector;
 import cn.oi.klittle.era.activity.photo.tools.PictureFileUtils;
 import cn.oi.klittle.era.base.KBaseActivity;
 import cn.oi.klittle.era.comm.KToast;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
@@ -249,7 +250,7 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
     //fixme 二维码扫描结果，子类就重写这个方法即可。
     protected void onQrScanResult(String str, Bitmap bitmap) {
         try {
-            //Log.e("test","二维码：\t"+str);
+            //KLoggerUtils.INSTANCE.e("二维码：\t"+str);
             scanBitmap = bitmap;
             if (inactivityTimer != null) {
                 inactivityTimer.onActivity();
@@ -257,6 +258,11 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    //本地图片二维码识别失败的时候，回调。
+    protected void onQrScanResultFail() {
+        KToast.INSTANCE.showInfo(getString(R.string.kqr_fair), getActivity(), null);
     }
 
     //震动(不需要任何权限)
@@ -368,11 +374,6 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
 //            e.printStackTrace();
 //        }
 //    }
-
-    //本地图片二维码识别失败的时候，回调。
-    protected void onQrScanResultFail() {
-        KToast.INSTANCE.showInfo(getString(R.string.kqr_fair), getActivity(), null);
-    }
 
     //资源释放
     @Override

@@ -12,6 +12,7 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
+import kotlinx.coroutines.experimental.async
 import java.util.regex.Pattern
 
 //                    fixme 使用案例
@@ -136,6 +137,21 @@ open class KButton : KShadowView {
                     }
                 }
                 if (isRegular) {
+                    if (mediaPlayer != null) {
+                        async {
+                            playMediaPlayer()
+//                            if (!mediaPlayer!!.isPlaying) {
+//                                mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
+//                            }
+                        }
+                    } else if (issMediaPlayerEnable && sMediaPlayer != null) {
+                        async {
+                            sPlayMediaPlayer()
+//                                if (!sMediaPlayer!!.isPlaying) {
+//                                    sMediaPlayer?.start()//播放全局静态音频
+//                                }
+                        }
+                    }
                     onClick()//fixme 如果数据校验正确，才会触发点击事件
                 }
             }

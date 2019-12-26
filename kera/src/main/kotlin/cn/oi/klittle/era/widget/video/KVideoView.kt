@@ -12,6 +12,11 @@ import android.widget.VideoView
 //                                            pause()//立即播放和暂停（这样画面会停留在第一帧）；如果不播放整个控件的画面就是黑的。什么都没有
 //                                        }
 
+//                    var path = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1576322118470.mp4"
+//                    prepare(path) {
+//                        start()//预加载完成播放
+//                    }
+
 //                                            //播放完成（画面会停留在最后一帧）
 //                                            setOnCompletionListener {
 //                                            }
@@ -33,17 +38,21 @@ class KVideoView : VideoView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     /**
-     * 准备播放，并且画面停留在第一帧。
+     * 准备播放，并且画面停留在第一帧。fixme 播放完成之后，画面会停留在最后一帧。
      * @param path 播放资源路径
+     * @param callback 预处理完成之后，回调。
      */
-    fun prepare(path: String?) {
+    fun prepare(path: String?, callback: (() -> Unit)? = null) {
         path?.trim()?.let {
             if (it.length > 0) {
                 setVideoPath(path)//加载本地视频，同样也支持网络视频。如果字符串是网络url，同样可以播放。
                 //在视频预处理完成后被调用。
                 setOnPreparedListener {
                     start()
-                    pause()//立即播放和暂停（这样画面会停留在第一帧）；如果不播放整个控件的画面就是黑的。什么都没有
+                    pause()//fixme 立即播放和暂停（这样画面会停留在第一帧）；如果不播放整个控件的画面就是黑的。什么都没有
+                    callback?.let {
+                        it()
+                    }
                 }
             }
         }

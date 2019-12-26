@@ -136,14 +136,17 @@ object KUiHelper {
         }
     }
 
+    var qrCallback: ((result: String) -> Unit)? = null
     /**
      * 跳转到 二维码扫描界面
+     * @param qrCallback 二维码扫描结果回调
      */
-    fun goCaptureActivity(nowActivity: Activity? = getActivity()) {
+    fun goCaptureActivity(nowActivity: Activity? = getActivity(), qrCallback: ((result: String) -> Unit)? = null) {
         try {
             //需要相机权限（必须）
             KPermissionUtils.requestPermissionsCamera {
                 if (it) {
+                    this.qrCallback = qrCallback
                     goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
                 } else {
                     KPermissionUtils.showFailure()

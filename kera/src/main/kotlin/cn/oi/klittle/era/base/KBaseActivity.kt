@@ -521,21 +521,23 @@ open class KBaseActivity : FragmentActivity() {
      * @param imageSpanCount 图片选择器列表每行的个数
      * @param selectCallback 图片选中回调(返回以及选中的KLocalMedia对象集合)
      */
-    open fun pictrueSelectorForLocalMedia(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((selectDatas: MutableList<KLocalMedia>) -> Unit)? = null) {
-        KPictureSelector.type(type).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
+    open fun pictrueSelectorForLocalMedia(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, isCamera: Boolean = true, selectCallback: ((selectDatas: MutableList<KLocalMedia>) -> Unit)? = null) {
+        KPictureSelector.type(type).isCamera(isCamera).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
             var data = it
             selectCallback?.let { it(data) }
         }
     }
 
+    //fixme pictrueSelectorForPath(type = PictureConfig.TYPE_VIDEO) 这个是视频选择器
     /**
      * 图片选择器
      * @param maxSelectNum 图片选择最大张数；不要设置默认参数，防止和子类方法冲突
      * @param imageSpanCount 图片选择器列表每行的个数
      * @param selectDatas 图片回调(返回图片路径)，不要设置默认参数，防止和子类方法冲突。
+     * @param isCamera 是否有相机
      */
-    open fun pictrueSelectorForPath(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, selectCallback: ((path: ArrayList<String>) -> Unit)? = null) {
-        KPictureSelector.type(type).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
+    open fun pictrueSelectorForPath(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia, type: Int = PictureConfig.TYPE_IMAGE, maxSelectNum: Int = 1, imageSpanCount: Int = 3, isCompress: Boolean = true, isCamera: Boolean = true, selectCallback: ((path: ArrayList<String>) -> Unit)? = null) {
+        KPictureSelector.type(type).isCamera(isCamera).imageSpanCount(imageSpanCount).maxSelectNum(maxSelectNum).isCompress(isCompress).selectionMedia(selectionMedia).minimumCompressSize(100).forResult(this) {
             var pathes = ArrayList<String>()
             it?.forEach {
                 var path = it.path//原图路径

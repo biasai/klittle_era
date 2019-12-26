@@ -11,6 +11,7 @@ import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import java.lang.Exception
 
 /**
@@ -135,6 +136,7 @@ open class K0Widget : TextView {
         }
 
         //fixme 按钮声音播放;静态音频文件，不会自动销毁。需要自己手动去释放。
+        //fixme 在K1Widget头部有写使用案例。
         var sMediaPlayer: MediaPlayer? = null
 
         //释放掉音频；不会自动销毁。需要自己手动去释放。
@@ -165,7 +167,7 @@ open class K0Widget : TextView {
         }
 
         /**
-         * 播放SD卡下的音频。
+         * 设置SD卡下的音频。
          * @param path 文件的完整路径（包括文件的后缀名,如:"sound/sb.WAV"）；
          */
         fun setsSoundsSD(path: String) {
@@ -180,7 +182,7 @@ open class K0Widget : TextView {
         }
 
         /**
-         * 播放Assets目录下的音频。
+         * 设置Assets目录下的音频。
          * @param path 文件的完整路径（包括文件的后缀名,如:"sound/sb.WAV"）；
          */
         fun setsSoundsAssets(path: String) {
@@ -197,7 +199,7 @@ open class K0Widget : TextView {
         }
 
         /**
-         * 播放SD卡下的音频。
+         * 设置SD卡下的音频。
          * @param url 网络上的音频地址
          */
         fun setsSoundsUrl(url: String) {
@@ -208,6 +210,17 @@ open class K0Widget : TextView {
                 sMediaPlayer?.prepare()
                 sMediaPlayer?.setLooping(false)//不循环播放
             } catch (e: Exception) {
+            }
+        }
+
+        /**
+         * 播放
+         */
+        fun sPlayMediaPlayer() {
+            sMediaPlayer?.let {
+                if (!it.isPlaying) {
+                    it.start()
+                }
             }
         }
 

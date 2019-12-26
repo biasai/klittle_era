@@ -27,6 +27,14 @@ import android.graphics.Paint.FILTER_BITMAP_FLAG
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import cn.oi.klittle.era.entity.camera.KCamera
 
+//                    fixme 设置音频播放
+//                    issMediaPlayerEnable = true//开启全局音频播放
+//                    K0Widget.Companion.apply {
+//                        fixme 全局音频不会释放，需要手动去释放，调用sReleaseMediaPlayer()方法
+//                        setsSoundsRaw(R.raw.kpictureselect_music)//设置全局(set方法带s)播放音频（点击的时候会播放）
+//                    }
+
+//                    setSoundsRaw(R.raw.kpictureselect_music)//设置当前(方法不带s)控件的播放音频（在onDestroy()里会对音频进行释放）
 
 /**
  * 一：基本组件，集成基本功能。
@@ -220,7 +228,7 @@ open class K1Widget : K0Widget {
     }
 
     /**
-     * 播放SD卡下的音频。
+     * 设置SD卡下的音频。
      * @param path 文件的完整路径（包括文件的后缀名,如:"sound/sb.WAV"）；
      */
     fun setSoundsSD(path: String) {
@@ -235,7 +243,7 @@ open class K1Widget : K0Widget {
     }
 
     /**
-     * 播放Assets目录下的音频。
+     * 设置Assets目录下的音频。
      * @param path 文件的完整路径（包括文件的后缀名,如:"sound/sb.WAV"）；
      */
     fun setSoundsAssets(path: String) {
@@ -252,7 +260,7 @@ open class K1Widget : K0Widget {
     }
 
     /**
-     * 播放SD卡下的音频。
+     * 设置SD卡下的音频。
      * @param url 网络上的音频地址
      */
     fun setSoundsUrl(url: String) {
@@ -263,6 +271,17 @@ open class K1Widget : K0Widget {
             mediaPlayer?.prepare()
             mediaPlayer?.setLooping(false)//不循环播放
         } catch (e: Exception) {
+        }
+    }
+
+    /**
+     * 播放音频
+     */
+    fun playMediaPlayer() {
+        this.mediaPlayer?.let {
+            if (!it.isPlaying) {
+                it.start()
+            }
         }
     }
 
@@ -313,15 +332,17 @@ open class K1Widget : K0Widget {
                     if (isFastClickEnable) {
                         if (mediaPlayer != null) {
                             async {
-                                if (!mediaPlayer!!.isPlaying) {
-                                    mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
-                                }
+                                playMediaPlayer()
+//                                if (!mediaPlayer!!.isPlaying) {
+//                                    mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
+//                                }
                             }
                         } else if (issMediaPlayerEnable && sMediaPlayer != null) {
                             async {
-                                if (!sMediaPlayer!!.isPlaying) {
-                                    sMediaPlayer?.start()//播放全局静态音频
-                                }
+                                K0Widget.sPlayMediaPlayer()
+//                                if (!sMediaPlayer!!.isPlaying) {
+//                                    sMediaPlayer?.start()//播放全局静态音频
+//                                }
                             }
                         }
                         //放在循环外面；放在多次执行。
@@ -339,15 +360,17 @@ open class K1Widget : K0Widget {
                     } else if (!isFastClick()) {//fixme 不允许快速点击
                         if (mediaPlayer != null) {
                             async {
-                                if (!mediaPlayer!!.isPlaying) {
-                                    mediaPlayer?.start()//播放自己音频(优先播放)
-                                }
+                                playMediaPlayer()
+//                                if (!mediaPlayer!!.isPlaying) {
+//                                    mediaPlayer?.start()//播放自己音频(优先播放)
+//                                }
                             }
                         } else if (issMediaPlayerEnable && sMediaPlayer != null) {
                             async {
-                                if (!sMediaPlayer!!.isPlaying) {
-                                    sMediaPlayer?.start()//播放全局静态音频
-                                }
+                                K0Widget.sPlayMediaPlayer()
+//                                if (!sMediaPlayer!!.isPlaying) {
+//                                    sMediaPlayer?.start()//播放全局静态音频
+//                                }
                             }
                         }
                         var b = mOnClickCallback?.let {

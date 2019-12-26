@@ -90,7 +90,8 @@ object KPictureSelector {
 
     //判断是否有相机拍照功能
     fun isCamera(): Boolean {
-        if (isCamera2 && checkedFolderIndex == 0 && type != PictureConfig.TYPE_AUDIO) {
+        //fixme 目前音频和视频，没有开启手动拍摄功能。
+        if (isCamera2 && checkedFolderIndex == 0 && type != PictureConfig.TYPE_AUDIO && type != PictureConfig.TYPE_VIDEO) {
             return true
         }
         return false

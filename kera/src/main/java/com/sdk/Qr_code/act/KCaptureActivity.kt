@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Gravity
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.toolbar.KToolbar
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
@@ -30,6 +31,11 @@ import org.jetbrains.anko.*
 //    }
 //   KUiHelper.goCaptureActivity()//fixme 跳转到 二维码扫描界面
 //       fixme 最下面有上一个Activity的回调结果案例。
+
+//                    fixme 最新调用案例
+//                    KUiHelper.goCaptureActivity(){
+//                        KLoggerUtils.e("二维码扫描结果：\t"+it)
+//                    }
 
 /**
  * fixme 子类可以仿照以下进行重写；亲测可行。
@@ -135,6 +141,15 @@ open class KCaptureActivity : CaptureActivity() {
         //扫描框扫出来的二维码，bitmap一般都不为空；但是扫描本地图片则是空的。（因为扫描本地二维码时，没有传位图）
         //setResult(str)
         //KLoggerUtils.e("二维码扫描结果：\t" + str)
+        //二维码扫描回调
+        KUiHelper.qrCallback?.let {
+            if (str != null) {
+                it(str)
+                KUiHelper.qrCallback = null
+                finish()
+            }
+        }
+
     }
 
     //本地二维码图片识别失败时回调。
