@@ -272,7 +272,9 @@ object KStringUtils {
                 str = str + "." + zero
             }
             return str
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return null
     }
 
@@ -485,4 +487,24 @@ object KStringUtils {
         }
     }
 
+    //将长度转换为时间
+    var mFormatBuilder = StringBuilder();
+    var mFormatter = Formatter(mFormatBuilder, Locale.getDefault());
+
+    //将长度转换为时间(Video里面调用。)
+    fun stringForTime(timeMs: Int): String {
+        if (timeMs <= 0) {
+            return "00:00"
+        }
+        var totalSeconds = timeMs / 1000;
+        var seconds = totalSeconds % 60;
+        var minutes = (totalSeconds / 60) % 60;
+        var hours = totalSeconds / 3600;
+        mFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
 }

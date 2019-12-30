@@ -215,6 +215,25 @@ open class KRecyclerView : RecyclerView {
         }
     }
 
+    override fun setAdapter(adapter: Adapter<*>?) {
+        try {
+            super.setAdapter(adapter)
+            adapter?.let {
+                if (layoutManager == null) {
+                    setLinearLayoutManager()//fixme 防止遗忘，防止视图不显示。
+                }
+                if (it.itemCount > 0) {
+                    it?.notifyDataSetChanged()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+//        View.VISIBLE//0
+//        View.INVISIBLE//4
+//        View.GONE//8
+    }
+
     /**
      * 尽可能的解决RecyclerView和NestedScrollView同时滑动冲突。
      * 快速滑动的冲突，没有解决！

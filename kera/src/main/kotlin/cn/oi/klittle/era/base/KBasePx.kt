@@ -973,6 +973,12 @@ open class KBasePx {
     //id生成器(xml系统布局id都是从20亿开始的。所以绝对不会和系统id重复。)
     //即能生成id,也能获取id
     fun id(key: String? = null): Int {
+        var key = key
+        KBaseActivityManager.getInstance()?.stackTopActivity?.let {
+            //KLoggerUtils.e("id class:\t"+it.javaClass.toString())
+            //it.javaClass.toString() 类名是不变了。如：class com.example.myapplication.MainActivity
+            key = it.javaClass.toString() + key//fixme id和当前Activity绑定；防止多个Activity里的控件id重复。不同Activity之间，最好不要有相同的id。不然很容易发生意想不到的错误。切记。
+        }
         //根据键值获取id
         //id不能小于0，-1表示没有id
         //constraintLayout id找不到时，就以父容器为主。(前提：id不能小于0)
@@ -985,7 +991,7 @@ open class KBasePx {
         ids++
         //Log.e("test", "id:\t" + ids)
         key?.let {
-            map.put(key, ids)
+            map.put(it, ids)
         }
         return ids
     }

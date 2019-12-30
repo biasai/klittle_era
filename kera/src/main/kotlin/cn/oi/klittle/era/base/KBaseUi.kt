@@ -169,6 +169,9 @@ abstract class KBaseUi {
                         //KLoggerUtils.e("======================================================释放")
                         //log打印太过频繁且内容相同，可以不会打印。
                         //fixme 打印有时可能不会打印出来。但是代码已经执行了，只是没有打印出来而已。（放心已经执行了）
+                    } else if (view is KVideoView) {
+                        //视频销毁
+                        view?.onDestory()
                     } else if (view is KLineChart) {
                         //线性图表
                         view.onDestroy()
