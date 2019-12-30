@@ -964,8 +964,7 @@ open class KBasePx {
     var id: Int = 0
         //id不能小于0，-1表示没有id
         get() = id()
-    private var ids = 1000//记录id生成的个数，依次叠加，保证不重复。
-    private var map = mutableMapOf<String, Int>()//保存id键值
+
     fun id(key: Int): Int {
         return id(key.toString())
     }
@@ -1100,6 +1099,14 @@ open class KBasePx {
             }
         }
         return application
+    }
+
+    companion object {
+        /**
+         * fixme id记录集合；静态。子类共享。
+         */
+        var ids = 1000//记录id生成的个数，依次叠加，保证不重复。
+        var map = mutableMapOf<String, Int>()//保存id键值
     }
 
 }
