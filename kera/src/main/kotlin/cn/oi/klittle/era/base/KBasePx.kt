@@ -989,10 +989,11 @@ open class KBasePx {
         //如果id不存在，就重新创建id
         ids++
         //Log.e("test", "id:\t" + ids)
+        var id=ids
         key?.let {
-            map.put(it, ids)
+            map.put(it, id)
         }
-        return ids
+        return id
     }
 
     /**
