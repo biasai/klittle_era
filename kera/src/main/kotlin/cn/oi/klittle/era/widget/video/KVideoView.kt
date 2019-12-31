@@ -68,13 +68,13 @@ class KVideoView : VideoView {
     fun prepare(path: String?, isStart: Boolean = true, callback: (() -> Unit)? = null) {
         path?.trim()?.let {
             if (it.length > 0) {
-                if (it.equals(path)) {
+                if (it.equals(this.path?.trim())) {
                     return//fixme 防止重复
                 }
                 suspend()//fixme 释放掉之前的视频
                 this.path = path
                 /**
-                 * fixme 注意，加载完视频之后，videoView控件本身会根据视频宽高比例；自动调节本身控件的宽和高。即与视频的宽高比例保持一致。
+                 * fixme 注意，加载完视频之后，videoView控件本身会根据视频宽高比例；自动调节控件本身的宽和高。即与视频的宽高比例保持一致。
                  */
                 if (KRegexUtils.isUrl(path)) {
                     setVideoURI(Uri.parse(path))// 播放网络视频
@@ -113,11 +113,20 @@ class KVideoView : VideoView {
         }
     }
 
-    //播放监听(每次播放都会调用)
+    //播放监听(每次播放都会调用)；即继续播放（和暂停对应）
     var onStart: (() -> Unit)? = null
 
     fun onStart(onStart: (() -> Unit)? = null) {
         this.onStart = onStart
+    }
+
+    //重新播放；即从第一帧开始重新播放。不是继续播放
+    //重新播放/重头播放时调用(即从第一帧播放时调用)
+    //fixme 一般onResume会在onStart的前面回调。
+    var onResume: (() -> Unit)? = null
+
+    fun onResume(onResume: (() -> Unit)? = null) {
+        this.onResume = onResume
     }
 
     //暂停监听
@@ -127,9 +136,18 @@ class KVideoView : VideoView {
         this.onPause = onPause
     }
 
-    //播放 fixme (视频如果播放完成之后，再调用start();视频会重新播放。即从第一帧开始播放。)
+    //播放(继续播放，和暂停对应) fixme (视频如果播放完成之后，再调用start();视频会重新播放。即从第一帧开始播放。)
     override fun start() {
         var isPlaying = isPlaying
+        if (!isPlaying) {
+            //KLoggerUtils.e("currentPosition:\t"+currentPosition+"\tisResume:\t"+isResume)
+            //防止播放关键帧不是0;currentPosition单位是毫秒
+            if (currentPosition <= 101 && !isResume) {
+                onResume?.let {
+                    it()//重新播放回调。(从第一帧播放时调用。)
+                }
+            }
+        }
         super.start()//isPlaying会变成ture
         if (!isPlaying) {
             //防止重复回调。
@@ -137,7 +155,17 @@ class KVideoView : VideoView {
                 it()
             }
         }
+        isResume = false
+    }
 
+    private var isResume = false
+    //重新播放（从第一帧开始播放，不是继续播放）；
+    override fun resume() {
+        isResume = true
+        super.resume()//内部调用了start()方法(异步调用，不是同步哦。)。
+        onResume?.let {
+            it()
+        }
     }
 
     //暂停
@@ -206,6 +234,7 @@ class KVideoView : VideoView {
     //重写，释放所有资源
     override fun suspend() {
         try {
+            this.path=null
             super.suspend()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -220,6 +249,7 @@ class KVideoView : VideoView {
             setOnTouchListener(null)
             setOnCompletionListener(null)
             onStart = null
+            onResume = null
             onPause = null
             onSeekTo = null
             mediaPlayer?.setOnSeekCompleteListener(null)

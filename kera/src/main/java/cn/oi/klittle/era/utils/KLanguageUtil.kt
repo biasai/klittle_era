@@ -41,19 +41,6 @@ object KLanguageUtil {
     }
 
     /**
-     * fixme 判断当前本应用语言是否为英语(亲测有效)
-     */
-    fun isEngLish(context: Context? = getContext()): Boolean {
-        getCurrentLocale(context)?.language?.let {
-            //KLoggerUtils.e("当前语言：\t" + it + "\t英语：\t" + Locale.ENGLISH.language)//当前语言：	zh	英语：	en
-            if (it.equals(Locale.ENGLISH.language)) {
-                return true
-            }
-        }
-        return false
-    }
-
-    /**
      * 获取获取系统语言。（即是系统的语言，不是应用的。）
      */
     fun getDefaultLocale(): Locale {
@@ -64,6 +51,10 @@ object KLanguageUtil {
      * 获取当前资源配置的语言(即当前应用的语言)
      */
     fun getCurrentLocale(context: Context? = getContext()): Locale? {
+        var context = context
+        if (context == null) {
+            context = getContext()
+        }
         var locale: Locale? = null
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             locale = context?.getResources()?.getConfiguration()?.getLocales()?.get(0)//7.0版本以上
@@ -135,6 +126,34 @@ object KLanguageUtil {
         setLanguage(Locale(language, country), context)
     }
 
+    /**
+     * fixme 判断当前语言是否为中文(亲测有效)。
+     */
+    fun isChinese(context: Context? = getContext()): Boolean {
+        var context = context
+        if (context == null) {
+            context = getContext()
+        }
+        getCurrentLocale(context)?.let {
+            if (it.equals(Locale.CHINA) || it.equals(Locale.CHINESE) || it.equals(Locale.SIMPLIFIED_CHINESE) || it.equals(Locale.TRADITIONAL_CHINESE)) {
+                return true
+            }
+        }
+        return false
+    }
+
+    /**
+     * fixme 判断当前本应用语言是否为英语(亲测有效)
+     */
+    fun isEngLish(context: Context? = getContext()): Boolean {
+        getCurrentLocale(context)?.language?.let {
+            //KLoggerUtils.e("当前语言：\t" + it + "\t英语：\t" + Locale.ENGLISH.language)//当前语言：	zh	英语：	en
+            if (it.equals(Locale.ENGLISH.language)) {
+                return true
+            }
+        }
+        return false
+    }
 
     /**
      * 设置简体中文 values-zh-rCN

@@ -15,6 +15,7 @@ import android.view.KeyEvent
 import android.view.View
 import android.view.WindowManager
 import cn.oi.klittle.era.utils.KCacheUtils
+import cn.oi.klittle.era.utils.KLanguageUtil
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.async
@@ -577,6 +578,26 @@ open class KBasePx {
         return y2
     }
 
+
+    //是否只对中国语言进行字体缩放。(默认只对中国语言字体进行缩放)
+    var isEnableTextSizeScaleForOnlyChinese = true//fixme true 只对中国语言进行缩放；false 对所有语言都进行缩放处理。
+
+    fun isEnableTextSizeScaleForOnlyChinese(isEnableTextSizeScaleForOnlyChinese: Boolean) {
+        this.isEnableTextSizeScaleForOnlyChinese = isEnableTextSizeScaleForOnlyChinese
+    }
+
+    //判断当前语言是否需要缩放(亲测有效)
+    private fun isSclaeForLanguage(): Boolean {
+        if (isEnableTextSizeScaleForOnlyChinese) {
+            if (KLanguageUtil.isChinese(KBaseActivityManager.getInstance().stackTopActivity)) {
+                return true //只对中国语言进行缩放
+            } else {
+                return false//其他语言不缩放
+            }
+        }
+        return true//所有语言都缩放
+    }
+
     /**
      * fixme 控制文本大小缩放倍率。(等于1时，不会进行缩放处理。)
      */
@@ -660,7 +681,7 @@ open class KBasePx {
      */
     fun textSizeX(x: Float, isScale: Boolean): Float {
         pixelToDp(x(x)).let {
-            if (isScale && textSizeXScale != 1F && it > textSizeXScale_min && it < textSizeXScale_max) {
+            if (isScale && textSizeXScale != 1F && it > textSizeXScale_min && it < textSizeXScale_max && isSclaeForLanguage()) {
                 (it * textSizeXScale).let {
                     if (it < textSizeXScale_min) {
                         return textSizeXScale_min//fixme 最小文本
@@ -698,7 +719,7 @@ open class KBasePx {
      */
     fun textSizeY(y: Float, isScale: Boolean): Float {
         pixelToDp(y(y))?.let {
-            if (isScale && textSizeYScale != 1F && it > textSizeYScale_min && it < textSizeYScale_max) {
+            if (isScale && textSizeYScale != 1F && it > textSizeYScale_min && it < textSizeYScale_max && isSclaeForLanguage()) {
                 (it * textSizeYScale).let {
                     if (it < textSizeYScale_min) {
                         return textSizeYScale_min//fixme 最小文本
@@ -989,7 +1010,7 @@ open class KBasePx {
         //如果id不存在，就重新创建id
         ids++
         //Log.e("test", "id:\t" + ids)
-        var id=ids
+        var id = ids
         key?.let {
             map.put(it, id)
         }
