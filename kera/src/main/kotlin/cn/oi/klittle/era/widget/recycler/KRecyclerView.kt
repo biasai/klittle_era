@@ -3,6 +3,7 @@ package cn.oi.klittle.era.widget.recycler
 import android.content.Context
 import android.graphics.*
 import android.support.v4.view.ViewCompat
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
@@ -192,6 +193,13 @@ open class KRecyclerView : RecyclerView {
      * @param spanCount 每行网格的个数（列数）
      */
     open fun setGridLayoutManager(spanCount: Int) {
+        layoutManager?.let {
+            if (it is GridLayoutManager) {
+                if (it.spanCount == spanCount) {
+                    return//防止重复添加
+                }
+            }
+        }
         context?.let {
             layoutManager = KGridLayoutManager(context, spanCount)
             setHasFixedSize(true)
@@ -203,6 +211,21 @@ open class KRecyclerView : RecyclerView {
      * @param isVertical 是否垂直；fixme 默认就是垂直。是true
      */
     open fun setLinearLayoutManager(isVertical: Boolean = true) {
+        layoutManager?.let {
+            if (it is LinearLayoutManager) {
+                if (isVertical) {
+                    if (it.orientation == LinearLayoutManager.VERTICAL) {
+                        //垂直
+                        return//防止重复添加
+                    }
+                } else {
+                    if (it.orientation == LinearLayoutManager.HORIZONTAL) {
+                        //水平
+                        return//防止重复添加
+                    }
+                }
+            }
+        }
         context?.let {
             var linearLayoutManager = KLinearLayoutManager(context)
             if (isVertical) {
