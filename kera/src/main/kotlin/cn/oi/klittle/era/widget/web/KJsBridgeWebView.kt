@@ -59,6 +59,7 @@ import java.lang.Exception
 // var isIgnoreSsslError = true//fixme 是否忽略ssl错误。http 可以直接加载，但 https 是经过ssl 加密的
 // setUseWideViewPort(true)//fixme true完整的显示手机屏幕;false是BridgeWebView默认样式，整个页面会被放大。
 // isLoadSuccess2()//fixme 判断页面是否加载成功
+//fixme jsBridge?.progress 必须在主线程中获取，不然异常哦。要注意。
 open class KJsBridgeWebView : BridgeWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
