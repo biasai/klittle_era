@@ -168,6 +168,20 @@ import android.view.ViewGroup
 //
 //            }
 
+//                fixme 有垂直进度条的KRecyclerView调用案例(可以多次调用)
+//                kRecyclerViewBar(ctx,this)?.apply {
+//                    setLinearLayoutManager()
+//                    var datas: MutableList<String>? = mutableListOf()
+//                    for (i in 0..300) {
+//                        datas?.add("" + i)
+//                    }
+//                    adapter = KRecyclerAdapter(datas)
+//                    lparams {
+//                        width= matchParent
+//                        height=kpx.screenHeight()/2
+//                    }
+//                }
+
 open class KRecyclerView : RecyclerView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
@@ -175,6 +189,14 @@ open class KRecyclerView : RecyclerView {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
+    }
+
+    /**
+     * fixme 显示垂直滑动条(没有效果，必须通过xml布局加载设置android:scrollbars="vertical"才会有滑动条，以下代码没有效果。)
+     */
+    fun setVerticalScrollBarEnabled() {
+        setVerticalScrollBarEnabled(true);
+        setScrollBarStyle(View.SCROLLBARS_OUTSIDE_OVERLAY);
     }
 
     /**

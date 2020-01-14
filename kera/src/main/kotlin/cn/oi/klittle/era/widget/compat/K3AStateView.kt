@@ -74,6 +74,25 @@ open class K3AStateView : K2GestureWidget {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
+    var onSetSelected: ((isSelected: Boolean) -> Unit)? = null
+    fun onSetSelected(onSetSelected: ((isSelected: Boolean) -> Unit)? = null) {
+        this.onSetSelected = onSetSelected
+    }
+
+    override fun setSelected(selected: Boolean) {
+        try {
+            var selected2 = isSelected
+            super.setSelected(selected)
+            if (selected2 != selected) {//fixme 防止重复调用,很重要。不要重复调用。
+                onSetSelected?.let {
+                    it(selected)//fixme 是否选中时监听
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     //fixme 优先级：按下>悬浮>聚焦>选中>常态
     //这几个状态，是用来判断和控制属性动画的。
     protected var state_enable: Int = 0//不可用状态
@@ -218,6 +237,7 @@ open class K3AStateView : K2GestureWidget {
         changedSelected = null
         changedNormal = null
         changedEnabled = null
+        onSetSelected = null
     }
 
 }

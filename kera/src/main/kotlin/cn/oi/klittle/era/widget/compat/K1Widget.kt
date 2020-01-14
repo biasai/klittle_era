@@ -776,7 +776,7 @@ open class K1Widget : K0Widget {
 
     override fun draw(canvas: Canvas?) {
         try {
-            if (width <= 0 || height <= 0) {
+            if (width <= 0 || height <= 0 || canvas == null) {
                 return
             }
             canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)//画布清除

@@ -8,7 +8,12 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.K1Widget
+import cn.oi.klittle.era.widget.compat.KView
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
 //                        fixme 使用案例
@@ -155,19 +160,46 @@ open class KTabLayout : TabLayout {
         return null
     }
 
+    var cSelectPostion: Int = 0//记录当前选中的下标
     open fun setOnClickTab() {
+        //fixme 修复点击时，tab菜单无法对齐问题；亲测有效。
         getTabAll()?.forEach {
             var position = it.position
-            it.customView?.onClick {
-                mViewPager?.let {
-                    it.adapter?.let {
-                        if (it.count > position) {
-                            isOnClickTab = true//防止重复切换，页签闪烁。
-                            setScrollPosition(position, 0f, true, true)//滑动条选中
-                            mViewPager?.setCurrentItem(position, true)
+            it.customView?.let {
+                if (it is KView) {
+                    it?.onSetSelected {
+                        if (it) {
+                            //fixme 选中监听，防止点击事件未触发。这就是滑动条对不齐的根本原因。
+                            mViewPager?.let {
+                                if (it.currentItem != position && cSelectPostion != position) {
+                                    cSelectPostion = position
+                                    isOnClickTab = true//防止重复切换，页签闪烁。
+                                    mViewPager?.setCurrentItem(position, true)
+                                }
+                            }
                         }
                     }
                 }
+            }
+            it.customView?.onClick {
+                try {
+                    mViewPager?.let {
+                        it.adapter?.let {
+                            if (it.count > position) {
+                                mViewPager?.let {
+                                    if (it.currentItem != position) {
+                                        cSelectPostion = position//fixme 设置一下，很重要。保存一致。
+                                        isOnClickTab = true//防止重复切换，页签闪烁。
+                                        mViewPager?.setCurrentItem(position, true)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
             }
         }
     }

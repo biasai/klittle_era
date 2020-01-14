@@ -58,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import cn.oi.klittle.era.R;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 import static android.support.v4.view.ViewPager.SCROLL_STATE_DRAGGING;
@@ -237,7 +238,7 @@ public class TabLayout extends HorizontalScrollView {
     private final ArrayList<TabLayout.Tab> mTabs = new ArrayList<>();
     private TabLayout.Tab mSelectedTab;
 
-    private final TabLayout.SlidingTabStrip mTabStrip;
+    final TabLayout.SlidingTabStrip mTabStrip;
 
     int mTabPaddingStart;
     int mTabPaddingTop;
@@ -270,7 +271,7 @@ public class TabLayout extends HorizontalScrollView {
     ViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private DataSetObserver mPagerAdapterObserver;
-    private TabLayout.TabLayoutOnPageChangeListener mPageChangeListener;
+    TabLayout.TabLayoutOnPageChangeListener mPageChangeListener;
     private TabLayout.AdapterChangeListener mAdapterChangeListener;
     private boolean mSetupViewPagerImplicitly;
 
@@ -1766,7 +1767,7 @@ public class TabLayout extends HorizontalScrollView {
         }
     }
 
-    private class SlidingTabStrip extends LinearLayout {
+    public class SlidingTabStrip extends LinearLayout {
         private int mSelectedIndicatorHeight;
         private final Paint mSelectedIndicatorPaint;
 
@@ -1810,11 +1811,10 @@ public class TabLayout extends HorizontalScrollView {
             return false;
         }
 
-        void setIndicatorPositionFromTabPosition(int position, float positionOffset) {
+        public void setIndicatorPositionFromTabPosition(int position, float positionOffset) {
             if (mIndicatorAnimator != null && mIndicatorAnimator.isRunning()) {
                 mIndicatorAnimator.cancel();
             }
-
             mSelectedPosition = position;
             mSelectionOffset = positionOffset;
             updateIndicatorPosition();
@@ -1913,14 +1913,12 @@ public class TabLayout extends HorizontalScrollView {
             }
         }
 
-        private void updateIndicatorPosition() {
+        void updateIndicatorPosition() {
             final View selectedTitle = getChildAt(mSelectedPosition);
             int left, right;
-
             if (selectedTitle != null && selectedTitle.getWidth() > 0) {
                 left = selectedTitle.getLeft();
                 right = selectedTitle.getRight();
-
                 if (mSelectionOffset > 0f && mSelectedPosition < getChildCount() - 1) {
                     // Draw the selection partway between the tabs
                     View nextTitle = getChildAt(mSelectedPosition + 1);
@@ -1932,7 +1930,9 @@ public class TabLayout extends HorizontalScrollView {
             } else {
                 left = right = -1;
             }
-
+//            if (mViewPager!=null) {
+//                KLoggerUtils.INSTANCE.e("mSelectedPosition:\t" + mSelectedPosition + "\tleft:\t" + left + "\tmViewPager:\t" + mViewPager.getCurrentItem());
+//            }
             setIndicatorPosition(left, right);
         }
 

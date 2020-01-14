@@ -166,7 +166,11 @@ public class KAssetsUtils {
                 return map.get(key);//防止重复加载，浪费内存
             }
             if (map.containsKey(key)) {
-                map.remove(key);//移除多余无用的键值
+                try {
+                    map.remove(key);//移除多余无用的键值
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -96,12 +96,22 @@ object KGlideUtils {
                     var key = it
                     keyMap?.let {
                         if (it.containsKey(key)) {
-                            it.remove(key)
+                            try {
+                                it.remove(key)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常1：\t" + e.message)
+                            }
                         }
                     }
                     keyMap2?.let {
                         if (it.containsKey(key)) {
-                            it.remove(key)
+                            try {
+                                it.remove(key)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常2：\t" + e.message)
+                            }
                         }
                     }
                 }

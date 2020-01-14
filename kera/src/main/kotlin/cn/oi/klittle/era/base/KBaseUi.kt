@@ -8,11 +8,9 @@ import android.os.Build
 import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v7.widget.RecyclerView
-import android.view.View
-import android.view.ViewGroup
-import android.view.ViewManager
-import android.view.Window
+import android.view.*
 import android.widget.LinearLayout
+import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
@@ -341,6 +339,41 @@ abstract class KBaseUi {
 
         inline fun ViewManager.kRecyclerView(init: (@AnkoViewDslMarker KRecyclerView).() -> Unit): KRecyclerView {
             return ankoView({ ctx: Context -> KRecyclerView(ctx) }, theme = 0) { init() }
+        }
+
+
+//                    fixme 有垂直进度条的KRecyclerView调用案例(可以多次调用)
+//                kRecyclerViewBar(ctx,this)?.apply {
+//                    setLinearLayoutManager()
+//                    var datas: MutableList<String>? = mutableListOf()
+//                    for (i in 0..300) {
+//                        datas?.add("" + i)
+//                    }
+//                    adapter = KRecyclerAdapter(datas)
+//                    lparams {
+//                        width= matchParent
+//                        height=kpx.screenHeight()/2
+//                    }
+//                }
+
+        //fixme 有垂直滚动条的KRecyclerView
+        fun kRecyclerViewBar(context: Context?, viewGroup: ViewGroup?): KRecyclerView? {
+            try {
+                if (context != null && viewGroup != null) {
+                    var recyclerView = LayoutInflater.from(context).inflate(
+                            R.layout.kera_widget_recycler, viewGroup, false) as KRecyclerView
+                    viewGroup?.addView(recyclerView)
+                    recyclerView?.setVerticalScrollBarEnabled()
+                    return recyclerView
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+        fun krecyclerViewBar(context: Context?, viewGroup: ViewGroup?): KRecyclerView? {
+            return kRecyclerViewBar(context, viewGroup)
         }
 
         inline fun ViewManager.kimageItemRecyclerView(init: (@AnkoViewDslMarker KImageItemRecyclerView).() -> Unit): KImageItemRecyclerView {
