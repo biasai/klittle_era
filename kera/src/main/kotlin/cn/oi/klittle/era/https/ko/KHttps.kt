@@ -238,38 +238,40 @@ open class KHttps() {
 
     //fixme 网络取消(不存在真正的网络请求取消,仅仅只是取消了网络回调而已)
     fun cancel() {
-        //fixme 去除网络请求标志(网络请求结束)
-        //fixme [放在最前；放在https?.finish之前执行。防止finish()中再次执行网络请求无效。]
-        var https: KHttps? = this
-        https?.let {
-            var key = KHttp.getUrlUnique(it)
-            if (KHttp.map.containsKey(key)) {
-                KHttp.map.remove(key)
+        try {
+            //fixme 去除网络请求标志(网络请求结束)
+            //fixme [放在最前；放在https?.finish之前执行。防止finish()中再次执行网络请求无效。]
+            var https: KHttps? = this
+            https?.let {
+                var key = KHttp.getUrlUnique(it)
+                if (KHttp.map.containsKey(key)) {
+                    KHttp.map.remove(key)
+                }
+                it.urlUniqueParams = null
             }
-            it.urlUniqueParams = null
-        }
-        //fixme 关闭进度条
-        if (https?.isShowLoad ?: false) {
-            https?.dismissProgressbar()
-        }
-        https?.finish0?.let {
-            it()
-        }
-        //结束回调（在进度条关闭之后，再回调。防止进度条和activity同时关闭。）
-        https?.finish?.let {
-            it()
-        }
-        https?.requestCallback?.finish?.let {
-            it()
-        }
-        //fixme 网络轮询回调
-        https?.next?.let {
-            async {
+            //fixme 关闭进度条
+            if (https?.isShowLoad ?: false) {
+                https?.dismissProgressbar()
+            }
+            https?.finish0?.let {
                 it()
             }
-        }
-        https?.onDestrory()
-        https = null
+            //结束回调（在进度条关闭之后，再回调。防止进度条和activity同时关闭。）
+            https?.finish?.let {
+                it()
+            }
+            https?.requestCallback?.finish?.let {
+                it()
+            }
+            //fixme 网络轮询回调
+            https?.next?.let {
+                async {
+                    it()
+                }
+            }
+            https?.onDestrory()
+            https = null
+        }catch (e:java.lang.Exception){e.printStackTrace()}
     }
 
     open var saveTime: Int? = null//缓存数据时间；单位秒。空null没有时间限制,及永久存储.
@@ -542,28 +544,30 @@ open class KHttps() {
      * fixme 这个在KGenericsCallback里的onFinish()中调用；其他地方不要调用
      */
     fun onDestrory() {
-        headers?.clear()
-        params?.clear()
-        files?.clear()
-        body?.let {
-            body = null
-        }
-        kBody?.apply {
-            onDestroy()
-        }
-        kBody = null
-        url = null
-        activity = null
-        next = null
-        start0 = null
-        start = null
-        failure0 = null
-        success0 = null
-        failure = null
-        success = null
-        finish0 = null
-        finish = null
-        requestCallback = null
+        try {
+            headers?.clear()
+            params?.clear()
+            files?.clear()
+            body?.let {
+                body = null
+            }
+            kBody?.apply {
+                onDestroy()
+            }
+            kBody = null
+            url = null
+            activity = null
+            next = null
+            start0 = null
+            start = null
+            failure0 = null
+            success0 = null
+            failure = null
+            success = null
+            finish0 = null
+            finish = null
+            requestCallback = null
+        }catch (e:Exception){e.printStackTrace()}
     }
 
     //fixme Get请求,所有参数设置完成之后再调用
@@ -579,18 +583,23 @@ open class KHttps() {
         KHttp.LogParams(this)
         KHttp.Get2(url, this, requestCallBack = object : KGenericsCallback(this) {
             override fun onResponse(response: String?) {
-                callback?.let {
-                    response?.let {
-                        try {
-                            //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
-                            callback(KGsonUtils.parseJSONToAny<T>(it, *field))
-                        } catch (e: Exception) {
-                            //防止异常之后，finish()不执行;捕捉之后就没事了
-                            KLoggerUtils.e("get回调处理异常：\t" + e.message)
+                try {
+                    callback?.let {
+                        response?.let {
+                            try {
+                                //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
+                                callback(KGsonUtils.parseJSONToAny<T>(it, *field))
+                            } catch (e: Exception) {
+                                //防止异常之后，finish()不执行;捕捉之后就没事了
+                                KLoggerUtils.e("get回调处理异常：\t" + e.message)
+                            }
                         }
                     }
+                    super.onResponse(response)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    KLoggerUtils.e("get回调处理异常2：\t" + e.message)
                 }
-                super.onResponse(response)
             }
         }, timeOut = timeOut)
     }
@@ -609,18 +618,23 @@ open class KHttps() {
         KHttp.Post2(url, this, requestCallBack = object : KGenericsCallback(this) {
             //fixme 只要有数据,成功或是失败都会回调onResponse()返回;失败了会读取缓存,只要缓存有数据,就会回调
             override fun onResponse(response: String?) {
-                callback?.let {
-                    response?.let {
-                        //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
-                        try {
-                            callback(KGsonUtils.parseJSONToAny<T>(it, *field))
-                        } catch (e: Exception) {
-                            //防止异常之后，finish()不执行;捕捉之后就没事了
-                            KLoggerUtils.e("post回调处理异常：\t" + e.message)
+                try {
+                    callback?.let {
+                        response?.let {
+                            //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
+                            try {
+                                callback(KGsonUtils.parseJSONToAny<T>(it, *field))
+                            } catch (e: Exception) {
+                                //防止异常之后，finish()不执行;捕捉之后就没事了
+                                KLoggerUtils.e("post回调处理异常：\t" + e.message)
+                            }
                         }
                     }
+                    super.onResponse(response)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    KLoggerUtils.e("post回调处理异常2：\t" + e.message)
                 }
-                super.onResponse(response)
             }
 
         }, timeOut = timeOut)
