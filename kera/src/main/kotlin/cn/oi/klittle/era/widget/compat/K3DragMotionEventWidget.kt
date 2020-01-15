@@ -89,6 +89,16 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
         clearButonShadow()
     }
 
+    companion object {
+        var isDragMotionEventing: Boolean = false//fixme 防止和左滑关闭Activity冲突。
+        /**
+         * fixme 判断viewpager是否正在滑动。
+         */
+        fun isDrgMotinEventing(): Boolean {
+            return isDragMotionEventing
+        }
+    }
+
     private var dragId: String? = null//fixme 拖动id,唯一标志；记录和保存该控件的实时位置。
     fun getDragId(): String? {
         dragId?.let {
@@ -294,14 +304,26 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
                 MotionEvent.ACTION_DOWN -> {
                     //第一根手指按下
                     isdragAble = true//具备拖动能力
+                    isDragMotionEventing = false
+                    drag?.let {
+                        if (it.isDragEnable) {
+                            isDragMotionEventing = true//fixme 正在拖动
+                        }
+                    }
                 }
                 MotionEvent.ACTION_POINTER_DOWN -> {
                     //多个手指按下
                     isdragAble = false//不具备拖动能力
+                    drag?.let {
+                        if (it.isDragEnable) {
+                            isDragMotionEventing = true//fixme 正在拖动
+                        }
+                    }
                 }
                 MotionEvent.ACTION_UP -> {
                     //最后手指离开的时候，要保存位置信息，所以要为true
                     isdragAble = true
+                    isDragMotionEventing = false
                 }
             }
             //fixme 单指拖动。（双指要缩放和旋转；多指移动也不好控制很容易错乱。单指比较靠谱。）
