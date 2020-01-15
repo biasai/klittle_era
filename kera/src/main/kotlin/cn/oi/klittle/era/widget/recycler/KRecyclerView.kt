@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.widget.recycler
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.support.v4.view.ViewCompat
@@ -9,6 +10,8 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
 
 //           fixme 带有悬浮置顶的Item;使用案例：
 //            KBaseUi.apply {
@@ -189,6 +192,44 @@ open class KRecyclerView : RecyclerView {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
+    }
+
+    /**
+     * fixme 滑动置顶(亲测有效)
+     */
+    fun scrollToTop() {
+        try {
+            async {
+                try {
+                    delay(200)//fixme 延迟200毫秒，防止无效。(防止初始化未完成)
+                    try {
+                        getContext()?.let {
+                            if (it is Activity) {
+                                if (!it.isFinishing) {
+                                    it.runOnUiThread {
+                                        try {
+                                            adapter?.itemCount?.let {
+                                                if (it > 0) {
+                                                    layoutManager?.scrollToPosition(0)
+                                                }
+                                            }
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
