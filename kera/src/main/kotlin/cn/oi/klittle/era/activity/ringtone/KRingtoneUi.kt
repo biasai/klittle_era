@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.activity.ringtone
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Color
 import android.support.v4.view.ViewPager
@@ -26,6 +27,13 @@ open class KRingtoneUi : KBaseUi() {
     var toolbar: KToolbar? = null
     var recyclerView: KRecyclerView? = null
     var ringtoneAdapter: KRingtoneAdapter? = null
+
+    override fun destroy(activity: Activity?) {
+        super.destroy(activity)
+        toolbar = null
+        recyclerView = null
+        ringtoneAdapter = null
+    }
 
     override fun createView(ctx: Context?): View? {
 

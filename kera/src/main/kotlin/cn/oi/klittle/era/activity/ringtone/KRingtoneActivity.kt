@@ -34,8 +34,14 @@ open class KRingtoneActivity : KBaseActivity() {
 
 
     override fun finish() {
-        super.finish()
-        KRingtoneManagerUtils.stop()
+        try {
+            ui?.ringtoneAdapter?.datas=null
+            ui?.ringtoneAdapter=null
+            super.finish()
+            ui?.destroy(this)//界面销毁
+            KRingtoneManagerUtils.stop()
+        }catch (e:Exception){e.printStackTrace()}
+
     }
 
 }

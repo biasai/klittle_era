@@ -105,29 +105,34 @@ open class KRingtoneAdapter(var datas: MutableList<Ringtone>? = null) : KAdapter
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        //正常
-        holder?.left_txt?.setText(null)
-        var data = datas?.get(position)
-        data?.let {
-            //名称
-            holder?.left_txt?.setText(KRingtoneManagerUtils.getTitle(position))
-            holder?.item_checked?.isSelected = (position == KRingtoneManagerUtils.index)
-            holder?.item_layout?.onClick {
-                checked(position)
+        try {
+            //正常
+            holder?.left_txt?.setText(null)
+            var data = datas?.get(position)
+            data?.let {
+                //名称
+                holder?.left_txt?.setText(KRingtoneManagerUtils.getTitle(position))
+                holder?.item_checked?.isSelected = (position == KRingtoneManagerUtils.index)
+                holder?.item_layout?.onClick {
+                    checked(position)
+                }
+                holder?.item_checked?.onClick {
+                    checked(position)
+                }
             }
-            holder?.item_checked?.onClick {
-                checked(position)
-            }
-        }
+        }catch (e:Exception){e.printStackTrace()}
+
     }
 
     //选中
     fun checked(index: Int) {
-        var index1 = KRingtoneManagerUtils.index
-        KRingtoneManagerUtils.index = index
-        KRingtoneManagerUtils.play()
-        notifyItemChanged(index1)
-        notifyItemChanged(index)
+        try {
+            var index1 = KRingtoneManagerUtils.index
+            KRingtoneManagerUtils.index = index
+            KRingtoneManagerUtils.play()
+            notifyItemChanged(index1)
+            notifyItemChanged(index)
+        }catch (e:java.lang.Exception){e.printStackTrace()}
     }
 
 
