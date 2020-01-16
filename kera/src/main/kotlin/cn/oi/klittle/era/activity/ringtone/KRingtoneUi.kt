@@ -59,9 +59,11 @@ open class KRingtoneUi : KBaseUi() {
                     }
                 }
                 recyclerView = krecyclerView {
-                    setLinearLayoutManager()
-                    ringtoneAdapter = KRingtoneAdapter(KRingtoneManagerUtils.listRingTone)
-                    adapter = ringtoneAdapter
+                    try {
+                        setLinearLayoutManager()
+                        ringtoneAdapter = KRingtoneAdapter(KRingtoneManagerUtils.listRingTone)
+                        adapter = ringtoneAdapter
+                    }catch (e:Exception){e.printStackTrace()}
                 }.lparams {
                     width = matchParent
                     height = matchParent
