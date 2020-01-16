@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
@@ -139,7 +140,7 @@ object KUiHelper {
     var qrCallback: ((result: String) -> Unit)? = null
     /**
      * 跳转到 二维码扫描界面
-     * @param qrCallback 二维码扫描结果回调
+     * @param qrCallback 二维码扫描结果回调(返回选择)
      */
     fun goCaptureActivity(nowActivity: Activity? = getActivity(), qrCallback: ((result: String) -> Unit)? = null) {
         try {
@@ -152,6 +153,17 @@ object KUiHelper {
                     KPermissionUtils.showFailure()
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * 跳转到 铃声选择界面
+     */
+    fun goRingtoneActivity(nowActivity: Activity? = getActivity()) {
+        try {
+            goActivity(KRingtoneActivity::class.java, nowActivity)
         } catch (e: Exception) {
             e.printStackTrace()
         }

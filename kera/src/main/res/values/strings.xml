@@ -199,6 +199,8 @@
     <string name="kpicture_camera_roll">相机胶卷</string>
     <string name="kpicture_empty_title">无视频或照片\n</string>
     <string name="kpicture_empty_audio_title">无音频文件\n</string>
+    <!--铃声-->
+    <string name="kringtone">铃声</string>
     <!--多国语言-->
     <string name="klanguage_zh">中文</string>
     <string name="klanguage_zh_rCN">中文(简体)</string>

@@ -57,6 +57,7 @@ class KVideoView : VideoView {
         //setOnCompletionListener {}
     }
 
+    //mediaPlayer?.isLooping=false//fixme 是否循环播放
     var mediaPlayer: MediaPlayer? = null
     var path: String? = null//当前的播放视频路径
     /**

@@ -146,7 +146,7 @@ object KIntentUtils {
     }
 
 
-    //跳转到声音设置界面
+    //fixme 跳转到声音设置界面(控制声音大小，亲测有效。)
     fun goSoundSetting(activity: Activity? = getActivity()) {
         try {
             if (activity != null && !activity.isFinishing) {

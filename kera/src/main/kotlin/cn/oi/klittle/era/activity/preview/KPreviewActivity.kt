@@ -8,7 +8,7 @@ import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.utils.KAssetsUtils
 
 /**
- * 图片预览
+ * fixme 图片预览;在KPictureSelector.openExternalPreview()方法里调用了
  */
 open class KPreviewActivity : KBaseActivity() {
 

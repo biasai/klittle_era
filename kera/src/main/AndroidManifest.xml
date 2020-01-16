@@ -78,6 +78,10 @@
         <!-- </provider> -->
         <!-- android:name="android.support.v4.content.FileProvider" -->
         <!-- android:authorities="${applicationId}.kera.provider" fixme 这个是一个身份标志，每个provider的authorities都不能重复相同，防止冲突。 -->
+        <activity
+            android:name=".activity.ringtone.KRingtoneActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus" />
         <provider
             android:name=".provider.KFileProvider"
             android:authorities="${applicationId}.kera.provider"
@@ -186,7 +190,7 @@
     <!--相机，二维码-->
     <uses-permission android:name="android.permission.CAMERA" />
     <!--任务栈控制-->
-    <uses-permission android:name="android.permission.REORDER_TASKS"/>
+    <uses-permission android:name="android.permission.REORDER_TASKS" />
     <!--系统广播-->
     <protected-broadcast android:name="android.intent.action.SCREEN_OFF" />
     <protected-broadcast android:name="android.intent.action.SCREEN_ON" />
