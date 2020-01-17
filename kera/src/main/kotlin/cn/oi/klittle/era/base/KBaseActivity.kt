@@ -743,17 +743,27 @@ open class KBaseActivity : FragmentActivity() {
 
     var kprogressbar: KProgressDialog? = null
     /**
-     * 显示进度条
+     * fixme 显示进度条
      */
     open fun showProgressbar() {
-        if (kprogressbar == null) {
-            kprogressbar = KProgressDialog(this)
+        if (!isFinishing) {
+            runOnUiThread {
+                if (!isFinishing) {
+                    try {
+                        if (kprogressbar == null) {
+                            kprogressbar = KProgressDialog(this)
+                        }
+                        kprogressbar?.show()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
         }
-        kprogressbar?.show()
     }
 
     /**
-     * 关闭进度条
+     * fixme 关闭进度条
      */
     open fun shutProgressbar() {
         kprogressbar?.dismiss()

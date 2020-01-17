@@ -129,7 +129,7 @@ open class KRingtoneAdapter(var datas: MutableList<Ringtone>? = null) : KAdapter
         try {
             var index1 = KRingtoneManagerUtils.index
             KRingtoneManagerUtils.index = index
-            KRingtoneManagerUtils.play()
+            KRingtoneManagerUtils.play(index)
             notifyItemChanged(index1)
             notifyItemChanged(index)
         }catch (e:java.lang.Exception){e.printStackTrace()}
