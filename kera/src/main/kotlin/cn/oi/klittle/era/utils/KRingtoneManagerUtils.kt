@@ -98,8 +98,10 @@ object KRingtoneManagerUtils {
                     }
                 }
                 //只加载当前选中铃声
-                if (index < count) {
+                if (index < count && count > 0) {
                     ringtone = it.getRingtone(index)//fixme 获取这一步是耗时操作(大约获取一个需要116毫秒)
+                } else if (count > 0) {
+                    ringtone = it.getRingtone(0)
                 }
                 //KLoggerUtils.e("初始化结束:\t" + (System.currentTimeMillis() - t))
             }
