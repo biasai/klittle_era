@@ -1,13 +1,17 @@
 package cn.oi.klittle.era.activity.ringtone
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.ringtone.adapter.KRingtoneAdapter
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRingtoneManagerUtils
 import kotlinx.coroutines.experimental.async
+import android.support.v7.widget.RecyclerView
+
 
 /**
  * fixme 系统铃声选择;铃声选中之后，改变的是KRingtoneManagerUtils.index下标
@@ -47,6 +51,9 @@ open class KRingtoneActivity : KBaseActivity() {
                                 runOnUiThread {
                                     ui?.ringtoneAdapter?.notifyDataSetChanged()
                                     shutProgressbar()//关闭弹窗
+                                    if (KRingtoneManagerUtils.index > 12) {//PDA能显示13个左右。小米8能显示17个左右
+                                        ui?.recyclerView?.scrollToPositionWithOffset(KRingtoneManagerUtils.index)//滑动到选中下标
+                                    }
                                 }
                             }
                         }

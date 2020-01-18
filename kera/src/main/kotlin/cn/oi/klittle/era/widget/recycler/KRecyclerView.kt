@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
+import java.util.concurrent.TimeUnit
 
 //           fixme 带有悬浮置顶的Item;使用案例：
 //            KBaseUi.apply {
@@ -197,8 +198,12 @@ open class KRecyclerView : RecyclerView {
     /**
      * fixme 滑动置顶(亲测有效)
      */
-    fun scrollToTop() {
+    fun scrollToPo() {
+        if (adapter==null||layoutManager==null){
+            return
+        }
         try {
+            scrollToPositionWithOffset(0)//fixme 滑动置顶，没有滑动效果。基本都是有效的。
             async {
                 try {
                     delay(200)//fixme 延迟200毫秒，防止无效。(防止初始化未完成)
@@ -229,6 +234,55 @@ open class KRecyclerView : RecyclerView {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 滑动到指定下标位置(亲测有效,但是不具体滑动效果)
+     * @param position 下标，位置从0开始。(下标越界或者小于0，也不会报错。只是会无效而已。)
+     * @param offset 偏移量
+     */
+    fun scrollToPositionWithOffset(position: Int, offset: Int = 0) {
+        if (adapter==null||layoutManager==null){
+            return
+        }
+        adapter?.let {
+            if (position >= 0 && position < it.itemCount) {
+                try {
+                    layoutManager?.let {
+                        //GridLayoutManager也继承LinearLayoutManager
+                        if (it is LinearLayoutManager) {
+                            it.scrollToPositionWithOffset(position, offset)//fixme 这一步基本都是有效的。(不具备滑动效果)
+                            async {
+                                try {
+                                    delay(100, TimeUnit.MILLISECONDS)//延迟100毫秒，再来一次。低于200毫秒的。肉眼是感觉不出来的。
+                                    getContext()?.let {
+                                        if (it is Activity) {
+                                            if (!it.isFinishing) {
+                                                it.runOnUiThread {
+                                                    try {
+                                                        layoutManager?.let {
+                                                            if (it is LinearLayoutManager) {
+                                                                it.scrollToPositionWithOffset(position, offset)//fixme 这一步，只是为了以防万一无效，再来一遍。(一般都是有效的。没有这一步也无所谓的。)
+                                                            }
+                                                        }
+                                                    } catch (e: java.lang.Exception) {
+                                                        e.printStackTrace()
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
         }
     }
 

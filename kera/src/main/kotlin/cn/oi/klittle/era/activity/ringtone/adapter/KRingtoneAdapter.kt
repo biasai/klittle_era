@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRingtoneManagerUtils
 import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.widget.compat.KTextView
@@ -68,7 +69,7 @@ open class KRingtoneAdapter(var datas: MutableList<Ringtone>? = null) : KAdapter
                         kview {
                             id = kpx.id("item_checked")
                             autoBg {
-                                width = kpx.x(48)
+                                width = kpx.x(40)
                                 height = width
                                 //autoBg(R.mipmap.kera_ic_unchecked)
                                 autoBg(R.mipmap.kera_ic_unselect)
@@ -78,7 +79,7 @@ open class KRingtoneAdapter(var datas: MutableList<Ringtone>? = null) : KAdapter
                                 autoBg(R.mipmap.kera_ic_select)
                             }
                         }.lparams {
-                            width = kpx.x(48)
+                            width = kpx.x(40)
                             height = width
                             centerVertically()
                             alignParentRight()
