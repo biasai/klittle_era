@@ -198,7 +198,7 @@ open class KRecyclerView : RecyclerView {
     /**
      * fixme 滑动置顶(亲测有效)
      */
-    fun scrollToPo() {
+    fun scrollToTop() {
         if (adapter==null||layoutManager==null){
             return
         }
