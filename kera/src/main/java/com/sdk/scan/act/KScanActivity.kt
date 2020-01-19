@@ -40,6 +40,7 @@ open class KScanActivity : KRfidActivity() {
         this.onScanResult = onScanResult
     }
 
+    private var isNewPdA_Alpas2 = false//是否为新版PDA
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         try {
@@ -52,9 +53,11 @@ open class KScanActivity : KRfidActivity() {
                 }
                 //监听扫描
                 if (isNewPdA_Alpas()) {
+                    isNewPdA_Alpas2 = true
                     //新版扫描注册
                     onResultReceiver()
                 } else {
+                    isNewPdA_Alpas2 = false
                     KScanUtils.registerReceiver()
                     //旧版本扫描注册
                     KScanUtils.onScanResult(onScanResult)//在finish和onpause里不对它进行回收了；防止没有反应。
@@ -77,6 +80,19 @@ open class KScanActivity : KRfidActivity() {
 //        if (scanReader != null) {
 //            scanReader?.startScan()//启动扫描（会开启扫描灯的）
 //        }
+        try {
+            if (isEnableScan()) {
+                //监听扫描
+                if (isNewPdA_Alpas2) {
+                    //新版扫描注册
+                } else {
+                    //旧版本扫描注册;fixme 重新赋值扫描回调函数。防止跳转下一个Activity后，回调被覆盖。
+                    KScanUtils.onScanResult(onScanResult)//在finish和onpause里不对它进行回收了；防止没有反应。
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     /**
