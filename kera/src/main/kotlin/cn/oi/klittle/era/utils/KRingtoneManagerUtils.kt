@@ -1,10 +1,12 @@
 package cn.oi.klittle.era.utils
 
+import android.content.Context
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.media.Ringtone
 import android.media.RingtoneManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.base.KBaseUi
 import kotlinx.coroutines.experimental.async
 
 /**
@@ -283,6 +285,77 @@ object KRingtoneManagerUtils {
                 e.printStackTrace()
                 KLoggerUtils.e("KRingtoneManagerUtils反射异常2：\t" + e.message)
             }
+        }
+    }
+
+    /**
+     * fixme 设置铃声大小(是铃声音量，不是媒体音量)，亲测有效，不需要任何权限。
+     */
+    private var mAudioManager: AudioManager? = null
+    fun getAudioManager(): AudioManager? {
+        if (mAudioManager == null) {
+            try {
+                KBaseApplication.getInstance().getSystemService(Context.AUDIO_SERVICE)?.let {
+                    if (it is AudioManager) {
+                        mAudioManager = it as AudioManager
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        return mAudioManager
+    }
+
+    /**
+     * fixme 获取当前铃声音量
+     */
+    fun getStreamVolume(): Int {
+        try {
+            getAudioManager()?.getStreamVolume(AudioManager.STREAM_RING)?.let {
+                return it
+            };//铃声当前音量
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return 0
+    }
+
+    /**
+     * fixme 获取铃声最大音量，一般为15
+     */
+    fun getStreamMaxVolume(): Int {
+        try {
+            getAudioManager()?.getStreamMaxVolume(AudioManager.STREAM_RING)?.let {
+                return it
+            };//铃声当前音量
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return 0
+    }
+
+    /**
+     * fixme 设置最大铃声
+     */
+    fun setStreamMaxVolume() {
+        try {
+            getAudioManager()?.getStreamMaxVolume(AudioManager.STREAM_RING)?.let {
+                getAudioManager()?.setStreamVolume(AudioManager.STREAM_SYSTEM, it, 0); //铃声最大音量；15
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 设置最小铃声(铃声静音)
+     */
+    fun setStreamMinVolume() {
+        try {
+            getAudioManager()?.setStreamVolume(AudioManager.STREAM_SYSTEM, 0, 0); //铃声最小音量；0
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
