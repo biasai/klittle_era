@@ -521,14 +521,31 @@ object KIntentUtils {
     }
 
     var isGoRest: Boolean = false//fixme 判断是否为手动重启
-    //App重启
-    fun goRest(activity: Activity? = getActivity()) {
+    //fixme App重启
+    fun goRest() {
+        goRest(getActivity())
+    }
+
+    private var restTime = "KGOREST_TIME"//记录重启时间
+    fun goRest(activity: Activity?) {
         try {
             if (activity != null && !activity.isFinishing) {
-                var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
-                activity.startActivity(intent)
+                var isGoRest=true
+                KCacheUtils.getLong(restTime)?.let {
+                    //KLoggerUtils.e("重启时间2：\t"+(System.currentTimeMillis() - it))
+                    if ((System.currentTimeMillis() - it) < 1500) {//两次重启间隔时间不能少于1.5秒。手动操作最快一般都在1051。比一秒大。
+                        isGoRest=false
+                        return//fixme 防止应用异常无限重启卡死。
+                    }
+                }
+                //KLoggerUtils.e("是否重启：\t"+isGoRest)
+                if (isGoRest){
+                    KCacheUtils.putLong(restTime, System.currentTimeMillis())//fixme 保存当前重启的时间。
+                    var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
+                    activity.startActivity(intent)
+                }
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()

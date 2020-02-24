@@ -173,10 +173,12 @@ open class K7RadiusWidget : K6TriangleWidget {
                         paint.color = it.bg_color
                         isDrawColor = true
                     }
-                    var left = 0f + scrollX + centerX - w / 2
-                    var top = 0f + scrollY + centerY - h / 2
+                    var left = 0f + scrollX + centerX - w / 2.0f
+                    var top = 0f + scrollY + centerY - h / 2.0f//fixme 2.0f必须设置成浮点型，不然可能会有0.5的偏差。
+                    //KLoggerUtils.e("scrollY:\t"+scrollY+"\tcenterY:\t"+centerY+"\th / 2:\t"+(h / 2.0f)+"\th:\t"+h)
                     var right = w + left
                     var bottom = h + top
+                    //KLoggerUtils.e("left:\t"+left+"\ttop:\t"+top+"\tright:\t"+right+"\tbottom:\t"+bottom)
                     if (it.bgVerticalColors != null) {
                         var shader: LinearGradient? = null
                         if (!it.isBgGradient) {

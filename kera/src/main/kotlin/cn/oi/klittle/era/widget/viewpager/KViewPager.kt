@@ -9,12 +9,14 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.widget.viewpager.animationlibrary.KStackTransformer
 
 /**
  * 禁止滑动的ViewPager,也可以继承VerticalViewPager
  * 手指不可以滑动，但是可以代码调用setCurrentItem
  *
  * setCurrentItem(0,true)//选中第一个。参数二表示是否具备滑动效果。默认就是true
+ * setPageTransformer(true, KStackTransformer())//fixme 多页滑动覆盖效果；在animationlibrary包下，还有很多效果。
  *
  * fixme isScroll 是否滑动，默认禁止滑动，isFastScroll 快速滑动，禁止快速滑动。
  */

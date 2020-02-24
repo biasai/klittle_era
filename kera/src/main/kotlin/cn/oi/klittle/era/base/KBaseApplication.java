@@ -30,6 +30,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KAppUtils;
 import cn.oi.klittle.era.utils.KAssetsUtils;
 import cn.oi.klittle.era.utils.KCacheUtils;
@@ -116,18 +117,25 @@ public class KBaseApplication extends Application {
     //初始化
     public static KBaseApplication getInstance() {
         if (sInstance == null) {
-            //如果配置文件没有声明，也没有手动初始化。则通过反射自动初始化。【反射是最后的手段，效率不高】
-            //通过反射，手动获取上下文。
-            final Object activityThread = getActivityThread();
-            if (null != activityThread) {
-                try {
-                    final Method getApplication = activityThread.getClass().getDeclaredMethod("getApplication");
-                    getApplication.setAccessible(true);
-                    Context applicationContext = (Context) getApplication.invoke(activityThread);
-                    setsInstance(applicationContext);
-                } catch (Exception e) {
-                    e.printStackTrace();
+            try {
+                //如果配置文件没有声明，也没有手动初始化。则通过反射自动初始化。【反射是最后的手段，效率不高】
+                //通过反射，手动获取上下文。
+                final Object activityThread = getActivityThread();
+                if (null != activityThread) {
+                    try {
+                        final Method getApplication = activityThread.getClass().getDeclaredMethod("getApplication");
+                        getApplication.setAccessible(true);
+                        Context applicationContext = (Context) getApplication.invoke(activityThread);
+                        setsInstance(applicationContext);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                //fixme 应用全局异常错误监听
+                KCatchException.getInstance().init(sInstance);
+            } catch (Exception e) {
+                e.printStackTrace();
+                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t"+e.getMessage());
             }
         }
         return sInstance;

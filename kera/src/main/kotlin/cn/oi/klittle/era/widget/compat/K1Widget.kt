@@ -26,6 +26,7 @@ import java.lang.Exception
 import android.graphics.Paint.FILTER_BITMAP_FLAG
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import cn.oi.klittle.era.entity.camera.KCamera
+import cn.oi.klittle.era.exception.KCatchException
 
 //                    fixme 设置音频播放
 //                    issMediaPlayerEnable = true//开启全局音频播放
@@ -325,71 +326,74 @@ open class K1Widget : K0Widget {
                 isClickable = true//设置具备点击能力
                 //点击事件
                 setOnClickListener {
-                    if (onClickes == null) {
-                        return@setOnClickListener
-                    }
-                    //fixme 防止快速点击
-                    if (isFastClickEnable) {
-                        if (mediaPlayer != null) {
-                            async {
-                                playMediaPlayer()
+                    try {
+                        if (onClickes == null) {
+                            return@setOnClickListener
+                        }
+                        //fixme 防止快速点击
+                        if (isFastClickEnable) {
+                            if (mediaPlayer != null) {
+                                async {
+                                    playMediaPlayer()
 //                                if (!mediaPlayer!!.isPlaying) {
 //                                    mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
 //                                }
-                            }
-                        } else if (issMediaPlayerEnable && sMediaPlayer != null) {
-                            async {
-                                K0Widget.sPlayMediaPlayer()
+                                }
+                            } else if (issMediaPlayerEnable && sMediaPlayer != null) {
+                                async {
+                                    K0Widget.sPlayMediaPlayer()
 //                                if (!sMediaPlayer!!.isPlaying) {
 //                                    sMediaPlayer?.start()//播放全局静态音频
 //                                }
-                            }
-                        }
-                        //放在循环外面；放在多次执行。
-                        var b = mOnClickCallback?.let {
-                            it()//fixme 自定义图片点击事件；在一般的点击事件之前。如果图片事件处理了。就不会再执行普通的点击事件了。
-                        }
-                        //true允许快速点击事件
-                        for (i in onClickes!!) {
-                            i?.let {
-                                if (b == null || !b) {
-                                    it()//fixme 点击事件
                                 }
                             }
-                        }
-                    } else if (!isFastClick()) {//fixme 不允许快速点击
-                        if (mediaPlayer != null) {
-                            async {
-                                playMediaPlayer()
-//                                if (!mediaPlayer!!.isPlaying) {
-//                                    mediaPlayer?.start()//播放自己音频(优先播放)
-//                                }
+                            //放在循环外面；放在多次执行。
+                            var b = mOnClickCallback?.let {
+                                it()//fixme 自定义图片点击事件；在一般的点击事件之前。如果图片事件处理了。就不会再执行普通的点击事件了。
                             }
-                        } else if (issMediaPlayerEnable && sMediaPlayer != null) {
-                            async {
-                                K0Widget.sPlayMediaPlayer()
-//                                if (!sMediaPlayer!!.isPlaying) {
-//                                    sMediaPlayer?.start()//播放全局静态音频
-//                                }
-                            }
-                        }
-                        var b = mOnClickCallback?.let {
-                            it()//fixme 自定义图片点击事件；在一般的点击事件之前。如果图片事件处理了。就不会再执行普通的点击事件了。
-                        }
-                        if (onClickes != null) {
-                            //不允许快速点击
+                            //true允许快速点击事件
                             for (i in onClickes!!) {
                                 i?.let {
                                     if (b == null || !b) {
                                         it()//fixme 点击事件
                                     }
                                 }
-                                if (onClickes == null) {
-                                    break
+                            }
+                        } else if (!isFastClick()) {//fixme 不允许快速点击
+                            if (mediaPlayer != null) {
+                                async {
+                                    playMediaPlayer()
+//                                if (!mediaPlayer!!.isPlaying) {
+//                                    mediaPlayer?.start()//播放自己音频(优先播放)
+//                                }
+                                }
+                            } else if (issMediaPlayerEnable && sMediaPlayer != null) {
+                                async {
+                                    K0Widget.sPlayMediaPlayer()
+//                                if (!sMediaPlayer!!.isPlaying) {
+//                                    sMediaPlayer?.start()//播放全局静态音频
+//                                }
+                                }
+                            }
+                            var b = mOnClickCallback?.let {
+                                it()//fixme 自定义图片点击事件；在一般的点击事件之前。如果图片事件处理了。就不会再执行普通的点击事件了。
+                            }
+                            if (onClickes != null) {
+                                //不允许快速点击
+                                for (i in onClickes!!) {
+                                    i?.let {
+                                        if (b == null || !b) {
+                                            it()//fixme 点击事件
+                                        }
+                                    }
+                                    if (onClickes == null) {
+                                        break
+                                    }
                                 }
                             }
                         }
-
+                    } catch (e: Exception) {
+                        KLoggerUtils.e("K1Widget.kt点击事件异常：\t" + KCatchException.getExceptionMsg(e))
                     }
                 }
                 hasClick = true

@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.design.widget.TabLayout
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.LinearLayout
@@ -17,6 +16,7 @@ import cn.oi.klittle.era.widget.MPAndroidChart.*
 import cn.oi.klittle.era.widget.book.view.KBookPageView
 import cn.oi.klittle.era.widget.chart.KBaseChartView
 import cn.oi.klittle.era.widget.compat.*
+import cn.oi.klittle.era.widget.drawerLayout.KDrawerLayout
 import cn.oi.klittle.era.widget.layout.KSwipeMenuLayout
 import cn.oi.klittle.era.widget.photo.KImageView
 import cn.oi.klittle.era.widget.photo.KPhotoView
@@ -747,6 +747,16 @@ abstract class KBaseUi {
         inline fun ViewManager.kPathView(init: (@AnkoViewDslMarker KPathView).() -> Unit): KPathView {
             return ankoView({ ctx: Context -> KPathView(ctx) }, theme = 0) { init() }
         }
+
+        //路径控件(异形控件)
+        inline fun ViewManager.KDrawerLayout(init: (@AnkoViewDslMarker KDrawerLayout).() -> Unit): KDrawerLayout {
+            return ankoView({ ctx: Context -> KDrawerLayout(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kDrawerLayout(init: (@AnkoViewDslMarker KDrawerLayout).() -> Unit): KDrawerLayout {
+            return ankoView({ ctx: Context -> KDrawerLayout(ctx) }, theme = 0) { init() }
+        }
+
     }
 
 }

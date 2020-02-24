@@ -4,7 +4,7 @@
         fixme 如PDA上Activity跳场动画时快速点击可能会点中桌面图标，主要是因为 A 跳转到 B 时，A关闭了，而B又是透明样式。如果A没有关闭的话，就不会有这个问题。如：启动页(会关闭) 跳 主页面。
         fixme 8.0上设置竖屏时也会闪退（已经在BaseActivity里作了判断修复。）。-->
 
-    <!--fixme 第一个Activity即主MainActivity（应用最底层的哪个Activity）背景样式不能未透明，不然效果很不友好。会看见桌面背景。-->
+    <!--fixme 主MainActivity（应用最底层的哪个Activity）背景样式不能未透明，不然效果很不友好。会看见桌面背景。-->
     <!--fixme 不建议使用透明主题，有很多系统Bug问题，如按home键之后，当前Activity的界面就显示不见了。尽量少用透明主题(可以用，最好少用,启动页可以使用)。-->
     <!--fixme 透明背景对overridePendingTransition()转场动画也有影响，可能部分设置没有效果。-->
     <!--fixme 强烈推荐使用非透明主题：android:theme="@style/KTheme_Activity_hasStatus" -->
