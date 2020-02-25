@@ -10,11 +10,12 @@ import java.lang.reflect.Field;
 import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.widget.drawerLayout.KDrawerLayout;
+import cn.oi.klittle.era.widget.drawerLayout.KViewDragHelper;
 
 /**
  * fixme 控制左右滑动菜单的边缘滑动距离。
  */
-public class DrawerLayoutUtils {
+public class KDrawerLayoutUtils {
 
     /**
      * 设置左右两边的滑动距离。
@@ -95,21 +96,12 @@ public class DrawerLayoutUtils {
     public static void setDrawerLeftEdgeSize(Activity activity, KDrawerLayout drawerLayout, float displayWidthPercentage) {
         if (activity == null || drawerLayout == null) return;
         try {
-            // 找到 ViewDragHelper 并设置 Accessible 为true
-            Field leftDraggerField =
-                    KDrawerLayout.class.getDeclaredField("mLeftDragger");
-            leftDraggerField.setAccessible(true);
-            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField.get(drawerLayout);
-
-            // 找到 edgeSizeField 并设置 Accessible 为true
-            Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            int edgeSize = edgeSizeField.getInt(leftDragger);
             // 设置新的边缘大小
             Point displaySize = new Point();
             activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-            edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (displaySize.x *
-                    displayWidthPercentage)));
+            int edgeSize =  drawerLayout.mLeftDragger.mEdgeSize;
+            drawerLayout.mLeftDragger.mEdgeSize =Math.max(edgeSize, (int) (displaySize.x *
+                    displayWidthPercentage));
         } catch (Exception e) {
             KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Left:\t" + KCatchException.getExceptionMsg(e));
         }
@@ -118,21 +110,11 @@ public class DrawerLayoutUtils {
     public static void setDrawerRightEdgeSize(Activity activity, KDrawerLayout drawerLayout, float displayWidthPercentage) {
         if (activity == null || drawerLayout == null) return;
         try {
-            // 找到 ViewDragHelper 并设置 Accessible 为true
-            Field leftDraggerField =
-                    KDrawerLayout.class.getDeclaredField("mRightDragger");//Right
-            leftDraggerField.setAccessible(true);
-            ViewDragHelper leftDragger = (ViewDragHelper) leftDraggerField.get(drawerLayout);
-
-            // 找到 edgeSizeField 并设置 Accessible 为true
-            Field edgeSizeField = leftDragger.getClass().getDeclaredField("mEdgeSize");
-            edgeSizeField.setAccessible(true);
-            int edgeSize = edgeSizeField.getInt(leftDragger);
-            // 设置新的边缘大小
             Point displaySize = new Point();
             activity.getWindowManager().getDefaultDisplay().getSize(displaySize);
-            edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (displaySize.x *
-                    displayWidthPercentage)));
+            int edgeSize =  drawerLayout.mRightDragger.mEdgeSize;
+            drawerLayout.mRightDragger.mEdgeSize =Math.max(edgeSize, (int) (displaySize.x *
+                    displayWidthPercentage));
         } catch (Exception e) {
             KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Right:\t" + KCatchException.getExceptionMsg(e));
         }

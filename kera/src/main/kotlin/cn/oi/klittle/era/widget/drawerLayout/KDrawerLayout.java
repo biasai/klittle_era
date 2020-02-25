@@ -27,7 +27,6 @@ import android.support.v4.view.AccessibilityDelegateCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
-import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -43,7 +42,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.oi.klittle.era.widget.drawerLayout.utils.DrawerLayoutUtils;
+import cn.oi.klittle.era.utils.KLoggerUtils;
+import cn.oi.klittle.era.widget.drawerLayout.utils.KDrawerLayoutUtils;
 
 import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 
@@ -94,12 +94,17 @@ import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 //                            gravity = Gravity.RIGHT//fixme 右菜单
 //                        }
 //                    }
-//                    setDrawerLeftEdgeSize(act, 0.5f)//设置左边的滑动间距
-//                    setDrawerRightEdgeSize(act, 0.5f)//设置右边的滑动间距
+//                    setDrawerLeftEdgeSize(act, 0.25f)//设置左边的滑动间距
+//                    setDrawerRightEdgeSize(act, 0.25f)//设置右边的滑动间距
+//                    //setDrawerLockMode(KDrawerLayout.LOCK_MODE_LOCKED_CLOSED, Gravity.LEFT);//关闭左侧的手势滑动。
 //                }.lparams {
 //                    width = matchParent
 //                    height = matchParent
 //                }
+
+//drawLayout?.closeDrawer(Gravity.LEFT)//关闭
+//drawLayout?.openDrawer(Gravity.LEFT)//打开
+//drawLayout?.isDrawerOpen(Gravity.LEFT)//判断是否打开
 
 /**
  * fixme 左右滑动菜单；代码拷贝的是原生DrawerLayout的代码。
@@ -113,7 +118,7 @@ public class KDrawerLayout extends ViewGroup {
      * @param displayWidthPercentage 0~1 ;1是整个DrawerLayout控件的宽度，是比例；最好不要超过菜单本身的宽度。不然效果不好。会闪。
      */
     public void setDrawerLeftEdgeSize(Activity activity, float displayWidthPercentage) {
-        DrawerLayoutUtils.setDrawerLeftEdgeSize(activity, this, displayWidthPercentage);
+        KDrawerLayoutUtils.setDrawerLeftEdgeSize(activity, this, displayWidthPercentage);
     }
 
     /**
@@ -123,7 +128,7 @@ public class KDrawerLayout extends ViewGroup {
      * @param displayWidthPercentage 0~1 ;1是整个DrawerLayout控件的宽度，是比例；最好不要超过菜单本身的宽度。不然效果不好。会闪。
      */
     public void setDrawerRightEdgeSize(Activity activity, float displayWidthPercentage) {
-        DrawerLayoutUtils.setDrawerRightEdgeSize(activity, this, displayWidthPercentage);
+        KDrawerLayoutUtils.setDrawerRightEdgeSize(activity, this, displayWidthPercentage);
     }
 
     /**
@@ -151,17 +156,17 @@ public class KDrawerLayout extends ViewGroup {
     /**
      * Indicates that any drawers are in an idle, settled state. No animation is in progress.
      */
-    public static final int STATE_IDLE = ViewDragHelper.STATE_IDLE;
+    public static final int STATE_IDLE = KViewDragHelper.STATE_IDLE;
 
     /**
      * Indicates that a drawer is currently being dragged by the user.
      */
-    public static final int STATE_DRAGGING = ViewDragHelper.STATE_DRAGGING;
+    public static final int STATE_DRAGGING = KViewDragHelper.STATE_DRAGGING;
 
     /**
      * Indicates that a drawer is in the process of settling to a final position.
      */
-    public static final int STATE_SETTLING = ViewDragHelper.STATE_SETTLING;
+    public static final int STATE_SETTLING = KViewDragHelper.STATE_SETTLING;
 
     @IntDef({LOCK_MODE_UNLOCKED, LOCK_MODE_LOCKED_CLOSED, LOCK_MODE_LOCKED_OPEN,
             LOCK_MODE_UNDEFINED})
@@ -247,8 +252,8 @@ public class KDrawerLayout extends ViewGroup {
     private float mScrimOpacity;
     private Paint mScrimPaint = new Paint();
 
-    private final ViewDragHelper mLeftDragger;
-    private final ViewDragHelper mRightDragger;
+    public final KViewDragHelper mLeftDragger;
+    public final KViewDragHelper mRightDragger;
     private final KDrawerLayout.ViewDragCallback mLeftCallback;
     private final KDrawerLayout.ViewDragCallback mRightCallback;
     private int mDrawerState;
@@ -370,13 +375,13 @@ public class KDrawerLayout extends ViewGroup {
         mLeftCallback = new KDrawerLayout.ViewDragCallback(Gravity.LEFT);
         mRightCallback = new KDrawerLayout.ViewDragCallback(Gravity.RIGHT);
 
-        mLeftDragger = ViewDragHelper.create(this, TOUCH_SLOP_SENSITIVITY, mLeftCallback);
-        mLeftDragger.setEdgeTrackingEnabled(ViewDragHelper.EDGE_LEFT);
+        mLeftDragger = KViewDragHelper.create(this, TOUCH_SLOP_SENSITIVITY, mLeftCallback);
+        mLeftDragger.setEdgeTrackingEnabled(KViewDragHelper.EDGE_LEFT);
         mLeftDragger.setMinVelocity(minVel);
         mLeftCallback.setDragger(mLeftDragger);
 
-        mRightDragger = ViewDragHelper.create(this, TOUCH_SLOP_SENSITIVITY, mRightCallback);
-        mRightDragger.setEdgeTrackingEnabled(ViewDragHelper.EDGE_RIGHT);
+        mRightDragger = KViewDragHelper.create(this, TOUCH_SLOP_SENSITIVITY, mRightCallback);
+        mRightDragger.setEdgeTrackingEnabled(KViewDragHelper.EDGE_RIGHT);
         mRightDragger.setMinVelocity(minVel);
         mRightCallback.setDragger(mRightDragger);
 
@@ -643,7 +648,7 @@ public class KDrawerLayout extends ViewGroup {
 
         if (lockMode != LOCK_MODE_UNLOCKED) {
             // Cancel interaction in progress
-            final ViewDragHelper helper = absGravity == Gravity.LEFT ? mLeftDragger : mRightDragger;
+            final KViewDragHelper helper = absGravity == Gravity.LEFT ? mLeftDragger : mRightDragger;
             helper.cancel();
         }
         switch (lockMode) {
@@ -802,8 +807,8 @@ public class KDrawerLayout extends ViewGroup {
     }
 
     /**
-     * Resolve the shared state of all drawers from the component ViewDragHelpers.
-     * Should be called whenever a ViewDragHelper's state changes.
+     * Resolve the shared state of all drawers from the component KViewDragHelpers.
+     * Should be called whenever a KViewDragHelper's state changes.
      */
     void updateDrawerState(int forGravity, @KDrawerLayout.State int activeState, View activeDrawer) {
         final int leftState = mLeftDragger.getViewDragState();
@@ -907,7 +912,12 @@ public class KDrawerLayout extends ViewGroup {
         }
     }
 
+    public float slideOffset = 0f;//自己加的
+    public View drawerView = null;//自己加的。
+
     void dispatchOnDrawerSlide(View drawerView, float slideOffset) {
+        this.drawerView = drawerView;
+        this.slideOffset = slideOffset;
         if (mListeners != null) {
             // Notify the listeners. Do that from the end of the list so that if a listener
             // removes itself as the result of being called, it won't mess up with our iteration
@@ -920,6 +930,9 @@ public class KDrawerLayout extends ViewGroup {
 
     void setDrawerViewOffset(View drawerView, float slideOffset) {
         final KDrawerLayout.LayoutParams lp = (KDrawerLayout.LayoutParams) drawerView.getLayoutParams();
+        if (slideOffset > 1) {
+            slideOffset = 1f;
+        }
         if (slideOffset == lp.onScreen) {
             return;
         }
@@ -1220,7 +1233,6 @@ public class KDrawerLayout extends ViewGroup {
             }
 
             final KDrawerLayout.LayoutParams lp = (KDrawerLayout.LayoutParams) child.getLayoutParams();
-
             if (isContentView(child)) {
                 child.layout(lp.leftMargin, lp.topMargin,
                         lp.leftMargin + child.getMeasuredWidth(),
@@ -1276,7 +1288,6 @@ public class KDrawerLayout extends ViewGroup {
                         break;
                     }
                 }
-
                 if (changeOffset) {
                     setDrawerViewOffset(child, newOffset);
                 }
@@ -1473,6 +1484,7 @@ public class KDrawerLayout extends ViewGroup {
         return false;
     }
 
+
     @SuppressWarnings("ShortCircuitBoolean")
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
@@ -1481,7 +1493,6 @@ public class KDrawerLayout extends ViewGroup {
         // "|" used deliberately here; both methods should be invoked.
         final boolean interceptForDrag = mLeftDragger.shouldInterceptTouchEvent(ev)
                 | mRightDragger.shouldInterceptTouchEvent(ev);
-
         boolean interceptForTap = false;
 
         switch (action) {
@@ -1503,7 +1514,7 @@ public class KDrawerLayout extends ViewGroup {
 
             case MotionEvent.ACTION_MOVE: {
                 // If we cross the touch slop, don't perform the delayed peek for an edge touch.
-                if (mLeftDragger.checkTouchSlop(ViewDragHelper.DIRECTION_ALL)) {
+                if (mLeftDragger.checkTouchSlop(KViewDragHelper.DIRECTION_ALL)) {
                     mLeftCallback.removeCallbacks();
                     mRightCallback.removeCallbacks();
                 }
@@ -1522,6 +1533,7 @@ public class KDrawerLayout extends ViewGroup {
     }
 
     private boolean isDownOpen = false;//判断手指按下时菜单是否打开
+    private boolean isMove = false;
 
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
@@ -1533,6 +1545,7 @@ public class KDrawerLayout extends ViewGroup {
 
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN: {
+                isMove = false;
                 final float x = ev.getX();
                 final float y = ev.getY();
                 mInitialMotionX = x;
@@ -1544,6 +1557,10 @@ public class KDrawerLayout extends ViewGroup {
                     isDownOpen = isDrawerOpen(Gravity.RIGHT);
                 }
                 break;
+            }
+
+            case MotionEvent.ACTION_MOVE: {
+                isMove = true;
             }
 
             case MotionEvent.ACTION_UP: {
@@ -1563,11 +1580,32 @@ public class KDrawerLayout extends ViewGroup {
                         }
                     }
                 }
+                //KLoggerUtils.INSTANCE.e("isDownOpen:\t" + isDownOpen + "\tpeekingOnly:\t" + peekingOnly + "\tisMove:\t" + isMove + "\tslideOffset:\t" + slideOffset);
                 if (isDownOpen) {//fixme 菜单打开了，才关闭。
-                    closeDrawers(peekingOnly);
+                    isDownOpen = isDrawerOpen(Gravity.LEFT);
+                    if (!isDownOpen) {
+                        isDownOpen = isDrawerOpen(Gravity.RIGHT);
+                    }
+                    //KLoggerUtils.INSTANCE.e("isDownOpen:\t" + isDownOpen + "\tpeekingOnly:\t" + peekingOnly + "\tisMove:\t" + isMove + "\tslideOffset:\t" + slideOffset+"\tdrawerView:\t"+drawerView);
+                    if (slideOffset < 0.9 && slideOffset > 0 && isDownOpen) {
+                        closeDrawers(peekingOnly);
+                    } else if (!isMove) {
+                        closeDrawers(peekingOnly);
+                    }
+                } else if (!isMove) {
+                    //KLoggerUtils.INSTANCE.e("isDownOpen2:\t" + isDownOpen + "\tpeekingOnly:\t" + peekingOnly + "\tisMove:\t" + isMove + "\tslideOffset:\t" + slideOffset+"\tdrawerView:\t"+drawerView);
+                    if (slideOffset < 0.5 && slideOffset > 0) {
+                        closeDrawers(true);//菜单没有打开，且没有滑动。则关闭。
+                    } else if (slideOffset >= 0.5 && drawerView != null) {
+                        openDrawer(drawerView);//打开。
+                        //fixme slideOffset是滑动比例（0~1）；drawerView是菜单View
+                    } else if (slideOffset == 0f || drawerView == null) {
+                        closeDrawers(true);
+                    }
                 }
                 //closeDrawers(peekingOnly);
                 mDisallowInterceptRequested = false;
+                isMove = false;
                 break;
             }
 
@@ -1585,8 +1623,8 @@ public class KDrawerLayout extends ViewGroup {
     @Override
     public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
         if (CHILDREN_DISALLOW_INTERCEPT
-                || (!mLeftDragger.isEdgeTouched(ViewDragHelper.EDGE_LEFT)
-                && !mRightDragger.isEdgeTouched(ViewDragHelper.EDGE_RIGHT))) {
+                || (!mLeftDragger.isEdgeTouched(KViewDragHelper.EDGE_LEFT)
+                && !mRightDragger.isEdgeTouched(KViewDragHelper.EDGE_RIGHT))) {
             // If we have an edge touch we want to skip this and track it for later instead.
             super.requestDisallowInterceptTouchEvent(disallowIntercept);
         }
@@ -2109,9 +2147,9 @@ public class KDrawerLayout extends ViewGroup {
         };
     }
 
-    private class ViewDragCallback extends ViewDragHelper.Callback {
+    private class ViewDragCallback extends KViewDragHelper.Callback {
         private final int mAbsGravity;
-        private ViewDragHelper mDragger;
+        private KViewDragHelper mDragger;
 
         private final Runnable mPeekRunnable = new Runnable() {
             @Override
@@ -2124,7 +2162,7 @@ public class KDrawerLayout extends ViewGroup {
             mAbsGravity = gravity;
         }
 
-        public void setDragger(ViewDragHelper dragger) {
+        public void setDragger(KViewDragHelper dragger) {
             mDragger = dragger;
         }
 
@@ -2135,7 +2173,7 @@ public class KDrawerLayout extends ViewGroup {
         @Override
         public boolean tryCaptureView(View child, int pointerId) {
             // Only capture views where the gravity matches what we're looking for.
-            // This lets us use two ViewDragHelpers, one for each side drawer.
+            // This lets us use two KViewDragHelpers, one for each side drawer.
             return isDrawerView(child) && checkDrawerViewAbsoluteGravity(child, mAbsGravity)
                     && getDrawerLockMode(child) == LOCK_MODE_UNLOCKED;
         }
@@ -2244,7 +2282,7 @@ public class KDrawerLayout extends ViewGroup {
         @Override
         public void onEdgeDragStarted(int edgeFlags, int pointerId) {
             final View toCapture;
-            if ((edgeFlags & ViewDragHelper.EDGE_LEFT) == ViewDragHelper.EDGE_LEFT) {
+            if ((edgeFlags & KViewDragHelper.EDGE_LEFT) == KViewDragHelper.EDGE_LEFT) {
                 toCapture = findDrawerWithGravity(Gravity.LEFT);
             } else {
                 toCapture = findDrawerWithGravity(Gravity.RIGHT);
@@ -2282,7 +2320,7 @@ public class KDrawerLayout extends ViewGroup {
         private static final int FLAG_IS_CLOSING = 0x4;
 
         public int gravity = Gravity.NO_GRAVITY;
-        float onScreen;
+        private float onScreen;
         boolean isPeeking;
         int openState;
 
