@@ -101,7 +101,7 @@ open class KCaptureActivity : CaptureActivity() {
                 }
                 gravity = Gravity.CENTER
                 textColor = Color.WHITE
-                textSize = kpx.textSizeX(38)
+                textSize = kpx.textSizeX(38,false)
                 if (CameraManager.get().judgeLight()) {
                     //开灯
                     text = getString(R.string.kguangding)//"关灯"

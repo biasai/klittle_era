@@ -278,6 +278,10 @@ object KStringUtils {
         return null
     }
 
+    fun decimalString(str: Float, num: Int = 2): String? {
+        return decimalString(str.toString(), num)
+    }
+
     fun decimalString(str: String?, num: Int = 2): String? {
         return decimalString(str, num, true, false)
     }

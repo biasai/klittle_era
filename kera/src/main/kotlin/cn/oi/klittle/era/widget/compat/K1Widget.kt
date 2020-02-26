@@ -1043,6 +1043,11 @@ open class K1Widget : K0Widget {
                 //removeTextChangedListener(textWatcher)
                 //setText(null)
 
+                if (onGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
+                    viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+                }
+                onGlobalLayoutListener = null
+
                 clearAnimation()
                 clearFocus()
                 clearFindViewByIdCache()

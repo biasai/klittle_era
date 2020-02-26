@@ -127,7 +127,7 @@ open class KToolbar {
 
         //标题栏字体大小
         fun getTextSize(): Float {
-            return kpx.textSizeY(32)
+            return kpx.textSizeY(32,false)
         }
 
         //获取标题栏默认字体颜色

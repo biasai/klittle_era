@@ -44,7 +44,7 @@ open class KPhotoUi : KBaseUi() {
                     }
                     titleTextView?.apply {
                         textColor = Color.WHITE
-                        textSize = kpx.textSizeX(32)
+                        textSize = kpx.textSizeX(32,false)
                         gravity = Gravity.LEFT or Gravity.CENTER_VERTICAL
                         autoBg {
                             width = kpx.x(35)
@@ -63,7 +63,7 @@ open class KPhotoUi : KBaseUi() {
 //                    rightTextView?.apply {
 //                        text = KBaseUi.Companion.getString(R.string.kcancel)//取消
 //                        textColor = Color.WHITE
-//                        textSize = kpx.textSizeX(28)
+//                        textSize = kpx.textSizeX(28,false)
 //                        onClick {
 //                            getActivity()?.finish()
 //                        }
@@ -86,7 +86,7 @@ open class KPhotoUi : KBaseUi() {
                         preview = ktextView {
                             text = KBaseUi.Companion.getString(R.string.kpreview)//预览
                             txt {
-                                textSize = kpx.textSizeX(28)
+                                textSize = kpx.textSizeX(28,false)
                                 textColor = Color.parseColor("#9B9B9B")
                             }
                             txt_selected {
@@ -101,7 +101,7 @@ open class KPhotoUi : KBaseUi() {
                             id = kpx.id("kcomplete")
                             txt {
                                 text = KBaseUi.Companion.getString(R.string.kchoose_photo)//请选择
-                                textSize = kpx.textSizeX(28)
+                                textSize = kpx.textSizeX(28,false)
                                 textColor = Color.parseColor("#9B9B9B")
                             }
                             txt_selected {
@@ -121,7 +121,7 @@ open class KPhotoUi : KBaseUi() {
                         num = ktextView {
                             backgroundColor = Color.parseColor("#FA632D")
                             textColor = Color.WHITE
-                            textSize = kpx.textSizeX(24)
+                            textSize = kpx.textSizeX(24,false)
                             gravity = Gravity.CENTER
                             radius {
                                 all_radius(kpx.x(200))

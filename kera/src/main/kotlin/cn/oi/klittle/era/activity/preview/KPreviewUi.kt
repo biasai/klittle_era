@@ -80,7 +80,7 @@ open class KPreviewUi : KBaseUi() {
                     }
                     titleTextView?.apply {
                         textColor = Color.WHITE
-                        textSize = kpx.textSizeX(32)
+                        textSize = kpx.textSizeX(32,false)
                         gravity = Gravity.CENTER
                     }
                     rightTextView?.apply {
@@ -108,7 +108,7 @@ open class KPreviewUi : KBaseUi() {
                             }
                             txt_selected {
                                 textColor = Color.WHITE
-                                textSize = kpx.textSizeX(26f)
+                                textSize = kpx.textSizeX(26f,false)
                             }
                             initRightTextView(this)//防止初始化的时候为空，所以最好还是传参进去。
                             onClick {
@@ -190,7 +190,7 @@ open class KPreviewUi : KBaseUi() {
                             num = ktextView {
                                 backgroundColor = Color.parseColor("#FA632D")
                                 textColor = Color.WHITE
-                                textSize = kpx.textSizeX(24)
+                                textSize = kpx.textSizeX(24,false)
                                 gravity = Gravity.CENTER
                                 radius {
                                     all_radius(kpx.x(200))
@@ -206,7 +206,7 @@ open class KPreviewUi : KBaseUi() {
                                 id = kpx.id("kcomplete")
                                 txt {
                                     text = KBaseUi.Companion.getString(R.string.kchoose_photo)//请选择
-                                    textSize = kpx.textSizeX(28)
+                                    textSize = kpx.textSizeX(28,false)
                                     textColor = Color.parseColor("#9B9B9B")
                                 }
                                 txt_selected {

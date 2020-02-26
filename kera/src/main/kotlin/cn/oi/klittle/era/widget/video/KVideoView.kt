@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.widget.video
 
+import android.app.Activity
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
@@ -10,29 +11,51 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.custom.async
 import org.jetbrains.anko.runOnUiThread
+import java.util.concurrent.TimeUnit
 
-//                                        setVideoPath(path)//加载本地视频，同样也支持网络视频。如果字符串是网络url，同样可以播放。
-//                                        //在视频预处理完成后被调用。
-//                                        setOnPreparedListener {
-//                                            start()
-//                                            pause()//立即播放和暂停（这样画面会停留在第一帧）；如果不播放整个控件的画面就是黑的。什么都没有
-//                                        }
+//                   setVideoPath(path)//加载本地视频，同样也支持网络视频。如果字符串是网络url，同样可以播放。
+//                   //在视频预处理完成后被调用。
+//                   setOnPreparedListener {
+//                      start()
+//                      pause()//立即播放和暂停（这样画面会停留在第一帧）；如果不播放整个控件的画面就是黑的。什么都没有
+//                    }
 
 //                    var path = "/storage/emulated/0/tencent/MicroMsg/WeiXin/1576322118470.mp4"
 //                    prepare(path) {
-//                        //预加载完成,默认会自动播放
+//                       //预加载完成,默认会自动播放
 //                    }
 
-//                                            //播放完成（画面会停留在最后一帧）
-//                                            setOnCompletionListener {
-//                                            }
+//                   //播放完成（画面会停留在最后一帧）
+//                   setOnCompletionListener {
+//                   }
 
-//                                            setOnErrorListener { mp, what, extra ->
-//                                                //播放错误监听
-//                                                true
-//                                            }
+//                   setOnErrorListener { mp, what, extra ->
+//                     //播放错误监听
+//                     true
+//                   }
+
+//                    //播放进度监听(回调在ui主线程中)
+//                    onSeekListener {
+//                        //process 播放进度（0~1）
+//                        //getProcessPercent()播放进度百分比
+//                        //currentPosition 当前播放时间，duration视频播放总时间；单位都是毫秒。duration为-1表示没有视频资源。
+//                    }
+
+//                    fixme 常用方法
+//                    start()//播放(暂停之后，会继续播放)
+//                    pause()//暂停
+//                    toggle()//播放暂停；切换
+//                    resume()//重新播放（从第一帧开始播放，不是继续播放）；
+//                    seekTo()//跳转到指定播放时间
+//                    onSeekTo{}//seekTo()调用之后，会回调。
+//                    isPlaying//判断是否正在播放
+//                    path//当前视频播放路径
+//                    suspend()资源释放
+//                    getCurrentPositionTimeParse()//当前播放时间，毫秒转分钟格式：00:00
+//                    getDurationTimeParse()//视频总时长，转分钟格式：00:00
 
 /**
  * 重写视频播放器；添加播放和暂停的监听；原生的没有。（原生的只有播放完成，播放错误监听。）
@@ -155,6 +178,7 @@ class KVideoView : VideoView {
             onStart?.let {
                 it()
             }
+            restartOnSeekListener()//防止进度回调死掉
         }
         isResume = false
     }
@@ -203,39 +227,122 @@ class KVideoView : VideoView {
         this.onSeekTo = onSeekTo
     }
 
-    //获取当前的播放时长
-    fun getCurrentPositionForTime(): String {
+    //获取当前的播放时长; 毫秒转分钟格式。如： 00:00
+    fun getCurrentPositionTimeParse(): String {
         //currentPosition当前的播放时长，单位毫秒;fixme currentPosition初始值一般是0
-        return KStringUtils.stringForTime(currentPosition)//转换为时间格式
+        return KStringUtils.stringForTime(currentPosition)//转换为时间格式 fixme currentPosition 单位毫秒
     }
 
     //获取视频总时长
-    fun getDurationForTime(): String {
+    fun getDurationTimeParse(): String {
         //duration视频总时长;如：00:13 ；fixme duration初始值是-1(没有视频时)
-        return KStringUtils.stringForTime(duration)//转换为时间格式
+        return KStringUtils.stringForTime(duration)//转换为时间格式;fixme duration 单位毫秒
     }
 
-    var onSeekListener: ((progress: Float) -> Unit)? = null//进度回调
+
+    var onSeekListener: (() -> Unit)? = null//进度回调
     private var isProgress: Boolean = false//是否正在刷新进度
     private var job: Deferred<Any?>? = null
-    fun onSeekListener(onSeekListener: ((progress: Float) -> Unit)? = null) {
-        this.onSeekListener = onSeekListener
-//        if (!isProgress) {
-//            isProgress = true
-//            job?.cancel()//取消协程
-//            job = kotlinx.coroutines.experimental.async {
-//                when (isProgress) {
-//
-//                }
-//                job = null//协程结束
-//            }
-//        }
+    var process: Float = 0F//播放进度(0~1)
+    private var preProcess = -1f//记录上一次的播放进度
+
+    override fun getCurrentPosition(): Int {
+        super.getCurrentPosition()?.let {
+            if (duration > 0 && it == 100) {//fixme 修复播放完毕之后，currentPosition会变成100的Bug。
+                return duration
+            } else {
+                return it
+            }
+        }
     }
 
-    //重写，释放所有资源
+    /**
+     * 获取播放进度，百分比。
+     * @param keep 百分比，小数点后的个数。
+     */
+    open fun getProcessPercent(keep: Int = 2): String {
+        if (currentPosition <= 0 && duration <= 0) {
+            return "0%"
+        } else if ((currentPosition == 100 && duration > 0) || currentPosition == duration) {//播放完成之后，currentPosition自动变成了100；这是给Bug
+            return "100%"
+        } else {
+            return KStringUtils.getPercent(currentPosition.toLong(), duration.toLong(), keep)
+        }
+    }
+
+    //防止进度回调死掉；在start()里调用了。
+    private fun restartOnSeekListener() {
+        onSeekListener?.let {
+            job?.let {
+                if (isProgress) {
+                    //KLoggerUtils.e("isActive:\t" + job?.isActive + "\tisCompleted:\t" + job?.isCompleted + "\tisCancelled:\t" + job?.isCancelled)
+                    if (!it.isActive && !it.isCancelled && !it.isCompleted) {
+                        onSeekListener(this.onSeekListener)
+                    }
+                }
+            }
+        }
+    }
+
+    fun onSeekListener(onSeekListener: (() -> Unit)? = null) {
+        this.onSeekListener = onSeekListener
+        preProcess = -1f;
+        if (onSeekListener == null) {
+            job?.cancel()
+            job = null
+            isProgress = false
+        } else if (!isProgress || job == null || job?.isActive == false) {
+            isProgress = true
+            job?.cancel()//取消协程
+            job = kotlinx.coroutines.experimental.async {
+                while (isProgress) {
+                    if (!isFinish()) {
+                        if (currentPosition >= 0 && duration > 0) {
+                            process = currentPosition.toFloat() / duration.toFloat()
+                        } else {
+                            process = 0f
+                        }
+                        this@KVideoView?.context?.let {
+                            if (it is Activity) {
+                                if (!it.isFinishing) {
+                                    if (preProcess != process) {
+                                        preProcess = process//防止重复回调。
+                                        it.runOnUiThread {
+                                            this@KVideoView.onSeekListener?.let {
+                                                it()//进度在主线程中回调。
+                                            }
+                                        }
+                                    }
+                                    delay(500, TimeUnit.MILLISECONDS)//500毫秒循环回调一次；1000毫秒是一秒。
+                                }
+                            }
+                        }
+                    } else {
+                        isProgress = false
+                    }
+                }
+                job = null//协程结束
+            }
+        }
+    }
+
+    //判断Activity是否销毁;true已经销毁，false没有销毁
+    private fun isFinish(): Boolean {
+        if (!isDestory) {
+            context?.let {
+                if (it is Activity) {
+                    if (!it.isFinishing) {
+                        return false
+                    }
+                }
+            }
+        }
+        return true
+    }
+
+    //重写，释放所有资源；系统会时不时的自动释放。不要在这里置空任何对象。
     override fun suspend() {
         try {
-            this.path=null
             super.suspend()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -243,9 +350,11 @@ class KVideoView : VideoView {
         }
     }
 
+    var isDestory = false//判断是否销毁
     //销毁
     fun onDestory() {
         try {
+            isDestory = true
             setOnClickListener(null)
             setOnTouchListener(null)
             setOnCompletionListener(null)
@@ -260,6 +369,7 @@ class KVideoView : VideoView {
             job = null
             onSeekListener = null
             isProgress = false
+            onSeekListener(null)
             suspend()
         } catch (e: Exception) {
             e.printStackTrace()

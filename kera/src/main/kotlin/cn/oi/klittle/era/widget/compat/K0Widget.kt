@@ -3,9 +3,11 @@ package cn.oi.klittle.era.widget.compat
 import android.content.Context
 import android.graphics.*
 import android.media.MediaPlayer
+import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.TextView
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
@@ -44,11 +46,19 @@ open class K0Widget : TextView {
     }
 
     private var isGone = false//判断是否执行过
+    var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    fun onGlobalLayoutListener(gone: (() -> Unit)? = null) {
+        mGone(gone)
+    }
+
     //fixme gone布局加载完成之后调用，只调用一次。（addOnGlobalLayoutListener可能执行多次。）
     fun mGone(gone: (() -> Unit)? = null) {
         if (gone != null) {
             //fixme viewTreeObserver?.addOnGlobalLayoutListener可以多次添加，互不影响(亲测)
-            viewTreeObserver?.addOnGlobalLayoutListener {
+            if (onGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
+                viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+            }
+            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
                 //宽和高不能为空，要返回具体的值。
                 if (width > 0 && height > 0) {
                     //防止多次重复调用，只执行一次
@@ -60,6 +70,12 @@ open class K0Widget : TextView {
                     }
                 }
             }
+            viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener)
+        } else {
+            if (onGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
+                viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+            }
+            onGlobalLayoutListener = null
         }
     }
 

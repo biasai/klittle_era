@@ -107,7 +107,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                             }
                             txt_selected {
                                 textColor = Color.WHITE
-                                textSize = kpx.textSizeX(26f)
+                                textSize = kpx.textSizeX(26f,false)
                             }
                             gravity = Gravity.CENTER
                         }.lparams {
@@ -121,7 +121,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                             id = kpx.id("item_right_bottom")
                             text = "GIF"
                             textColor = Color.WHITE
-                            textSize = kpx.textSizeX(32)
+                            textSize = kpx.textSizeX(32,false)
                             //backgroundColor = Color.parseColor("#60000000")//不要背景色，感觉添加了背景不好看。
                             gravity = Gravity.CENTER
                             leftPadding = kpx.x(8)
@@ -157,7 +157,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                                 bottomPadding = autoTopPadding.toInt()
                             }
                             textColor = Color.WHITE
-                            textSize = kpx.textSizeX(28)
+                            textSize = kpx.textSizeX(28,false)
                             text = KBaseUi.getString(R.string.kcamera)//拍摄
                             gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
                         }.lparams {
