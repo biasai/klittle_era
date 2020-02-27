@@ -114,7 +114,11 @@ open class KMediaController {
                     setOnSeekBarChangeListener { previousProgress, currentProgress, isActionUp, progressX, progressY ->
                         //KLoggerUtils.e("previousProgress:\t"+previousProgress+"\tcurrentProgress:\t"+currentProgress+"\tisActionUp:\t"+isActionUp)
                         if (!isActionUp){
-                            videoView?.seekTo(currentProgress)
+                            //手指触摸时
+                            videoView?.let {
+                                videoView?.seekTo(currentProgress)
+                            }
+
                         }
                     }
                 }.lparams {
