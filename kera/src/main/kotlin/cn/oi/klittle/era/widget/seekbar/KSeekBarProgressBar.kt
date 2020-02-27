@@ -55,21 +55,21 @@ import cn.oi.klittle.era.widget.compat.KView
  */
 class KSeekBarProgressBar : KView, View.OnTouchListener {
     var isEnableSeekbarTouch = true//是否开启seekbar触摸事件。默认开启
-    private var isACTION_UP = false//手指是否离开
+    private var isACTION_UP = true//手指是否离开(初始值手指肯定是离开的。)
     private var previousProgress: Float = 0f
 
-    private var isTouch:Boolean=false
+    private var isTouch: Boolean = false
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         event?.let {
-            if (it.action==MotionEvent.ACTION_DOWN){
-                isTouch=true
+            if (it.action == MotionEvent.ACTION_DOWN) {
+                isTouch = true
                 KBounceScrollView.isChildScoll = true//fixme  解决scrollView的滑动冲突
-            }else if (it.action==MotionEvent.ACTION_UP){
+            } else if (it.action == MotionEvent.ACTION_UP) {
                 KBounceScrollView.isChildScoll = false
-                isTouch=false
+                isTouch = false
             }
         }
-        if (!isEnableSeekbarTouch||!isTouch) {
+        if (!isEnableSeekbarTouch || !isTouch) {
             isACTION_UP = true
             return false
         }
@@ -187,7 +187,7 @@ class KSeekBarProgressBar : KView, View.OnTouchListener {
     }
 
     fun src(block: KProgressbar_dst_src_Entity.() -> Unit): KSeekBarProgressBar {
-        if (dst != null) {
+        if (dst != null && src == null) {
             src = dst?.copy()
         }
         if (src == null) {

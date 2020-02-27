@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 //                       //预加载完成,默认会自动播放
 //                    }
 
-//                   //播放完成（画面会停留在最后一帧）
+//                   //播放完成（画面会停留在最后一帧）;fixme 循环播放时，不会回调。不循环播放时，播放完成时才会回调。
 //                   setOnCompletionListener {
 //                   }
 
@@ -49,13 +49,16 @@ import java.util.concurrent.TimeUnit
 //                    pause()//暂停
 //                    toggle()//播放暂停；切换
 //                    resume()//重新播放（从第一帧开始播放，不是继续播放）；
-//                    seekTo()//跳转到指定播放时间
+//                    seekTo()//跳转到指定播放时间(视频会自动播放)
 //                    onSeekTo{}//seekTo()调用之后，会回调。
 //                    isPlaying//判断是否正在播放
 //                    path//当前视频播放路径
-//                    suspend()资源释放
+//                    suspend()资源释放，将VideoView所占用的视频资源释放掉
 //                    getCurrentPositionTimeParse()//当前播放时间，毫秒转分钟格式：00:00
 //                    getDurationTimeParse()//视频总时长，转分钟格式：00:00
+//                    setVolume()//设置音量
+//                    setLooping(true)//循环播放
+//                    isLooping()//判断是否循环播放
 
 /**
  * 重写视频播放器；添加播放和暂停的监听；原生的没有。（原生的只有播放完成，播放错误监听。）
@@ -81,7 +84,7 @@ class KVideoView : VideoView {
     }
 
     //mediaPlayer?.isLooping=false//fixme 是否循环播放
-    var mediaPlayer: MediaPlayer? = null
+    var mediaPlayer: MediaPlayer? = null//fixme videoView内部封装的就是一个mediaPlayer。
     var path: String? = null//当前的播放视频路径
     /**
      * 准备播放，并且画面停留在第一帧。fixme 播放完成之后，画面会停留在最后一帧。
@@ -108,6 +111,8 @@ class KVideoView : VideoView {
                 //在视频预处理完成后被调用。
                 setOnPreparedListener {
                     mediaPlayer = it//fixme 每次返回都是一个新的MediaPlayer对象；所以需要重新赋值。
+                    setVolume()//设置音量
+                    setLooping()//是否循环播放
                     mediaPlayer?.setOnSeekCompleteListener {
                         //seekTo 方法完成时的回调
                         start()//跳转到指定播放时间之后，立即自动播放；fixme 同时解决，视频播放时间不准确的问题。
@@ -130,6 +135,7 @@ class KVideoView : VideoView {
                                     e.printStackTrace()
                                 }
                             }
+                            kMediaController?.updateView()
                         }
                     }
                 }
@@ -178,7 +184,8 @@ class KVideoView : VideoView {
             onStart?.let {
                 it()
             }
-            restartOnSeekListener()//防止进度回调死掉
+            reStartOnSeekListener()//防止进度回调死掉
+            kMediaController?.updateView()
         }
         isResume = false
     }
@@ -191,6 +198,7 @@ class KVideoView : VideoView {
         onResume?.let {
             it()
         }
+        kMediaController?.updateView()
     }
 
     //暂停
@@ -199,6 +207,7 @@ class KVideoView : VideoView {
         onPause?.let {
             it()
         }
+        kMediaController?.updateView()
     }
 
     //fixme isPlaying判断是否正在播放;true正在播放；false没有播放
@@ -217,7 +226,63 @@ class KVideoView : VideoView {
         //fixme msec小于0；内部会默认作为0处理
         //fixme msec大于等于duration;视频播放时，不会立即播放尾帧。而是倒退一两秒播放。(亲测)
         //fixme seek只能seek到关键帧，否则无法播放，如91800的位置不是关键帧，所以会往前找，直到找到关键帧，87000(假设)应该就是关键帧的位置了。
-        super.seekTo(msec)
+        super.seekTo(msec)//fixme =================跳转该时间进行播放，如果视频是暂停的。会自动播放。======================
+    }
+
+    /**
+     * 跳转道指定进度
+     * @param process 进度(0~1f)
+     */
+    fun seekTo(process: Float) {
+        seekTo((duration * process).toInt())
+    }
+
+    private var leftVolume: Float? = null
+    private var rightVolume: Float? = null
+    /**
+     * 控制音量，左声道和有声道（范围0~1）
+     */
+    fun setVolume(leftVolume: Float? = this.leftVolume, rightVolume: Float? = this.rightVolume) {
+        if (leftVolume != null && rightVolume != null) {
+            this.leftVolume = leftVolume
+            this.rightVolume = rightVolume
+            this.leftVolume?.let {
+                if (it > 1f) {
+                    this.leftVolume = 1f
+                }
+                if (it < 0f) {
+                    this.leftVolume = 0f
+                }
+            }
+            this.rightVolume?.let {
+                if (it > 1f) {
+                    this.rightVolume = 1f
+                }
+                if (it < 0f) {
+                    this.rightVolume = 0f
+                }
+            }
+            mediaPlayer?.setVolume(this.leftVolume!!, this.rightVolume!!)
+        }
+    }
+
+    private var isLooping: Boolean = false
+
+    //判断是否循环播放
+    fun isLooping(): Boolean {
+        return isLooping
+    }
+
+    /**
+     * 是否循环播放；(亲测有效)
+     * @param isLooping true循环播放；false不循环播放。
+     */
+    fun setLooping(isLooping: Boolean = this.isLooping) {
+        this.isLooping = isLooping
+        mediaPlayer?.isLooping = this.isLooping
+        if (isLooping && currentPosition == duration) {
+            start()//播放完成。则自动播放一下。
+        }
     }
 
     //seekTo回调
@@ -271,7 +336,7 @@ class KVideoView : VideoView {
     }
 
     //防止进度回调死掉；在start()里调用了。
-    private fun restartOnSeekListener() {
+    private fun reStartOnSeekListener() {
         onSeekListener?.let {
             job?.let {
                 if (isProgress) {
@@ -282,6 +347,13 @@ class KVideoView : VideoView {
                 }
             }
         }
+    }
+
+    var kMediaController: KMediaController? = null
+
+    fun setMediaController(kMediaController: KMediaController) {
+        this.kMediaController = kMediaController
+        onSeekListener {}
     }
 
     fun onSeekListener(onSeekListener: (() -> Unit)? = null) {
@@ -308,12 +380,13 @@ class KVideoView : VideoView {
                                     if (preProcess != process) {
                                         preProcess = process//防止重复回调。
                                         it.runOnUiThread {
+                                            kMediaController?.updateView()
                                             this@KVideoView.onSeekListener?.let {
                                                 it()//进度在主线程中回调。
                                             }
                                         }
                                     }
-                                    delay(500, TimeUnit.MILLISECONDS)//500毫秒循环回调一次；1000毫秒是一秒。
+                                    delay(300, TimeUnit.MILLISECONDS)//1000毫秒是一秒。
                                 }
                             }
                         }
