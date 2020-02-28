@@ -45,6 +45,11 @@ import cn.oi.klittle.era.widget.compat.KView
 //                }
 //                setOnSeekBarChangeListener { previousProgress, currentProgress, isActionUp, progressX, progressY ->
 //                }
+//               //fixme 滑动监听
+//                    onTouchListener { progress, isActionDown, isActionUp ->
+//                        //progress 当前进度；isActionDown手指是否按下；isActionUp手指是否离开
+//                    }
+
 //            }.lparams {
 //                width = kpx.x(700)
 //                height = kpx.x(113)
@@ -59,14 +64,30 @@ class KSeekBarProgressBar : KView, View.OnTouchListener {
     private var previousProgress: Float = 0f
 
     private var isTouch: Boolean = false
+    private var isActionDown: Boolean = false
+    private var onTouchListener: ((progress: Float, isActionDown: Boolean, isActionUp: Boolean) -> Unit)? = null
+    /**
+     * 手指离开时，监听。返回当前进度(0~1)。
+     */
+    fun onTouchListener(onTouchUpListener: ((progress: Float, isActionDown: Boolean, isActionUp: Boolean) -> Unit)? = null) {
+        this.onTouchListener = onTouchUpListener
+    }
+
     override fun onTouch(v: View?, event: MotionEvent?): Boolean {
         event?.let {
             if (it.action == MotionEvent.ACTION_DOWN) {
                 isTouch = true
+                isActionDown = true
                 KBounceScrollView.isChildScoll = true//fixme  解决scrollView的滑动冲突
             } else if (it.action == MotionEvent.ACTION_UP) {
                 KBounceScrollView.isChildScoll = false
                 isTouch = false
+                onTouchListener?.let {
+                    it(progress, false, true)
+                }
+                isActionDown = false
+            } else {
+                isActionDown = false
             }
         }
         if (!isEnableSeekbarTouch || !isTouch) {
@@ -97,6 +118,9 @@ class KSeekBarProgressBar : KView, View.OnTouchListener {
             }
             if (p != progress || it.action == MotionEvent.ACTION_UP) {
                 progress = p
+            }
+            onTouchListener?.let {
+                it(progress, isActionDown, false)
             }
         }
         return true
@@ -366,6 +390,7 @@ class KSeekBarProgressBar : KView, View.OnTouchListener {
         super.onDestroy()
         onSeekBarChangeListener = null
         drawThumb = null
+        onTouchListener = null
     }
 
 }
