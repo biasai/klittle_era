@@ -8,6 +8,7 @@ import android.widget.RelativeLayout
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseUi.Companion.kview
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.compat.KView
 import cn.oi.klittle.era.widget.seekbar.KSeekBarProgressBar
@@ -29,7 +30,7 @@ open class KMediaController {
     var duration: KTextView? = null//视频总时长
 
     //播放活暂停
-    fun play() {
+    open fun play() {
         play?.apply {
             videoView?.toggle()
             videoView?.isPlaying?.let {
@@ -39,7 +40,7 @@ open class KMediaController {
     }
 
     //videoView视频播放会刷选该方法。
-    fun updateView() {
+    open fun updateView() {
         videoView?.context?.let {
             if (it is Activity) {
                 if (!it.isFinishing) {
@@ -64,6 +65,19 @@ open class KMediaController {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
+                    }
+                }
+            }
+        }
+    }
+
+    //全屏
+    open fun screen(){
+        videoView?.let {
+            it.context?.let {
+                if (it is Activity){
+                    if (!it.isFinishing){
+                        KUiHelper.goScreenVideoActivity(it,videoView?.path)
                     }
                 }
             }
@@ -172,6 +186,9 @@ open class KMediaController {
                             width = kpx.x(64) / 2
                             height = kpx.x(64) / 2
                             autoBg(R.mipmap.kera_media_screen_)
+                        }
+                        onClick {
+                            screen()
                         }
                     }.lparams {
                         width = kpx.x(64)

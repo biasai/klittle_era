@@ -78,10 +78,19 @@
         <!-- </provider> -->
         <!-- android:name="android.support.v4.content.FileProvider" -->
         <!-- android:authorities="${applicationId}.kera.provider" fixme 这个是一个身份标志，每个provider的authorities都不能重复相同，防止冲突。 -->
+        <!--铃声-->
         <activity
             android:name=".activity.ringtone.KRingtoneActivity"
             android:launchMode="singleTop"
             android:theme="@style/KTheme_Activity_hasStatus" />
+        <!--视频全屏播放-->
+        <activity
+            android:name=".activity.video.KScreenVideoActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/KTheme_Activity_full" />
+
         <provider
             android:name=".provider.KFileProvider"
             android:authorities="${applicationId}.kera.provider"

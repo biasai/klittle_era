@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
+import cn.oi.klittle.era.activity.video.KScreenVideoActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
@@ -164,6 +165,21 @@ object KUiHelper {
     fun goRingtoneActivity(nowActivity: Activity? = getActivity()) {
         try {
             goActivity(KRingtoneActivity::class.java, nowActivity)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val videoPath_key = "videoPath"
+    /**
+     * 跳转到 视频全屏播放界面
+     * @param videoPath 视频播放路径（本地和网络都可以）
+     */
+    fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), videoPath: String?) {
+        try {
+            var bundle = Bundle()
+            bundle.putString(videoPath_key, videoPath)
+            goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
         } catch (e: Exception) {
             e.printStackTrace()
         }
