@@ -193,12 +193,20 @@ open class K2GestureWidget : K2AnimeWidget {
 
             }
             gestureDetectorCompat = GestureDetectorCompat(context, simpleOnGestureListener)
-            onTouch { v, event ->
+//            onTouch { v, event ->
+//                try {
+//                    gestureDetectorCompat?.onTouchEvent(event)//fixme 添加手势
+//                } catch (e: Exception) {
+//                    e.printStackTrace()
+//                }
+//            }
+            setOnTouchListener { v, event ->
                 try {
                     gestureDetectorCompat?.onTouchEvent(event)//fixme 添加手势
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
+                true
             }
         }
 

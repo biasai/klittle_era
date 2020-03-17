@@ -90,7 +90,7 @@
             android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/KTheme_Activity_full" />
-
+        <!-- android:configChanges="orientation|keyboardHidden|screenSize"-->
         <provider
             android:name=".provider.KFileProvider"
             android:authorities="${applicationId}.kera.provider"

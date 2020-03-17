@@ -30,6 +30,14 @@ import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.act
 import java.util.concurrent.TimeUnit
 
+// fixme 如果在清單xml设置了Activity横屏，android:screenOrientation="landscape"；则以下方法重寫一定要设置false不然会异常。
+//override fun isOrientation(): Boolean {
+//    return false
+//}
+//
+//override fun isPortrait(): Boolean {
+//    return false
+//}
 
 /**
  * Created by 彭治铭 on 2018/6/24.
@@ -90,7 +98,7 @@ open class KBaseActivity : FragmentActivity() {
 
 
     open fun isPortrait(): Boolean {
-        return true//是否竖屏。默认就是竖屏。
+        return true//fixme 是否竖屏。默认就是竖屏。
     }
 
     //fixme 是否进行切屏(横屏和竖屏的转换,只在onCreate()里面做了判断)

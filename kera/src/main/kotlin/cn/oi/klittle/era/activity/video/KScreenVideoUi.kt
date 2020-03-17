@@ -8,8 +8,12 @@ import org.jetbrains.anko.*
 
 class KScreenVideoUi : KBaseUi() {
 
+    var view:View?=null
     override fun createView(ctx: Context?): View? {
-        return ctx?.UI {
+        view?.let {
+            return it
+        }
+        view= ctx?.UI {
             verticalLayout {
                 backgroundColor = Color.WHITE
                 button {
@@ -17,5 +21,6 @@ class KScreenVideoUi : KBaseUi() {
                 }
             }
         }?.view
+        return view
     }
 }
