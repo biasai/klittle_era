@@ -15,6 +15,7 @@ import android.widget.Scroller;
 
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.widget.compat.K3DragMotionEventWidget;
 import cn.oi.klittle.era.widget.viewpager.KViewPager;
 
@@ -263,12 +264,22 @@ public class KBaseSlideLayout extends FrameLayout {
 
     @Override
     public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            scrollTo(mScroller.getCurrX(), 0);
-            postInvalidate();
-        } else if (-getScrollX() >= getWidth()) {
-            mActivity.finish();
-            mActivity.overridePendingTransition(0, 0);//滑动关闭原始动画效果(finish后面调用的会之前的动画设置，亲测有效!)。
+        try {
+            if (mScroller.computeScrollOffset()) {
+                scrollTo(mScroller.getCurrX(), 0);
+                postInvalidate();
+            } else if (-getScrollX() >= getWidth()) {
+                mActivity.finish();
+                //activity调用了finishi()里的super.finish()；isFinishing才会为true
+                if (mActivity.isFinishing()) {
+                    mActivity.overridePendingTransition(0, 0);//滑动关闭原始动画效果(finish后面调用的会之前的动画设置，亲测有效!)。
+                } else {
+                    //未关闭，界面恢复。亲测正常有效。
+                    scrollBack();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
