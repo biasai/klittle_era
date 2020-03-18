@@ -1,10 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    ext.kotlin_version = '1.3.50'//'1.3.50' //'1.2.71'//'1.3.21' 引用连接错误；'1.2.71'亲测可行。gradle5.4之後，最低也需要1.3之後的版本。
-    // '1.2.61',目前使用的是 '1.2.71'  fixme 注意這裡，每次更新的時候。這是都会脑抽的发生改变（导致编译错误）。注意一哈。
+    ext.kotlin_version = '1.3.50'
+    //'1.3.50' //'1.2.71'//'1.3.21' 引用连接错误；'1.2.71'亲测可行。gradle5.4之後，最低也需要1.3之後的版本。
+    // '1.2.61',目前使用的是 '1.2.71'  fixme 注意這裡，每次更新的時候。這是都会脑抽的发生改变（导致编译错误）。注意一哈。'1.2.71'保留了kotlin-stdlib-jre7；高版本都是kotlin-stdlib-jdk7
     //ext.kotlin_version = '1.2.30'
     repositories {
+        //放在google()和jcenter()的前面，顺序不要错。修复Cause: unable to find valid certification path to requested target认证错误。多运行几次，一般都是网络问题。
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         google()
         jcenter()
         mavenCentral()//Java-WebSocket 来自这个库
@@ -12,7 +15,7 @@ buildscript {
             url 'https://maven.google.com/'
             name 'Google'
         }
-        maven {url 'https://dl.bintray.com/kotlin/kotlin-eap'}
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.5.3'
@@ -29,6 +32,8 @@ buildscript {
 
 allprojects {
     repositories {
+        //放在google()和jcenter()的前面，顺序不要错。
+        maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
         google()
         jcenter()
         mavenCentral()
@@ -40,7 +45,7 @@ allprojects {
             url 'https://maven.google.com/'
             name 'Google'
         }
-        maven {url 'https://dl.bintray.com/kotlin/kotlin-eap'}
+        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
     }
     //解决android support包找不到问题
     tasks.withType(Javadoc).all { enabled = false }

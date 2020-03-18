@@ -89,7 +89,7 @@ dependencies {
     api 'com.android.support.constraint:constraint-layout:1.1.0'
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
-    //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
+    //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"//将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
     //协程
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
