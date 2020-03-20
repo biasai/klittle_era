@@ -308,7 +308,7 @@ open class KRecyclerView : RecyclerView {
     //adapter 适配器
 
     /**
-     * 设置网格布局管理器；fixme 需要手动调用
+     * 设置网格布局管理器；fixme 需要手动调用，捕捉修复适配器下标异常错误问题！！KLinearLayoutManager捕捉了异常。
      * @param spanCount 每行网格的个数（列数）
      */
     open fun setGridLayoutManager(spanCount: Int) {
@@ -326,7 +326,7 @@ open class KRecyclerView : RecyclerView {
     }
 
     /**
-     * 设置线行布局管理器；fixme 需要手动调用
+     * 设置线行布局管理器；fixme 需要手动调用，捕捉修复适配器下标异常错误问题！！KLinearLayoutManager捕捉了异常。
      * @param isVertical 是否垂直；fixme 默认就是垂直。是true
      */
     open fun setLinearLayoutManager(isVertical: Boolean = true) {
