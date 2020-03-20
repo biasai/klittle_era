@@ -10,6 +10,8 @@ import android.support.v7.widget.RecyclerView
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import cn.oi.klittle.era.exception.KCatchException
+import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
@@ -199,7 +201,7 @@ open class KRecyclerView : RecyclerView {
      * fixme 滑动置顶(亲测有效)
      */
     fun scrollToTop() {
-        if (adapter==null||layoutManager==null){
+        if (adapter == null || layoutManager == null) {
             return
         }
         try {
@@ -243,7 +245,7 @@ open class KRecyclerView : RecyclerView {
      * @param offset 偏移量
      */
     fun scrollToPositionWithOffset(position: Int, offset: Int = 0) {
-        if (adapter==null||layoutManager==null){
+        if (adapter == null || layoutManager == null) {
             return
         }
         adapter?.let {
@@ -517,6 +519,30 @@ open class KRecyclerView : RecyclerView {
             removeAllViews()
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    override fun draw(c: Canvas?) {
+        try {
+            super.draw(c)
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("RecyclerView draw异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+    }
+
+    override fun dispatchDraw(canvas: Canvas?) {
+        try {
+            super.dispatchDraw(canvas)
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("RecyclerView dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+    }
+
+    override fun onMeasure(widthSpec: Int, heightSpec: Int) {
+        try {
+            super.onMeasure(widthSpec, heightSpec)
+        }catch (e:java.lang.Exception){
+            KLoggerUtils.e("RecyclerView onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
         }
     }
 

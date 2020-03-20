@@ -9,6 +9,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.android.synthetic.*
 import org.jetbrains.anko.backgroundDrawable
@@ -202,44 +203,65 @@ open class KVerticalLayout : LinearLayout {
     //fixme 之所以会有这个方法。是为了保证自定义的 draw和onDraw的执行顺序。始终是在最后。
     protected open fun draw2(canvas: Canvas, paint: Paint) {}
 
+    override fun onMeasure(widthSpec: Int, heightSpec: Int) {
+        try {
+            super.onMeasure(widthSpec, heightSpec)
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("自定义KVerticalLayout onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+    }
+
+    override fun draw(canvas: Canvas?) {
+        try {
+            super.draw(canvas)
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("自定义KVerticalLayout draw异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+
+    }
 
     //fixme 必须在dispatchDraw()里面画才有效，在draw()里面无效。
     //fixme dispatchDraw()在viewgroup背景的上面哦。
     override fun dispatchDraw(canvas: Canvas?) {
-        if (inner != null) {
-            canvas?.let {
-                inner?.viewGroup = this
-                //状态
-                inner?.drawState(this)
-                draw2First(canvas, inner!!.resetPaint())
-                //画自定义背景图片
-                inner?.autoView = this
-                inner?.drawAuto(canvas, inner!!.resetPaint(), this)
-                //画圆角背景
-                inner?.drawBg(canvas, inner!!.resetPaint(), this)
-                drawFront?.let {
-                    it(canvas, inner!!.resetPaint())
+        try {
+            if (inner != null) {
+                canvas?.let {
+                    inner?.viewGroup = this
+                    //状态
+                    inner?.drawState(this)
+                    draw2First(canvas, inner!!.resetPaint())
+                    //画自定义背景图片
+                    inner?.autoView = this
+                    inner?.drawAuto(canvas, inner!!.resetPaint(), this)
+                    //画圆角背景
+                    inner?.drawBg(canvas, inner!!.resetPaint(), this)
+                    drawFront?.let {
+                        it(canvas, inner!!.resetPaint())
+                    }
+                    super.dispatchDraw(canvas)//画子View
+                    draw2(canvas, inner!!.resetPaint())
+                    draw?.let {
+                        it(canvas, inner!!.resetPaint())
+                    }
+                    drawBehind?.let {
+                        it(canvas, inner!!.resetPaint())
+                    }
+                    //画左上角的三角形
+                    inner?.drawTriangle(canvas, inner!!.resetPaint(), this)
+                    //画水波纹
+                    inner?.drawWaterRipple(canvas)
+                    //画圆角
+                    inner?.drawRadius(canvas, this)
+                    draw2Last(canvas, inner!!.resetPaint())
+                    //组件大小
+                    inner?.paramView = this
+                    inner?.drawParam(canvas, this)
                 }
-                super.dispatchDraw(canvas)//画子View
-                draw2(canvas, inner!!.resetPaint())
-                draw?.let {
-                    it(canvas, inner!!.resetPaint())
-                }
-                drawBehind?.let {
-                    it(canvas, inner!!.resetPaint())
-                }
-                //画左上角的三角形
-                inner?.drawTriangle(canvas, inner!!.resetPaint(), this)
-                //画水波纹
-                inner?.drawWaterRipple(canvas)
-                //画圆角
-                inner?.drawRadius(canvas, this)
-                draw2Last(canvas, inner!!.resetPaint())
-                //组件大小
-                inner?.paramView = this
-                inner?.drawParam(canvas, this)
             }
+        } catch (e: Exception) {
+            KLoggerUtils.e("自定义KVerticalLayout dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
         }
+
     }
 
     open fun onDestroy() {

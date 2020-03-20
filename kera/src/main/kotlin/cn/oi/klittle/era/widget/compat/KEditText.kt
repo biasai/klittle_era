@@ -15,6 +15,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import org.jetbrains.anko.singleLine
+import kotlin.math.max
 
 /**
  * 文本输入框相关。
@@ -135,6 +136,10 @@ import org.jetbrains.anko.singleLine
 //fixme 单行设置
 //maxLines=1(无效)
 //singleLine=true (这个有效)
+
+//fixme 控制最大值及数值类型，常用方法。
+//decimal(0, 1)//小数点后保留位数，小数总长度(包含小数)
+//maxDecimal(2)//最大值
 
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -383,13 +388,25 @@ open class KEditText : KMyEditText {
                     }
                     var str = it.toString()
                     if (str.length > length) {
-                        //超过总长度，数值不变。
-                        replace(it, beforeText!!)
+                        if (maxDecimal != null) {
+                            var strd = 0.0
+                            if (str.length >= 2) {
+                                strd = KStringUtils.removeFrontZero(str).toDouble()//去除前面的0
+                            }
+                            if (strd > maxDecimal!!.toDouble()) {
+                                replace(it, maxDecimal!!)//赋值最大值
+                            } else {
+                                replace(it, strd.toString())
+                            }
+                        } else {
+                            //超过总长度，数值不变。
+                            replace(it, beforeText!!)
+                        }
                         remove(it, REGEX_NotHas_Decimal.toRegex())//去除（数字和点）以外的字符。(中文，空格，换行都会去除)
                         str = it.toString()
                         isMax = true
                     }
-                    if (str.length > 2) {
+                    if (str.length >= 2) {
                         str = KStringUtils.removeFrontZero(str)//去除前面的0
                         replace(it, str)
                     }

@@ -778,6 +778,22 @@ open class K1Widget : K0Widget {
         getCamera()?.rotate(degree, centerX, centerY, isRestore, callBack)
     }
 
+    override fun dispatchDraw(canvas: Canvas?) {
+        try {
+            super.dispatchDraw(canvas)
+        }catch (e:java.lang.Exception){
+            KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+    }
+
+    override fun onMeasure(widthSpec: Int, heightSpec: Int) {
+        try {
+            super.onMeasure(widthSpec, heightSpec)
+        }catch (e:java.lang.Exception){
+            KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
+        }
+    }
+
     override fun draw(canvas: Canvas?) {
         try {
             if (width <= 0 || height <= 0 || canvas == null) {
@@ -854,7 +870,7 @@ open class K1Widget : K0Widget {
             mCamera?.restore()//fixme 恢复相机的状态；防止异常
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("自定义 draw 异常：\t" + e.message)
+            KLoggerUtils.e("自定义View draw 异常：\t" + KCatchException.getExceptionMsg(e))
         }
     }
 
