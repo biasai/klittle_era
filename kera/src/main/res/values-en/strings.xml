@@ -161,4 +161,6 @@
     <string name="klanguage_zh_rCN">Chinese (simplified)</string>
     <string name="klanguage_zh_rTW">Chinese (traditional)</string>
     <string name="klanguage_en">English</string>
+    <!--异常-->
+    <string name="kpackNameError">Specifies a package name exception</string>
 </resources>

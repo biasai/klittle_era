@@ -22,6 +22,7 @@ import java.util.*
 
 //fixme 调用案例
 //KPictureSelector.type(PictureConfig.TYPE_ALL).isGif(true).isCamera(true).imageSpanCount().maxSelectNum(10).selectionMedia().minimumCompressSize(100).isCompress(true).forResult {}
+//ictureSelector.openExternalPreview2(path = pPath)//fixme 单张图片预览。
 /**
  * 图片选择器
  */
@@ -150,6 +151,32 @@ object KPictureSelector {
         return null
     }
 
+    /**
+     * fixme 获取压缩后的图片
+     * @param path 原图片路径
+     * @param minimumCompressSize 单位KB,小于该值不压缩
+     * @return 返回压缩后的图片路径
+     */
+    fun getCompressImage(path: String?, minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback: (compressPath: String) -> Unit) {
+        var isCompress = false
+        var localPath = path
+        //判断是否压缩过
+        KPictureSelector.getCompressPath(localPath)?.let {
+            if (it != null) {
+                isCompress = true
+                callback(it)
+            }
+        }
+        if (!isCompress) {
+            KLubanUtils.compress(localPath, KPictureSelector.minimumCompressSize) {
+                if (it != null) {
+                    KPictureSelector.putCompreessPath(localPath, it)//保存和记录，该文件已经压缩过了。
+                    callback(it)
+                }
+            }
+        }
+    }
+
     //fixme 删除缓存及拍照图片(包括裁剪和压缩后的缓存，要在上传成功后调用)
     fun deleteCacheDirFile() {
         try {
@@ -254,6 +281,7 @@ object KPictureSelector {
      * fixme 图片预览
      * @param index 当前所在图片下标
      * @param meidas 所有图片集合
+     * @param isCheckable 图片是否具备选择能力，true,图片右上角会有选中框。false则没有。
      */
     fun openExternalPreview(activity: Activity? = KBaseUi.getActivity(), index: Int = 0, meidas: MutableList<KLocalMedia>? = getCheckedFolder(), isCheckable: Boolean = false) {
         meidas?.let {
@@ -266,6 +294,47 @@ object KPictureSelector {
                     overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
                 }
             }
+        }
+    }
+
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), index: Int = 0, meidas: MutableList<File>?, isCheckable: Boolean = false) {
+        meidas?.let {
+            if (it.size > 0) {
+                var meidas2 = mutableListOf<KLocalMedia>()
+                var index2 = 0
+                meidas?.forEach {
+                    var localMedia = KLocalMedia()
+                    localMedia.path = it.absolutePath
+                    if (index == index2 && isCheckable) {
+                        localMedia.isChecked = true
+                    }
+                    meidas2.add(localMedia)
+                }
+                previewIndex = index
+                previewMeidas = meidas2
+                KPictureSelector.isCheckable = isCheckable
+                KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
+                activity?.apply {
+                    overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                }
+            }
+        }
+    }
+
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), file: File?) {
+        if (file != null) {
+            var meidas = mutableListOf<File>()
+            meidas.add(file)
+            openExternalPreview2(activity, 0, meidas, false)
+        }
+    }
+
+    /**
+     * fixme 单张图片预览。
+     */
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), path: String?) {
+        if (path != null) {
+            openExternalPreview2(activity, File(path))
         }
     }
 

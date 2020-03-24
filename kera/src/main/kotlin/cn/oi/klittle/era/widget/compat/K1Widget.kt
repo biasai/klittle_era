@@ -308,6 +308,13 @@ open class K1Widget : K0Widget {
         this.mOnClickCallback = mOnClickCallback
     }
 
+    //fixme 重写点击事件
+    override fun setOnClickListener(l: OnClickListener?) {
+        if (l==null){
+            hasClick=false//fixme 防止适配器界面刷新之后，点击事件无效问题。
+        }
+        super.setOnClickListener(l)
+    }
 
     private var onClickes: MutableList<() -> Unit>? = mutableListOf<() -> Unit>()
     var hasClick = false//判断是否已经添加了点击事情。

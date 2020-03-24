@@ -18,6 +18,8 @@ import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import java.io.*
 import android.support.v4.app.ActivityCompat.startActivityForResult
+import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.activity.photo.utils.KDCIMUtils
 import kotlinx.coroutines.experimental.async
 
@@ -33,6 +35,8 @@ import kotlinx.coroutines.experimental.async
 //    PictureUtils.onActivityResult(this, requestCode, resultCode, data)
 //}
 
+//fixme 相机拍照，返回压缩后的图片：KPictureUtils.cameraCompress{}
+
 /**
  *相册，相机，视频，剪切
  */
@@ -46,7 +50,7 @@ object KPictureUtils {
     //打开相册【不需要任何权限，亲测百分百可用】,系统会跳出一个相册选择框。无法跳过这一步【无解】。
     //只能选择一个。系统没有多选。都是单选。
     var galleryPackName: String? = null//相册包名
-    var packNameError = "指定包名异常"
+    var packNameError = KBaseUi.getString(R.string.kpackNameError)//"指定包名异常"
     fun photo(activity: Activity, callback2: (file: File) -> Unit) {
         try {
             val intent = Intent()
@@ -79,11 +83,24 @@ object KPictureUtils {
         }
     }
 
+    /**
+     *fixme 相机拍照，会对图片进行压缩处理;调用案例：KPictureUtils.cameraCompress{}
+     * @param minimumCompressSize 单位KB,小于该值不压缩
+     */
+    fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (file: File) -> Unit) {
+        camera(activity) {
+            KPictureSelector.getCompressImage(it.absolutePath, minimumCompressSize) {
+                callback2(File(it))
+            }
+        }
+    }
+
     //var fileUri: Uri? = null// 相机拍照时创建的Uri链接,fileUri.getPath()获取拍照图片路径
     //var cramefile: File? = null//相机照片
     var cramePath: String? = null//相机照片路径
     var CameraPackName: String? = null//相机包名
     //相机拍照【需要相机权限,如果清单里不写明相机权限,部分设备默认是开启。但是有的设备就不行，可能异常奔溃。所以保险还是在清单里加上权限声明】
+    //fixme 相机拍照，不会对图片进行压缩处理。
     fun camera(activity: Activity? = KBaseUi.getActivity(), callback2: (file: File) -> Unit) {
         if (activity == null || activity.isFinishing) {
             return
