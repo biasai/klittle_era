@@ -27,6 +27,24 @@ import java.util.*
  * 图片选择器
  */
 object KPictureSelector {
+
+    //获取本应用拍照图片路径
+    fun getCameraPath(): String {
+        return KPictureUtils.getCameraPath()
+    }
+
+    //获取压缩路径
+    fun getCompressPath(): String {
+        File(compressPath)?.apply {
+            if (!exists()) {
+                //目录如果不存在，则自动创建。鲁班压缩不会自动创建目录，传入的目录必须存在。
+                mkdir()
+                mkdirs()
+            }
+        }
+        return compressPath
+    }
+
     var imageSpanCount = 3//图片适配器列表每行的列数。
     var currentSelectNum = 0//当前选中数
     var maxSelectNum = 50//最大选中数
@@ -109,22 +127,6 @@ object KPictureSelector {
         KPictureSelector.compressPath = compressPath
     }
 
-    //获取本应用拍照图片路径
-    fun getCameraPath(): String {
-        return KPictureUtils.getAppCaclePath()
-    }
-
-    //获取压缩路径
-    fun getCompressPath(): String {
-        File(compressPath)?.apply {
-            if (!exists()) {
-                //目录如果不存在，则自动创建。鲁班压缩不会自动创建目录，传入的目录必须存在。
-                mkdir()
-                mkdirs()
-            }
-        }
-        return compressPath
-    }
 
     //存储压缩后路径（防止已经存在压缩文件之后，重复压缩）
     fun putCompreessPath(path: String?, compreePath: String?) {

@@ -41,6 +41,72 @@ import kotlinx.coroutines.experimental.async
  *相册，相机，视频，剪切
  */
 object KPictureUtils {
+
+    //文件路径[需要file_paths.xml才能访问]
+    //fixme 本应用，相机拍摄的图片会保存在该位置。
+    fun getCameraPath(context: Context = KBaseApplication.getInstance()): String {
+        //defaultConfig {
+        //targetSdkVersion 23//getExternalFilesDir才能正常访问，无需权限。但是如果是22及以下。就需要开启SD卡读取权限。
+        //}
+        //return getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
+        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/cache"
+        //return KCacheUtils.getCachePath() + "/img"
+        try {
+            //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
+            //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
+            //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
+            //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
+            return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/CameraImage"//context.packageName获取的是应用app的包名。
+            //return Environment.getExternalStorageDirectory().absolutePath + "/PictureSelector/CameraImage/" //第三方图片选择器的相机拍照图片路径。
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return KCacheUtils.getCachePath() + "/CameraImage"//fixme 如果异常，就使用本应用路径。最好不要使用本应用缓存。一个应用的缓存空间好像是有限的。
+    }
+
+    //视频录制路径
+    fun getAppVideoPath(context: Context): String {
+        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/video"
+        return KCacheUtils.getCachePath() + "/video"
+    }
+
+    //文件裁剪路径
+    fun getAppCropPath(context: Context): String {
+        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/crop"
+        return KCacheUtils.getCachePath() + "/crop"
+    }
+
+    //获取相册图片路径
+    fun getPhotoPath(activtiy: Activity, data: Intent): String? {
+        var photoPath: String? = null
+        try {
+            val uri = data.data
+            // 获取相册图片路径
+            val proj = arrayOf(MediaStore.Images.Media.DATA)
+            // 好像是android多媒体数据库的封装接口，具体的看Android文档
+            var cursor: Cursor? = null
+            if (Build.VERSION.SDK_INT >= 19) {//4.4版本
+                //managedQuery()现在已经被getContentResolver().query()替代了，不过它们的参数都是一样的。效果也是一样的。
+                cursor = activtiy.getContentResolver().query(uri!!, proj, null, null, null)
+            } else {
+                //低版本
+                cursor = activtiy.managedQuery(uri, proj, null, null, null)
+            }
+            // 按我个人理解 这个是获得用户选择的图片的索引值
+            val column_index = cursor!!
+                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
+            // 将光标移至开头 ，这个很重要，不小心很容易引起越界
+            cursor.moveToFirst()
+            // 最后根据索引值获取图片路径
+            photoPath = cursor.getString(column_index)
+            // bm = BitmapFactory.decodeFile(path);
+        } catch (e: Exception) {
+            // TODO: handle exception
+            KLoggerUtils.e("相册图片路径获取失败" + e.message)
+        }
+        return photoPath
+    }
+
     val DEFAULT_KEYS_PICTURE_PHOTO = 3828//相册图库选择
     val DEFAULT_KEYS_CROP_PHOTO = 3829//图片剪切
     val DEFAULT_KEYS_CAMARA_PHOTO = 3830//相机
@@ -83,14 +149,19 @@ object KPictureUtils {
         }
     }
 
+
     /**
      *fixme 相机拍照，会对图片进行压缩处理;调用案例：KPictureUtils.cameraCompress{}
+     *fixme 相机拍照的时候，在onActivityResult里发送了广播，所以相机能够看到拍照的图片，但是不能看到压缩后的图片。因为压缩后的图片，并没有发送系统广播。
      * @param minimumCompressSize 单位KB,小于该值不压缩
+     * @return 返回原文件，和
      */
-    fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (file: File) -> Unit) {
+    fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (srcfile: File, compressFile: File) -> Unit) {
         camera(activity) {
+            var src = it//fixme 原文件
             KPictureSelector.getCompressImage(it.absolutePath, minimumCompressSize) {
-                callback2(File(it))
+                var compress = it//fixme 压缩后的文件
+                callback2(src, File(compress))
             }
         }
     }
@@ -112,7 +183,7 @@ object KPictureUtils {
                     //resolveActivity()查询是否有第三方能够启动该intent
                     if (intent.resolveActivity(activity.getPackageManager()) != null) {
                         //PNG格式的不能显示在相册中
-                        var cramefile = KFileUtils.getInstance().createFile(getAppCaclePath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
+                        var cramefile = KFileUtils.getInstance().createFile(getCameraPath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
                         cramePath = cramefile?.absolutePath
                         var fileUri: Uri
                         if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。22是5.1的系统。
@@ -382,7 +453,7 @@ object KPictureUtils {
                         }
                         if (file == null) {
                             //创建新图片文件
-                            file = KFileUtils.getInstance().createFile(getAppCaclePath(activity), photoName)
+                            file = KFileUtils.getInstance().createFile(getCameraPath(activity), photoName)
                             // 将Uri图片的内容复制到file上
                             writeFile(activity.getContentResolver(),
                                     file, uri)
@@ -417,6 +488,7 @@ object KPictureUtils {
                         if (cramefile != null && cramefile?.exists() ?: false && cramefile!!.length() > 0) {
                             try {
                                 it(cramefile!!)//fixme 回调
+                                //fixme 再发送一次，cramefile可能在回调里，已经做了压缩等处理，文件已经改变。
                                 activity?.let {
                                     if (!it.isFinishing) {
                                         //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
@@ -493,71 +565,6 @@ object KPictureUtils {
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
-    }
-
-    //文件路径[需要file_paths.xml才能访问]
-    //相机拍摄的图片会保存在该位置。
-    fun getAppCaclePath(context: Context = KBaseApplication.getInstance()): String {
-        //defaultConfig {
-        //targetSdkVersion 23//getExternalFilesDir才能正常访问，无需权限。但是如果是22及以下。就需要开启SD卡读取权限。
-        //}
-        //return getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/cache"
-        //return KCacheUtils.getCachePath() + "/img"
-        try {
-            //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
-            //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
-            //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
-            //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
-            return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/CameraImage"//context.packageName获取的是应用app的包名。
-            //return Environment.getExternalStorageDirectory().absolutePath + "/PictureSelector/CameraImage/" //第三方图片选择器的相机拍照图片路径。
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-        return KCacheUtils.getCachePath() + "/CameraImage"//fixme 如果异常，就使用本应用路径。最好不要使用本应用缓存。一个应用的缓存空间好像是有限的。
-    }
-
-    //视频录制路径
-    fun getAppVideoPath(context: Context): String {
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/video"
-        return KCacheUtils.getCachePath() + "/video"
-    }
-
-    //文件裁剪路径
-    fun getAppCropPath(context: Context): String {
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/crop"
-        return KCacheUtils.getCachePath() + "/crop"
-    }
-
-    //获取相册图片路径
-    fun getPhotoPath(activtiy: Activity, data: Intent): String? {
-        var photoPath: String? = null
-        try {
-            val uri = data.data
-            // 获取相册图片路径
-            val proj = arrayOf(MediaStore.Images.Media.DATA)
-            // 好像是android多媒体数据库的封装接口，具体的看Android文档
-            var cursor: Cursor? = null
-            if (Build.VERSION.SDK_INT >= 19) {//4.4版本
-                //managedQuery()现在已经被getContentResolver().query()替代了，不过它们的参数都是一样的。效果也是一样的。
-                cursor = activtiy.getContentResolver().query(uri!!, proj, null, null, null)
-            } else {
-                //低版本
-                cursor = activtiy.managedQuery(uri, proj, null, null, null)
-            }
-            // 按我个人理解 这个是获得用户选择的图片的索引值
-            val column_index = cursor!!
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            // 将光标移至开头 ，这个很重要，不小心很容易引起越界
-            cursor.moveToFirst()
-            // 最后根据索引值获取图片路径
-            photoPath = cursor.getString(column_index)
-            // bm = BitmapFactory.decodeFile(path);
-        } catch (e: Exception) {
-            // TODO: handle exception
-            KLoggerUtils.e("相册图片路径获取失败" + e.message)
-        }
-        return photoPath
     }
 
     //处理相册中的图片旋转问题
