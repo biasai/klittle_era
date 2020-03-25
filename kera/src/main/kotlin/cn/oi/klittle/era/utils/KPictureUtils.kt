@@ -150,11 +150,12 @@ object KPictureUtils {
     }
 
 
+    //KPictureUtils.cameraCompress { srcfile, compressFile -> }
     /**
      *fixme 相机拍照，会对图片进行压缩处理;调用案例：KPictureUtils.cameraCompress{}
      *fixme 相机拍照的时候，在onActivityResult里发送了广播，所以相机能够看到拍照的图片，但是不能看到压缩后的图片。因为压缩后的图片，并没有发送系统广播。
      * @param minimumCompressSize 单位KB,小于该值不压缩
-     * @return 返回原文件，和
+     * @return 返回原文件，和压缩后的文件
      */
     fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (srcfile: File, compressFile: File) -> Unit) {
         camera(activity) {
@@ -162,6 +163,27 @@ object KPictureUtils {
             KPictureSelector.getCompressImage(it.absolutePath, minimumCompressSize) {
                 var compress = it//fixme 压缩后的文件
                 callback2(src, File(compress))
+            }
+        }
+    }
+
+    //KPictureUtils.cameraCompress { compressFile -> }
+    /**
+     * fixme 相机拍照，只放回压缩后的图片。原文件会自动删除。只保留压缩后的。
+     */
+    fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (compressFile: File) -> Unit) {
+        camera(activity) {
+            var src = it//fixme 原文件
+            KPictureSelector.getCompressImage(it.absolutePath, minimumCompressSize) {
+                var compress = it//fixme 压缩后的文件
+                try {
+                    if (!src.absolutePath.equals(it)) {
+                        src.delete()//fixme 原文件和压缩文件不一致，直接删除原文件。只保留压缩后的。
+                    }
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                callback2(File(compress))
             }
         }
     }
