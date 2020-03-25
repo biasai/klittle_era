@@ -160,7 +160,7 @@ object KPictureUtils {
     }
 
     /**
-     * fixme 删除文件后更新数据库  通知媒体库更新文件夹,！！！！！dirPath（文件夹路径）要求尽量精确，以防删错
+     * fixme 删除文件后更新数据库  通知媒体库更新文件夹,！！！！！dirPath（文件夹路径）要求尽量精确。系统会更新该文件夹。
      * @param dirPath fixme 文件夹路径，如：/data/user/0/com.example.myapplication/cache/compress
      */
     public fun updateDirFromDatabase(context: Context? = KBaseUi.getActivity(), dirPath: String) {
