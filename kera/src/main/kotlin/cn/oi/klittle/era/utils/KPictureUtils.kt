@@ -164,12 +164,18 @@ object KPictureUtils {
      * @param dirPath fixme 文件夹路径，如：/data/user/0/com.example.myapplication/cache/compress
      */
     public fun updateDirFromDatabase(context: Context? = KBaseUi.getActivity(), dirPath: String) {
-        //fixme 以下方法，亲测有效。
-        var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
-        var i = context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+        try {
+            //fixme 以下方法，亲测有效。
+            var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
+            context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+//          var i = context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
 //        if (i > 0) {
 //            Log.e(TAG, "媒体库更新成功！");
 //        }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     //KPictureUtils.cameraCompress { srcfile, compressFile -> }
