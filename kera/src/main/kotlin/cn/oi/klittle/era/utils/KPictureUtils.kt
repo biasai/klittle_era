@@ -150,6 +150,28 @@ object KPictureUtils {
     }
 
 
+    /**
+     * fixme 删除文件后更新数据库  通知媒体库更新文件
+     * @param filepath fixme 文件的完整路径。如：/data/user/0/com.example.myapplication/cache/compress/1585131992658549.jpeg
+     */
+    public fun updateFileFromDatabase(context: Context? = KBaseUi.getActivity(), filepath: String) {
+        var dirPath = KFileUtils.getInstance().getFileDir(filepath)//根据文件的完整路径，获取文件所在文件夹路径。
+        updateDirFromDatabase(context, dirPath)
+    }
+
+    /**
+     * fixme 删除文件后更新数据库  通知媒体库更新文件夹,！！！！！dirPath（文件夹路径）要求尽量精确，以防删错
+     * @param dirPath fixme 文件夹路径，如：/data/user/0/com.example.myapplication/cache/compress
+     */
+    public fun updateDirFromDatabase(context: Context? = KBaseUi.getActivity(), dirPath: String) {
+        //fixme 以下方法，亲测有效。
+        var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
+        var i = context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+//        if (i > 0) {
+//            Log.e(TAG, "媒体库更新成功！");
+//        }
+    }
+
     //KPictureUtils.cameraCompress { srcfile, compressFile -> }
     /**
      *fixme 相机拍照，会对图片进行压缩处理;调用案例：KPictureUtils.cameraCompress{}
@@ -179,6 +201,7 @@ object KPictureUtils {
                 try {
                     if (!src.absolutePath.equals(it)) {
                         src.delete()//fixme 原文件和压缩文件不一致，直接删除原文件。只保留压缩后的。
+                        updateFileFromDatabase(filepath = src.absolutePath)//fixme 告诉系统，更新该文件夹。
                     }
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()

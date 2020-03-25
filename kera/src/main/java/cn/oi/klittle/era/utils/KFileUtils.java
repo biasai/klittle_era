@@ -41,7 +41,7 @@ public class KFileUtils {
     /**
      * 根据路径获取文件
      *
-     * @param filePath
+     * @param filePath 文件的完整路径，包括文件和后缀名
      * @return
      */
     public File getFile(String filePath) {
@@ -91,6 +91,19 @@ public class KFileUtils {
      */
     public String getFileName(String path) {
         return path.substring(path.lastIndexOf("/") + 1);
+    }
+
+    /**
+     * fixme 根据文件完整路径，获取文件所在目录。
+     *
+     * @param path
+     * @return
+     */
+    public String getFileDir(String path) {
+        if (path != null) {
+            return path.substring(0, path.lastIndexOf("/"));
+        }
+        return null;
     }
 
     /**
@@ -246,7 +259,7 @@ public class KFileUtils {
             if (delpath == null || delpath.length() <= 0) {
                 return false;
             }
-            if (suffix!=null&&suffix.length()>0) {
+            if (suffix != null && suffix.length() > 0) {
                 suffix = suffix.toLowerCase().trim();//.后缀
             }
             File file = new File(delpath);
@@ -269,7 +282,7 @@ public class KFileUtils {
                         delAllFiles(delpath + "/" + filelist[i], suffix);//fixme 闭合
                     }
                 }
-                filelist=null;
+                filelist = null;
                 if (suffix == null || suffix.length() <= 0) {
                     file.delete();//fixme 删除目录
                 }
