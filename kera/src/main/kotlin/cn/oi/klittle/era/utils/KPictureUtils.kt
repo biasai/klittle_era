@@ -149,45 +149,79 @@ object KPictureUtils {
         }
     }
 
+    /**
+     * fixme 调用相机拍照成功后，需要通知系统。这样系统相册里才能看到该图片。只对系统相机拍摄的照片才有效(亲测！)。应用本身内的图片无效。
+     * @param file 照片文件。
+     */
+    fun updateFileFromDatabase_add(file: File, activity: Activity? = KBaseUi.getActivity()) {
+        activity?.let {
+            if (!it.isFinishing) {
+                try {
+                    //fixme 关闭发送很快的，不需要协程。不耗时。
+                    //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                    it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))//fixme 这里不要使用FileProvider；不然无效（图片选择器会无法读取）。
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
+        }
+    }
+
+    /**
+     * @param filePath 照片文件路径
+     */
+    fun updateFileFromDatabase_add(filePath: String, activity: Activity? = KBaseUi.getActivity()) {
+        if (filePath == null) {
+            return
+        }
+        if (filePath.length <= 0) {
+            return
+        }
+        updateFileFromDatabase_add(File(filePath), activity)
+    }
 
     /**
      * fixme 删除文件后更新数据库  通知媒体库更新文件
      * @param filepath fixme 文件的完整路径。如：/data/user/0/com.example.myapplication/cache/compress/1585131992658549.jpeg
      */
-    public fun updateFileFromDatabase(context: Context? = KBaseUi.getActivity(), filepath: String) {
+    public fun updateFileFromDatabase_del(filepath: String, context: Context? = KBaseUi.getActivity()) {
         var dirPath = KFileUtils.getInstance().getFileDir(filepath)//根据文件的完整路径，获取文件所在文件夹路径。
-        updateDirFromDatabase(context, dirPath)
+        updateDirFromDatabase_del(dirPath, context)
     }
 
     /**
      * fixme 删除文件后更新数据库  通知媒体库更新文件夹,！！！！！dirPath（文件夹路径）要求尽量精确。系统会更新该文件夹。
      * @param dirPath fixme 文件夹路径，如：/data/user/0/com.example.myapplication/cache/compress
      */
-    public fun updateDirFromDatabase(context: Context? = KBaseUi.getActivity(), dirPath: String) {
+    public fun updateDirFromDatabase_del(dirPath: String, context: Context? = KBaseUi.getActivity()) {
         if (dirPath == null) {
             return
         }
         if (dirPath.length <= 0) {
             return
         }
-        try {
-            //fixme 以下方法，亲测有效。
-            var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
-            context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
+        //fixme 更新系统相册是耗时操作，所以放在协程里。文件夹里的照片数量越多越耗时。
+        async {
+            try {
+                //var ltime=System.currentTimeMillis()
+                //fixme 以下方法，亲测有效。在协程里面也有效，非主线程也有效。
+                var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
+                context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)//fixme 文件夹内的照片数量越多，越耗时。
 //          var i = context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
 //        if (i > 0) {
 //            Log.e(TAG, "媒体库更新成功！");
 //        }
-        } catch (e: Exception) {
-            e.printStackTrace()
+                //KLoggerUtils.e("相册更新耗时：\t"+(System.currentTimeMillis()-ltime))//小米8耗时2832；
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
-
     }
 
     //KPictureUtils.cameraCompress { srcfile, compressFile -> }
     /**
      *fixme 相机拍照，会对图片进行压缩处理;调用案例：KPictureUtils.cameraCompress{}
-     *fixme 相机拍照的时候，在onActivityResult里发送了广播，所以相机能够看到拍照的图片，但是不能看到压缩后的图片。因为压缩后的图片，并没有发送系统广播。
+     *fixme 相机拍照的时候，在onActivityResult里发送了广播（往下翻），所以相机能够看到拍照的图片，但是不能看到压缩后的图片。因为压缩后的图片，并没有发送系统广播。
      * @param minimumCompressSize 单位KB,小于该值不压缩
      * @return 返回原文件，和压缩后的文件
      */
@@ -213,7 +247,7 @@ object KPictureUtils {
                 try {
                     if (!src.absolutePath.equals(it)) {
                         src.delete()//fixme 原文件和压缩文件不一致，直接删除原文件。只保留压缩后的。
-                        updateFileFromDatabase(filepath = src.absolutePath)//fixme 告诉系统，更新该文件夹。
+                        updateFileFromDatabase_del(filepath = src.absolutePath)//fixme 告诉系统，更新该文件夹。
                     }
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
