@@ -139,6 +139,20 @@ open class KMyEditText : KTextView {
         }
     }
 
+    //调出软键盘(防止初始化时软键盘调不出，所以延迟一下，再弹出软键盘，亲测有效。)
+    fun showSoftInput3() {
+        try {
+            async {
+                delay(130, TimeUnit.MILLISECONDS)//fixme 130毫秒,防止无效。这个延迟时间，几乎百分百有效。
+                getContext()?.runOnUiThread {
+                    KMyEditText.showSoftInput(this, this@KMyEditText)
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
     //隐藏软键盘
     fun hideSoftKeyboard() {
         KMyEditText.hideSoftKeyboard(context, this)

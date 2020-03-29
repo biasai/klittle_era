@@ -3,6 +3,10 @@
     android:shape="rectangle">
     <!--颜色渐变范围-->
     <gradient
+        android:angle="0"
         android:endColor="#50000000"
         android:startColor="#00000000" />
+    <!-- 90阴影冲上，－90，阴影冲下-->
+    <!-- 渐变，正值为逆时针,角度0从左往右，90从下往上，180从右往左，270度为从上到下 -->
+    <!-- fixme android:angle="0" 颜色渐变方向，最好手动写一下。不同的系统可能默认值不一样。 -->
 </shape>

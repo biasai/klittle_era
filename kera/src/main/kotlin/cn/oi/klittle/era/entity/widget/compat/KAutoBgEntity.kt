@@ -229,7 +229,9 @@ data class KAutoBgEntity(var view: View?,
                 try {
                     AutoWH()//fixme 自动获取宽和高。
                     if (isGlide) {
-                        job_res?.cancel()//fixme 取消上一次
+                        try {
+                            job_res?.cancel()//fixme 取消上一次
+                        }catch (e:Exception){e.printStackTrace()}
                         key = KGlideUtils.getKeyForRes(resId, width, height)
                         //fixme 异步新开协程
                         job_res = KGlideUtils.getBitmapFromResouce(resId, width, height, isCenterCrop = isCenterCrop) { key, bitmap ->
@@ -237,7 +239,9 @@ data class KAutoBgEntity(var view: View?,
                             autoBg = bitmap
                             requestLayout()
                             isAutoBging = false
-                            job_res?.cancel()
+                            try {
+                                job_res?.cancel()//fixme 取消上一次
+                            }catch (e:Exception){e.printStackTrace()}
                             job_res = null
                         }
                     } else {

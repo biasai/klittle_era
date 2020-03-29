@@ -927,12 +927,15 @@ open class KBaseActivity : FragmentActivity() {
             return KAssetsUtils.getInstance().getBitmapFromFile(filePath, isRGB_565)
         }
 
+        /**
+         * fixme 调用之后，软键盘不会在Activity初始化的时候自动弹出来。)；解决软键盘自动弹出的问题。
+         * fixme 输入框，软键盘;(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。
+         */
         open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
             //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
             //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         }
-
 
     }
 

@@ -11,6 +11,7 @@ import android.view.*
 import android.widget.LinearLayout
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.view.KAutoLinefeedLayout
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
 import cn.oi.klittle.era.widget.book.view.KBookPageView
@@ -755,6 +756,15 @@ abstract class KBaseUi {
 
         inline fun ViewManager.kDrawerLayout(init: (@AnkoViewDslMarker KDrawerLayout).() -> Unit): KDrawerLayout {
             return ankoView({ ctx: Context -> KDrawerLayout(ctx) }, theme = 0) { init() }
+        }
+
+        //fixme 换行布局
+        inline fun ViewManager.KAutoLinefeedLayout(init: (@AnkoViewDslMarker KAutoLinefeedLayout).() -> Unit): KAutoLinefeedLayout {
+            return ankoView({ ctx: Context -> KAutoLinefeedLayout(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kAutoLinefeedLayout(init: (@AnkoViewDslMarker KAutoLinefeedLayout).() -> Unit): KAutoLinefeedLayout {
+            return ankoView({ ctx: Context -> KAutoLinefeedLayout(ctx) }, theme = 0) { init() }
         }
 
     }
