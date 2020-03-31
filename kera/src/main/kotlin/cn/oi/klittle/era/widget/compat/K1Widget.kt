@@ -1080,7 +1080,7 @@ open class K1Widget : K0Widget {
         return intArray[0]
     }
 
-    //fixme 获取屏幕位置。
+    //fixme 获取屏幕位置。intArray[0]是x坐标；intArray[1]是y坐标。
     fun getLocationOnScreen(): IntArray {
         getLocationOnScreen(intArray)
         return intArray
