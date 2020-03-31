@@ -722,11 +722,11 @@ object KPermissionUtils {
             //snackView.setBackgroundResource(R.drawable.shape_drawable_snackbar);
             val snackbar_text = snackView.findViewById<View>(R.id.snackbar_text) as TextView
             snackbar_text.setTextColor(Color.parseColor("#ffffff"))//设置通知文本的颜色，白色
-            snackbar_text?.textSize= kpx.textSizeX(34,false)
+            snackbar_text?.textSize= kpx.textSizeX(30,false)
             //snackbar_text.setTextSize(textSize);
             val snackbar_action = snackView.findViewById<View>(R.id.snackbar_action) as TextView
             snackbar_action.setTextColor(Color.parseColor("#FF3B80"))//点击文本的颜色,绯红
-            snackbar_action?.textSize= kpx.textSizeX(34,false)
+            snackbar_action?.textSize= kpx.textSizeX(33,false)
             //snackbar_action.setTextSize(textSize);
             //snackbar_action.setBackground(null);
             snackbar_action.setBackgroundDrawable(null)
