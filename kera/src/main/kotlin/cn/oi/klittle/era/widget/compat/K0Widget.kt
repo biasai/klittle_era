@@ -46,13 +46,16 @@ open class K0Widget : TextView {
     }
 
     private var isGone = false//判断是否执行过
+    private var isAlways = false//fixme 是否每次加载完毕都回调；true每次都回调，false只回调一次。
     var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
-    fun onGlobalLayoutListener(gone: (() -> Unit)? = null) {
-        mGone(gone)
+    //fixme invalidate()重新和重新布局时，都会回调。
+    fun onGlobalLayoutListener(isAlways: Boolean = false, gone: (() -> Unit)? = null) {
+        mGone(isAlways, gone)
     }
 
     //fixme gone布局加载完成之后调用，只调用一次。（addOnGlobalLayoutListener可能执行多次。）
-    fun mGone(gone: (() -> Unit)? = null) {
+    fun mGone(isAlways: Boolean = false, gone: (() -> Unit)? = null) {
+        this.isAlways = isAlways
         if (gone != null) {
             //fixme viewTreeObserver?.addOnGlobalLayoutListener可以多次添加，互不影响(亲测)
             if (onGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
@@ -62,7 +65,7 @@ open class K0Widget : TextView {
                 //宽和高不能为空，要返回具体的值。
                 if (width > 0 && height > 0) {
                     //防止多次重复调用，只执行一次
-                    if (!isGone) {
+                    if (!isGone || isAlways) {
                         isGone = true
                         gone?.let {
                             it()

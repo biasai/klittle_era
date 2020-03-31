@@ -1,6 +1,7 @@
 package cn.oi.klittle.era.widget.compat
 
 import android.animation.ObjectAnimator
+import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
@@ -36,7 +37,6 @@ import cn.oi.klittle.era.exception.KCatchException
 //                    }
 
 //                    setSoundsRaw(R.raw.kpictureselect_music)//设置当前(方法不带s)控件的播放音频（在onDestroy()里会对音频进行释放）
-
 /**
  * 一：基本组件，集成基本功能。
  */
@@ -310,8 +310,8 @@ open class K1Widget : K0Widget {
 
     //fixme 重写点击事件
     override fun setOnClickListener(l: OnClickListener?) {
-        if (l==null){
-            hasClick=false//fixme 防止适配器界面刷新之后，点击事件无效问题。
+        if (l == null) {
+            hasClick = false//fixme 防止适配器界面刷新之后，点击事件无效问题。
         }
         super.setOnClickListener(l)
     }
@@ -788,7 +788,7 @@ open class K1Widget : K0Widget {
     override fun dispatchDraw(canvas: Canvas?) {
         try {
             super.dispatchDraw(canvas)
-        }catch (e:java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
         }
     }
@@ -796,7 +796,7 @@ open class K1Widget : K0Widget {
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         try {
             super.onMeasure(widthSpec, heightSpec)
-        }catch (e:java.lang.Exception){
+        } catch (e: java.lang.Exception) {
             KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
         }
     }
@@ -1045,6 +1045,34 @@ open class K1Widget : K0Widget {
                 }
             }
         }
+    }
+
+    /**
+     * fixme 获取与屏幕低部的距离（以整个屏幕为标准。绝对距离）
+     * fixme top是顶部的位置，bottom是低部的位置。
+     */
+    fun bottom2(): Int {
+        context?.let {
+            if (it is Activity) {
+                if (!it.isFinishing) {
+                    return it.window.decorView.height - (getLocationOnScreenY() + height)
+                }
+            }
+        }
+        return 0
+    }
+
+    private var intArray = intArrayOf(0, 1)
+    //fixme 获取在整个屏幕的Y绝对坐标。
+    fun getLocationOnScreenY(): Int {
+        getLocationOnScreen(intArray)
+        return intArray[1]
+    }
+
+    //fixme 获取在整个屏幕的X绝对坐标。
+    fun getLocationOnScreenX(): Int {
+        getLocationOnScreen(intArray)
+        return intArray[0]
     }
 
     var isOnDestroy: Boolean = false//fixme 判断是否销毁了。

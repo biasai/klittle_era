@@ -196,7 +196,7 @@ open class KMyEditText : KTextView {
             var screenHeight = kpx.maxScreenHeight() - barHeight;
             //获取View可见区域的bottom
             var rect = Rect();
-            window.getDecorView().getWindowVisibleDisplayFrame(rect);
+            window.getDecorView().getWindowVisibleDisplayFrame(rect);//fixme getWindowVisibleDisplayFrame()获取得到的是最外层控件的位置。不是本控件。
             //activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
             //KLoggerUtils.e("screenHeight:\t" + screenHeight + "\tbottom:\t" + rect.bottom + "\t结果：\t" + (screenHeight - rect.bottom))
             //(screenHeight - rect.bottom) fixme 非全屏幕下正常；0软键盘没有显示；大于0，软键盘显示，该差值就算软键盘的高度。一般为764
@@ -404,5 +404,10 @@ open class KMyEditText : KTextView {
                 info.addAction(AccessibilityNodeInfo.AccessibilityAction.ACTION_SET_TEXT)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        textWatcher = null
     }
 }
