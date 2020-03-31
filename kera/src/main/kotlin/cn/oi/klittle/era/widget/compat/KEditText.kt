@@ -141,6 +141,8 @@ import kotlin.math.max
 //decimal(0, 1)//小数点后保留位数，小数总长度(包含小数)
 //maxDecimal(2)//最大值
 
+//inputHeightListener {}//fixme 软键盘（输入法）高度变化时会回调。即界面被弹窗挤上去和挤下来时，会回调。
+
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -943,39 +945,64 @@ open class KEditText : KMyEditText {
         }
     }
 
+    var inputHeight = 0//记录当前屏幕被挤上去的高度（软键盘的高度）；0软键盘没有弹窗，大于0，软键盘会弹出。
+    var inputHeightListener: ((inputHeight: Int) -> Unit)? = null
+    /**
+     * fixme 软键盘高度监听;小于等于0，软键盘没有显示，大于0，软键盘显示了(布局被挤上去了)。亲测有效！
+     */
+    fun inputHeightListener(inputHeightListener: ((inputHeight: Int) -> Unit)? = null) {
+        this.inputHeightListener = inputHeightListener
+    }
+
+
     var currentLineLenght: Float = 0F//当前进度显示的横线长度。
     var linePhase: Float = 0F//横线偏移量
     override fun draw2(canvas: Canvas, paint: Paint) {
-        super.draw2(canvas, paint)
-        if (line != null) {
-            var model: KEditLineEntity? = null
-            if (!isEnabled && line_enable != null) {
-                //不可用
-                model = line_enable
-            } else if (isPressed && line_press != null) {
-                //按下
-                model = line_press
-            } else if (isHovered && line_hover != null) {
-                //鼠标悬浮
-                model = line_hover
-            } else if (isFocused && line_focuse != null) {
-                //聚焦
-                model = line_focuse
-            } else if (isSelected && line_selected != null) {
-                //选中
-                model = line_selected
+        try {
+            //KLoggerUtils.e("输入发，绘制")//fixme 输入的draw()绘制方法，大约每500毫秒会自动调用。不管是否聚焦，都在不断的自动执行中。
+            super.draw2(canvas, paint)
+            if (line != null) {
+                var model: KEditLineEntity? = null
+                if (!isEnabled && line_enable != null) {
+                    //不可用
+                    model = line_enable
+                } else if (isPressed && line_press != null) {
+                    //按下
+                    model = line_press
+                } else if (isHovered && line_hover != null) {
+                    //鼠标悬浮
+                    model = line_hover
+                } else if (isFocused && line_focuse != null) {
+                    //聚焦
+                    model = line_focuse
+                } else if (isSelected && line_selected != null) {
+                    //选中
+                    model = line_selected
+                }
+                //正常
+                if (model == null) {
+                    model = line
+                }
+                //画底线的底线（没有动画效果，一直存在），实现线条重叠效果
+                line_bg?.apply {
+                    drawLine(canvas, paint, this, 1f)
+                }
+                model?.apply {
+                    drawLine(canvas, paint, this, lineProgress)
+                }
             }
-            //正常
-            if (model == null) {
-                model = line
+            inputHeightListener?.let {
+                getInputHeight(context).let {
+                    if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
+                        inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
+                        inputHeightListener?.let {
+                            it(inputHeight)
+                        }
+                    }
+                }
             }
-            //画底线的底线（没有动画效果，一直存在），实现线条重叠效果
-            line_bg?.apply {
-                drawLine(canvas, paint, this, 1f)
-            }
-            model?.apply {
-                drawLine(canvas, paint, this, lineProgress)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -1067,6 +1094,7 @@ open class KEditText : KMyEditText {
         line_focuse = null
         line_selected = null
         line_hover = null
+        inputHeightListener = null
     }
 
 }

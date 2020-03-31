@@ -3,6 +3,7 @@ package cn.oi.klittle.era.widget.compat
 import android.app.Activity
 import android.content.Context
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Editable
@@ -16,10 +17,13 @@ import android.util.AttributeSet
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
 
 import android.view.inputmethod.InputMethodManager
+import cn.oi.klittle.era.base.KBaseUi
+import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.helper.KAsteriskPasswordTransformationMethod
 import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.coroutines.experimental.async
@@ -156,6 +160,54 @@ open class KMyEditText : KTextView {
     //隐藏软键盘
     fun hideSoftKeyboard() {
         KMyEditText.hideSoftKeyboard(context, this)
+    }
+
+    fun getInputHeight(context: Context?): Int {
+        context?.let {
+            if (it is Activity) {
+                return getInputHeight(it as Activity)
+            }
+        }
+        return 0
+    }
+
+    fun getInputHeight(activity: Activity? = KBaseUi.getActivity()): Int {
+        if (activity == null) {
+            return 0
+        }
+        if (activity.isFinishing) {
+            return 0
+        }
+        return getInputHeight(activity?.window)
+    }
+
+    /**
+     * fixme 获取输入高度(实际获取的是布局被软键盘挤上去的高度);亲测执行该方法只需1毫秒
+     * @param window fixme Activity和Dialog的window是一起。即Dialog弹窗被挤上去，Activity的界面也会被挤上去。（亲测！）
+     * @return 大于0，输入法显示，小于等于0，输入发没有弹出
+     */
+    fun getInputHeight(window: Window?): Int {
+        if (window == null) {
+            return 0
+        }
+        var barHeight = kpx.navigationBarHeight//低部导航栏的高度
+        //获取当前屏幕内容的高度
+        var screenHeight = kpx.maxScreenHeight() - barHeight;
+        //获取View可见区域的bottom
+        var rect = Rect();
+        window.getDecorView().getWindowVisibleDisplayFrame(rect);
+        //activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(rect);
+        //KLoggerUtils.e("screenHeight:\t" + screenHeight + "\tbottom:\t" + rect.bottom + "\t结果：\t" + (screenHeight - rect.bottom))
+        //(screenHeight - rect.bottom) fixme 非全屏幕下正常；0软键盘没有显示；大于0，软键盘显示，该差值就算软键盘的高度。一般为764
+        //fixme 全面屏模式下；-130(低部导航栏的高度)软键盘没有显示；软键盘显示时，软键盘的高度大约为771和正常的差不多。
+        var inputHeight = (screenHeight - rect.bottom);//低部导航栏的高度一般都为130；输入法高度一般为764
+        inputHeight?.let {
+            if (it > barHeight) {
+                return it//fixme 返回输入高度（准确的说应该是界面被挤上去的高度）
+            } else {
+                return 0//fixme 为0，软键盘没有显示。
+            }
+        }
     }
 
     //初始化
