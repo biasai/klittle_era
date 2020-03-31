@@ -37,6 +37,7 @@ import cn.oi.klittle.era.exception.KCatchException
 //                    }
 
 //                    setSoundsRaw(R.raw.kpictureselect_music)//设置当前(方法不带s)控件的播放音频（在onDestroy()里会对音频进行释放）
+//fixme bottom2()低部距离；getLocationOnScreenY（）;getLocationOnScreenX();getLocationOnScreen();获取屏幕位置。最好在onGlobalLayoutListener加载完成之后再调用。
 /**
  * 一：基本组件，集成基本功能。
  */
@@ -1062,6 +1063,10 @@ open class K1Widget : K0Widget {
         return 0
     }
 
+    /**
+     * fixme 最好在onGlobalLayoutListener加载完成之后再调用
+     */
+
     private var intArray = intArrayOf(0, 1)
     //fixme 获取在整个屏幕的Y绝对坐标。
     fun getLocationOnScreenY(): Int {
@@ -1073,6 +1078,12 @@ open class K1Widget : K0Widget {
     fun getLocationOnScreenX(): Int {
         getLocationOnScreen(intArray)
         return intArray[0]
+    }
+
+    //fixme 获取屏幕位置。
+    fun getLocationOnScreen(): IntArray {
+        getLocationOnScreen(intArray)
+        return intArray
     }
 
     var isOnDestroy: Boolean = false//fixme 判断是否销毁了。
