@@ -5,6 +5,7 @@ import android.graphics.*
 import android.text.Editable
 import android.text.InputType
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -141,7 +142,7 @@ import kotlin.math.max
 //decimal(0, 1)//小数点后保留位数，小数总长度(包含小数)
 //maxDecimal(2)//最大值
 
-//inputHeightListener {}//fixme 软键盘（输入法）高度变化时会回调。即界面被弹窗挤上去和挤下来时，会回调。
+//inputHeightListener {}//fixme 软键盘（输入法）高度变化监听。即界面被弹窗挤上去和挤下来时，会回调。返回的是软键盘的高度。
 
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -954,6 +955,18 @@ open class KEditText : KMyEditText {
         this.inputHeightListener = inputHeightListener
     }
 
+    private fun inputHeightListener(){
+        inputHeightListener?.let {
+            getInputHeight(context).let {
+                if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
+                    inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
+                    inputHeightListener?.let {
+                        it(inputHeight)
+                    }
+                }
+            }
+        }
+    }
 
     var currentLineLenght: Float = 0F//当前进度显示的横线长度。
     var linePhase: Float = 0F//横线偏移量
@@ -991,19 +1004,20 @@ open class KEditText : KMyEditText {
                     drawLine(canvas, paint, this, lineProgress)
                 }
             }
-            inputHeightListener?.let {
-                getInputHeight(context).let {
-                    if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
-                        inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
-                        inputHeightListener?.let {
-                            it(inputHeight)
-                        }
-                    }
-                }
-            }
+            inputHeightListener()//fixme 软键盘监听
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+        var b= super.dispatchTouchEvent(event)
+        event?.action?.let {
+            if (it==MotionEvent.ACTION_UP){
+                inputHeightListener()//fixme 软键盘监听
+            }
+        }
+        return b
     }
 
     //画底线
