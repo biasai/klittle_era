@@ -263,65 +263,75 @@ object KPictureUtils {
     var CameraPackName: String? = null//相机包名
     //相机拍照【需要相机权限,如果清单里不写明相机权限,部分设备默认是开启。但是有的设备就不行，可能异常奔溃。所以保险还是在清单里加上权限声明】
     //fixme 相机拍照，不会对图片进行压缩处理。
+    //fixme 亲测相机拍摄，还需要SD卡存储的权限
     fun camera(activity: Activity? = KBaseUi.getActivity(), callback2: (file: File) -> Unit) {
         if (activity == null || activity.isFinishing) {
             return
         }
-        KPermissionUtils.requestPermissionsCamera(activity) {
+        //fixme 获取SD卡的权限
+        KPermissionUtils.requestPermissionsStorage {
             if (it) {
-                try {
-                    val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    //resolveActivity()查询是否有第三方能够启动该intent
-                    if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                        //PNG格式的不能显示在相册中
-                        var cramefile = KFileUtils.getInstance().createFile(getCameraPath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
-                        cramePath = cramefile?.absolutePath
-                        var fileUri: Uri
-                        if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。22是5.1的系统。
-                            //getPackageName()和${applicationId}显示的都是当前应用的包名。无论是在library还是moudle中，都是一样的。都显示的是当前应用moudle的。与类库无关。请放心使用。
-                            //fixme 无论是Activity还是Context。getPackageName()返回的都是当前应用的包名。
-                            fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
-                                    cramefile!!)
-                            //测试发现，5.0（版本号21）也可以使用FileProvider
-                            //FileProvider 图片路径不管是SD卡上，还是本应用缓存的路径，都有效。相机图片都能返回。
-                        } else {
-                            fileUri = Uri.fromFile(cramefile!!)//路径必须是本地SD卡存储上的路径，不然图片无法返回。
-                        }
-                        //KLoggerUtils.e("相机拍照：\t" + cramefile + "\t" + Build.VERSION.SDK_INT)
-                        //以下两个addFlags必不可少。【以防万一出错】
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                        intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                        intent.putExtra("return-data", false)
-                        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)//必不可少
-                        if (CameraPackName == null) {
-                            CameraPackName = KAppUtils.getCameraPackName(activity)//获取系统相机包名
-                        }
-                        CameraPackName?.let {
-                            if (!it.equals(packNameError)) {
-                                intent.setPackage(CameraPackName)//指定系统相机（不会再跳选择框了。欧耶！）
+                //fixme 获取相机的权限
+                KPermissionUtils.requestPermissionsCamera(activity) {
+                    if (it) {
+                        try {
+                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            //resolveActivity()查询是否有第三方能够启动该intent
+                            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                                //PNG格式的不能显示在相册中
+                                var cramefile = KFileUtils.getInstance().createFile(getCameraPath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
+                                cramePath = cramefile?.absolutePath
+                                var fileUri: Uri
+                                if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。22是5.1的系统。
+                                    //getPackageName()和${applicationId}显示的都是当前应用的包名。无论是在library还是moudle中，都是一样的。都显示的是当前应用moudle的。与类库无关。请放心使用。
+                                    //fixme 无论是Activity还是Context。getPackageName()返回的都是当前应用的包名。
+                                    fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
+                                            cramefile!!)
+                                    //测试发现，5.0（版本号21）也可以使用FileProvider
+                                    //FileProvider 图片路径不管是SD卡上，还是本应用缓存的路径，都有效。相机图片都能返回。
+                                } else {
+                                    fileUri = Uri.fromFile(cramefile!!)//路径必须是本地SD卡存储上的路径，不然图片无法返回。
+                                }
+                                //KLoggerUtils.e("相机拍照：\t" + cramefile + "\t" + Build.VERSION.SDK_INT)
+                                //以下两个addFlags必不可少。【以防万一出错】
+                                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                                intent.putExtra("return-data", false)
+                                intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)//必不可少
+                                if (CameraPackName == null) {
+                                    CameraPackName = KAppUtils.getCameraPackName(activity)//获取系统相机包名
+                                }
+                                CameraPackName?.let {
+                                    if (!it.equals(packNameError)) {
+                                        intent.setPackage(CameraPackName)//指定系统相机（不会再跳选择框了。欧耶！）
+                                    }
+                                }
+                                //fixme 默认一般打开的都是后置摄像机。放心。基本都是打开的后置。
+                                //intent.putExtra("android.intent.extras.CAMERA_FACING", 1);//fixme 前置相机，部分机型有效（小米有效）。不是全部机型都有效(PDA就无效)。
+                                activity.startActivityForResult(intent, DEFAULT_KEYS_CAMARA_PHOTO)//自定义相机标志
+                                this.cllback = callback2
+                            }
+                        } catch (e: Exception) {
+                            // TODO: handle exception
+                            KLoggerUtils.e("相机崩坏2:\t" + e.message)
+                            CameraPackName?.let {
+                                if (e.message?.contains(it) ?: false) {
+                                    if (!it.equals(packNameError)) {
+                                        CameraPackName = packNameError
+                                        camera(activity, callback2)
+                                    }
+                                }
                             }
                         }
-                        //fixme 默认一般打开的都是后置摄像机。放心。基本都是打开的后置。
-                        //intent.putExtra("android.intent.extras.CAMERA_FACING", 1);//fixme 前置相机，部分机型有效（小米有效）。不是全部机型都有效(PDA就无效)。
-                        activity.startActivityForResult(intent, DEFAULT_KEYS_CAMARA_PHOTO)//自定义相机标志
-                        this.cllback = callback2
-                    }
-                } catch (e: Exception) {
-                    // TODO: handle exception
-                    KLoggerUtils.e("相机崩坏2:\t" + e.message)
-                    CameraPackName?.let {
-                        if (e.message?.contains(it) ?: false) {
-                            if (!it.equals(packNameError)) {
-                                CameraPackName = packNameError
-                                camera(activity, callback2)
-                            }
-                        }
+                    } else {
+                        KPermissionUtils.showFailure(activity, KPermissionUtils.perMissionTypeCamera)//fixme 提示打开相机权限
                     }
                 }
             } else {
-                KPermissionUtils.showFailure(activity, KPermissionUtils.perMissionTypeCamera)
+                KPermissionUtils.showFailure(activity, KPermissionUtils.perMissionTypeStorage)//fixme 提示SD卡读取权限
             }
         }
+
     }
 
     var cropfile: File? = null//裁剪文件
