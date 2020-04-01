@@ -8,15 +8,9 @@ import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.Paint
 import android.util.DisplayMetrics
-import android.util.Log
 import android.util.TypedValue
-import android.view.KeyCharacterMap
-import android.view.KeyEvent
-import android.view.View
-import android.view.WindowManager
-import cn.oi.klittle.era.utils.KCacheUtils
+import android.view.*
 import cn.oi.klittle.era.utils.KLanguageUtil
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
@@ -46,6 +40,7 @@ open class KBasePx {
     //fixme 屏幕最大，屏幕真正的最大高度。（不是Activity的contentView视图的真实高度。）contentViewHeight()可以获取真实的高度。
     //fixme 对全屏状态和有状态栏状态。都适用。都一样。都能获取最真实的最大高度。(亲测)
     fun maxScreenHeight(): Int {
+        navigationBarHeight = getNavigationBarHeight(KBaseApplication.getInstance())
         if (navigationBarHeight <= 0) {
             //当导航栏高度为0时,screenHeight就是整个屏幕的高(包含了状态栏的高度).
             return screenHeight.toInt()
@@ -100,6 +95,74 @@ open class KBasePx {
         }
     }
 
+    //设置最外层视图的高度
+    fun setWindowHeight(window: Window?, height: Int?) {
+        if (height == null) {
+            return
+        }
+        try {
+            getWindowContentView(window)?.let {
+                it.layoutParams?.let {
+                    it.height = height
+                }
+                it.requestLayout()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //设置最外层视图的宽度
+    fun setWindowWidth(window: Window?, width: Int?) {
+        if (width == null) {
+            return
+        }
+        try {
+            getWindowContentView(window)?.let {
+                it.layoutParams?.let {
+                    it.width = width
+                }
+                it.requestLayout()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //设置最外层视图的宽度和高度
+    fun setWindow(window: Window?, width: Int?, height: Int?) {
+        try {
+            getWindowContentView(window)?.let {
+                it.layoutParams?.let {
+                    if (width != null) {
+                        it.width = width
+                    }
+                    if (height != null) {
+                        it.height = height
+                    }
+                }
+                it.requestLayout()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //获取window视图；一定要在setContentView()添加布局之后，再调用，才有效。
+    fun getWindowContentView(window: Window?): View? {
+        try {
+            return window?.decorView?.findViewById<ViewGroup>(android.R.id.content)?.getChildAt(0)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    //fixme 监听window视图加载；视图刷选时也会回调。
+    fun addOnGlobalLayoutListener(window: Window?, callBack: () -> Unit) {
+        getWindowContentView(window)?.getViewTreeObserver()?.addOnGlobalLayoutListener(ViewTreeObserver.OnGlobalLayoutListener { callBack?.let { it() } })
+    }
+
     /**
      * 获取当前Activity屏幕方向，true竖屏，false横屏
      */
@@ -133,7 +196,7 @@ open class KBasePx {
     /**
      * fixme 获取屏幕高，isVertical true以竖屏为标准。默认是。false以横屏为标准
      */
-    fun screenHeight(isVertical: Boolean = true): Int {
+    fun screenHeight(isVertical: Boolean = true, context: Context? = KBaseUi.getActivity()): Int {
         if (isVertical) {
             if (screenHeight > screenWidth) {
                 return screenHeight.toInt()//竖屏，高度比宽度大

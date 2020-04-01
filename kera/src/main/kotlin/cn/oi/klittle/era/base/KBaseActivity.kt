@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentActivity
 import android.view.View
+import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.WindowManager
 import cn.oi.klittle.era.R
@@ -25,6 +26,7 @@ import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
+import cn.oi.klittle.era.widget.compat.K0Widget
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.act
@@ -820,6 +822,21 @@ open class KBaseActivity : FragmentActivity() {
         finishCallBackes?.add(finishCallBack)
     }
 
+    private var OnGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+    private var callBack: (() -> Unit)? = null
+    //fixme 监听window视图加载；视图刷选时也会回调。即判断Activity是否加载完成
+    //fixme K0Widget的加载监听也是：onGlobalLayoutListener {  }；
+    //fixme 一定要在setContentView()添加布局之后，再调用，才有效。
+    fun onGlobalLayoutListener(callBack: (() -> Unit)?) {
+        this.callBack = callBack
+        if (OnGlobalLayoutListener == null) {
+            OnGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { this.callBack?.let { it() } }
+        }
+        //addOnGlobalLayoutListener可以多次添加，不冲突。
+        kpx.getWindowContentView(window)?.getViewTreeObserver()?.addOnGlobalLayoutListener(OnGlobalLayoutListener)
+        //getWindowContentView（）要在setContentView()之后才有效。
+    }
+
     //fixme Activity关闭的时候一定会调用，返回键也会调用该方法。
     override fun finish() {
         //KLoggerUtils.e("finish():\t" + isOnCreateSuper)
@@ -838,6 +855,12 @@ open class KBaseActivity : FragmentActivity() {
                 }
                 finishCallBackes?.clear()
                 finishCallBackes = null
+
+                if (OnGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
+                    kpx.getWindowContentView(window)?.getViewTreeObserver()?.removeOnGlobalLayoutListener(OnGlobalLayoutListener)
+                }
+                OnGlobalLayoutListener = null
+                callBack = null
 
                 //fixme 只移除数据，不会对原数据置空，如果要置空，请手动置空。
                 KBaseApplication.getInstance().remove(this::class.java.toString())
@@ -909,9 +932,15 @@ open class KBaseActivity : FragmentActivity() {
         //dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)//fixme 隐藏软键盘Dialog(onShow())里调用。Dialog就不会在一开始显示的时候自动弹出弹框。
     }
 
+//    scrollView {
+//        isFillViewport = true//子控件充满scrollView
+//        setVerticalScrollBarEnabled(false);//实现滚动条隐藏.
+//        verticalLayout {  }
+//    }
+
     /**
      * fixme 最外层布局必须是scrollView（必须，不然部分设备无效）;设置了以下模式，软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_STATE_UNSPECIFIED
-     * fixme inputHeightListener()仍然可以获取软键盘高度。不挤压屏幕，依旧可以获取软键盘的高度。dialog弹窗也有效。
+     * fixme inputHeightListener()仍然可以获取软键盘高度。不挤压屏幕，依旧可以获取软键盘的高度。=========dialog弹窗也有效。==========
      */
     open fun setSoftInputMode2(window: Window? = KBaseUi.getActivity()?.window) {
         //fixme 可能会自动弹出软键盘；解决方案，在文本输入框的父容器中，加入以下聚焦代码即可。
@@ -925,7 +954,7 @@ open class KBaseActivity : FragmentActivity() {
     /**
      * fixme 软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_ADJUST_NOTHING亲测有效
      * fixme 这个完全不挤压屏幕，也无法获取软键盘的高度。软键盘高度始终获取为0
-     * fixme 对Dialog设置好像无效，依旧会挤压布局，不会覆盖。
+     * fixme ===========对Dialog设置好像无效，依旧会挤压布局，不会覆盖。================
      */
     open fun setSoftInputMode3(window: Window? = KBaseUi.getActivity()?.window) {
         window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//fixme 不会自动弹出软键盘，最外层布局没有要求，什么布局都有效。

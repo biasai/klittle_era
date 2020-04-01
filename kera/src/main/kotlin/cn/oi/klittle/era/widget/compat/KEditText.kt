@@ -957,16 +957,16 @@ open class KEditText : KMyEditText {
      */
     fun inputHeightListener(window: Window? = null, inputHeightListener: ((inputHeight: Int) -> Unit)? = null) {
         if (window != null) {
-            this.window = window
+            this.mWindow = window
         }
         this.inputHeightListener = inputHeightListener
     }
 
-    var window: Window? = null
+    var mWindow: Window? = null
     private fun inputHeightListener() {
         inputHeightListener?.let {
-            if (window != null) {
-                getInputHeight(window).let {
+            if (mWindow != null) {
+                getInputHeight(mWindow).let {
                     if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
                         inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
                         inputHeightListener?.let {
@@ -1136,7 +1136,7 @@ open class KEditText : KMyEditText {
         line_selected = null
         line_hover = null
         inputHeightListener = null
-        window = null
+        mWindow = null
     }
 
 }

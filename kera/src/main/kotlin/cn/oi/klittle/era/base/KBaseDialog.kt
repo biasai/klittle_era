@@ -591,6 +591,12 @@ open class KBaseDialog() {
         //dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)//fixme 隐藏软键盘Dialog(onShow())里调用。Dialog就不会在一开始显示的时候自动弹出弹框。
     }
 
+//        scrollView {
+//        isFillViewport = true//子控件充满scrollView
+//        setVerticalScrollBarEnabled(false);//实现滚动条隐藏.
+//        verticalLayout {  }
+//    }
+
     /**
      * fixme 最外层布局必须是scrollView（必须，不然部分设备无效）;设置了以下模式，软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_STATE_UNSPECIFIED
      * fixme inputHeightListener()仍然可以获取软键盘高度。不挤压屏幕，依旧可以获取软键盘的高度。dialog弹窗也有效。
