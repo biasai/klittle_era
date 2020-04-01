@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
+import android.view.WindowManager
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
 
@@ -68,6 +69,22 @@ open class KMyEditText : KTextView {
     }
 
     companion object {
+
+//        /**
+//         * fixme 判断软键盘，输入法是否弹出。true软盘弹出了。false没有弹出;
+//         * fixme 无效，无法判断输入法是否弹出。以下是错误的。
+//         */
+//        fun isShowSoftInput(context: Context? = KBaseUi.getActivity()): Boolean {
+//            context?.let {
+//                if (it is Activity) {
+//                    if (it.window.getAttributes().softInputMode == WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE) {
+//                        return true
+//                    }
+//                }
+//            }
+//            return false
+//        }
+
         //fixme 手动调出软键盘,这个文本框不会主动弹出，需要手动调用。所以不需要担心输入框自动弹出的问题。
         fun showSoftInput(context: Context?, view: View) {
             try {
@@ -182,7 +199,7 @@ open class KMyEditText : KTextView {
     }
 
     /**
-     * fixme 获取输入高度(实际获取的是布局被软键盘挤上去的高度);亲测执行该方法只需1毫秒
+     * fixme 获取输入高度(不是布局被挤上的高度，就算软键盘的高度。);亲测执行该方法只需1毫秒
      * @param window fixme Activity和Dialog的window是一起。即Dialog弹窗被挤上去，Activity的界面也会被挤上去。（亲测！）
      * @return 大于0，输入法显示，小于等于0，输入发没有弹出
      */
@@ -204,7 +221,7 @@ open class KMyEditText : KTextView {
             var inputHeight = (screenHeight - rect.bottom);//低部导航栏的高度一般都为130；输入法高度一般为764
             inputHeight?.let {
                 if (it > barHeight) {
-                    return it//fixme 返回输入高度（准确的说应该是界面被挤上去的高度）
+                    return it//fixme 返回输入高度（不是布局被挤的高度，就是软键盘的高度）
                 } else {
                     return 0//fixme 为0，软键盘没有显示。
                 }

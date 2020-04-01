@@ -8,6 +8,7 @@ import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.view.inputmethod.EditorInfo
 import android.widget.TextView
 import cn.oi.klittle.era.entity.widget.compat.KEditLineEntity
@@ -15,6 +16,8 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.singleLine
 import kotlin.math.max
 
@@ -950,18 +953,34 @@ open class KEditText : KMyEditText {
     var inputHeightListener: ((inputHeight: Int) -> Unit)? = null
     /**
      * fixme 软键盘高度监听;小于等于0，软键盘没有显示，大于0，软键盘显示了(布局被挤上去了)。亲测有效！
+     * @param window 可以为空，为空的时候，会自动通过context上下文去获取。
      */
-    fun inputHeightListener(inputHeightListener: ((inputHeight: Int) -> Unit)? = null) {
+    fun inputHeightListener(window: Window? = null, inputHeightListener: ((inputHeight: Int) -> Unit)? = null) {
+        if (window != null) {
+            this.window = window
+        }
         this.inputHeightListener = inputHeightListener
     }
 
-    private fun inputHeightListener(){
+    var window: Window? = null
+    private fun inputHeightListener() {
         inputHeightListener?.let {
-            getInputHeight(context).let {
-                if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
-                    inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
-                    inputHeightListener?.let {
-                        it(inputHeight)
+            if (window != null) {
+                getInputHeight(window).let {
+                    if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
+                        inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
+                        inputHeightListener?.let {
+                            it(inputHeight)
+                        }
+                    }
+                }
+            } else {
+                getInputHeight(context).let {
+                    if (it != inputHeight) {//软键盘高度有变化时，才回调。防止重复回调。
+                        inputHeight = it//fixme 记录当前屏幕被挤上去的高度（软键盘的高度）
+                        inputHeightListener?.let {
+                            it(inputHeight)
+                        }
                     }
                 }
             }
@@ -1011,11 +1030,19 @@ open class KEditText : KMyEditText {
     }
 
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
-        var b= super.dispatchTouchEvent(event)
-        event?.action?.let {
-            if (it==MotionEvent.ACTION_UP){
-                inputHeightListener()//fixme 软键盘监听
+        var b = true
+        try {
+            b = super.dispatchTouchEvent(event)
+            event?.action?.let {
+                if (it == MotionEvent.ACTION_UP) {
+                    //fixme 手指离开
+                    async {
+                        inputHeightListener()//fixme 软键盘监听
+                    }
+                }
             }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
         }
         return b
     }
@@ -1109,6 +1136,7 @@ open class KEditText : KMyEditText {
         line_selected = null
         line_hover = null
         inputHeightListener = null
+        window = null
     }
 
 }

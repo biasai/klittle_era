@@ -581,6 +581,38 @@ open class KBaseDialog() {
         return ctx?.resources?.getStringArray(id)
     }
 
+    /**
+     * fixme 隐藏软键盘Dialog(onShow())里调用。Dialog就不会在一开始显示的时候自动弹出弹框。
+     */
+    open fun setSoftInputMode(window: Window? = dialog?.window) {
+        //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
+        //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        //dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)//fixme 隐藏软键盘Dialog(onShow())里调用。Dialog就不会在一开始显示的时候自动弹出弹框。
+    }
+
+    /**
+     * fixme 最外层布局必须是scrollView（必须，不然部分设备无效）;设置了以下模式，软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_STATE_UNSPECIFIED
+     * fixme inputHeightListener()仍然可以获取软键盘高度。不挤压屏幕，依旧可以获取软键盘的高度。dialog弹窗也有效。
+     */
+    open fun setSoftInputMode2(window: Window? = KBaseUi.getActivity()?.window) {
+        //fixme 可能会自动弹出软键盘；解决方案，在文本输入框的父容器中，加入以下聚焦代码即可。
+        //isFocusable=true
+        //isFocusableInTouchMode=true
+        //requestFocus()
+        //requestFocusFromTouch()
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED)
+    }
+
+    /**
+     * fixme 软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_ADJUST_NOTHING亲测有效
+     * fixme 这个完全不挤压屏幕，也无法获取软键盘的高度。软键盘高度始终获取为0
+     * fixme 对Dialog设置好像无效，依旧会挤压布局，不会覆盖。
+     */
+    open fun setSoftInputMode3(window: Window? = KBaseUi.getActivity()?.window) {
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//fixme 不会自动弹出软键盘，最外层布局没有要求，什么布局都有效。
+    }
+
     companion object {
         //获取位图
         open fun getBitmapFromAssets(filePath: String, isRGB_565: Boolean = false): Bitmap {
