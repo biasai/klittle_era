@@ -3,11 +3,14 @@ package cn.oi.klittle.era.utils
 import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import cn.oi.klittle.era.base.KBaseApplication
-import kotlinx.coroutines.experimental.async
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.File
 import java.io.Serializable
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * Created by 彭治铭 on 2018/10/25.
@@ -124,7 +127,7 @@ object KCacheUtils {
 
     //fixme 清除所有公共缓存[不包含私有缓存],防止删除的文件过大，防止耗时。所以加了协程和回调。
     fun clearCache(callback: (() -> Unit)? = null) {
-        async {
+        GlobalScope.async {
             getCache().clear()
             callback?.let {
                 it()//删除完成回调
@@ -134,7 +137,7 @@ object KCacheUtils {
 
     //清除所有公共缓存[不包含私有缓存]
     fun clearCacheAll(callback: (() -> Unit)? = null) {
-        async {
+        GlobalScope.async {
             getCache().clear()
             KFileUtils.getInstance().delAllFiles(getCachePath())//fixme 删除该文件夹下的所有文件夹和文件
             callback?.let {
@@ -145,7 +148,7 @@ object KCacheUtils {
 
     //清除私有缓存目录
     fun clearCacheSecret(callback: (() -> Unit)? = null) {
-        async {
+        GlobalScope.async {
             getCacheSecret().clear()
             callback?.let {
                 it()//删除完成回调
@@ -155,7 +158,7 @@ object KCacheUtils {
 
     //清除私有缓存目录，包括该目录下的所有目录
     fun clearCacheSecretAll(callback: (() -> Unit)? = null) {
-        async {
+        GlobalScope.async {
             getCacheSecret().clear()
             KFileUtils.getInstance().delAllFiles(getCachePathSecret())//fixme 删除该文件夹下的所有文件夹和文件
             callback?.let {

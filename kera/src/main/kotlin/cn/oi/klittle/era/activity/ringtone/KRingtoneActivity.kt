@@ -1,16 +1,12 @@
 package cn.oi.klittle.era.activity.ringtone
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
-import android.view.View
-import cn.oi.klittle.era.R
-import cn.oi.klittle.era.activity.ringtone.adapter.KRingtoneAdapter
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRingtoneManagerUtils
-import kotlinx.coroutines.experimental.async
-import android.support.v7.widget.RecyclerView
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 
 /**
@@ -42,7 +38,7 @@ open class KRingtoneActivity : KBaseActivity() {
         super.onResume()
         if (ui?.ringtoneAdapter?.datas == null) {
             showProgressbar()//显示弹窗
-            async {
+            GlobalScope.async {
                 try {
                     ui?.ringtoneAdapter?.datas = KRingtoneManagerUtils.getRingToneDatas()
                     ui?.ringtoneAdapter?.datas?.let {

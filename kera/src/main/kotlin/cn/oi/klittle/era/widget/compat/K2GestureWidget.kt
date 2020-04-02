@@ -6,7 +6,8 @@ import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ViewGroup
-import org.jetbrains.anko.sdk25.coroutines.onTouch
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.lang.Exception
 
 //                fixme kotlin 原始事件

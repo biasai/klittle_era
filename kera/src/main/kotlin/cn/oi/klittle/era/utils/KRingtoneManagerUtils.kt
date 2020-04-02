@@ -7,7 +7,10 @@ import android.media.Ringtone
 import android.media.RingtoneManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * fixme 系统铃声;KIntentUtils.goSoundSetting()跳转到声音大小调节设置界面。
@@ -55,7 +58,7 @@ object KRingtoneManagerUtils {
                             ringtone = it[index]//fixme 记录当前铃声
                         }
                     }
-                    async {
+                    GlobalScope.async {
                         try {
                             KCacheUtils.putSecret(index_key, value.toString())//fixme 保存下标
                         } catch (e: Exception) {
@@ -188,8 +191,8 @@ object KRingtoneManagerUtils {
                             setRingtoneRepeat(it)
                             if (delay > 10) {
                                 var stopIndex = index
-                                async {
-                                    kotlinx.coroutines.experimental.delay(delay)
+                                GlobalScope.async {
+                                    delay(delay)
                                     stop(stopIndex)//fixme 指定时间自动停止播放。
                                 }
                             }
@@ -219,8 +222,8 @@ object KRingtoneManagerUtils {
                     setRingtoneRepeat(it)
                     if (delay > 10) {
                         var stopIndex = index
-                        async {
-                            kotlinx.coroutines.experimental.delay(delay)
+                        GlobalScope.async {
+                            delay(delay)
                             stop(stopIndex)//fixme 指定时间自动停止播放。
                         }
                     }

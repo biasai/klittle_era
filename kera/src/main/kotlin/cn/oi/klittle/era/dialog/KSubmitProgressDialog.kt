@@ -18,9 +18,10 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 //调用案例
 //KSubmitProgressDialog(this).apply {
@@ -97,8 +98,8 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
 
     //被观察者
     private var observable: Observable<Boolean>? = Observable.create<Boolean> {
-        async {
-            delay(timeOut, TimeUnit.MILLISECONDS)
+        GlobalScope.async {
+            delay(timeOut)
             it.onComplete()
         }
     }

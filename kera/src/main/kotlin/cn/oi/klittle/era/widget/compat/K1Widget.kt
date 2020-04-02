@@ -21,13 +21,16 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.android.synthetic.*
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.*
 import java.lang.Exception
 import android.graphics.Paint.FILTER_BITMAP_FLAG
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import cn.oi.klittle.era.entity.camera.KCamera
 import cn.oi.klittle.era.exception.KCatchException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //                    fixme 设置音频播放
 //                    issMediaPlayerEnable = true//开启全局音频播放
@@ -341,14 +344,14 @@ open class K1Widget : K0Widget {
                         //fixme 防止快速点击
                         if (isFastClickEnable) {
                             if (mediaPlayer != null) {
-                                async {
+                                GlobalScope.async {
                                     playMediaPlayer()
 //                                if (!mediaPlayer!!.isPlaying) {
 //                                    mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
 //                                }
                                 }
                             } else if (issMediaPlayerEnable && sMediaPlayer != null) {
-                                async {
+                                GlobalScope.async {
                                     K0Widget.sPlayMediaPlayer()
 //                                if (!sMediaPlayer!!.isPlaying) {
 //                                    sMediaPlayer?.start()//播放全局静态音频
@@ -369,14 +372,14 @@ open class K1Widget : K0Widget {
                             }
                         } else if (!isFastClick()) {//fixme 不允许快速点击
                             if (mediaPlayer != null) {
-                                async {
+                                GlobalScope.async {
                                     playMediaPlayer()
 //                                if (!mediaPlayer!!.isPlaying) {
 //                                    mediaPlayer?.start()//播放自己音频(优先播放)
 //                                }
                                 }
                             } else if (issMediaPlayerEnable && sMediaPlayer != null) {
-                                async {
+                                GlobalScope.async {
                                     K0Widget.sPlayMediaPlayer()
 //                                if (!sMediaPlayer!!.isPlaying) {
 //                                    sMediaPlayer?.start()//播放全局静态音频

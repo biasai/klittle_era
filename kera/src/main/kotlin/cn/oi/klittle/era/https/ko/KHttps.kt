@@ -9,8 +9,11 @@ import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.gson.KGsonUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
 import java.io.File
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 open class KHttps() {
 
@@ -265,7 +268,7 @@ open class KHttps() {
             }
             //fixme 网络轮询回调
             https?.next?.let {
-                async {
+                GlobalScope.async {
                     it()
                 }
             }

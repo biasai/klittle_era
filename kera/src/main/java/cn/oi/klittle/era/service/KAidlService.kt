@@ -7,15 +7,14 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.os.Build
 import android.os.IBinder
 import cn.oi.klittle.era.service.aidl.KAidlCallback
 import cn.oi.klittle.era.service.aidl.KAidlInterface
-import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import java.util.concurrent.TimeUnit
-
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 /**
  * fixme 跨进程服务

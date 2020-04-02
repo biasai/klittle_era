@@ -14,7 +14,8 @@ import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.compat.KView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * 图片列表选择框

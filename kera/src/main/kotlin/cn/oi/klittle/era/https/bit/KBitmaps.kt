@@ -10,14 +10,16 @@ import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KProportionUtils
-import kotlinx.coroutines.experimental.async
 import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //调用案例
 //                    var url = "http://s4.sinaimg.cn/mw690/001ve3i3zy6SziUdgH143&690"
@@ -318,7 +320,7 @@ open class KBitmaps() {
                     }
                 } else {
                     //fixme 没有回调，就将位图释放掉,防止异常，在新开协程里释放。
-                    async {
+                    GlobalScope.async {
                         if (!bitmap.isRecycled) {
                             bitmap.recycle()
                         }
@@ -492,13 +494,13 @@ open class KBitmaps() {
         private var maping = hashMapOf<String, Boolean?>()
         //获取指定颜色的位图(将该位图，有像素的部分全都变成该颜色值)
         fun getColorBitmap(color: Int, bitmap: Bitmap, callback: ((bitimap: Bitmap) -> Unit)) {
-            async {
+            GlobalScope.async {
                 //返回位图的id，当位图被修改时，id会改变. 可以用于位图是否改变的一种高效的方式
                 //bitmap.generationId
                 var key = color.toString() + bitmap.generationId.toString() + bitmap.width.toString() + bitmap.height.toString()
                 var ising: Boolean? = maping.get(bitmap.generationId.toString())//判断是否正在操作该位图
                 if (ising != null && ising) {
-                    delay(1500, TimeUnit.MILLISECONDS)//如果正在操作，则延迟一下。
+                    delay(1500)//如果正在操作，则延迟一下。
                 }
                 //缓存用的是key,是否正在使用位图，用的是位图的id
                 maping.put(bitmap.generationId.toString(), true)//fixme 正在操作该位图（防止同时操作，奔溃）
@@ -533,11 +535,11 @@ open class KBitmaps() {
          * strokeColor 圆形位图，边框颜色
          */
         fun getCircleBitmap(strokeWidth: Float, strokeColor: Int, bitmap: Bitmap, callback: ((bitimap: Bitmap) -> Unit)) {
-            async {
+            GlobalScope.async {
                 var key = strokeWidth.toString() + strokeColor.toString() + bitmap.generationId.toString() + bitmap.width.toString() + bitmap.height.toString()
                 var ising: Boolean? = maping.get(bitmap.generationId.toString())//判断是否正在操作该位图
                 if (ising != null && ising) {
-                    delay(1500, TimeUnit.MILLISECONDS)//如果正在操作，则延迟一下。
+                    delay(1500)//如果正在操作，则延迟一下。
                 }
                 maping.put(bitmap.generationId.toString(), true)//fixme 正在操作该位图（防止同时操作，奔溃）
                 var outBitmap: Bitmap? = KAssetsUtils.getInstance().getCacleBitmap(key)//优先读取缓存，重复利用。

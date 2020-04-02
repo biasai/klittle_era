@@ -2,7 +2,6 @@ package cn.oi.klittle.era.widget.video
 
 import android.app.Activity
 import android.content.Context
-import android.graphics.Canvas
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.AttributeSet
@@ -11,11 +10,11 @@ import android.widget.VideoView
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.delay
-import org.jetbrains.anko.custom.async
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 import org.jetbrains.anko.runOnUiThread
-import java.util.concurrent.TimeUnit
 
 //                   setVideoPath(path)//加载本地视频，同样也支持网络视频。如果字符串是网络url，同样可以播放。
 //                   //在视频预处理完成后被调用。
@@ -127,7 +126,7 @@ class KVideoView : VideoView {
                             it()
                         }
                     }
-                    async {
+                    GlobalScope.async {
                         context?.runOnUiThread {
                             start()
                             if (!isStart) {
@@ -418,7 +417,7 @@ class KVideoView : VideoView {
     private fun onSeekListener2() {
         isProgress = true
         job?.cancel()//取消协程
-        job = kotlinx.coroutines.experimental.async {
+        job = GlobalScope.async {
             while (isProgress) {
                 if (!isFinish()) {
                     if (currentPosition >= 0 && duration > 0) {
@@ -438,7 +437,7 @@ class KVideoView : VideoView {
                                         }
                                     }
                                 }
-                                delay(500, TimeUnit.MILLISECONDS)//1000毫秒是一秒。
+                                delay(500)//1000毫秒是一秒。
                             }
                         }
                     }

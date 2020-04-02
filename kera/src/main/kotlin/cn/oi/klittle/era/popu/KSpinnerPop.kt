@@ -14,7 +14,8 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KPopuWindowUtils
 import org.jetbrains.anko.*
 import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 //        //数据
 //        var list = mutableListOf<String>()

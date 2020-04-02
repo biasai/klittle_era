@@ -10,13 +10,11 @@ import android.widget.TextView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.utils.KLoggerUtils
-import cn.oi.klittle.era.widget.KGradientScrollView
-import cn.oi.klittle.era.widget.compat.KScrollTextView
-import cn.oi.klittle.era.widget.compat.KShadowView
 import cn.oi.klittle.era.widget.compat.KTextView
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 //        val alert: KTimiAlertDialog by lazy { KTimiAlertDialog(this) }
 //        alert.title("温馨提示").mession("是否确认退出？").positive("确定") {
@@ -207,7 +205,7 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
         title?.setText(txt_title)
         mession?.setText(txt_mession)//先设置文本，再计算高度。
         var distanceHeight = 0//文本多出控件的高度
-        async {
+        GlobalScope.async {
             //新开线程，防止文本框没有初始化完成，宽和高没有获取得到。
             ctx?.runOnUiThread {
                 scrollView?.apply {

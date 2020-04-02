@@ -12,10 +12,11 @@ import android.util.TypedValue
 import android.view.*
 import cn.oi.klittle.era.utils.KLanguageUtil
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.contentView
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 /**
  * Created by 彭治铭 on 2018/7/21.
@@ -76,8 +77,8 @@ open class KBasePx {
                         }
                     }
                     if (delay > 10) {//判断延迟时间，防止无限循环加载
-                        async {
-                            kotlinx.coroutines.experimental.delay(delay, TimeUnit.MILLISECONDS)//延迟
+                        GlobalScope.async {
+                            delay(delay)//延迟
                             var delay = delay - 10//时间递减；从150毫秒递减相加，为1190毫秒。
                             runOnUiThread {
                                 contentViewHeight(activity, delay, callBack)
@@ -338,7 +339,7 @@ open class KBasePx {
                 removeKey(url, src)
                 return
             }
-            async {
+            GlobalScope.async {
                 if (!isRpeateKey(url, src)) {
                     //KLoggerUtils.e("没有重复：\t" + src + "\turl:\t" + url + "\t" + src.isRecycled)
                     //fixme 开始操作位图，缓存键
@@ -351,8 +352,8 @@ open class KBasePx {
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
-                    async {
-                        delay(10, TimeUnit.MILLISECONDS)//避免并发，还是延迟一下。（亲测，延迟一下很好）
+                    GlobalScope.async {
+                        delay(10)//避免并发，还是延迟一下。（亲测，延迟一下很好）
                         //fixme 位图操作完成，清除键
                         removeKey(url, src)
                     }
@@ -365,7 +366,7 @@ open class KBasePx {
                         var radom2 = KStringUtils.getRandom(2).toLong()
                         var time = delay + radom0 + radom1 + radom2
                         //KLoggerUtils.e("重复压缩延迟时间：\t" + time + "\turl:\t" + url + "\tsrc:\t" + src + "\t" + src.isRecycled)
-                        kotlinx.coroutines.experimental.delay(time, TimeUnit.MILLISECONDS)//延迟
+                        delay(time)//延迟
                         keyBitmap(url, src, width, height, isCompress, isRecycle, callBack)//fixme 递归
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()

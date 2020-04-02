@@ -16,7 +16,8 @@ import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.compat.KView
 import cn.oi.klittle.era.widget.recycler.adapter.KAdapter
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
  * fixme 这个Adaper适配器是为了方便测试使用的。

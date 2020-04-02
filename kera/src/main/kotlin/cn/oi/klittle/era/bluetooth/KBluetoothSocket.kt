@@ -7,11 +7,10 @@ import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.socket.KState
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
-import java.io.DataInputStream
 import java.io.DataOutputStream
-import java.io.InputStream
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 //                    fixme 实例案例
 //                    //打开BluetoothServerSocket服务
 //                    KBluetoothAdapter.openBluetoothServerSocket {  }
@@ -61,7 +60,7 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
         }
         data?.let {
             if (it.size > 0) {
-                async {
+                GlobalScope.async {
                     try {
                         if (isConnect()) {
                             var out = DataOutputStream(bluetoothSocket?.outputStream)
@@ -107,7 +106,7 @@ class KBluetoothSocket(var bluetoothSocket: BluetoothSocket?) {
         }
         isReadUTF = true
         kotlin.run {
-            async {
+            GlobalScope.async {
                 while (isConnect()) {
                     //无限循环读取
                     try {

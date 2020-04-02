@@ -4,9 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 import android.view.View
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 /**
  * 定时刷新工具类，参数说明,0F是浮点型，0L是长整形。
  * count 刷新次数，从1开始。计循环次数是从 1到count （包括1和num）, Long.MAX_VALUE这个值非常大，比Int.MAX_VALUE大。所以选择Long类型
@@ -53,7 +54,7 @@ object KTimerUtils {
         //Long.MAX_VALUE//9223372036854775807L
         var kTimer = KTimer()
         if (count > 0) {
-            async {
+            GlobalScope.async {
                 var i = 1L//fixme 次数从1开始，
                 while (!kTimer.isEnd()) {
                     if (kTimer.isEnd()) {
@@ -91,7 +92,7 @@ object KTimerUtils {
         var kTimer = KTimer()
         if (count > 0) {
             activity?.let {
-                async {
+                GlobalScope.async {
                     var i = 1L
                     while (!kTimer.isEnd()) {
                         if (kTimer.isEnd()) {
@@ -152,7 +153,7 @@ object KTimerUtils {
             }
             activity?.let {
                 if (!it.isFinishing) {
-                    async {
+                    GlobalScope.async {
                         var i = 1L
                         while (!kTimer.isEnd()) {
                             if (kTimer.isEnd()) {

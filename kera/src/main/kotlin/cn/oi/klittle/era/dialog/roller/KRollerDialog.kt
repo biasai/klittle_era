@@ -16,7 +16,8 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KRollerView
 import cn.oi.klittle.era.widget.compat.KView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.lang.Exception
 
 //            fixme 调用案例

@@ -3,8 +3,11 @@ package cn.oi.klittle.era.https.ko
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
 import java.lang.Exception
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * Created by 彭治铭 on 2018/6/6.

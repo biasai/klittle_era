@@ -11,10 +11,12 @@ import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * fixme wifi管理工具类、wifi权限无法完全获取。
@@ -478,9 +480,9 @@ object KWifiManagerUtils {
                         //wifi关闭
                         if (shutCallback != null) {
                             shutCallback?.let {
-                                async {
+                                GlobalScope.async {
                                     shutCallback = null//回调一次即可。防止重复回调。不会影响下面的it()
-                                    delay(500, TimeUnit.MILLISECONDS)//fixme wifi开关需要时间，所以延迟一哈。时间间隔500毫秒即可，太大了也不行。
+                                    delay(500)//fixme wifi开关需要时间，所以延迟一哈。时间间隔500毫秒即可，太大了也不行。
                                     it()
                                 }
                             }
@@ -489,9 +491,9 @@ object KWifiManagerUtils {
                         //wifi开启
                         if (openCallback != null) {
                             openCallback?.let {
-                                async {
+                                GlobalScope.async {
                                     openCallback = null//回调一次即可。防止重复回调。不会影响下面的it()
-                                    delay(500, TimeUnit.MILLISECONDS)
+                                    delay(500)
                                     it()
                                 }
                             }
@@ -501,11 +503,10 @@ object KWifiManagerUtils {
                     //wifi连接结果通知
                     //fixme 基本上只要这个就够。其他的广播发送太频繁了。
                     connetCallBack?.let {
-                        async {
+                        GlobalScope.async {
                             connetCallBack = null//回调一次即可。防止重复回调。不会影响下面的it()
-                            delay(500, TimeUnit.MILLISECONDS)
+                            delay(500)
                             it()
-
                         }
                     }
                     //fixme 连接状态变化监听;不会主动制空；一直都会有回调

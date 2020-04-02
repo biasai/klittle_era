@@ -14,13 +14,16 @@ import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLEncoder
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //获取得到的数据，Log打印不出中文，但是JSON解析是可以解析中文的。
 object KHttp {
@@ -42,7 +45,7 @@ object KHttp {
             }
 
             //开启协程协议
-            async {
+            GlobalScope.async {
                 var isFinish = false
                 //fixme 开始链接
                 requestCallBack?.let {
@@ -266,7 +269,7 @@ object KHttp {
                 map.put(getUrlUnique(it), "网络请求标志开始")//去除标志，在onFinish()方法里
             }
             //开启协程协议
-            async {
+            GlobalScope.async {
                 var isFinish = false
                 //fixme 开始链接
                 requestCallBack?.let {
@@ -606,7 +609,7 @@ object KHttp {
         var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         var w = width
         var h = height
-        async {
+        GlobalScope.async {
             var isStop = false//是否停止
             url?.let {
                 requestParams?.let {
@@ -662,7 +665,7 @@ object KHttp {
                             //fixme 尽可能的解决并发；防止同一时间对同一个位图进行操作。防止异常。所以要随机延迟处理一下。
                             try {
                                 var delay = 1500L//延迟请求（一次网络请求差不多在一秒左右。）
-                                kotlinx.coroutines.experimental.delay(delay, TimeUnit.MILLISECONDS)
+                                delay(delay)
                             } catch (e: java.lang.Exception) {
                                 e.printStackTrace()
                             }

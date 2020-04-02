@@ -17,11 +17,13 @@ import android.support.v4.content.FileProvider
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import java.io.*
-import android.support.v4.app.ActivityCompat.startActivityForResult
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.activity.photo.utils.KDCIMUtils
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 
 //fixme 注意调用前，需要在Activity中添加以下方法。[不过我已经在BaseActivity中添加以下方法了，如果继承了BaseActvity就不用再写了]
@@ -201,7 +203,7 @@ object KPictureUtils {
             return
         }
         //fixme 更新系统相册是耗时操作，所以放在协程里。文件夹里的照片数量越多越耗时。
-        async {
+        GlobalScope.async {
             try {
                 //var ltime=System.currentTimeMillis()
                 //fixme 以下方法，亲测有效。在协程里面也有效，非主线程也有效。

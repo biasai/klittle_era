@@ -9,9 +9,11 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.https.bit.KBitmaps
 import cn.oi.klittle.era.utils.*
 import cn.oi.klittle.era.widget.compat.K1Widget
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
 import java.lang.Exception
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * 自定义背景图片
@@ -167,7 +169,7 @@ data class KAutoBgEntity(var view: View?,
                 if (isGlide) {
                     autoBg(resId, isRGB_565)
                 } else {
-                    async {
+                    GlobalScope.async {
                         autoBg(resId, isRGB_565)
                         view?.postInvalidate()//fixme 必不可少，防止刷新失败；亲测有效。
                         //KLoggerUtils.e("刷新了")
@@ -178,7 +180,7 @@ data class KAutoBgEntity(var view: View?,
                 if (isGlide) {
                     autoBgFromAssets(assetsPath, isRGB_565)
                 } else {
-                    async {
+                    GlobalScope.async {
                         autoBgFromAssets(assetsPath, isRGB_565)
                         view?.postInvalidate()
                     }
@@ -188,7 +190,7 @@ data class KAutoBgEntity(var view: View?,
                 if (isGlide) {
                     autoBgFromFile(filePath, isRGB_565)
                 } else {
-                    async {
+                    GlobalScope.async {
                         autoBgFromFile(filePath, isRGB_565)
                         view?.postInvalidate()
                     }
@@ -198,7 +200,7 @@ data class KAutoBgEntity(var view: View?,
                 if (isGlide) {
                     autoBgFromUrl(url, false, isRepeat, isRGB_565)
                 } else {
-                    async {
+                    GlobalScope.async {
                         //fixme 加载网络图片
                         autoBgFromUrl(url, false, isRepeat, isRGB_565) {
                             view?.postInvalidate()

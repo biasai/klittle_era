@@ -6,9 +6,11 @@ import android.bluetooth.BluetoothGattCharacteristic
 import android.bluetooth.BluetoothSocket
 import android.os.Build
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
 import java.lang.Exception
 import java.util.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 
 /**
@@ -126,7 +128,7 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
      */
     fun connectBluetoothServerSocket(uuid: UUID = KBluetoothAdapter.uuid, callback: ((kBluetoothSocket: KBluetoothSocket) -> Unit)?) {
         if (device != null) {
-            async {
+            GlobalScope.async {
                 try {
                     var socket = device?.createRfcommSocketToServiceRecord(uuid)// 这里的 UUID 需要和服务器的一致
                     try {

@@ -10,9 +10,12 @@ import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.utils.KLoggerUtils
 import com.sdk.scan.act.KScanActivity
-import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
-
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 /**
  * 扫描工具类;引用jar包scanSDK.jar;fixme 针对旧版PDA，品牌alps，型号Alps PL-40L有效。
  * Created by 彭治铭 on 2019/3/12
@@ -43,8 +46,8 @@ object KScanUtils {
                 if (mScanDevice != null) {
                     default()
                     //广播注册之所以延迟注册。是因为init还有实例化完成。必须实例化完成之后注册才有效。
-                    kotlinx.coroutines.experimental.async {
-                        delay(800L, TimeUnit.MILLISECONDS)
+                    GlobalScope.async {
+                        delay(800L)
                         registerReceiver()//注册广播
                     }
                 }

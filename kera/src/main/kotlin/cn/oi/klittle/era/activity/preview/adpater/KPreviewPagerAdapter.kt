@@ -19,7 +19,8 @@ import cn.oi.klittle.era.widget.compat.KView
 import cn.oi.klittle.era.widget.photo.KPhotoView
 import cn.oi.klittle.era.widget.video.KVideoView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 
 open class KPreviewPagerAdapter(var datas: MutableList<KLocalMedia>?) : PagerAdapter() {
     var keys = mutableMapOf<Int, String>()

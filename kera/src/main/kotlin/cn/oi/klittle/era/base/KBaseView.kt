@@ -23,10 +23,12 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KRadiusUtils
 import cn.oi.klittle.era.https.bit.KBitmaps
 import cn.oi.klittle.era.utils.KAssetsUtils
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.runOnUiThread
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 
 /**
@@ -522,8 +524,8 @@ open class KBaseView : View {
     fun autoUrlBgDelay(url: String?, delay: Long = 100) {
         if (w <= 0 || h <= 0) {
             //无法获取宽度和高度，就延迟再获取
-            async {
-                kotlinx.coroutines.experimental.delay(delay)
+            GlobalScope.async {
+                delay(delay)
                 autoUrlBg(url)
             }
         } else {

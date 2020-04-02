@@ -17,13 +17,14 @@ import cn.oi.klittle.era.utils.KAppUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.runOnUiThread
 import java.lang.Exception
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 
 /**
@@ -216,8 +217,8 @@ object KBluetoothAdapter {
             }
             //fixme 蓝牙打开需要时间，测试大约500毫秒;小米8上面测试时间为2000毫秒。打开时间比较耗时。
             callback?.let {
-                async {
-                    delay(3100, TimeUnit.MILLISECONDS)
+                GlobalScope.async {
+                    delay(3100)
                     if (!isCallback) {
                         isCallback = true
                         it(isEnabled())
@@ -240,8 +241,8 @@ object KBluetoothAdapter {
         if (isEnabled()) {
             bluetoothAdapter?.disable()//fixme 蓝牙关闭时间很短。100毫秒即可;比打开时间要短很多。
             callback?.let {
-                async {
-                    delay(300, TimeUnit.MILLISECONDS)
+                GlobalScope.async {
+                    delay(300)
                     it(!isEnabled())
                 }
             }
@@ -348,7 +349,7 @@ object KBluetoothAdapter {
                 KPermissionUtils.requestPermissionsBlueTooth {
                     if (it) {
                         //6.0以后需要定位权限，才能搜索蓝牙。亲测，定位权限必不可少！
-                        async {
+                        GlobalScope.async {
                             bluetoothAdapter?.startDiscovery()//fixme 开始扫描，使用广播接收(防止以下方法搜索不到设备，所以加上广播一起搜索。)
                             isStopSan = false//fixme 开始扫描标志
                             if (isVersion21()) {
@@ -360,16 +361,16 @@ object KBluetoothAdapter {
                                 }
                             }
                         }
-                        async {
+                        GlobalScope.async {
                             if (delay <= 0) {
-                                kotlinx.coroutines.experimental.delay(3500, TimeUnit.MILLISECONDS)
+                                delay(3500)
                             } else {
-                                kotlinx.coroutines.experimental.delay(delay, TimeUnit.MILLISECONDS)
+                                delay(delay)
                             }
-                            kotlinx.coroutines.experimental.delay(100)
+                            delay(100)
                             // fixme 预先定义停止蓝牙扫描的时间（因为蓝牙扫描需要消耗较多的电量）
                             stopLeScan()
-                            kotlinx.coroutines.experimental.delay(100, TimeUnit.MILLISECONDS)
+                            delay(100)
                             isStopSan = true//fixme 结束扫描标志
                             if (isEnabled()) {
                                 getContext().runOnUiThread {
@@ -389,7 +390,7 @@ object KBluetoothAdapter {
     //停止扫描（在开始扫描里面，会主动停止扫描，所以不需要手动调用。）
     fun stopLeScan() {
         if (isVersion18() && hasSystemFeature()) {
-            kotlinx.coroutines.experimental.async {
+            GlobalScope.async {
                 bluetoothAdapter?.cancelDiscovery()//fixme 停止扫描(停止广播接收)
                 isStopSan = true
                 if (isVersion21()) {
@@ -554,9 +555,9 @@ object KBluetoothAdapter {
                     }
 
                 })
-                async {
+                GlobalScope.async {
                     //fixme 回调超时
-                    delay(timeout, TimeUnit.MILLISECONDS)
+                    delay(timeout)
                     if (!isCallBack) {
                         isCallBack = true
                         callback?.let {
@@ -866,7 +867,7 @@ object KBluetoothAdapter {
         if (isOpenBluetoothServerSocket) {
             return//防止重复开启服务。
         }
-        async {
+        GlobalScope.async {
             isCloseBluetoothSocket = false
             while (!isCloseBluetoothSocket) {
                 isOpenBluetoothServerSocket = true
@@ -893,7 +894,7 @@ object KBluetoothAdapter {
      * fixme 关闭BluetoothSocket服务
      */
     fun closeBluetoothServerSocket() {
-        async {
+        GlobalScope.async {
             try {
                 isCloseBluetoothSocket = true
                 mmBluetoothServerSockets?.forEach {
@@ -922,7 +923,7 @@ object KBluetoothAdapter {
      * fixme 关闭BluetoothSocket客户端
      */
     fun closeBluetoothSocket() {
-        async {
+        GlobalScope.async {
             try {
                 mBluetoothSockets?.forEach {
                     it?.close()

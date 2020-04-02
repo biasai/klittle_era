@@ -10,10 +10,11 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * 使用第三方Glide加载图片；调用以下方法时必须在子线程中调用，不能在UI主线程中调用。
@@ -141,7 +142,7 @@ object KGlideUtils {
                     it(key, bitmap)
                 }
             } else {
-                job = async {
+                job = GlobalScope.async {
                     try {
                         if (!isRuning) {//fixme 防止重复加载
                             var bitmap = KGlideUtils.getBitmapFromPath(path, overrideWidth, overrideHeight, sizeMultiplier, isCenterCrop)
@@ -171,7 +172,7 @@ object KGlideUtils {
                                     }
                                 }
                             }
-                            delay(delayTime, TimeUnit.MILLISECONDS)
+                            delay(delayTime)
                             getBitmapFromPath(path, overrideWidth, overrideHeight, sizeMultiplier, isCenterCrop, callBack)//fixme 延迟闭合重新调用。
                         }
                     } catch (e: java.lang.Exception) {
@@ -258,7 +259,7 @@ object KGlideUtils {
                     it(key, bitmap)
                 }
             } else {
-                job = async {
+                job = GlobalScope.async {
                     try {
                         if (!isRuning) {//fixme 防止重复加载
                             //KLoggerUtils.e("新获取")
@@ -289,7 +290,7 @@ object KGlideUtils {
                                     }
                                 }
                             }
-                            delay(delayTime, TimeUnit.MILLISECONDS)
+                            delay(delayTime)
                             getBitmapFromAssets(path, overrideWidth, overrideHeight, sizeMultiplier, isCenterCrop, callBack)//fixme 延迟闭合重新调用。
                         }
                     } catch (e: Exception) {
@@ -377,7 +378,7 @@ object KGlideUtils {
                     it(key, bitmap)
                 }
             } else {
-                job = async {
+                job = GlobalScope.async {
                     try {
                         if (!isRuning) {//fixme 防止重复加载
 //                    KLoggerUtils.e("新获取：\t" + resID)
@@ -408,7 +409,7 @@ object KGlideUtils {
                                     }
                                 }
                             }
-                            delay(delayTime, TimeUnit.MILLISECONDS)
+                            delay(delayTime)
                             getBitmapFromResouce(resID, overrideWidth, overrideHeight, sizeMultiplier, isCenterCrop, callBack)//fixme 延迟闭合重新调用。
                         }
                     } catch (e: Exception) {
@@ -500,7 +501,7 @@ object KGlideUtils {
                     it(key, bitmap)
                 }
             } else {
-                job = async {
+                job = GlobalScope.async {
                     try {
                         if (!isRuning && !isRuning2) {//fixme 防止重复加载
 //                    KLoggerUtils.e("新获取网络位图")
@@ -534,7 +535,7 @@ object KGlideUtils {
                                     }
                                 }
                             }
-                            delay(delayTime, TimeUnit.MILLISECONDS)
+                            delay(delayTime)
                             getBitmapFromUrl(url, overrideWidth, overrideHeight, headers, params, isCenterCrop, callBack)//fixme 延迟闭合重新调用。
                         }
                     } catch (e: java.lang.Exception) {

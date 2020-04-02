@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import cn.oi.klittle.era.utils.KCacheUtils;
 import cn.oi.klittle.era.utils.KIntentUtils;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
@@ -83,6 +84,8 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
         this.exceptionCallback = exceptionCallback;
     }
 
+    String error_key_time = "kerror_key_time";//记录错误的次数
+
     //自定义错误处理器;在uncaughtException()方法里手动调用了。
     private boolean handlerException(Throwable ex) {
         if (ex == null) {  //如果已经处理过这个Exception,则让系统处理器进行后续关闭处理
@@ -93,9 +96,26 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
         if (exceptionCallback != null) {
             exceptionCallback.catchException(msg);//异常监听回调。
         }
-        KLoggerUtils.INSTANCE.e("App全局异常捕捉:\t" + msg);
-        KIntentUtils.INSTANCE.goRest();//fixme app应用崩溃后，自动重启（如果不重启，整个应用也是卡着的。没有任何响应。）
-
+        try {
+            Object errorTime = KCacheUtils.INSTANCE.getSecret(error_key_time);
+            long errorTime2 = 0;
+            if (errorTime != null) {
+                errorTime2 = (Long) errorTime;
+            }
+            errorTime2 = System.currentTimeMillis() - errorTime2;//fixme 两次异常的时间差
+            KLoggerUtils.INSTANCE.e("App全局异常时间差:\t" + errorTime2 + "\t全局异常信息：\t" + msg);
+            KCacheUtils.INSTANCE.putSecret(error_key_time, System.currentTimeMillis());
+            if (errorTime2 > 800) {
+                //防止无限循环卡死
+                KIntentUtils.INSTANCE.goRest();//fixme app应用崩溃后，自动重启（如果不重启，整个应用也是卡着的。没有任何响应。）
+            } else {
+                KLoggerUtils.INSTANCE.e("全局异常，关闭App");
+                android.os.Process.killProcess(android.os.Process.myPid());
+                System.exit(10);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 //        new Thread() {
 //            public void run() {
 //                Toast 显示需要出现在一个线程的消息队列中

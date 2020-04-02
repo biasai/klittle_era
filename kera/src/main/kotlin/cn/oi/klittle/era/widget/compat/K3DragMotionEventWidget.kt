@@ -11,10 +11,13 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KDragEntity
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.lang.Exception
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //            fixme 调用案例
 //            relativeLayout {
@@ -124,7 +127,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
     fun saveDrag() {
         dragId?.let {
             if (it.trim().length > 0 && isSaveDrag) {
-                async {
+                GlobalScope.async {
                     try {
                         layoutParams?.let {
                             if (it is RelativeLayout.LayoutParams) {

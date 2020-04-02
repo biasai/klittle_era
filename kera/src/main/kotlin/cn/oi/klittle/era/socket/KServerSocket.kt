@@ -1,9 +1,12 @@
 package cn.oi.klittle.era.socket
 
-import kotlinx.coroutines.experimental.async
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.net.Socket
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 
 /**
@@ -29,7 +32,7 @@ open class KServerSocket(var ip: String? = KIpPort.getHostIp4(), var port: Int =
                 return
             }
         }
-        async {
+        GlobalScope.async {
             try {
                 //fixme 开始启动服务
                 //没有指定本地其他Ip的时候,默认ip就是 0.0.0.0(即本机。运行在同一个机器上才有效)，如果ip显示的是 :	:: (这个就是0.0.0.0本机)

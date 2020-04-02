@@ -14,7 +14,8 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.view.KRollerView
 import cn.oi.klittle.era.widget.compat.KView
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
 import java.lang.Exception
 
 //            fixme 三滾輪調用案例

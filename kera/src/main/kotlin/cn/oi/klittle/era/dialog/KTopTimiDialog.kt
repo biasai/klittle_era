@@ -20,13 +20,12 @@ import cn.oi.klittle.era.widget.KGradientView
 import cn.oi.klittle.era.widget.compat.KScrollTextView
 import cn.oi.klittle.era.widget.compat.KShadowView
 import cn.oi.klittle.era.widget.compat.KTextView
-import kotlinx.coroutines.experimental.CoroutineScope
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.*
-import org.jetbrains.anko.sdk25.coroutines.onClick
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //        val alert: KTopTimiDialog by lazy { KTopTimiDialog(this) }
 //        alert.mession("提示").show()
@@ -100,8 +99,8 @@ open class KTopTimiDialog(ctx: Context, isStatus: Boolean = true, isTransparent:
         super.onShow()
         mession?.setText(txt_mession)//先设置文本，再计算高度。
         job?.cancel()//取消协程
-        job = async {
-            delay(2000, TimeUnit.MILLISECONDS)
+        job = GlobalScope.async {
+            delay(2000)
             dismiss()//定时关闭
             job = null
         }

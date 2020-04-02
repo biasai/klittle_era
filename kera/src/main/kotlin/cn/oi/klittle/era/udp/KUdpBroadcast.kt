@@ -9,8 +9,10 @@ import java.net.InetAddress
 import java.net.InetSocketAddress
 
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
-
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * fixme 同一网段（同一路由器下有效。不同wifi只要在同一个路由器下都有效）
@@ -85,7 +87,7 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
         if (socket == null || text == null || port == null || inetAddress == null || socket!!.isClosed) {
             return
         }
-        async {
+        GlobalScope.async {
             try {
                 var text = text
                 text = text.trim { it <= ' ' }
@@ -126,7 +128,7 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
         if (isCircleReceive) {
             return//fixme 正在接收中。receive不能多次调用。不能对同一个流多次操作。
         }
-        async {
+        GlobalScope.async {
             try {
                 while (!isStopedReceive && receiveCallBack != null && socket != null && !socket!!.isClosed) {
                     try {

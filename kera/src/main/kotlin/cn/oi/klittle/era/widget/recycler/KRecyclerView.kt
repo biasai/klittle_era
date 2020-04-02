@@ -12,9 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //           fixme 带有悬浮置顶的Item;使用案例：
 //            KBaseUi.apply {
@@ -206,7 +208,7 @@ open class KRecyclerView : RecyclerView {
         }
         try {
             scrollToPositionWithOffset(0)//fixme 滑动置顶，没有滑动效果。基本都是有效的。
-            async {
+            GlobalScope.async {
                 try {
                     delay(200)//fixme 延迟200毫秒，防止无效。(防止初始化未完成)
                     try {
@@ -255,9 +257,9 @@ open class KRecyclerView : RecyclerView {
                         //GridLayoutManager也继承LinearLayoutManager
                         if (it is LinearLayoutManager) {
                             it.scrollToPositionWithOffset(position, offset)//fixme 这一步基本都是有效的。(不具备滑动效果)
-                            async {
+                            GlobalScope.async {
                                 try {
-                                    delay(100, TimeUnit.MILLISECONDS)//延迟100毫秒，再来一次。低于200毫秒的。肉眼是感觉不出来的。
+                                    delay(100)//延迟100毫秒，再来一次。低于200毫秒的。肉眼是感觉不出来的。
                                     getContext()?.let {
                                         if (it is Activity) {
                                             if (!it.isFinishing) {

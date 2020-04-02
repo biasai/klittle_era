@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.widget.viewpager
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
 import android.support.v4.view.ViewCompat
@@ -11,10 +12,13 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.K1Widget
 import cn.oi.klittle.era.widget.compat.KView
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.sdk25.coroutines.onClick
+//import org.jetbrains.anko.sdk25.coroutines.onClick
+import org.jetbrains.anko.sdk27.coroutines.onClick
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //                        fixme 使用案例
 //                        var tab = kTabLayout { }.apply {
@@ -104,13 +108,16 @@ open class KTabLayout : TabLayout {
     }
 
     //初始化
+    @SuppressLint("WrongConstant")
     private fun initCon() {
-        setTabMode(android.support.design.widget.TabLayout.MODE_SCROLLABLE);//tab个数过多显示不全时，可以滑动显示。
-        //tab.setTabMode(TabLayout.MODE_FIXED);//tab个数会全部显示出来。
-        setTabTextColors(Color.GRAY, Color.WHITE);//普通颜色和选中颜色
-        setSelectedTabIndicatorColor(Color.WHITE);//tab滑动条的颜色(透明色Color.TRANSPARENT也有效)
-        //tab.setSelectedTabIndicatorHeight(kpx.x(4))//tab底部滑动条的高度(一般不用设置，默认高度即可)(无法设置宽度，宽度是根据tab的宽度自适应的。)
-        ViewCompat.setElevation(this, kpx.x(10f));
+        try{
+            setTabMode(android.support.design.widget.TabLayout.MODE_SCROLLABLE);//tab个数过多显示不全时，可以滑动显示。
+            //tab.setTabMode(TabLayout.MODE_FIXED);//tab个数会全部显示出来。
+            setTabTextColors(Color.GRAY, Color.WHITE);//普通颜色和选中颜色
+            setSelectedTabIndicatorColor(Color.WHITE);//tab滑动条的颜色(透明色Color.TRANSPARENT也有效)
+            //tab.setSelectedTabIndicatorHeight(kpx.x(4))//tab底部滑动条的高度(一般不用设置，默认高度即可)(无法设置宽度，宽度是根据tab的宽度自适应的。)
+            ViewCompat.setElevation(this, kpx.x(10f));
+        }catch (e:java.lang.Exception){e.printStackTrace()}
     }
 
     var tabSelectedListener: ((tab: cn.oi.klittle.era.widget.viewpager.TabLayout.Tab) -> Unit)? = null

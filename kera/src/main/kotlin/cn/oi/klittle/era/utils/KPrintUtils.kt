@@ -12,6 +12,10 @@ import android.support.v4.print.PrintHelper
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import java.io.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * 安卓原生系统打印功能；对4.4 api 19 以上的才有效；8.0和9.0不需要安装插件也可以；8.0以下需要安装Mopria Print Service 插件；下载地址：https://app.mopria.org/MopriaPrintService
@@ -119,7 +123,7 @@ object KPrintUtils {
                         return
                     }
                     //耗时操作；在协程中进行。
-                    kotlinx.coroutines.experimental.async {
+                    GlobalScope.async {
                         var input: InputStream? = null
                         var output: OutputStream? = null
                         try {

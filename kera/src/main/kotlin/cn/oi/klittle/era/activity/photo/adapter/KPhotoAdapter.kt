@@ -12,15 +12,17 @@ import cn.oi.klittle.era.activity.photo.utils.KDateUtils
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPictureUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.recycler.adapter.KAdapter
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.*
 import java.util.concurrent.TimeUnit
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter<KPhotoAdapter.Companion.MyViewHolder>() {
 
@@ -268,8 +270,8 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                     isRecyclerBitmap = false//不释放位图
                     //图片预览
                     KPictureSelector.openExternalPreview(index = index, meidas = datas, isCheckable = true)
-                    kotlinx.coroutines.experimental.async {
-                        delay(500, TimeUnit.MILLISECONDS)
+                    GlobalScope.async {
+                        delay(500)
                         isRecyclerBitmap = true//恢复释放位图
                     }
                 }
@@ -299,8 +301,8 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                         KPictureSelector.reduceNum(data)
                         isRecyclerBitmap = false//刷新时不释放位图
                         notifyDataSetChanged()
-                        async {
-                            delay(500, TimeUnit.MILLISECONDS)
+                        GlobalScope.async {
+                            delay(500)
                             isRecyclerBitmap = true//恢复释放位图
                         }
                     }

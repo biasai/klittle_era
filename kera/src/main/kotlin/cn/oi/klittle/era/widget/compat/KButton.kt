@@ -12,8 +12,11 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
 import java.util.regex.Pattern
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //                    fixme 使用案例
 //            KButton(this).apply {
@@ -138,14 +141,14 @@ open class KButton : KShadowView {
                 }
                 if (isRegular) {
                     if (mediaPlayer != null) {
-                        async {
+                        GlobalScope.async {
                             playMediaPlayer()
 //                            if (!mediaPlayer!!.isPlaying) {
 //                                mediaPlayer?.start()//fixme 播放自己音频(优先播放,优先级比静态全局的高！)
 //                            }
                         }
                     } else if (issMediaPlayerEnable && sMediaPlayer != null) {
-                        async {
+                        GlobalScope.async {
                             sPlayMediaPlayer()
 //                                if (!sMediaPlayer!!.isPlaying) {
 //                                    sMediaPlayer?.start()//播放全局静态音频

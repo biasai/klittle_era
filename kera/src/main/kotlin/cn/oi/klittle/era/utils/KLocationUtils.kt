@@ -12,11 +12,12 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import org.jetbrains.anko.runOnUiThread
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 
 /**
@@ -203,8 +204,8 @@ object KLocationUtils {
     //被观察者
     private var observable: Observable<Boolean>? = Observable.create<Boolean> {
         if (requestLocationUpdate_timeOut > 0) {
-            async {
-                delay(requestLocationUpdate_timeOut, TimeUnit.MILLISECONDS)//等待中
+            GlobalScope.async {
+                delay(requestLocationUpdate_timeOut)//等待中
                 it.onComplete()//超时回调
             }
         }

@@ -16,8 +16,11 @@ import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.widget.KGradientView
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.compat.KVerticalLayout
-import kotlinx.coroutines.experimental.async
 import org.jetbrains.anko.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //            fixme 使用案例
 //        setStatusBarColor(Color.parseColor("#186FB5"))//状态栏颜色
@@ -190,7 +193,7 @@ open class KToolbar {
                     } else if (it is RelativeLayout.LayoutParams) {
                         //fixme 负补定，在现对布局里面也是有效的。
                         it.bottomMargin = -toolbarShadowHeight
-                        async {
+                        GlobalScope.async {
                             activity?.runOnUiThread {
                                 //fixme 相对布局里，可以显示在最上面。其他控件不会受影响。
                                 //fixme 线性布局就不行。线性布局会改变他的显示添加顺序。

@@ -10,11 +10,13 @@ import cn.oi.klittle.era.activity.preview.KPreviewActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KAssetsUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
-import kotlinx.coroutines.experimental.delay
-import org.jetbrains.anko.custom.async
 import java.util.concurrent.TimeUnit
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 /**
  * 图片选择器
@@ -116,7 +118,7 @@ open class KPhotoActivity : KBaseActivity() {
                     }
                 } else {
                     KToast.showInfo(getString(R.string.kstoragy_not))
-                    async {
+                    GlobalScope.async {
                         finish()//关闭
                     }
                 }
@@ -137,8 +139,8 @@ open class KPhotoActivity : KBaseActivity() {
             try {
                 ui?.photoAdapter?.isRecyclerBitmap = false//不释放位图，防止整个界面抖动。
                 ui?.photoAdapter?.notifyDataSetChanged()
-                kotlinx.coroutines.experimental.async {
-                    delay(500, TimeUnit.MILLISECONDS)
+                GlobalScope.async {
+                    delay(500)
                     ui?.photoAdapter?.isRecyclerBitmap = true//恢复释放位图
                 }
                 checkNumCallback(KPictureSelector.currentSelectNum)//当前选中数

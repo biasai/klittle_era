@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.base
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -26,11 +27,16 @@ import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
-import cn.oi.klittle.era.widget.compat.K0Widget
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.act
 import java.util.concurrent.TimeUnit
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+//import org.jetbrains.anko.custom.async
+//import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+
 
 // fixme 如果在清單xml设置了Activity横屏，android:screenOrientation="landscape"；则以下方法重寫一定要设置false不然会异常。
 //override fun isOrientation(): Boolean {
@@ -109,6 +115,7 @@ open class KBaseActivity : FragmentActivity() {
     }
 
     //true 竖屏，false横屏
+    @SuppressLint("SourceLockedOrientationActivity")
     open fun orientation(isPortrait: Boolean) {
         try {
             if (!(Build.VERSION.SDK_INT == 26 && getApplicationInfo().targetSdkVersion >= 26)) {
@@ -246,8 +253,8 @@ open class KBaseActivity : FragmentActivity() {
             //fixme 开启左滑功能
             if (isEnableSliding()) {
                 //获取上一个Activity的界面位图
-                async {
-                    delay(350, TimeUnit.MILLISECONDS)//延迟几秒获取，确保获取的界面尽可能是最新的。立即获取界面可能不是最新的。
+                GlobalScope.async {
+                    delay(350)//延迟几秒获取，确保获取的界面尽可能是最新的。立即获取界面可能不是最新的。
                     if (!isFinishing()) {
                         KBaseApplication.getInstance().recyclePreviousBitmap()
                         //开启位图视觉差效果(现在主题不推荐使用透明主题，所以必须开启绘制位图。)
@@ -256,7 +263,7 @@ open class KBaseActivity : FragmentActivity() {
                 }
             } else {
                 //未开启左滑功能，销毁位图。
-                async {
+                GlobalScope.async {
                     KBaseApplication.getInstance().recyclePreviousBitmap()
                 }
             }
@@ -823,14 +830,14 @@ open class KBaseActivity : FragmentActivity() {
     }
 
     private var OnGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
-    private var callBack: (() -> Unit)? = null
+    private var OnGlobalLayoutListenerCallBack: (() -> Unit)? = null
     //fixme 监听window视图加载；视图刷选时也会回调。即判断Activity是否加载完成
     //fixme K0Widget的加载监听也是：onGlobalLayoutListener {  }；
     //fixme 一定要在setContentView()添加布局之后，再调用，才有效。
     fun onGlobalLayoutListener(callBack: (() -> Unit)?) {
-        this.callBack = callBack
+        this.OnGlobalLayoutListenerCallBack = callBack
         if (OnGlobalLayoutListener == null) {
-            OnGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { this.callBack?.let { it() } }
+            OnGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener { this.OnGlobalLayoutListenerCallBack?.let { it() } }
         }
         //addOnGlobalLayoutListener可以多次添加，不冲突。
         kpx.getWindowContentView(window)?.getViewTreeObserver()?.addOnGlobalLayoutListener(OnGlobalLayoutListener)
@@ -860,7 +867,7 @@ open class KBaseActivity : FragmentActivity() {
                     kpx.getWindowContentView(window)?.getViewTreeObserver()?.removeOnGlobalLayoutListener(OnGlobalLayoutListener)
                 }
                 OnGlobalLayoutListener = null
-                callBack = null
+                OnGlobalLayoutListenerCallBack = null
 
                 //fixme 只移除数据，不会对原数据置空，如果要置空，请手动置空。
                 KBaseApplication.getInstance().remove(this::class.java.toString())
@@ -925,7 +932,7 @@ open class KBaseActivity : FragmentActivity() {
      * fixme 输入框，软键盘;(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。
      * fixme SOFT_INPUT_ADJUST_PAN一般正常都是使用这个模式。
      */
-    open fun setSoftInputMode(window: Window? = KBaseUi.getActivity()?.window) {
+    open fun setSoftInputMode_adjustpan(window: Window? = KBaseUi.getActivity()?.window) {
         //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
         //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
         window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
@@ -942,7 +949,7 @@ open class KBaseActivity : FragmentActivity() {
      * fixme 最外层布局必须是scrollView（必须，不然部分设备无效）;设置了以下模式，软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_STATE_UNSPECIFIED
      * fixme inputHeightListener()仍然可以获取软键盘高度。不挤压屏幕，依旧可以获取软键盘的高度。=========dialog弹窗也有效。==========
      */
-    open fun setSoftInputMode2(window: Window? = KBaseUi.getActivity()?.window) {
+    open fun setSoftInputMode2_unspecified(window: Window? = KBaseUi.getActivity()?.window) {
         //fixme 可能会自动弹出软键盘；解决方案，在文本输入框的父容器中，加入以下聚焦代码即可。
         //isFocusable=true
         //isFocusableInTouchMode=true
@@ -956,7 +963,7 @@ open class KBaseActivity : FragmentActivity() {
      * fixme 这个完全不挤压屏幕，也无法获取软键盘的高度。软键盘高度始终获取为0
      * fixme ===========对Dialog设置好像无效，依旧会挤压布局，不会覆盖。================
      */
-    open fun setSoftInputMode3(window: Window? = KBaseUi.getActivity()?.window) {
+    open fun setSoftInputMode3_adjustnothing(window: Window? = KBaseUi.getActivity()?.window) {
         window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//fixme 不会自动弹出软键盘，最外层布局没有要求，什么布局都有效。
     }
 

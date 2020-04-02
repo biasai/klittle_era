@@ -14,12 +14,13 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.UI
 import org.jetbrains.anko.runOnUiThread
 import org.jetbrains.anko.verticalLayout
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 //fixme timeOutCallback新增超时事件回调。
 
@@ -46,8 +47,8 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
 
     //被观察者
     private var observable: Observable<Boolean>? = Observable.create<Boolean> {
-        async {
-            delay(timeOut, TimeUnit.MILLISECONDS)
+        GlobalScope.async {
+            delay(timeOut)
             it.onComplete()
         }
     }

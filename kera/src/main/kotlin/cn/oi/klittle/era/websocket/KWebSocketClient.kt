@@ -2,12 +2,14 @@ package cn.oi.klittle.era.websocket
 
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KNetWorkUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.java_websocket.client.WebSocketClient
 import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 //仓库         mavenCentral()
 //使用依赖     api "org.java-websocket:Java-WebSocket:1.3.9"
@@ -63,10 +65,10 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
      */
     private fun autoConnect() {
         if (isEnableAutoConnect && !isAutoConeting) {
-            async {
+            GlobalScope.async {
                 while (isEnableAutoConnect && !isConnect()) {
                     isAutoConeting = true//正在循环重连
-                    delay(autoConnectTime, TimeUnit.MILLISECONDS)
+                    delay(autoConnectTime)
                     //首先判断是否有网
                     if (KNetWorkUtils.isNetworkAvailable()) {
                         reconnect()//重连连接
@@ -79,7 +81,7 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
 
     //连接（第一次连接的时候调用。如果关闭了，就不能再调用，就必须调用重新连接。）
     override fun connect() {
-        async {
+        GlobalScope.async {
             if (!isConnect()) {
                 super.connect()
             }
@@ -90,7 +92,7 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
      * 重新连接（关闭之后，可以调用重新连接。）；fixme 即关闭（close()）之后,必须调用重新连接才能连接上。（因为重新连接里面调用了重置的方法。）
      */
     override fun reconnect() {
-        async {
+        GlobalScope.async {
             if (!isConnect()) {
                 super.reconnect()
             }
@@ -107,7 +109,7 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
 
     //手动关闭
     override fun close() {
-        async {
+        GlobalScope.async {
             if (isConnect()) {
                 isEnableAutoConnect = false//手动断开，则关闭自动重连功能。
                 super.close()
@@ -117,14 +119,14 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
 
     //发送字符串数据
     override fun send(text: String) {
-        async {
+        GlobalScope.async {
             super.send(text)
         }
     }
 
     //发送字节数组
     override fun send(data: ByteArray) {
-        async {
+        GlobalScope.async {
             super.send(data)
         }
     }
@@ -156,10 +158,10 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
         if (isHearting) {
             return//正在心跳中。防止多次重复心跳。
         }
-        async {
+        GlobalScope.async {
             try {
                 if (firstTime > 0) {
-                    delay(firstTime, TimeUnit.MILLISECONDS)
+                    delay(firstTime)
                 }
                 while (isConnect()) {//连接断开，自动跳出循环。
                     isHearting = true
@@ -175,7 +177,7 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
                     } else {
                         break//跳出心跳循环。
                     }
-                    delay(heartTime, TimeUnit.MILLISECONDS)//单位毫秒，1000等于一秒
+                    delay(heartTime)//单位毫秒，1000等于一秒
                 }
                 isHearting = false//心跳结束，跳出循环。
             } catch (e: java.lang.Exception) {

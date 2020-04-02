@@ -27,10 +27,12 @@ import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.helper.KAsteriskPasswordTransformationMethod
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
 import org.jetbrains.anko.runOnUiThread
 import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * fixme 自定义文本输入框。拷贝了系统的EditText
@@ -149,8 +151,8 @@ open class KMyEditText : KTextView {
     //调出软键盘(防止初始化时软键盘调不出，所以延迟一下，再弹出软键盘，亲测有效。)
     fun showSoftInput2() {
         try {
-            async {
-                delay(30, TimeUnit.MILLISECONDS)//10毫秒足以。
+            GlobalScope.async {
+                delay(30)//10毫秒足以。
                 getContext()?.runOnUiThread {
                     KMyEditText.showSoftInput(this, this@KMyEditText)
                 }
@@ -163,8 +165,8 @@ open class KMyEditText : KTextView {
     //调出软键盘(防止初始化时软键盘调不出，所以延迟一下，再弹出软键盘，亲测有效。)
     fun showSoftInput3() {
         try {
-            async {
-                delay(130, TimeUnit.MILLISECONDS)//fixme 130毫秒,防止无效。这个延迟时间，几乎百分百有效。
+            GlobalScope.async {
+                delay(130)//fixme 130毫秒,防止无效。这个延迟时间，几乎百分百有效。
                 getContext()?.runOnUiThread {
                     KMyEditText.showSoftInput(this, this@KMyEditText)
                 }
@@ -179,23 +181,23 @@ open class KMyEditText : KTextView {
         KMyEditText.hideSoftKeyboard(context, this)
     }
 
-    fun getInputHeight(context: Context?): Int {
+    fun getSoftInputHeight(context: Context?): Int {
         context?.let {
             if (it is Activity) {
-                return getInputHeight(it as Activity)
+                return getSoftInputHeight(it as Activity)
             }
         }
         return 0
     }
 
-    fun getInputHeight(activity: Activity? = KBaseUi.getActivity()): Int {
+    fun getSoftInputHeight(activity: Activity? = KBaseUi.getActivity()): Int {
         if (activity == null) {
             return 0
         }
         if (activity.isFinishing) {
             return 0
         }
-        return getInputHeight(activity?.window)
+        return getSoftInputHeight(activity?.window)
     }
 
     /**
@@ -203,7 +205,7 @@ open class KMyEditText : KTextView {
      * @param window fixme Activity和Dialog的window是一起。即Dialog弹窗被挤上去，Activity的界面也会被挤上去。（亲测！）
      * @return 大于0，输入法显示，小于等于0，输入发没有弹出
      */
-    fun getInputHeight(window: Window?): Int {
+    fun getSoftInputHeight(window: Window?): Int {
         try {
             if (window == null) {
                 return 0

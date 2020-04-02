@@ -2,12 +2,15 @@ package cn.oi.klittle.era.socket
 
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
-import kotlinx.coroutines.experimental.async
 import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.InputStream
 import java.net.InetSocketAddress
 import java.net.Socket
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.Deferred
 
 /**
  * Socket客户端
@@ -70,7 +73,7 @@ open class KSocket(var ip: String? = KIpPort.getHostIp4(), var port: Int? = KIpP
                     it(KState(true))//fixme 连接成功
                 }
             } else {
-                async {
+                GlobalScope.async {
                     socket?.apply {
                         try {
                             var socketAddress = InetSocketAddress(ip, this@KSocket.port!!)//fixme 注意了，socket自己也有port属性。之前就是port错误，才导致一直连接不上
@@ -133,7 +136,7 @@ open class KSocket(var ip: String? = KIpPort.getHostIp4(), var port: Int? = KIpP
     fun send(data: ByteArray, callback: ((state: KState) -> Unit)? = null) {
         data?.let {
             if (it.size > 0) {
-                async {
+                GlobalScope.async {
                     try {
                         if (!isConnect()) {
                             //fixme 主动连接
@@ -191,7 +194,7 @@ open class KSocket(var ip: String? = KIpPort.getHostIp4(), var port: Int? = KIpP
         if (isConnect() && !isRead) {
             isRead = true
             kotlin.run {
-                async {
+                GlobalScope.async {
                     while (isConnect()) {
                         //无限循环读取
                         try {

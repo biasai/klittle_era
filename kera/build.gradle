@@ -69,8 +69,9 @@ configurations.all {
         }
     }
 }
-
-ext.anko_version = '0.10.5'
+//https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
+//ext.anko_version = '0.10.5'
+ext.anko_version = '0.10.8'
 gradle.ext.sinSupportVersion = '27.1.1'
 
 dependencies {
@@ -86,15 +87,17 @@ dependencies {
     //包含了AppTheme和Appcompat主題。
     api 'com.android.support:design:' + gradle.sinSupportVersion
     //约束布局
-    api 'com.android.support.constraint:constraint-layout:1.1.0'
+    //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
+    api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
     //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"//将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
     //协程
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
-    api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
+    //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.+'//1.3.4 ;1.3.+ 下载不下来，一直报错。
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'//协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
     //基本普通依赖,一般这个就够了
     api "org.jetbrains.anko:anko:$anko_version"
     //以下依赖根据需求自己添加
