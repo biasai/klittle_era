@@ -135,7 +135,7 @@ public class KBaseApplication extends Application {
                 KCatchException.getInstance().init(sInstance);
             } catch (Exception e) {
                 e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t"+e.getMessage());
+                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t" + e.getMessage());
             }
         }
         return sInstance;
@@ -427,11 +427,12 @@ public class KBaseApplication extends Application {
             window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);//全屏,有效。因为4.4以下状态栏透明设置无效，奇丑无比，所以设置全屏。
         }
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);//状态栏背景透明(和应用背景一样4.4及以上才有效,测试真机，亲测有效)
+        //window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);//状态栏背景透明(和应用背景一样4.4及以上才有效,测试真机，亲测有效) fixme 对软盘的弹出有不好的影响（会覆盖布局）
         //设置状态栏背景透明【亲测有效】
         try {
             window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);   //去除半透明状态栏
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);  //一般配合fitsSystemWindows()使用, 或者在根部局加上属性android:fitsSystemWindows="true", 使根部局全屏显示
+            //window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);  fixme 对软键盘的弹出有不好的影响（会覆盖布局）
+            // setSystemUiVisibility()一般配合fitsSystemWindows()使用, 或者在根部局加上属性android:fitsSystemWindows="true", 使根部局全屏显示
             if (Build.VERSION.SDK_INT >= 21) {
                 window.setStatusBarColor(Color.TRANSPARENT);
             }
@@ -477,9 +478,12 @@ public class KBaseApplication extends Application {
     private void setAndroidStatusBark(Window window, boolean isDark) {
         if (Build.VERSION.SDK_INT >= 19) {//19是4.4
             if (isDark) {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//深色，一般为黑色
+                //fixme View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN对软键盘有不好的影响（软键盘会覆盖布局），所以不设置。
+                //window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);//深色，一般为黑色
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
             } else {
-                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);//浅色，一般为白色
+                //window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);//浅色，一般为白色
+                window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
         }
     }
