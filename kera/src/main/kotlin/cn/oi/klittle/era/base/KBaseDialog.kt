@@ -603,6 +603,7 @@ open class KBaseDialog() {
      */
     open fun setSoftInputMode2_unspecified(window: Window? = dialog?.window) {
         //fixme 可能会自动弹出软键盘；解决方案，在文本输入框的父容器中，加入以下聚焦代码即可。
+        //fixme 可能会弹出软键盘，在Dialog里好像就没有自动弹出软键盘。所以不一定。
         //isFocusable=true
         //isFocusableInTouchMode=true
         //requestFocus()
