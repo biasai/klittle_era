@@ -50,7 +50,12 @@ import android.app.AlertDialog
 open class KBaseDialog() {
     //fixme Activity不要使用全局变量。局部即可。防止内存泄露
     //fixme 不要使用单列模式，一个Activity就对应一个Dialog。（Dialog需要Activity的支持）
-    var dialog: Dialog? = null
+    public var dialog: Dialog? = null
+
+    //获取窗口window对象
+    public open fun getWindow():Window?{
+        return dialog?.window
+    }
 
     /**
      * 销毁
