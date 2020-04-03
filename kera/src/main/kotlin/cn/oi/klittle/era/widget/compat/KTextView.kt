@@ -1,6 +1,5 @@
 package cn.oi.klittle.era.widget.compat
 
-import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.os.Build
@@ -9,13 +8,13 @@ import android.text.style.ForegroundColorSpan
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.feature.KSearchEntity
 import cn.oi.klittle.era.entity.widget.compat.KTextEntity
-import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import org.jetbrains.anko.*
-import java.lang.Exception
+
 
 /**
  * 文本框相关。
@@ -31,6 +30,7 @@ import java.lang.Exception
  */
 //fixme setLineSpacing(kpx.x(8f),1.5f) 设置行高之后；lineHeight会自动更新。以下方法能够正确获取文本的实际高度。行间距离是行与行之间垂直距离；不是文字水平间距。
 //fixme setMore()更多显示不下时，会显示3个点；单行，多行都有效。且只对KTextView有效，文本输入框KEditText无效
+//fixme isOverFlowedMore()判断文本是否超过，是否显示了更多...
 open class KTextView : KAutoSplitTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -467,12 +467,13 @@ open class KTextView : KAutoSplitTextView {
         }
     }
 
-
+    private var mMoreLine = 1
     /**
      * fixme 更多（显示不全时）显示三个点...  单行，多行都有效。且只对KTextView有效，文本输入框KEditText无效
      * lines 显示的最大行数。
      */
     fun setMore(lines: Int = 1) {
+        mMoreLine = lines
         //能水平滚动较长的文本内容。不要用这个。圆角会没有效果的。就是这个搞的圆角没有效果。
         //setHorizontallyScrolling(true)
         //setSingleLine(true)//是否單行顯示。过时了。也会导致圆角没有效果。
@@ -481,6 +482,34 @@ open class KTextView : KAutoSplitTextView {
         setMaxLines(lines);//fixme 显示最大行,这个也是关键。setMaxLines和setEllipsize同时设置，才会显示更多。
         //代码不换行，更多显示三个点...
         setEllipsize(TextUtils.TruncateAt.END)//fixme 这个才是关键，会显示更多
+    }
+
+    private fun getAvailableWidth(): Int {
+        return width - paddingLeft - paddingRight
+    }
+
+    /**
+     * fixme 判断文本是否超过，是否显示了更多... true超过；false没有超过。
+     * fixme 亲测，单行，多行都能够正确判断。
+     */
+    open fun isOverFlowedMore(): Boolean {
+        try {
+            var paint: Paint = paint
+            var width = paint.measureText(text.toString())//文本的总长度。
+            //KLoggerUtils.e("lineCount：\t"+lineCount+"\tmMoreLine:\t"+mMoreLine+"\twidth:\t"+width+"\tgetAvailableWidth():\t"+getAvailableWidth()*mMoreLine)
+            if (mMoreLine <= 1) {
+                //单行判断是否超过
+                return if (width > getAvailableWidth()) true else false
+            } else {
+                //多行判断是否超过;必须大于才行。相等会完全显示出来。只有超过了才会出现三个省略号...
+                if (width > getAvailableWidth() * mMoreLine) {
+                    return true
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return false
     }
 
     /**
