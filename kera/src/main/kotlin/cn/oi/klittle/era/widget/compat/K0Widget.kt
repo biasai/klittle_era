@@ -1,25 +1,26 @@
 package cn.oi.klittle.era.widget.compat
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.LinearGradient
+import android.graphics.Paint
+import android.graphics.Shader
 import android.media.MediaPlayer
 import android.os.Build
+import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
-import android.widget.TextView
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KAssetsUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
-import java.lang.Exception
 
 /**
  * 0：初始和静态方法。fixme 改成继承TextView；不要继承Button(问题老多了。)
  */
-open class K0Widget : TextView {
+open class K0Widget : AppCompatTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }

@@ -31,7 +31,7 @@ import java.lang.Exception
  */
 //fixme setLineSpacing(kpx.x(8f),1.5f) 设置行高之后；lineHeight会自动更新。以下方法能够正确获取文本的实际高度。行间距离是行与行之间垂直距离；不是文字水平间距。
 //fixme setMore()更多显示不下时，会显示3个点；单行，多行都有效。且只对KTextView有效，文本输入框KEditText无效
-open class KTextView : KView {
+open class KTextView : KAutoSplitTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }

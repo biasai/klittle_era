@@ -592,11 +592,12 @@ open class KBaseDialog() {
 //        fixme dialog设置软键盘默认，现在好像只能在initEvent（）方法里设置才有效。其他地方好像都无效。亲测。
 //        override fun initEvent() {
 //        super.initEvent()
-//        setSoftInputMode_adjustResize_hidden()//fixme 在initEvent（）设置，亲测有效。
+//        setSoftInputMode_adjustResize_hidden()//fixme 在initEvent（）设置，亲测有效。即必须在Dialog刚刚初始化完成的时候，调用才有效。
 //    }
 
     /**
-     * fixme 挤压屏幕，软键盘停留在焦点位置。输入框的bottomPadding低部内补丁可以控制软键盘的之间的距离。(HIDDEN软键盘不会自动弹出)
+     * fixme 挤压屏幕，软键盘停留在文本输入框焦点位置。输入框的bottomPadding低部内补丁可以控制软键盘的之间的距离。(HIDDEN软键盘不会自动弹出)
+     * fixme softInputHeightListener {  }可以监听软键盘高度
      */
     open fun setSoftInputMode_adjustpan_hidden(window: Window? = dialog?.window) {
         //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
@@ -627,12 +628,21 @@ open class KBaseDialog() {
     }
 
     /**
+     * fixme adjustResize 全屏和沉浸式无效问题。在文本框输入框的任意父容器中，设置fitsSystemWindows=true即可。任意父容器即可（父容器的父容器也可以）
+     * fixme fitsSystemWindows=true 父容器与子控件之间，会多出一个状态栏的间隔。等价于topPadding多出了一个状态的高度，topPadding=0也会有一个状态的高度间隔。
+     * fixme 如果多个View设置了fitsSystemWindows=”true”,只有初始的view起作用，都是从第一个设置了fitsSystemWindows的view开始计算padding
+     * fixme fitsSystemWindows默认都是false
+     */
+
+    /**
      * fixme 布局内容自动调整，留出软键盘空间。内容会被顶上去。整个布局并不会被挤出屏幕。(HIDDEN软键盘不会自动弹出)
-     * fixme adjustResize自动调节布局空间。所以一般都可以配合scrollView{}一起使用。
+     * fixme adjustResize自动调节布局空间。所以一般都可以配合scrollView{}一起使用。如果布局高度无法再调整，则会被软键盘遮住。
+     * fixme softInputHeightListener {  }可以监听软键盘高度(布局没变化，被软键盘盖住，fitsSystemWindows=false。也可以监听)
      */
     open fun setSoftInputMode_adjustResize_hidden(window: Window? = dialog?.window) {
         window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
     }
+
 
     /**
      * fixme (VISIBLE软键盘会自动弹出)
@@ -644,7 +654,7 @@ open class KBaseDialog() {
 
     /**
      * fixme 软键盘不会挤压屏幕（会覆盖在布局上）。SOFT_INPUT_ADJUST_NOTHING亲测有效
-     * fixme 这个完全不挤压屏幕，也无法获取软键盘的高度。软键盘高度始终获取为0
+     * fixme 这个完全不挤压屏幕，也无法获取软键盘的高度。软键盘高度始终获取为0；softInputHeightListener {  }无法监听软键盘高度。
      * fixme hidden软键盘不会自动弹出来
      */
     open fun setSoftInputMode_adjustnothing_hidden(window: Window? = KBaseUi.getActivity()?.window) {
