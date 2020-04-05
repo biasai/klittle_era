@@ -27,6 +27,7 @@ import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.*
+import cn.oi.klittle.era.widget.compat.KMyEditText
 import org.jetbrains.anko.act
 import java.util.concurrent.TimeUnit
 //import kotlinx.coroutines.experimental.async
@@ -928,13 +929,28 @@ open class KBaseActivity : FragmentActivity() {
     }
 
     /**
+     * fixme 父容器设置获取焦点；解决edit文本输入框软键盘自动弹窗的问题。
+     * fixme 最好在最顶层的父容器中设置。亲测有效。
+     */
+    fun setRequestFocus(view: View?){
+        view?.let {
+            //fixme 解决软键盘自动弹出，就使用这个方法；不要手动设置SOFT_INPUT_STATE_HIDDEN（效果很不好）
+            it.isFocusable=true
+            it.isFocusableInTouchMode=true
+            it.requestFocus()
+            it.requestFocusFromTouch()
+        }
+    }
+
+    /**
      * fixme 挤压屏幕，软键盘停留在文本输入框焦点位置。输入框的bottomPadding低部内补丁可以控制软键盘的之间的距离。(HIDDEN软键盘不会自动弹出)
      * fixme softInputHeightListener {  }可以监听软键盘高度
      */
     open fun setSoftInputMode_adjustpan_hidden(window: Window? = KBaseUi.getActivity()?.window) {
         //正常，不会挤压屏幕（默认），在这里手动设置了，弹框显示时，键盘输入框不会自动弹出,并且文本同时还具备光标(亲测)。
         //fixme 对Activity，Dialog都有效。(在Activity(onResume())和Dialog(onShow())显示的时候调用有效。)
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        //window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)//fixme 默认就是hidden;不要再手动设置。不然：Dialog关闭时，软键盘可能无法自动关闭。
     }
 
     /**
@@ -949,7 +965,8 @@ open class KBaseActivity : FragmentActivity() {
      * fixme 一般都会选择setSoftInputMode_adjustpan_hidden（）这个模式。
      */
     open fun setSoftInputMode_unspecified_hidden(window: Window? = KBaseUi.getActivity()?.window) {
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED)
+        //window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED)
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_UNSPECIFIED)//fixme 默认就是hidden;不要再手动设置。不然：Dialog关闭时，软键盘可能无法自动关闭。
     }
 
     /**
@@ -972,7 +989,8 @@ open class KBaseActivity : FragmentActivity() {
      * fixme softInputHeightListener {  }可以监听软键盘高度(布局没变化，被软键盘盖住，fitsSystemWindows=false。也可以监听)
      */
     open fun setSoftInputMode_adjustResize_hidden(window: Window? = KBaseUi.getActivity()?.window) {
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        //window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)//fixme 默认就是hidden;不要再手动设置。不然：Dialog关闭时，软键盘可能无法自动关闭。
     }
 
     /**
@@ -989,7 +1007,8 @@ open class KBaseActivity : FragmentActivity() {
      * fixme hidden软键盘不会自动弹出来
      */
     open fun setSoftInputMode_adjustnothing_hidden(window: Window? = KBaseUi.getActivity()?.window) {
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        //window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN or WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)//fixme 默认就是hidden;不要再手动设置。不然：Dialog关闭时，软键盘可能无法自动关闭。
     }
 
     /**

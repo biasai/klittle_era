@@ -87,14 +87,31 @@ open class KMyEditText : KTextView {
 //            return false
 //        }
 
-        //fixme 手动调出软键盘,这个文本框不会主动弹出，需要手动调用。所以不需要担心输入框自动弹出的问题。
-        fun showSoftInput(context: Context?, view: View) {
+        /**
+         * fixme 手动调出软键盘,这个文本框不会主动弹出，需要手动调用。所以不需要担心输入框自动弹出的问题。
+         * @param view 当前聚焦的View,必不可少
+         */
+        fun showSoftInput(context: Context?, view: View?) {
             try {
-                if (context != null && context is Activity) {
-                    var inputManager: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputManager?.showSoftInput(view, 0)
-                    inputManager = null
-                    //KLoggerUtils.e("test", "弹出软键盘")
+//                KLoggerUtils.e("显示软键盘：\tcontext:\t"+context+"\t"+(context is Activity))
+//                context?.let {
+//                    if (it is Activity){
+//                        KLoggerUtils.e(""+it.isFinishing())
+//                    }
+//                }
+                if (context != null && context is Activity && !context.isFinishing && view != null) {
+                    context?.runOnUiThread {
+                        try {
+                            if (context != null && context is Activity && !context.isFinishing && view != null) {
+                                var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                inputManager?.showSoftInput(view, 0)
+                                inputManager = null
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            KLoggerUtils.e("软键盘弹出异常:\t" + e.message)
+                        }
+                    }
                 }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
@@ -107,12 +124,27 @@ open class KMyEditText : KTextView {
          */
         fun hideSoftKeyboard(context: Context?, view: View? = null) {
             try {
-                if (context != null && context is Activity) {
-                    var inputManager: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    inputManager?.hideSoftInputFromWindow((context as Activity).getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
-                    view?.let {
-                        //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
-                        inputManager?.hideSoftInputFromWindow(it.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN)
+//                KLoggerUtils.e("隐藏软键盘：\tcontext:\t" + context + "\t" + (context is Activity))
+//                context?.let {
+//                    if (it is Activity) {
+//                        KLoggerUtils.e("" + it.isFinishing())
+//                    }
+//                }
+                if (context != null && context is Activity && !context.isFinishing) {
+                    context?.runOnUiThread {
+                        if (context != null && context is Activity && !context.isFinishing) {
+                            try {
+                                var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                inputManager?.hideSoftInputFromWindow((context as Activity).getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
+                                view?.let {
+                                    //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
+                                    inputManager?.hideSoftInputFromWindow(it.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                KLoggerUtils.e("软键盘关闭异常:\t" + e.message)
+                            }
+                        }
                     }
                 }
             } catch (e: java.lang.Exception) {
@@ -121,12 +153,33 @@ open class KMyEditText : KTextView {
         }
 
         /**
+         * fixme 强制隐藏软键盘(有效);防止无效。所以加了延迟。在KBaseDialog弹窗关闭的时候会调用。
+         * @param activity
+         */
+        fun hideSoftKeyboard2(context: Context?, view: View? = null) {
+            //fixme 基本上都能关闭软键盘，极少数异常下可能会失败，忽略不计。
+            if (context != null && context is Activity && !context.isFinishing) {
+                GlobalScope.async {
+                    try {
+                        hideSoftKeyboard(context, view)
+                        delay(33)//fixme 防止无效果，至少需要间隔9毫秒才有效。
+                        hideSoftKeyboard(context, view)
+                        delay(55)
+                        hideSoftKeyboard(context, view)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }
+
+        /**
          * fixme 软键盘交替（亲测可行！）（目前没有判断软键盘是否弹出的方法。）
          */
         fun toggleSoftInput(context: Context?) {
             try {
-                if (context != null && context is Activity) {
-                    var inputManager: InputMethodManager? = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                if (context != null && context is Activity && !context.isFinishing) {
+                    var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     inputManager?.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0)//软键盘弹出消失交替（没有软键盘会弹出，有软键盘会消失）
                 }
             } catch (e: java.lang.Exception) {
@@ -152,7 +205,7 @@ open class KMyEditText : KTextView {
     fun showSoftInput2() {
         try {
             GlobalScope.async {
-                delay(30)//10毫秒足以。
+                delay(35)//10毫秒足以。
                 getContext()?.runOnUiThread {
                     KMyEditText.showSoftInput(this, this@KMyEditText)
                 }
@@ -166,7 +219,7 @@ open class KMyEditText : KTextView {
     fun showSoftInput3() {
         try {
             GlobalScope.async {
-                delay(130)//fixme 130毫秒,防止无效。这个延迟时间，几乎百分百有效。
+                delay(135)//fixme 130毫秒,防止无效。这个延迟时间，几乎百分百有效。
                 getContext()?.runOnUiThread {
                     KMyEditText.showSoftInput(this, this@KMyEditText)
                 }
