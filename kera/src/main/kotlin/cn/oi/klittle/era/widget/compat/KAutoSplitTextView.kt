@@ -26,7 +26,8 @@ open class KAutoSplitTextView : KView {
     private var indent: String?=null
 
     /**
-     * fixme 设置自动换行文本。（自己手动计算是否换行，解决原生换行异常问题(一行文本没有满就自动换行了。)）
+     * fixme 设置自动换行文本。（自己手动计算是否换行，解决原生换行异常问题(一行文本没有满就自动换行了。)）;
+     * fixme 控件宽度最好固定，如果width=wrapContent;最好不要调用这个方法。不准。
      * @param text 文本
      * @param indent 悬挂缩进效果的文本。即该文本会出头，其他文本都在该文本的右边。
      */
