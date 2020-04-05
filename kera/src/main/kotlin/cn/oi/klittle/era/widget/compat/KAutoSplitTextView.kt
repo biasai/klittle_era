@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 //参考链接：https://blog.csdn.net/P876643136/article/details/88082850?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1
 /**
@@ -23,36 +24,50 @@ open class KAutoSplitTextView : KView {
 
 
     private var onGlobalLayoutListener2: ViewTreeObserver.OnGlobalLayoutListener? = null
-    private var indent: String?=null
+    private var indent: String? = null
 
     /**
      * fixme 设置自动换行文本。（自己手动计算是否换行，解决原生换行异常问题(一行文本没有满就自动换行了。)）;
-     * fixme 控件宽度最好固定，如果width=wrapContent;最好不要调用这个方法。不准。
      * @param text 文本
      * @param indent 悬挂缩进效果的文本。即该文本会出头，其他文本都在该文本的右边。
      */
-    fun setAutoSplitText(text: CharSequence?,indent: String?=null) {
-        this.indent=indent
+    fun setAutoSplitText(text: CharSequence?, indent: String? = null) {
+        this.indent = indent
         setText(text)//fixme 必须先设置一下原始文本,必不可少。
         if (width > 0) {
-            setAutoSplitText2()
+            var isListener2 = false
+            layoutParams?.let {
+                if (it.width == ViewGroup.LayoutParams.WRAP_CONTENT) {
+                    isListener2 = true
+                    //WRAP_CONTENT控件宽度会发生变化，会回调。其他固定长度。则不会回调。
+                    onGlobalLayoutListener2()//fixme ViewGroup.LayoutParams.WRAP_CONTENT 自定义宽度；会重新布局。所以需要重新监听。
+                }
+            }
+            if (!isListener2) {
+                setAutoSplitText2()
+            }
         } else {
-            //fixme 监听布局是否加载完成。
-            if (onGlobalLayoutListener2 == null) {
-                onGlobalLayoutListener2 = ViewTreeObserver.OnGlobalLayoutListener {
-                    //宽和高不能为空，要返回具体的值。
-                    if (width > 0 && height > 0 && onGlobalLayoutListener2 != null) {
-                        //fixme 防止多次重复调用，只执行一次
-                        if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener2 != null) {
-                            viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener2)
-                        }
-                        onGlobalLayoutListener2 = null
-                        setAutoSplitText2()
+            onGlobalLayoutListener2()
+        }
+    }
+
+    private fun onGlobalLayoutListener2() {
+        //fixme 监听布局是否加载完成。
+        if (onGlobalLayoutListener2 == null) {
+            onGlobalLayoutListener2 = ViewTreeObserver.OnGlobalLayoutListener {
+                //KLoggerUtils.e("监听宽度:\t" + width)
+                //宽和高不能为空，要返回具体的值。
+                if (width > 0 && height > 0 && onGlobalLayoutListener2 != null) {
+                    //fixme 防止多次重复调用，只执行一次
+                    if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener2 != null) {
+                        viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener2)
                     }
+                    onGlobalLayoutListener2 = null
+                    setAutoSplitText2()
                 }
-                if (onGlobalLayoutListener2 != null) {
-                    viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener2)
-                }
+            }
+            if (onGlobalLayoutListener2 != null) {
+                viewTreeObserver?.addOnGlobalLayoutListener(onGlobalLayoutListener2)
             }
         }
     }
@@ -61,10 +76,10 @@ open class KAutoSplitTextView : KView {
         if (width > 0) {
             text?.trim()?.let {
                 if (it.length > 0) {
-                    var newText:String?=null
-                    if (indent!=null){
-                        newText = autoSplitText(this,indent)
-                    }else{
+                    var newText: String? = null
+                    if (indent != null) {
+                        newText = autoSplitText(this, indent)
+                    } else {
                         newText = autoSplitText(this)
                     }
                     if (!TextUtils.isEmpty(newText)) {
@@ -110,7 +125,9 @@ open class KAutoSplitTextView : KView {
                 sbNewText.deleteCharAt(sbNewText.length - 1)
             }
             return sbNewText.toString()
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return ""
     }
 
@@ -165,13 +182,15 @@ open class KAutoSplitTextView : KView {
                 sbNewText.deleteCharAt(sbNewText.length - 1)
             }
             return sbNewText.toString()
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return ""
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        this.indent=null
+        this.indent = null
         if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener2 != null) {
             viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener2)
         }
