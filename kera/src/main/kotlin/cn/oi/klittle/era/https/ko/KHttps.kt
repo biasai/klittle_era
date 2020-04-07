@@ -650,12 +650,9 @@ open class KHttps() {
         var isCallback = true
         try {
             if (isUiThread) {//主线程
-                if (activity == null) {
-                    isCallback = false
-                }
                 activity?.let {
                     if (it.isFinishing) {
-                        isCallback = false//activity关闭了，也不回调了。
+                        isCallback = false//fixme activity关闭了，则不用再回调了。
                     }
                 }
             }
