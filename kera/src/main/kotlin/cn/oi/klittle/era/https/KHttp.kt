@@ -31,7 +31,7 @@ object KHttp {
     var map: MutableMap<String, String> = mutableMapOf()
 
     fun Get2(url: String?, requestParams: KHttps?, requestCallBack: KGenericsCallback? = null, timeOut: Int = 3000) {
-        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
+        var url = url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         url?.let {
             requestParams?.let {
                 if (!it.isRepeatRequest) {
@@ -256,7 +256,7 @@ object KHttp {
     }
 
     fun Post2(url: String?, requestParams: KHttps?, requestCallBack: KGenericsCallback? = null, timeOut: Int = 3000) {
-        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
+        var url = url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         url?.let {
             requestParams?.let {
                 if (!it.isRepeatRequest) {
@@ -606,7 +606,7 @@ object KHttp {
      * fixme 图片地址多几个斜杠/是没有关系的，是可以正常访问的。亲测可行。如：http://test.app.bwg2017.com///photo/201905/10863/20190517134844_0.jpg
      */
     fun GetNetBitmap(url: String?, activity: Activity? = null, requestParams: KBitmaps?, requestCallBack: KBitmapCallback? = null, timeOut: Int = 3000, width: Int = 0, height: Int = 0) {
-        var url= url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
+        var url = url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
         var w = width
         var h = height
         GlobalScope.async {
@@ -836,7 +836,7 @@ object KHttp {
     //里面的网络请求，需要调用者在子线程调用。
     //fixme Cleartext HTTP traffic to hbimg.b0.upaiyun.com not permitted 错误是该服务器不支持http,可以试试https（一般都可以。）。
     fun getNetByteArray(url: String?, headers: Map<String, String>? = null, params: Map<String, String>? = null): ByteArray? {
-        var url= url?.replace("\\", "/");//不识别斜杠；只识别反斜杠。
+        var url = url?.replace("\\", "/");//不识别斜杠；只识别反斜杠。
         url?.let {
             var urlNameString = url
             //fixme 参数 params
@@ -1007,18 +1007,62 @@ object KHttp {
 
     }
 
-    //获取网络请求唯一标志(url+所有参数集合)
+    //获取网络请求唯一标志(url+所有参数集合);fixme 防止网络重复请求。
     fun getUrlUnique(https2: KHttps): String {
-        var stringBuffer = StringBuffer("")
-        https2.apply {
-            //fixme 防止参数里面有时间戳(当前时间 System.currentTimeMillis())；
-            //fixme 所以用参数来判断是否唯一；已经不保险了。还是直接使用url最保险。
-            stringBuffer.append(url)
-            if (urlUniqueParams != null) {
-                stringBuffer.append(urlUniqueParams)//添加该参数作为唯一标志
+        try {
+            var stringBuffer = StringBuffer("")
+            https2.apply {
+                //fixme 防止参数里面有时间戳(当前时间 System.currentTimeMillis())；
+                //fixme 所以用参数来判断是否唯一；已经不保险了。还是直接使用url最保险。
+                stringBuffer.append(url)
+                if (urlUniqueParams != null) {
+                    stringBuffer.append(urlUniqueParams)//添加该参数作为唯一标志
+                }
+                //网络唯一标志；是否包含参数；默认是不包含的。
+                if (isUrlUniqueParams) {
+                    if (headers?.size > 0) {
+                        for ((key, value) in headers.entries) {
+                            stringBuffer.append(key)
+                            stringBuffer.append(value)
+                        }
+                    }
+                    if (params?.size > 0) {
+                        for ((key, value) in params.entries) {
+                            stringBuffer.append(key)
+                            stringBuffer.append(value)
+                        }
+                    }
+                    if (files?.size > 0) {
+                        for ((key, value) in files.entries) {
+                            stringBuffer.append(key)
+                            stringBuffer.append(value)
+                        }
+                    }
+                    body?.let {
+                        stringBuffer.append(it)
+                    }
+                    if (isUiThread) {
+                        activity?.toString()?.let {
+                            stringBuffer.append(it)//fixme 绑定Activity。
+                        }
+                    }
+                }
+                //Log.e("test", "" + stringBuffer)
             }
-            //网络唯一标志；是否包含参数；默认是不包含的。
-            if (isUrlUniqueParams) {
+            return stringBuffer.toString().trim()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
+    //获取缓存唯一键值(url+所有参数集合)
+    fun getCacheUnique(https2: KHttps): String {
+        try {
+            var stringBuffer = StringBuffer("")
+            https2.apply {
+                stringBuffer.append(url)
+                //缓存唯一标志；包含所有参数。
                 if (headers?.size > 0) {
                     for ((key, value) in headers.entries) {
                         stringBuffer.append(key)
@@ -1040,42 +1084,13 @@ object KHttp {
                 body?.let {
                     stringBuffer.append(it)
                 }
+                //Log.e("test", "" + stringBuffer)
             }
-            //Log.e("test", "" + stringBuffer)
+            return stringBuffer.toString().trim()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return stringBuffer.toString().trim()
-    }
-
-    //获取缓存唯一键值(url+所有参数集合)
-    fun getCacheUnique(https2: KHttps): String {
-        var stringBuffer = StringBuffer("")
-        https2.apply {
-            stringBuffer.append(url)
-            //缓存唯一标志；包含所有参数。
-            if (headers?.size > 0) {
-                for ((key, value) in headers.entries) {
-                    stringBuffer.append(key)
-                    stringBuffer.append(value)
-                }
-            }
-            if (params?.size > 0) {
-                for ((key, value) in params.entries) {
-                    stringBuffer.append(key)
-                    stringBuffer.append(value)
-                }
-            }
-            if (files?.size > 0) {
-                for ((key, value) in files.entries) {
-                    stringBuffer.append(key)
-                    stringBuffer.append(value)
-                }
-            }
-            body?.let {
-                stringBuffer.append(it)
-            }
-            //Log.e("test", "" + stringBuffer)
-        }
-        return stringBuffer.toString().trim()
+        return ""
     }
 
 }

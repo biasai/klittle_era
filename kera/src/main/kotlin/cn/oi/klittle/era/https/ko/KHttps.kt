@@ -134,9 +134,9 @@ open class KHttps() {
         return this
     }
 
-    open var isLocked:Boolean=true//fixme 网络进度条，是否屏蔽返回键。默认屏蔽。
-    open fun isLocked(isLocked:Boolean=true){
-        this.isLocked=isLocked
+    open var isLocked: Boolean = true//fixme 网络进度条，是否屏蔽返回键。默认屏蔽。
+    open fun isLocked(isLocked: Boolean = true) {
+        this.isLocked = isLocked
     }
 
     //进度条变量名，子类虽然可以重写，但是类型改不了。所以。进度条就不允许继承了。子类自己去定义自己的进度条。
@@ -280,7 +280,9 @@ open class KHttps() {
             }
             https?.onDestrory()
             https = null
-        }catch (e:java.lang.Exception){e.printStackTrace()}
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
     open var saveTime: Int? = null//缓存数据时间；单位秒。空null没有时间限制,及永久存储.
@@ -576,7 +578,9 @@ open class KHttps() {
             finish0 = null
             finish = null
             requestCallback = null
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     //fixme Get请求,所有参数设置完成之后再调用
@@ -593,14 +597,16 @@ open class KHttps() {
         KHttp.Get2(url, this, requestCallBack = object : KGenericsCallback(this) {
             override fun onResponse(response: String?) {
                 try {
-                    callback?.let {
-                        response?.let {
-                            try {
-                                //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
-                                callback(KGsonUtils.parseJSONToAny<T>(it, *field))
-                            } catch (e: Exception) {
-                                //防止异常之后，finish()不执行;捕捉之后就没事了
-                                KLoggerUtils.e("get回调处理异常：\t" + e.message)
+                    if (isCallback()) {
+                        callback?.let {
+                            response?.let {
+                                try {
+                                    //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
+                                    callback(KGsonUtils.parseJSONToAny<T>(it, *field))
+                                } catch (e: Exception) {
+                                    //防止异常之后，finish()不执行;捕捉之后就没事了
+                                    KLoggerUtils.e("get回调处理异常：\t" + e.message)
+                                }
                             }
                         }
                     }
@@ -611,6 +617,27 @@ open class KHttps() {
                 }
             }
         }, timeOut = timeOut)
+    }
+
+
+    //fixme 判断是否需要回调。
+    public fun isCallback(): Boolean {
+        var isCallback = true
+        try {
+            if (isUiThread) {//主线程
+                if (activity == null) {
+                    isCallback = false
+                }
+                activity?.let {
+                    if (it.isFinishing) {
+                        isCallback = false//activity关闭了，也不回调了。
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return isCallback
     }
 
     //fixme Post请求,所有参数设置完成之后再调用
@@ -628,14 +655,16 @@ open class KHttps() {
             //fixme 只要有数据,成功或是失败都会回调onResponse()返回;失败了会读取缓存,只要缓存有数据,就会回调
             override fun onResponse(response: String?) {
                 try {
-                    callback?.let {
-                        response?.let {
-                            //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
-                            try {
-                                callback(KGsonUtils.parseJSONToAny<T>(it, *field))
-                            } catch (e: Exception) {
-                                //防止异常之后，finish()不执行;捕捉之后就没事了
-                                KLoggerUtils.e("post回调处理异常：\t" + e.message)
+                    if (isCallback()) {
+                        callback?.let {
+                            response?.let {
+                                //fixme 默认返回原始数据String(包括缓存数据)，缓存数据不为空并且开启缓存isCacle==true的时候，会返回缓存数据。
+                                try {
+                                    callback(KGsonUtils.parseJSONToAny<T>(it, *field))
+                                } catch (e: Exception) {
+                                    //防止异常之后，finish()不执行;捕捉之后就没事了
+                                    KLoggerUtils.e("post回调处理异常：\t" + e.message)
+                                }
                             }
                         }
                     }

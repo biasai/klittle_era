@@ -134,11 +134,13 @@ open class KMyEditText : KTextView {
                     context?.runOnUiThread {
                         if (context != null && context is Activity && !context.isFinishing) {
                             try {
-                                var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                                inputManager?.hideSoftInputFromWindow((context as Activity).getCurrentFocus().getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
-                                view?.let {
-                                    //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
-                                    inputManager?.hideSoftInputFromWindow(it.getWindowToken(), InputMethodManager.RESULT_UNCHANGED_SHOWN)
+                                (context as Activity).getCurrentFocus()?.getWindowToken()?.let {
+                                    var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                    inputManager?.hideSoftInputFromWindow(it, InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
+                                    view?.windowToken?.let {
+                                        //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
+                                        inputManager?.hideSoftInputFromWindow(it, InputMethodManager.RESULT_UNCHANGED_SHOWN)
+                                    }
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
