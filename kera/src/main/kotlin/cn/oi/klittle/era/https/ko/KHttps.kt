@@ -134,6 +134,11 @@ open class KHttps() {
         return this
     }
 
+    open var isLocked:Boolean=true//fixme 网络进度条，是否屏蔽返回键。默认屏蔽。
+    open fun isLocked(isLocked:Boolean=true){
+        this.isLocked=isLocked
+    }
+
     //进度条变量名，子类虽然可以重写，但是类型改不了。所以。进度条就不允许继承了。子类自己去定义自己的进度条。
     protected open var progressbar: KProgressDialog? = null//进度条(Activity不能为空，Dialog需要Activity的支持)
 
@@ -152,6 +157,7 @@ open class KHttps() {
                             if ((progressbar == null || progressbar?.dialog == null) && activity != null) {
                                 progressbar = KProgressDialog(activity!!, https = this@KHttps)
                             }
+                            progressbar?.isLocked(isLocked)//是否屏蔽返回键
                             progressbar?.show()
                         } catch (e: Exception) {
                             //这里异常了不会影响回调进度。服务器（域名错误）异常时，会回调onFailure()

@@ -120,6 +120,20 @@ abstract class KBaseUi {
         return Color.parseColor("#ffffff")
     }
 
+    /**
+     * fixme 父容器设置获取焦点；解决edit文本输入框软键盘自动弹窗的问题。
+     * fixme 最好在最顶层的父容器中设置。亲测有效。
+     */
+    fun setRequestFocus(view: View?){
+        view?.let {
+            //fixme 解决软键盘自动弹出，就使用这个方法；不要手动设置SOFT_INPUT_STATE_HIDDEN（效果很不好）
+            it.isFocusable=true
+            it.isFocusableInTouchMode=true
+            it.requestFocus()
+            it.requestFocusFromTouch()
+        }
+    }
+
     companion object {
         fun getContext(): Context {
             return KBaseApplication.getInstance()
