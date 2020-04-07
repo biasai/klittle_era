@@ -196,11 +196,11 @@ abstract class KBaseUi {
                             //KLoggerUtils.e("释放2")
                         } else if (view is RecyclerView) {
                             //fixme 释放适配器
-                            view?.adapter?.notifyDataSetChanged()
+                            //view?.adapter?.notifyDataSetChanged()
                             view?.adapter = null
                             view?.layoutManager = null
                         } else if (view is ViewPager) {
-                            view?.adapter?.notifyDataSetChanged()
+                            //view?.adapter?.notifyDataSetChanged()
                             view?.adapter = null//释放适配器。
                         }
                         var count = view.childCount
