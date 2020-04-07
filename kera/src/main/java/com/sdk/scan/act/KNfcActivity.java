@@ -176,7 +176,7 @@ public class KNfcActivity extends KBaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            KLoggerUtils.INSTANCE.e("NFC初始化异常：\t" + e.getMessage());
+            //KLoggerUtils.INSTANCE.e("NFC初始化异常：\t" + e.getMessage());
         }
     }
 

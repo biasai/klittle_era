@@ -58,7 +58,7 @@ object KScanUtils {
         } catch (e: Exception) {
             mScanDevice = null
             isScanSupport = false//设备不支持扫描
-            KLoggerUtils.e("扫描类初始化异常：\t" + e.message)
+            //KLoggerUtils.e("扫描类初始化异常：\t" + e.message)
         }
         if (mScanDevice == null) {
             isScanSupport = false
