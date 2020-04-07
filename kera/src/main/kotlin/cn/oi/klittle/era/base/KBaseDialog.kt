@@ -62,12 +62,15 @@ open class KBaseDialog() {
         return dialog?.window
     }
 
+    var isDestory: Boolean = false
     /**
      * 销毁
      */
     open fun onDestroy() {
+        isDestory = true
         if (dialog != null && ctx != null) {
             try {
+                recycles()
                 dismiss()
                 onShow = null
                 onDismiss = null

@@ -165,7 +165,11 @@ open class KHttps() {
                                                 if (it == activity && progressbar2 is KProgressDialog) {
                                                     progressbar2?.isShow()?.let {
                                                         if (it){
-                                                            progressbar = progressbar2 as KProgressDialog//fixme 同一个Activity共享网络进度条
+                                                            progressbar2?.isDestory?.let {
+                                                                if(!it){
+                                                                    progressbar = progressbar2 as KProgressDialog//fixme 同一个Activity共享网络进度条
+                                                                }
+                                                            }
                                                         }
                                                     }
                                                 }
