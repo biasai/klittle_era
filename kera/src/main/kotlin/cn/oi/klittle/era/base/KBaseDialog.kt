@@ -128,22 +128,34 @@ open class KBaseDialog() {
         return this
     }
 
+    private var isLocked2 = false//判断locked（）方法，是否已经执行了。
+    private fun locked() {
+        if (!isLocked2) {
+            isLocked2 = true
+            //屏蔽返回键,并且监听返回键（只监听返回键按下。）
+            dialog?.setOnKeyListener { dialog, keyCode, event ->
+                if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
+                    lockCallback?.let {
+                        it()//监听返回键(按下)
+                    }
+                    isLocked//true,已经处理(屏蔽)，false没有处理，系统会自行处理。
+                } else {
+                    false//返回false，不屏蔽
+                    //返回键以外交给系统自行处理。不可以屏蔽，不然输入法键盘的按键可能无效。如删除键
+                }
+            }
+        }
+    }
 
+
+    private var isLocked: Boolean = false
+    private var lockCallback: (() -> Unit)? = null
     //fixme true屏蔽返回键，false不屏蔽返回键。
     //fixme 是否屏蔽返回键+监听返回键（只监听返回键按下。）
     fun isLocked(isLocked: Boolean = true, callback: (() -> Unit)? = null): KBaseDialog {
-        //屏蔽返回键,并且监听返回键（只监听返回键按下。）
-        dialog?.setOnKeyListener { dialog, keyCode, event ->
-            if (keyCode == KeyEvent.KEYCODE_BACK && event.action == KeyEvent.ACTION_DOWN) {
-                callback?.let {
-                    it()//监听返回键(按下)
-                }
-                isLocked//true,已经处理(屏蔽)，false没有处理，系统会自行处理。
-            } else {
-                false//返回false，不屏蔽
-                //返回键以外交给系统自行处理。不可以屏蔽，不然输入法键盘的按键可能无效。如删除键
-            }
-        }
+        this.isLocked = isLocked
+        this.lockCallback = callback
+        locked()
         return this
     }
 

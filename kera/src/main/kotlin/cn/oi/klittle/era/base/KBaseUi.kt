@@ -6,11 +6,13 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.support.v4.view.ViewPager
 import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.LinearLayout
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KAutoLinefeedLayout
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
@@ -124,11 +126,11 @@ abstract class KBaseUi {
      * fixme 父容器设置获取焦点；解决edit文本输入框软键盘自动弹窗的问题。
      * fixme 最好在最顶层的父容器中设置。亲测有效。
      */
-    fun setRequestFocus(view: View?){
+    fun setRequestFocus(view: View?) {
         view?.let {
             //fixme 解决软键盘自动弹出，就使用这个方法；不要手动设置SOFT_INPUT_STATE_HIDDEN（效果很不好）
-            it.isFocusable=true
-            it.isFocusableInTouchMode=true
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
             it.requestFocus()
             it.requestFocusFromTouch()
         }
@@ -194,8 +196,12 @@ abstract class KBaseUi {
                             //KLoggerUtils.e("释放2")
                         } else if (view is RecyclerView) {
                             //fixme 释放适配器
+                            view?.adapter?.notifyDataSetChanged()
                             view?.adapter = null
                             view?.layoutManager = null
+                        } else if (view is ViewPager) {
+                            view?.adapter?.notifyDataSetChanged()
+                            view?.adapter = null//释放适配器。
                         }
                         var count = view.childCount
                         if (count > 0) {
@@ -208,6 +214,7 @@ abstract class KBaseUi {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+                KLoggerUtils.e("KBaseUi destroyViewGroup（）异常：\t" + e.message)
             }
         }
 
