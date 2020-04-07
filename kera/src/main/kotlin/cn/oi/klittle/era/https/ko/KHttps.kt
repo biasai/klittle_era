@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.https.KHttp
@@ -70,6 +71,8 @@ open class KHttps() {
         fun onError(error: ((url: String?, errStr: String?, isCacle: Boolean, hasCahe: Boolean, cacleInfo: String?) -> Unit)? = null) {
             this.error = error
         }
+
+        open var progressbar2: KBaseDialog? = null//共用弹窗
     }
 
     /**
@@ -155,7 +158,23 @@ open class KHttps() {
                     it.runOnUiThread {
                         try {
                             if ((progressbar == null || progressbar?.dialog == null) && activity != null) {
-                                progressbar = KProgressDialog(activity!!, https = this@KHttps)
+                                if (isSharingDialog) {
+                                    progressbar2?.let {
+                                        it.ctx?.let {
+                                            if (it is Activity) {
+                                                if (it == activity && progressbar2 is KProgressDialog) {
+                                                    progressbar = progressbar2 as KProgressDialog
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (progressbar == null) {
+                                    progressbar = KProgressDialog(activity!!, https = this@KHttps)
+                                    if (isSharingDialog) {
+                                        progressbar2 = progressbar
+                                    }
+                                }
                             }
                             progressbar?.isLocked(isLocked)//是否屏蔽返回键
                             progressbar?.show()
@@ -189,8 +208,14 @@ open class KHttps() {
                     progressbar = null
                 }
             }
-
+            progressbar2 = null
         }
+    }
+
+    open var isSharingDialog: Boolean = false//fixme 是否共用Dialog网络进度弹窗
+
+    open fun isSharingDialog(isSharingDialog: Boolean = false) {
+        this.isSharingDialog = isSharingDialog
     }
 
     var isJava: Boolean = false//是否在java端运行，true是。false不是（在安卓设备上运行）
