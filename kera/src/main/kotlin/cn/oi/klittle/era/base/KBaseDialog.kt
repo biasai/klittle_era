@@ -526,7 +526,7 @@ open class KBaseDialog() {
     open fun dismiss() {
         dialog?.let {
             if (it.isShowing) {
-                it.dismiss()//关闭;不管是在主线程，还是非主线程。都可以关闭。亲测。
+                it.dismiss()//fixme 关闭;不管是在主线程，还是非主线程。都可以关闭。亲测有效。
             }
         }
     }
