@@ -535,21 +535,16 @@ open class KBaseDialog() {
                 } catch (e: Exception) {
                     KLoggerUtils.e("dialog关闭异常：\t" + e.message)
                 }
-                if (it.isShowing) {
-                    var mDialog: Dialog? = it
-                    ctx?.let {
-                        it?.runOnUiThread {
-                            try {
-                                mDialog?.isShowing?.let {
-                                    if (it) {
-                                        mDialog?.dismiss()//fixme 为了保险起见还是，在主线程中再关闭一次。防止异常无法关闭！！
-                                    }
-                                }
-                                mDialog = null
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                KLoggerUtils.e("dialog关闭异常2：\t" + e.message)
-                            }
+                var mDialog: Dialog? = it
+                ctx?.let {
+                    it?.runOnUiThread {
+                        try {
+                            //fixme 再重复关闭一次，不需要做isShowing判断；亲测重复关闭不会报错的。防止没有关闭。
+                            mDialog?.dismiss()//fixme 为了保险起见还是，在主线程中再关闭一次。防止异常无法关闭！！
+                            mDialog = null
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            KLoggerUtils.e("dialog关闭异常2：\t" + e.message)
                         }
                     }
                 }
