@@ -230,12 +230,6 @@ open class KHttps() {
     open var isSharingDialog: Boolean = false//fixme 是否共用Dialog网络进度弹窗
     open fun isSharingDialog(isSharingDialog: Boolean) {
         this.isSharingDialog = isSharingDialog
-        if (isSharingDialog) {
-            if (progressbar2Count < 0) {
-                progressbar2Count = 0
-            }
-            progressbar2Count++
-        }
     }
 
     var isJava: Boolean = false//是否在java端运行，true是。false不是（在安卓设备上运行）
