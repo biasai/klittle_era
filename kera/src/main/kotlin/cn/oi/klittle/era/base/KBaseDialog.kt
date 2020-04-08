@@ -70,8 +70,8 @@ open class KBaseDialog() {
         isDestory = true
         if (dialog != null && ctx != null) {
             try {
-                recycles()
                 dismiss()
+                recycles()
                 onShow = null
                 onDismiss = null
                 layoutId = null
@@ -502,10 +502,10 @@ open class KBaseDialog() {
     //防止内存泄漏
     //在activity结束时记得手动调用一次
     fun recycles() {
-        dialog?.dismiss()
+        dismiss()
         dialog?.cancel()
         dialog = null
-        System.gc()
+        //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
     }
 
 
@@ -526,9 +526,33 @@ open class KBaseDialog() {
     open fun dismiss() {
         dialog?.let {
             if (it.isShowing) {
-                it.dismiss()//fixme 关闭;不管是在主线程，还是非主线程。都可以关闭。亲测有效。
+                try {
+                    it.dismiss()
+                } catch (e: Exception) {
+                    KLoggerUtils.e("dialog关闭异常：\t" + e.message)
+                }
+                if (it.isShowing) {
+                    var mDialog: Dialog? = it
+                    ctx?.let {
+                        it.runOnUiThread {
+                            try {
+                                mDialog?.isShowing?.let {
+                                    if (it) {
+                                        mDialog?.dismiss()//fixme 为了保险起见还是，在主线程中再关闭一次。防止异常无法关闭！！
+                                    }
+                                }
+                                mDialog = null
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                                KLoggerUtils.e("dialog关闭异常2：\t" + e.message)
+                            }
+                        }
+                    }
+                }
+                //it.dismiss()//fixme 关闭;不管是在主线程，还是非主线程。都可以关闭。亲测有效。
             }
         }
+        //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
     }
 
     //显示窗体

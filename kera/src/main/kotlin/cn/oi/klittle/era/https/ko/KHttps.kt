@@ -144,7 +144,7 @@ open class KHttps() {
     }
 
     //进度条变量名，子类虽然可以重写，但是类型改不了。所以。进度条就不允许继承了。子类自己去定义自己的进度条。
-    protected open var progressbar: KProgressDialog? = null//进度条(Activity不能为空，Dialog需要Activity的支持)
+    public open var progressbar: KProgressDialog? = null//进度条(Activity不能为空，Dialog需要Activity的支持)
 
     //fixme 显示进度条[子类要更改进度条，可以重写这个]
     //重写的时候，注意屏蔽父类的方法，屏蔽 super.showProgress()
@@ -199,9 +199,10 @@ open class KHttps() {
 
     private fun dismissProgressbar2() {
         progressbar?.let {
+            progressbar?.dismiss()
             progressbar?.onDestroy()
-            progressbar = null
         }
+        progressbar = null
     }
 
     //fixme ++在 KHttp里的Get2（）和Post2（）里记录网络弹窗的个数。在那里计算才准确。
@@ -313,8 +314,10 @@ open class KHttps() {
                 it.urlUniqueParams = null
             }
             //fixme 关闭进度条
-            if (https?.isShowLoad ?: false) {
-                https?.dismissProgressbar()
+            https?.isShowLoad?.let {
+                if (it) {
+                    https?.dismissProgressbar()
+                }
             }
             https?.finish0?.let {
                 it()
