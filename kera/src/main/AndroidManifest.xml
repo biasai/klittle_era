@@ -55,7 +55,8 @@
         tools:ignore="ProtectedPermissions" /> <!-- Use NFC feature and Permissions -->
     <uses-permission android:name="android.permission.NFC" />
 
-    <application>
+    <!--fixme  android:usesCleartextTraffic="true" 可以訪問http網絡  Android P(api28);必須設置，不然無法訪問http网络，只能访问https -->
+    <application  android:usesCleartextTraffic="true">
         <!--图片预览,还是使用透明主题背景比较好-->
         <activity
             android:name=".activity.preview.KPreviewActivity"

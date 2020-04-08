@@ -72,6 +72,7 @@ configurations.all {
 //https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
 //ext.anko_version = '0.10.5'
 ext.anko_version = '0.10.8'
+//fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
 gradle.ext.sinSupportVersion = '28.0.0'//27.1.1
 
 dependencies {
