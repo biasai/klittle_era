@@ -71,7 +71,7 @@ open class KBaseDialog() {
         if (dialog != null && ctx != null) {
             try {
                 dismiss()
-                //recycles()
+                recycles()
                 onShow = null
                 onDismiss = null
                 layoutId = null
@@ -515,41 +515,26 @@ open class KBaseDialog() {
 
     //防止内存泄漏
     //在activity结束时记得手动调用一次
-//    fun recycles() {
-//        try {
-//            dialog?.cancel()//fixme 不要调用这个方法，可能会影响Dialog的正常关闭。可能无法正常关闭。
-//            dialog = null
-//            //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            KLoggerUtils.e("dialog.recycles()异常：\t" + e.message)
-//        }
-//    }
+    fun recycles() {
+        try {
+            dialog?.cancel()
+            dialog = null
+            //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
+        } catch (e: Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("dialog.recycles()异常：\t" + e.message)
+        }
+    }
 
     //关闭弹窗；一定要在recycles()之前执行
     open fun dismiss() {
         dialog?.let {
             if (it.isShowing) {
-                var mDialog: Dialog? = it
-                ctx?.let {
-                    //fixme 先在主线程中关闭。防止无法正常关闭。
-                    it.runOnUiThread {
-                        try {
-                            //fixme 再重复关闭一次，不需要做isShowing判断；亲测重复关闭不会报错的。防止没有关闭。
-                            mDialog?.dismiss()//fixme 为了保险起见还是，在主线程中再关闭一次。防止异常无法关闭！！
-                            mDialog = null
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                            KLoggerUtils.e("dialog关闭异常：\t" + e.message)
-                        }
-                    }
-                }
                 try {
                     it.dismiss()//再关闭一次。
                 } catch (e: Exception) {
-                    KLoggerUtils.e("dialog关闭异常2：\t" + e.message)
+                    KLoggerUtils.e("dialog关闭异常：\t" + e.message)
                 }
-
                 //it.dismiss()//fixme 关闭;不管是在主线程，还是非主线程。都可以关闭。亲测有效。
             }
         }
@@ -566,7 +551,7 @@ open class KBaseDialog() {
                             if (!isFinishing) {
                                 if (dialog != null && !dialog!!.isShowing) {
                                     //显示窗体，必须在window.setContentView之前调用一次。其后就可随便调show()了。
-                                    dialog?.show()
+                                    dialog?.show()//fixme 顯示，最好在主線程中調用。
                                 }
                             }
                         }
