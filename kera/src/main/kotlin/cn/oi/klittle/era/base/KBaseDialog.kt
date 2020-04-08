@@ -156,9 +156,11 @@ open class KBaseDialog() {
     //fixme true屏蔽返回键，false不屏蔽返回键。
     //fixme 是否屏蔽返回键+监听返回键（只监听返回键按下。）
     fun isLocked(isLocked: Boolean = true, callback: (() -> Unit)? = null): KBaseDialog {
-        this.isLocked = isLocked
         this.lockCallback = callback
-        locked()
+        if (this.isLocked != isLocked) {
+            this.isLocked = isLocked
+            locked()
+        }
         return this
     }
 
@@ -460,7 +462,19 @@ open class KBaseDialog() {
 
     //fixme Dialog弹窗关闭时，是否关闭弹窗。默认关闭。true关闭软键盘；false不关闭，不做任何操作。
     open fun isHidenSoftKeyboard(): Boolean {
-        return true
+        if (ctx != null && ctx is Activity) {
+            (ctx as Activity)?.let {
+                if (!it.isFinishing) {
+                    var windowToken = it?.getCurrentFocus()?.getWindowToken()
+                    if (windowToken == null) {
+                        return false//fixme 不需要关闭软键盘，因为没有软键盘。
+                    }
+                } else {
+                    return false
+                }
+            }
+        }
+        return true//fixme 关闭软键盘
     }
 
     //事件，弹窗每次消失时，都会调用。子类重写
@@ -510,32 +524,9 @@ open class KBaseDialog() {
 
     //关闭弹窗
     open fun dismiss() {
-        if (dialog != null && ctx != null) {
-            dialog?.let {
-                if (it.isShowing) {
-                    //关闭
-                    try {
-                        ctx?.runOnUiThread {
-                            try {
-                                if (ctx != null && this is Activity) {
-                                    if (!isFinishing) {
-                                        dialog?.let {
-                                            if (it.isShowing) {
-                                                it.dismiss()//关闭
-                                            }
-                                        }
-                                        System.gc()//垃圾内存回收
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                                KLoggerUtils.e("dialog关闭异常：\t" + e.message)
-                            }
-                        }
-                    } catch (e: java.lang.Exception) {
-                        e.printStackTrace()
-                    }
-                }
+        dialog?.let {
+            if (it.isShowing) {
+                it.dismiss()//关闭;不管是在主线程，还是非主线程。都可以关闭。亲测。
             }
         }
     }

@@ -26,6 +26,8 @@ import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
+import cn.oi.klittle.era.https.KHttp
+import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
 import cn.oi.klittle.era.widget.compat.KMyEditText
 import org.jetbrains.anko.act
@@ -890,6 +892,9 @@ open class KBaseActivity : FragmentActivity() {
                 kprogressbar?.onDestroy()
                 kprogressbar = null
                 slideLayout = null
+                KHttps.progressbar2?.onDestroy()//网络共享弹窗
+                KHttps.progressbar2 = null
+                KHttps.progressbar2Count = 0
                 //fixme 进入动画，一般在startActivity()之后调用有效。多次调用也有效，后面的会覆盖前面的。
                 //fixme 退出动画，在finish()之后调用有效，多次调用也有效，后面的会覆盖前面的。
                 //fixme 参数一  上一个Activity的动画效果，参数二当前Activity的动画效果。
@@ -932,11 +937,11 @@ open class KBaseActivity : FragmentActivity() {
      * fixme 父容器设置获取焦点；解决edit文本输入框软键盘自动弹窗的问题。
      * fixme 最好在最顶层的父容器中设置。亲测有效。
      */
-    fun setRequestFocus(view: View?){
+    fun setRequestFocus(view: View?) {
         view?.let {
             //fixme 解决软键盘自动弹出，就使用这个方法；不要手动设置SOFT_INPUT_STATE_HIDDEN（效果很不好）
-            it.isFocusable=true
-            it.isFocusableInTouchMode=true
+            it.isFocusable = true
+            it.isFocusableInTouchMode = true
             it.requestFocus()
             it.requestFocusFromTouch()
         }

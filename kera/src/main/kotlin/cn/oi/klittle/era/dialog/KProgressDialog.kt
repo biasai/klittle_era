@@ -106,7 +106,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
     }
 
     //显示超时错提示信息
-    open fun showTimeOutInfo():KProgressDialog {
+    open fun showTimeOutInfo(): KProgressDialog {
         timeOutInfo?.trim()?.let {
             if (it.length > 0) {
                 KToast.showError(timeOutInfo)//连接超时
@@ -166,6 +166,10 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
     override fun onDismiss() {
         super.onDismiss()
         dispose2()
+    }
+
+    override fun isHidenSoftKeyboard(): Boolean {
+        return false//不需要关闭软键盘。
     }
 
     override fun onDestroy() {

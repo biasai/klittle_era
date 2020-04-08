@@ -161,15 +161,15 @@ open class KMyEditText : KTextView {
         fun hideSoftKeyboard2(context: Context?, view: View? = null) {
             //fixme 基本上都能关闭软键盘，极少数异常下可能会失败，忽略不计。
             if (context != null && context is Activity && !context.isFinishing) {
-                GlobalScope.async {
-                    try {
-                        hideSoftKeyboard(context, view)
-                        delay(33)//fixme 防止无效果，至少需要间隔9毫秒才有效。
-                        hideSoftKeyboard(context, view)
-                        delay(55)
-                        hideSoftKeyboard(context, view)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                (context as Activity)?.getCurrentFocus()?.getWindowToken()?.let {
+                    GlobalScope.async {
+                        try {
+                            hideSoftKeyboard(context, view)
+                            delay(60)//fixme 防止无效果，至少需要间隔9毫秒才有效。
+                            hideSoftKeyboard(context, view)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
             }

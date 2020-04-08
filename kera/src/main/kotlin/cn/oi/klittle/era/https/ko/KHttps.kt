@@ -72,7 +72,8 @@ open class KHttps() {
             this.error = error
         }
 
-        open var progressbar2: KBaseDialog? = null//共用弹窗
+        open var progressbar2: KBaseDialog? = null//共用弹窗;在KBaseActivity里的finish()会自动销毁。
+        open var progressbar2Count = 0//保存记录共享弹窗的数量。在KBaseActivity里的finish()会自动清0。
     }
 
     /**
@@ -164,9 +165,9 @@ open class KHttps() {
                                             if (it is Activity) {
                                                 if (it == activity && progressbar2 is KProgressDialog) {
                                                     progressbar2?.isShow()?.let {
-                                                        if (it){
+                                                        if (it) {
                                                             progressbar2?.isDestory?.let {
-                                                                if(!it){
+                                                                if (!it) {
                                                                     progressbar = progressbar2 as KProgressDialog//fixme 同一个Activity共享网络进度条
                                                                 }
                                                             }
@@ -196,34 +197,41 @@ open class KHttps() {
         }
     }
 
+    private fun dismissProgressbar2() {
+        progressbar?.let {
+            progressbar?.onDestroy()
+            progressbar = null
+        }
+    }
+
     //fixme 关闭进度条[子类可以重写,重写的时候，记得对自己的进度条进行内存释放。]
     //重写的时候，注意屏蔽父类的方法，屏蔽 super.showProgress()
     open fun dismissProgressbar() {
         if (isShowLoad) {
-            if (activity != null && !activity!!.isFinishing) {
-                //fixme 进度条关闭最好在ui主线程中进行。防止错误。
-                activity?.runOnUiThread {
-                    progressbar?.let {
-                        progressbar?.dismiss()
-                        progressbar?.onDestroy()
-                        progressbar = null
-                    }
+            if (isSharingDialog) {
+                //共享弹窗。
+                progressbar2Count--
+                if (progressbar2Count <= 0) {
+                    progressbar2Count = 0
+                    dismissProgressbar2()//fixme 所以的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
+                    progressbar2 = null
                 }
             } else {
-                progressbar?.let {
-                    progressbar?.dismiss()
-                    progressbar?.onDestroy()
-                    progressbar = null
-                }
+                //正常关闭弹窗
+                dismissProgressbar2()
             }
-            progressbar2 = null
         }
     }
 
     open var isSharingDialog: Boolean = false//fixme 是否共用Dialog网络进度弹窗
-
-    open fun isSharingDialog(isSharingDialog: Boolean = false) {
+    open fun isSharingDialog(isSharingDialog: Boolean) {
         this.isSharingDialog = isSharingDialog
+        if (isSharingDialog) {
+            if (progressbar2Count < 0) {
+                progressbar2Count = 0
+            }
+            progressbar2Count++
+        }
     }
 
     var isJava: Boolean = false//是否在java端运行，true是。false不是（在安卓设备上运行）
