@@ -72,7 +72,7 @@ configurations.all {
 //https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
 //ext.anko_version = '0.10.5'
 ext.anko_version = '0.10.8'
-gradle.ext.sinSupportVersion = '27.1.1'
+gradle.ext.sinSupportVersion = '28.0.0'//27.1.1
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
