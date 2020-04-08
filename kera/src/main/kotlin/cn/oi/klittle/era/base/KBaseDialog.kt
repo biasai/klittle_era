@@ -538,7 +538,7 @@ open class KBaseDialog() {
                 if (it.isShowing) {
                     var mDialog: Dialog? = it
                     ctx?.let {
-                        it.runOnUiThread {
+                        it?.runOnUiThread {
                             try {
                                 mDialog?.isShowing?.let {
                                     if (it) {
