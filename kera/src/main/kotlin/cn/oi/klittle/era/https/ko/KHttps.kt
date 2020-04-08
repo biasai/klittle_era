@@ -199,8 +199,8 @@ open class KHttps() {
 
     private fun dismissProgressbar2() {
         progressbar?.let {
-            progressbar?.dismiss()
-            progressbar?.onDestroy()
+            progressbar?.dismiss()//关闭弹窗
+            progressbar?.onDestroy()//销毁
         }
         progressbar = null
     }

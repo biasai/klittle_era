@@ -499,15 +499,6 @@ open class KBaseDialog() {
         return this
     }
 
-    //防止内存泄漏
-    //在activity结束时记得手动调用一次
-    fun recycles() {
-        dismiss()
-        dialog?.cancel()
-        dialog = null
-        //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
-    }
-
 
     //获取控件
     fun <T : View?> findViewById(id: Int): T? {
@@ -522,7 +513,20 @@ open class KBaseDialog() {
         return null
     }
 
-    //关闭弹窗
+    //防止内存泄漏
+    //在activity结束时记得手动调用一次
+    fun recycles() {
+        try {
+            dialog?.cancel()
+            dialog = null
+            //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
+        } catch (e: Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("dialog.recycles()异常：\t" + e.message)
+        }
+    }
+
+    //关闭弹窗；一定要在recycles()之前执行
     open fun dismiss() {
         dialog?.let {
             if (it.isShowing) {
