@@ -209,7 +209,7 @@ open class KHttps() {
     open fun dismissProgressbar() {
         if (isShowLoad) {
             if (isSharingDialog) {
-                progressbar2Count--//fixme ++在 KGenericsCallback.onStart()里记录网络弹窗的个数。
+                progressbar2Count--//fixme ++在 KGenericsCallback.onStart()里记录网络弹窗的个数。在那里计算才准确。
                 if (progressbar == progressbar2) {
                     //共享弹窗。
                     if (progressbar2Count <= 0) {
