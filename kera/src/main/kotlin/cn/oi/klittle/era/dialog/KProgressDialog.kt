@@ -152,6 +152,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
                 //fixme 超时处理
                 //fixme 移除网络重复请求标志；防止第二次请求时没有反应；
                 KHttp.map.remove(KHttp.getUrlUnique(it))
+                KHttp.map.remove(KHttp.getUrlUnique2(it))
                 //https?.onDestrory() fixme 不要调用这个销毁方法；这个在KGenericsCallback里面调用；其他地方不要调用
             }
             https = null

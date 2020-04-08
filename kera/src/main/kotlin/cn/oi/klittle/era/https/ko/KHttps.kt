@@ -301,6 +301,12 @@ open class KHttps() {
                 if (KHttp.map.containsKey(key)) {
                     KHttp.map.remove(key)
                 }
+
+                var key2=KHttp.getUrlUnique2(it)
+                if (KHttp.map.containsKey(key2)) {
+                    KHttp.map.remove(key2)//fixme 去除网络请求标志2
+                }
+
                 it.urlUniqueParams = null
             }
             //fixme 关闭进度条

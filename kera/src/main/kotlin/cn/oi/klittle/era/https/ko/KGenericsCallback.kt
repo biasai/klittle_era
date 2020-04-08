@@ -45,6 +45,10 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 if (KHttp.map.containsKey(key)) {
                     KHttp.map.remove(key)//fixme 去除网络请求标志
                 }
+                var key2=KHttp.getUrlUnique2(it)
+                if (KHttp.map.containsKey(key2)) {
+                    KHttp.map.remove(key2)//fixme 去除网络请求标志2
+                }
             }
             var result = https?.onPostResponse(response) ?: ""//对服务器返回数据，在解析之前，优先做处理。如解密等
             https?.success0?.let {
@@ -98,6 +102,10 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 var key=KHttp.getUrlUnique(it)
                 if (KHttp.map.containsKey(key)) {
                     KHttp.map.remove(key)//fixme 去除网络请求标志
+                }
+                var key2=KHttp.getUrlUnique2(it)
+                if (KHttp.map.containsKey(key2)) {
+                    KHttp.map.remove(key2)//fixme 去除网络请求标志2
                 }
             }
             https?.failure0?.let {

@@ -53,6 +53,19 @@ object KHttp {
 
             //开启协程协议
             GlobalScope.async {
+
+                requestParams?.let {
+                    if (it.isShowLoad&&it.isSharingDialog) {
+                        var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复
+                        if (isRpeat2) {
+                            //重复了
+                            delay(100)//fixme 第二次相同url请求延迟;网络进度条创建大于耗时60毫秒左右
+                        } else {
+                            map.put(getUrlUnique2(it), "网络请求标志开始2")//去除标志，在onFinish()方法里
+                        }
+                    }
+                }
+
                 var isFinish = false
                 //fixme 开始链接
                 requestCallBack?.let {
@@ -284,6 +297,19 @@ object KHttp {
             }
             //开启协程协议
             GlobalScope.async {
+
+                requestParams?.let {
+                    if (it.isShowLoad&&it.isSharingDialog) {
+                        var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复
+                        if (isRpeat2) {
+                            //重复了
+                            delay(100)//fixme 第二次相同url请求延迟；网络进度条创建大于耗时60毫秒左右
+                        } else {
+                            map.put(getUrlUnique2(it), "网络请求标志开始2")//去除标志，在onFinish()方法里
+                        }
+                    }
+                }
+
                 var isFinish = false
                 //fixme 开始链接
                 requestCallBack?.let {
@@ -1021,6 +1047,25 @@ object KHttp {
 
     }
 
+    //获取网络请求唯一标志(纯url标志);
+    fun getUrlUnique2(https2: KHttps): String {
+        var stringBuffer = StringBuffer("")
+        https2.apply {
+            //fixme 防止参数里面有时间戳(当前时间 System.currentTimeMillis())；
+            //fixme 所以用参数来判断是否唯一；已经不保险了。还是直接使用url最保险。
+            stringBuffer.append(url)
+            if (urlUniqueParams != null) {
+                stringBuffer.append(urlUniqueParams)//添加该参数作为唯一标志
+            }
+            if (isUiThread) {
+                activity?.toString()?.let {
+                    stringBuffer.append(it)//fixme 绑定Activity。
+                }
+            }
+        }
+        return stringBuffer.toString().trim()
+    }
+
     //获取网络请求唯一标志(url+所有参数集合);fixme 防止网络重复请求。
     fun getUrlUnique(https2: KHttps): String {
         var stringBuffer = StringBuffer("")
@@ -1054,10 +1099,10 @@ object KHttp {
                 body?.let {
                     stringBuffer.append(it)
                 }
-                if (isUiThread) {
-                    activity?.toString()?.let {
-                        stringBuffer.append(it)//fixme 绑定Activity。
-                    }
+            }
+            if (isUiThread) {
+                activity?.toString()?.let {
+                    stringBuffer.append(it)//fixme 绑定Activity。
                 }
             }
             //Log.e("test", "" + stringBuffer)
