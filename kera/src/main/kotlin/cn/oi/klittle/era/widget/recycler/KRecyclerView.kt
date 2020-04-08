@@ -393,7 +393,7 @@ open class KRecyclerView : RecyclerView {
         if (khoverItemDecoration == null) {
             khoverItemDecoration = object : KHoverItemDecoration() {
                 //控制各个Item间距
-                override fun getItemOffsets(outRect: Rect?, itemPosition: Int, parent: RecyclerView?) {
+                override fun getItemOffsets(outRect: Rect, itemPosition: Int, parent: RecyclerView) {
                     super.getItemOffsets(outRect, itemPosition, parent)
 //                    itemPosition//当前item的下标
 //                    outRect?.apply {
@@ -435,7 +435,9 @@ open class KRecyclerView : RecyclerView {
 //                    canvas.drawLine(0f, startY, w.toFloat(), startY, paint)//画底部线
                 }
             }
-            addItemDecoration(khoverItemDecoration)
+            khoverItemDecoration?.let {
+                addItemDecoration(it)
+            }
         }
     }
 

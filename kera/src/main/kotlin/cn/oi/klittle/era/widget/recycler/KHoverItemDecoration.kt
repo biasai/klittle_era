@@ -98,7 +98,7 @@ abstract class KHoverItemDecoration() : RecyclerView.ItemDecoration() {
 
     //在整个RecyClerView上方进行绘图[显示在上面。]。
     //没有点击事件，只是复制item视图悬停在顶部，不会遮挡点击事件，会触发下面itme的点击事件
-    override fun onDrawOver(c: Canvas?, parent: RecyclerView?, state: RecyclerView.State?) {
+    override fun onDrawOver(c: Canvas, parent: RecyclerView, state: RecyclerView.State) {
         try {
             super.onDrawOver(c, parent, state)
             positiones?.let {

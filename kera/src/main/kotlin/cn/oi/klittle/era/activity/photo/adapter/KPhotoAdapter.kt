@@ -27,7 +27,7 @@ import kotlinx.coroutines.Deferred
 open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter<KPhotoAdapter.Companion.MyViewHolder>() {
 
     companion object {
-        open class MyViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+        open class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var item_camera: KTextView? = null
             var ui_camera: View? = null
 

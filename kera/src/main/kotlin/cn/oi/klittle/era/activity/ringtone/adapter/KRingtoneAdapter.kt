@@ -27,7 +27,7 @@ open class KRingtoneAdapter(var datas: MutableList<Ringtone>? = null) : KAdapter
 
     companion object {
 
-        open class MyViewHolder(itemView: View?, var viewType: Int) : RecyclerView.ViewHolder(itemView) {
+        open class MyViewHolder(itemView: View, var viewType: Int) : RecyclerView.ViewHolder(itemView) {
             var left_txt: KTextView? = null//左边的文本
             var item_checked: KView? = null
             var item_layout: View? = null

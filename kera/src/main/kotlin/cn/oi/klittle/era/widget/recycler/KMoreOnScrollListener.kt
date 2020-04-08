@@ -39,7 +39,7 @@ abstract class KMoreOnScrollListener : RecyclerView.OnScrollListener {
     //item滑动时(item上下随手指滑动而移动)，才会调用
     //dx 水平滑动距离。大于0，屏幕向左滑动。
     //dy 垂直滑动距离。大于0，屏幕向上滑动(上拉)。
-    override fun onScrolled(recyclerView: RecyclerView?, dx: Int, dy: Int) {
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
         super.onScrolled(recyclerView, dx, dy)
         //Log.e("test", "onScrolled()\t dx:\t" + dx + "\tdy:\t" + dy);
         lastVisibleItemPostion = linearLayoutManager.findLastVisibleItemPosition()
@@ -55,7 +55,7 @@ abstract class KMoreOnScrollListener : RecyclerView.OnScrollListener {
     // RecyclerView.SCROLL_STATE_DRAGGING=1;正在被外部拖拽,一般为用户正在用手指滚动。开始滚动。
     // RecyclerView.SCROLL_STATE_SETTLING=2;自动滚动开始，一般手动滑动之后，都会带有一点自动滑动。
     // RecyclerView.SCROLL_STATE_IDLE=0闲置，没有滑动。结束滚动。
-    override fun onScrollStateChanged(recyclerView: RecyclerView?, newState: Int) {
+    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
         //Log.e("test", "onScrollStateChanged()\tnewState:\t$newState")
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {

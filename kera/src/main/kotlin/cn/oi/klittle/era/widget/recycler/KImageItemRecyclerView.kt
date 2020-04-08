@@ -122,7 +122,7 @@ open class KImageItemRecyclerView : KRecyclerView {
         var viewType_footView = -200//末尾
         var viewType_empty = -1//空布局
 
-        open class FooterViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+        open class FooterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var img: KTextView? = null
 
             init {
@@ -130,7 +130,7 @@ open class KImageItemRecyclerView : KRecyclerView {
             }
         }
 
-        open class EmpatyViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+        open class EmpatyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var img: KTextView? = null
 
             init {
@@ -138,7 +138,7 @@ open class KImageItemRecyclerView : KRecyclerView {
             }
         }
 
-        open class MyViewHolder(itemView: View?) : RecyclerView.ViewHolder(itemView) {
+        open class MyViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             var img: KTextView? = null
 
             init {

@@ -23,7 +23,7 @@ open class KRecyclerAdapter(var datas: MutableList<String>? = null) : KAdapter<K
         var viewType_footView_loadMore = -200//末尾item(加载更多)
         var viewType_footView_loadMoreComplete = -201//末尾item(加载更多完成，没有更多数据了)
 
-        open class MyViewHolder(itemView: View?, var viewType: Int) : RecyclerView.ViewHolder(itemView) {
+        open class MyViewHolder(itemView: View, var viewType: Int) : RecyclerView.ViewHolder(itemView) {
             var left_txt: KTextView? = null//左边的文本
 
             init {
