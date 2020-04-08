@@ -209,12 +209,16 @@ open class KHttps() {
     open fun dismissProgressbar() {
         if (isShowLoad) {
             if (isSharingDialog) {
-                //共享弹窗。
                 progressbar2Count--
-                if (progressbar2Count <= 0) {
-                    progressbar2Count = 0
-                    dismissProgressbar2()//fixme 所以的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
-                    progressbar2 = null
+                if (progressbar == progressbar2) {
+                    //共享弹窗。
+                    if (progressbar2Count <= 0) {
+                        progressbar2Count = 0
+                        dismissProgressbar2()//fixme 所以的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
+                        progressbar2 = null
+                    }
+                } else {
+                    dismissProgressbar2()
                 }
             } else {
                 //正常关闭弹窗
