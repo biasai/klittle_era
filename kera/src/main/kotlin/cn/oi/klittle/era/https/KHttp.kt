@@ -50,10 +50,9 @@ object KHttp {
                 }
                 map.put(getUrlUnique(it), "网络请求标志开始")//去除标志，在onFinish()方法里
             }
-
+            requestParams?.addProgressbarCount()//fixme 网络弹窗计数++
             //开启协程协议
             GlobalScope.async {
-
                 requestParams?.let {
                     if (it.isShowLoad&&it.isSharingDialog) {
                         var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复
@@ -295,9 +294,9 @@ object KHttp {
                 }
                 map.put(getUrlUnique(it), "网络请求标志开始")//去除标志，在onFinish()方法里
             }
+            requestParams?.addProgressbarCount()//fixme 网络弹窗计数++
             //开启协程协议
             GlobalScope.async {
-
                 requestParams?.let {
                     if (it.isShowLoad&&it.isSharingDialog) {
                         var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复

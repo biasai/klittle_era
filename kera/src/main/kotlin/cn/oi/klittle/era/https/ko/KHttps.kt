@@ -204,16 +204,25 @@ open class KHttps() {
         }
     }
 
+    //fixme ++在 KHttp里的Get2（）和Post2（）里记录网络弹窗的个数。在那里计算才准确。
+    fun addProgressbarCount() {
+        if (isShowLoad && isSharingDialog) {
+            if (KHttps.progressbar2Count < 0) {
+                KHttps.progressbar2Count = 0
+            }
+            KHttps.progressbar2Count++//fixme 网络进度条计数++
+        }
+    }
+
     //fixme 关闭进度条[子类可以重写,重写的时候，记得对自己的进度条进行内存释放。]
     //重写的时候，注意屏蔽父类的方法，屏蔽 super.showProgress()
     open fun dismissProgressbar() {
         if (isShowLoad) {
             if (isSharingDialog) {
-                progressbar2Count--//fixme ++在 KGenericsCallback.onStart()里记录网络弹窗的个数。在那里计算才准确。
+                progressbar2Count--//fixme 网络进度条计算--
                 if (progressbar == progressbar2) {
                     //共享弹窗。
                     if (progressbar2Count <= 0) {
-                        progressbar2Count = 0
                         dismissProgressbar2()//fixme 所以的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
                         progressbar2 = null
                     }
@@ -296,7 +305,7 @@ open class KHttps() {
                     KHttp.map.remove(key)
                 }
 
-                var key2=KHttp.getUrlUnique2(it)
+                var key2 = KHttp.getUrlUnique2(it)
                 if (KHttp.map.containsKey(key2)) {
                     KHttp.map.remove(key2)//fixme 去除网络请求标志2
                 }

@@ -19,14 +19,6 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
     open fun onStart() {
         try {
             KHttps.isNetting=true//网络正在进行
-            https?.apply {
-                if (isShowLoad&&isSharingDialog) {
-                    if (KHttps.progressbar2Count < 0) {
-                        KHttps.progressbar2Count = 0
-                    }
-                    KHttps.progressbar2Count++//fixme 网络进度条计数
-                }
-            }
             https?.start0?.let {
                 it()
             }
