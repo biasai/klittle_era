@@ -18,7 +18,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
     //开始
     open fun onStart() {
         try {
-            KHttps.isNetting=true//网络正在进行
+            KHttps.isNetting = true//网络正在进行
             https?.start0?.let {
                 it()
             }
@@ -30,22 +30,26 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 it()
             }
             //fixme 显示进度条
-            if (https?.isShowLoad ?: false) {
-                https?.showProgressbar()
+            https?.isShowLoad?.let {
+                if (it) {
+                    https?.showProgressbar()
+                }
             }
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     //成功
     open fun onSuccess(response: String) {
         try {
-            KHttps.isNetting=false//网络请求结束
+            KHttps.isNetting = false//网络请求结束
             https?.let {
-                var key=KHttp.getUrlUnique(it)
+                var key = KHttp.getUrlUnique(it)
                 if (KHttp.map.containsKey(key)) {
                     KHttp.map.remove(key)//fixme 去除网络请求标志
                 }
-                var key2=KHttp.getUrlUnique2(it)
+                var key2 = KHttp.getUrlUnique2(it)
                 if (KHttp.map.containsKey(key2)) {
                     KHttp.map.remove(key2)//fixme 去除网络请求标志2
                 }
@@ -89,7 +93,9 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             result?.let {
                 onResponse(it)//fixme 成功会回调;
             }
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         //最后执行
         onFinish()
     }
@@ -97,13 +103,13 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
     //失败【基本可以断定是网络异常】
     open fun onFailure(errStr: String?) {
         try {
-            KHttps.isNetting=false//网络请求结束
+            KHttps.isNetting = false//网络请求结束
             https?.let {
-                var key=KHttp.getUrlUnique(it)
+                var key = KHttp.getUrlUnique(it)
                 if (KHttp.map.containsKey(key)) {
                     KHttp.map.remove(key)//fixme 去除网络请求标志
                 }
-                var key2=KHttp.getUrlUnique2(it)
+                var key2 = KHttp.getUrlUnique2(it)
                 if (KHttp.map.containsKey(key2)) {
                     KHttp.map.remove(key2)//fixme 去除网络请求标志2
                 }
@@ -146,12 +152,14 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                 if (System.currentTimeMillis() - KHttps.errorTime > KHttps.errorTimeInterval || KHttps.isFirstError) {
                     KHttps.isFirstError = false
                     if (https != null) {
-                        it(https?.url,errStr, https!!.isCacle, hasCache, https!!.cacleInfo)
+                        it(https?.url, errStr, https!!.isCacle, hasCache, https!!.cacleInfo)
                     }
                     KHttps.errorTime = System.currentTimeMillis()
                 }
             }
-        }catch (e:Exception){e.printStackTrace()}
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         //最后执行
         onFinish()
     }

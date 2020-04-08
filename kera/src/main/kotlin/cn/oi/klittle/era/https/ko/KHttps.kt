@@ -158,17 +158,19 @@ open class KHttps() {
                 if (!it.isFinishing) {
                     it.runOnUiThread {
                         try {
-                            if ((progressbar == null || progressbar?.dialog == null) && activity != null) {
-                                if (isSharingDialog) {
-                                    progressbar2?.let {
-                                        it.ctx?.let {
-                                            if (it is Activity) {
-                                                if (it == activity && progressbar2 is KProgressDialog) {
-                                                    progressbar2?.isShow()?.let {
-                                                        if (it) {
-                                                            progressbar2?.isDestory?.let {
-                                                                if (!it) {
-                                                                    progressbar = progressbar2 as KProgressDialog//fixme 同一个Activity共享网络进度条
+                            if (!isDismissProgressbar) {
+                                if ((progressbar == null || progressbar?.dialog == null) && activity != null) {
+                                    if (isSharingDialog) {
+                                        progressbar2?.let {
+                                            it.ctx?.let {
+                                                if (it is Activity) {
+                                                    if (it == activity && progressbar2 is KProgressDialog) {
+                                                        progressbar2?.isShow()?.let {
+                                                            if (it) {
+                                                                progressbar2?.isDestory?.let {
+                                                                    if (!it) {
+                                                                        progressbar = progressbar2 as KProgressDialog//fixme 同一个Activity共享网络进度条
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -177,16 +179,19 @@ open class KHttps() {
                                             }
                                         }
                                     }
-                                }
-                                if (progressbar == null) {
-                                    progressbar = KProgressDialog(activity!!, https = this@KHttps)
-                                    if (isSharingDialog) {
-                                        progressbar2 = progressbar
+                                    if (progressbar == null) {
+                                        progressbar = KProgressDialog(activity!!, https = this@KHttps)
+                                        if (isSharingDialog) {
+                                            progressbar2 = progressbar
+                                        }
                                     }
                                 }
+                                progressbar?.isLocked(isLocked)//是否屏蔽返回键
+                                progressbar?.show()
+                                if (isDismissProgressbar) {
+                                    dismissProgressbar2()
+                                }
                             }
-                            progressbar?.isLocked(isLocked)//是否屏蔽返回键
-                            progressbar?.show()
                         } catch (e: Exception) {
                             //这里异常了不会影响回调进度。服务器（域名错误）异常时，会回调onFailure()
                             //KLoggerUtils.e("网络弹框实例化异常：\t" + e.message+"\t"+progressbar+"\t"+activity)
@@ -197,7 +202,9 @@ open class KHttps() {
         }
     }
 
+    private var isDismissProgressbar: Boolean = false//fixme 是否已經關閉了進度條。因為進度條是在主線程中進行。所以有可能還沒等網絡條初始化完成，網絡請求就結束了。
     private fun dismissProgressbar2() {
+        isDismissProgressbar = true
         progressbar?.let {
             it.dismiss()//关闭弹窗
             it.onDestroy()//销毁
