@@ -187,9 +187,10 @@ open class KHttps() {
                                     }
                                 }
                                 progressbar?.isLocked(isLocked)//是否屏蔽返回键
-                                progressbar?.show()
-                                if (isDismissProgressbar) {
-                                    dismissProgressbar2()//fixme 防止網絡請求已經結束了，網絡進度條還未關閉。
+                                progressbar?.show2(){
+                                    if (isDismissProgressbar) {
+                                        dismissProgressbar2()//fixme 防止網絡請求已經結束了，網絡進度條還未關閉。
+                                    }
                                 }
                             }
                         } catch (e: Exception) {

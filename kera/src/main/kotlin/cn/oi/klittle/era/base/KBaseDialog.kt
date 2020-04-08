@@ -70,13 +70,14 @@ open class KBaseDialog() {
         isDestory = true
         if (dialog != null && ctx != null) {
             try {
-                dismiss()
+                dismiss()//必須在recycles()之前執行。
                 recycles()
                 onShow = null
                 onDismiss = null
                 layoutId = null
                 dialog = null
                 ctx = null
+                showCallBack=null
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -118,8 +119,8 @@ open class KBaseDialog() {
         //触摸最外层控件，是否消失\
         dialog?.window.let {
             if (isDismiss) {
-                getParentView(it)?.setOnTouchListener { view, motionEvent ->
-                    if (motionEvent.action == MotionEvent.ACTION_DOWN) {
+                getParentView(it)?.setOnTouchListener { v, event ->
+                    if (event.action == MotionEvent.ACTION_DOWN) {
                         dismiss()
                     }
                     true
@@ -541,6 +542,13 @@ open class KBaseDialog() {
         //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
     }
 
+    private var showCallBack:(()->Unit)?=null
+    //fixme 显示窗体;顯示成功會回調。
+    open fun show2(callback: (() -> Unit)?=null) {
+        this.showCallBack=callback
+        show()
+    }
+
     //显示窗体
     open fun show() {
         if (dialog != null && ctx != null) {
@@ -552,6 +560,8 @@ open class KBaseDialog() {
                                 if (dialog != null && !dialog!!.isShowing) {
                                     //显示窗体，必须在window.setContentView之前调用一次。其后就可随便调show()了。
                                     dialog?.show()//fixme 顯示，最好在主線程中調用。
+                                    showCallBack?.let { it() }//fixme 顯示成功回調
+                                    showCallBack=null
                                 }
                             }
                         }
