@@ -194,6 +194,7 @@ open class KBaseActivity : FragmentActivity() {
                     }
                 }
                 kpx.removeAllKey()//fixme 清除所有键值，防止图片加载不出来。
+                KHttps.progressbar2Count = 0//fixme 网络进度条计算清0
                 //super.onCreate(savedInstanceState)
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()

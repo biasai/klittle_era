@@ -73,7 +73,7 @@ open class KHttps() {
         }
 
         public open var progressbar2: KBaseDialog? = null//共用弹窗;在KBaseActivity里的finish()会自动销毁。
-        public open var progressbar2Count = 0//保存记录共享弹窗的数量。在KBaseActivity里的finish()会自动清0。
+        public open var progressbar2Count = 0//保存记录共享弹窗的数量。在KBaseActivity里的finish()和onCreate()会自动清0。
     }
 
     /**
