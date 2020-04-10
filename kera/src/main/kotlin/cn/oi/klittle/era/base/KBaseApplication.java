@@ -1,28 +1,21 @@
 package cn.oi.klittle.era.base;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.multidex.MultiDex;
-import android.support.v4.view.ViewPager;
-import android.util.Log;
+
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+
+import androidx.multidex.MultiDex;
+import androidx.viewpager.widget.ViewPager;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -32,8 +25,6 @@ import java.util.Map;
 
 import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KAppUtils;
-import cn.oi.klittle.era.utils.KAssetsUtils;
-import cn.oi.klittle.era.utils.KCacheUtils;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.utils.KProportionUtils;
 

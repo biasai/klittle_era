@@ -5,9 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Typeface;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
@@ -28,7 +26,6 @@ import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.oi.klittle.era.comm.kpx;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -115,7 +112,8 @@ public class KZxingUtils {
             canvas.drawBitmap(src, 0, 0, null);
             canvas.scale(scaleFactor, scaleFactor, srcWidth / 2, srcHeight / 2);
             canvas.drawBitmap(logo, (srcWidth - logoWidth) / 2, (srcHeight - logoHeight) / 2, null);
-            canvas.save(Canvas.ALL_SAVE_FLAG);
+            //canvas.save(Canvas.ALL_SAVE_FLAG);
+            canvas.save();
             canvas.restore();
         } catch (Exception e) {
             bitmap = null;
@@ -226,7 +224,8 @@ public class KZxingUtils {
         canvas.setBitmap(bitmap);
         canvas.drawBitmap(bCBitmap, 0, 0, null);
         canvas.drawText(content, bCBitmap.getWidth() / 2, baseLine-baseOffset, paint);
-        canvas.save(Canvas.ALL_SAVE_FLAG);
+        //canvas.save(Canvas.ALL_SAVE_FLAG);
+        canvas.save();
         canvas.restore();
         return bitmap;
     }

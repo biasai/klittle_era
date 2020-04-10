@@ -5,11 +5,11 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.media.MediaPlayer
-import android.support.v4.view.PagerAdapter
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.VideoView
+import androidx.viewpager.widget.PagerAdapter
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.comm.kpx

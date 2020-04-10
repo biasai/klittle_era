@@ -2,7 +2,7 @@ package cn.oi.klittle.era.widget.recycler
 
 import android.graphics.Canvas
 import android.graphics.Paint
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.base.KBaseView
 
 //                    fixme 使用案例

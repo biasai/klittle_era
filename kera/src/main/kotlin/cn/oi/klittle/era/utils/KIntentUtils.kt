@@ -14,7 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.bluetooth.KBluetoothAdapter
-import android.support.v4.app.ActivityCompat.startActivityForResult
+import androidx.core.app.ActivityCompat.startActivityForResult
 import cn.oi.klittle.era.utils.KAppUtils.getPackageName
 
 

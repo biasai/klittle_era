@@ -4,10 +4,11 @@ import android.content.Context
 import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.viewpager.widget.ViewPager
 
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.comm.kpx
@@ -98,7 +99,7 @@ import cn.oi.klittle.era.utils.KProportionUtils
 //                            }
 //                        }
 
-class KLayoutBar : android.support.v7.widget.AppCompatImageView, ViewPager.OnPageChangeListener {
+class KLayoutBar : AppCompatImageView, ViewPager.OnPageChangeListener {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

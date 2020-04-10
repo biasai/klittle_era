@@ -1,11 +1,14 @@
 package cn.oi.klittle.era.widget.viewpager;
 
 import android.content.Context;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.viewpager.widget.ViewPager;
+
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
  * 垂直ViewPager，和 ViewPager一样的用法。参考地址：https://www.jianshu.com/p/f1163d1161a2
@@ -84,6 +87,11 @@ public class VerticalViewPager extends ViewPager {
         boolean intercepted = super.onInterceptTouchEvent(swapXY(ev));
         swapXY(ev); // return touch coordinates to original reference frame for any child views
         return intercepted;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        return super.dispatchTouchEvent(ev);
     }
 
     @Override

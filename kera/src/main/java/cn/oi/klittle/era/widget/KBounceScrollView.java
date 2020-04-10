@@ -3,14 +3,13 @@ package cn.oi.klittle.era.widget;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Build;
-import android.support.annotation.NonNull;
-import android.support.v4.widget.NestedScrollView;
+
+import androidx.annotation.NonNull;
+import androidx.core.widget.NestedScrollView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
-import android.view.ViewGroup;
 
 import java.util.HashMap;
 import java.util.Map;

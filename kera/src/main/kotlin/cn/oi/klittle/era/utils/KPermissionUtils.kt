@@ -10,8 +10,8 @@ import android.hardware.Camera
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
+//import android.support.design.widget.Snackbar
+import androidx.core.app.ActivityCompat
 import android.view.View
 import android.widget.TextView
 import cn.oi.klittle.era.R
@@ -19,6 +19,7 @@ import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
+import com.google.android.material.snackbar.Snackbar
 import java.io.File
 
 //   fixme 在Activity里面调用一下方法。回调才有效。[不过我已经在BaseActivity中添加以下方法了，如果继承了BaseActvity就不用再写了]

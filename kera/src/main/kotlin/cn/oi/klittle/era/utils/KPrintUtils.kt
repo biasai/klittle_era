@@ -8,7 +8,7 @@ import android.os.Bundle
 import android.os.CancellationSignal
 import android.os.ParcelFileDescriptor
 import android.print.*
-import android.support.v4.print.PrintHelper
+import androidx.print.PrintHelper
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import java.io.*

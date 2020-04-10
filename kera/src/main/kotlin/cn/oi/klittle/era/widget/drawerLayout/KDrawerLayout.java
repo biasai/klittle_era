@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.widget.drawerLayout;
 
+import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
@@ -14,20 +15,21 @@ import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.SystemClock;
-import android.support.annotation.ColorInt;
-import android.support.annotation.DrawableRes;
-import android.support.annotation.IntDef;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.annotation.RestrictTo;
-import android.support.v4.content.ContextCompat;
-import android.support.v4.graphics.drawable.DrawableCompat;
-import android.support.v4.view.AbsSavedState;
-import android.support.v4.view.AccessibilityDelegateCompat;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
+
+import androidx.annotation.ColorInt;
+import androidx.annotation.DrawableRes;
+import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.GravityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import android.util.AttributeSet;
+import android.view.AbsSavedState;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -42,10 +44,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 
-import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.widget.drawerLayout.utils.KDrawerLayoutUtils;
 
-import static android.support.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
+
 
 //                fixme 左右滑动菜单
 //                KDrawerLayout {
@@ -627,7 +629,8 @@ public class KDrawerLayout extends ViewGroup {
      * @see #LOCK_MODE_LOCKED_CLOSED
      * @see #LOCK_MODE_LOCKED_OPEN
      */
-    public void setDrawerLockMode(@KDrawerLayout.LockMode int lockMode, @KDrawerLayout.EdgeGravity int edgeGravity) {
+//    public void setDrawerLockMode(@KDrawerLayout.LockMode int lockMode, @KDrawerLayout.EdgeGravity int edgeGravity) {
+    public void setDrawerLockMode(@KDrawerLayout.LockMode int lockMode, int edgeGravity) {
         final int absGravity = GravityCompat.getAbsoluteGravity(edgeGravity,
                 ViewCompat.getLayoutDirection(this));
 
@@ -702,7 +705,7 @@ public class KDrawerLayout extends ViewGroup {
      * {@link #LOCK_MODE_LOCKED_OPEN}.
      */
     @KDrawerLayout.LockMode
-    public int getDrawerLockMode(@KDrawerLayout.EdgeGravity int edgeGravity) {
+    public int getDrawerLockMode(int edgeGravity) {
         int layoutDirection = ViewCompat.getLayoutDirection(this);
 
         switch (edgeGravity) {
@@ -2106,6 +2109,7 @@ public class KDrawerLayout extends ViewGroup {
         @KDrawerLayout.LockMode
         int lockModeEnd;
 
+        @SuppressLint("NewApi")
         public SavedState(@NonNull Parcel in, @Nullable ClassLoader loader) {
             super(in, loader);
             openDrawerGravity = in.readInt();

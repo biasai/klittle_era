@@ -1,10 +1,10 @@
 package cn.oi.klittle.era.widget.recycler
 
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View.OVER_SCROLL_NEVER
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.lang.reflect.Field
 
 object KRecyclerUtils {

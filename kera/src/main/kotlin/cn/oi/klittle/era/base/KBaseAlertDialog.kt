@@ -1,11 +1,11 @@
 package cn.oi.klittle.era.base
 
 import android.app.Activity
-import android.support.constraint.ConstraintLayout
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import cn.oi.klittle.era.R
 
 //BaseAlertDialog(this).setContentView(UI {  verticalLayout {

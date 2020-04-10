@@ -6,10 +6,10 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.view.ViewPager
-import android.support.v7.widget.RecyclerView
 import android.view.*
 import android.widget.LinearLayout
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils

@@ -1,15 +1,14 @@
 package cn.oi.klittle.era.widget.viewpager
 
 import android.content.Context
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v4.view.ViewPager
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import cn.oi.klittle.era.utils.KLoggerUtils
-import cn.oi.klittle.era.widget.viewpager.animationlibrary.KStackTransformer
+import androidx.core.view.GestureDetectorCompat
+import androidx.viewpager.widget.ViewPager
+import cn.oi.klittle.era.utils.KLoggerUtils.e
 
 /**
  * 禁止滑动的ViewPager,也可以继承VerticalViewPager
@@ -39,8 +38,8 @@ open class KViewPager : ViewPager {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
-    var isScrollEnable: Boolean = true//true 能滑动，false不能滑动。
-    var isFastScrollEnable: Boolean = false
+    var isScrollEnable: Boolean = true//fixme true 能滑动，false不能滑动。默认能滑动
+    var isFastScrollEnable: Boolean = false//fixme 是否可以快速滑动，默认不能。(true 手指快速滑动时，会立即翻页。)
         //true快速滑动[也会禁止掉触摸滑动]，手指轻轻一划。就到下一页。false不能快速滑动
         set(value) {
             if (value) {
@@ -105,8 +104,8 @@ open class KViewPager : ViewPager {
         var isViewPagerMotionEventing: Boolean = false//fixme 防止和左滑关闭Activity冲突。
         var currentIteming: Int = 0
         var counting = 0
-        var isScrolling = true
-        var isFastScrolling=false
+        var isScrolling = true//true 能滑动，false不能滑动。默认能触摸滑动
+        var isFastScrolling=false//
         /**
          * fixme 判断viewpager是否正在滑动。
          */
@@ -164,7 +163,7 @@ open class KViewPager : ViewPager {
 
 
     var duration = 400
-        //滑动时间，单位毫秒
+        //fixme 滑动时间，单位毫秒;亲测有效，androidx也有效。
         set(value) {
             field = value
             //设置滑动时间，必须要手动设置一遍才有效。

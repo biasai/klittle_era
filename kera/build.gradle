@@ -5,7 +5,8 @@ apply plugin: 'com.github.dcendents.android-maven' //添加了这个；Jitpack�
 group = 'com.github.biasai' // 指定group，com.github.<用户名>
 android {
     //fixme 26 是8.0; 27是8.1 建议使用27，因为26有很多的坑。现在大多数使用的都是27
-    compileSdkVersion 27//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
+    //androidx 要求：Android Studio版本至少为3.2.0以上，gradle版本4.10以上，fixme 以及compileSdkVersion为28及以上
+    compileSdkVersion 28//为了兼容，尽可能的小。为了兼容kotlin的anko,最小也得26。不然报错。放心这个不会和主moudle冲突。
 
     compileOptions {
         //fixme 解决java不支持lambda表达式
@@ -20,7 +21,7 @@ android {
         minSdkVersion 14 //如果不写的话，默认就是1。14 是4.0; 21是5.0;23是6.0;24是7.0;26是8.0
         //targetSdkVersion 27 防止冲突，最好不写。交给主moudle去写。
         multiDexEnabled true//fixme 解决方法数过长过多[主module里面最好也配置一下；不然可能无效。]
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         //fixme 如果用到了注解；就必须添加如下配置；不然报错。
         javaCompileOptions { annotationProcessorOptions { includeCompileClasspath = true } }
     }
@@ -71,34 +72,36 @@ configurations.all {
 }
 //https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
 //ext.anko_version = '0.10.5'
-ext.anko_version = '0.10.8'
+ext.anko_version = '0.10.8'//fixme 这个版本的anko内部已经适配了androidx;不需要再引用：implementation 'androidx.core:core-ktx:1.0.2'
 //fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
 gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-//    testImplementation 'junit:junit:4.12'
-//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-//    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
-//    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
-//    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
+    //testImplementation 'junit:junit:4.12'
+    //androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
+    //implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
+    //implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
     //解决方法数过多
-    api 'com.android.support:multidex:1.0.2'
+    api 'com.android.support:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
-    api 'com.android.support:design:' + gradle.sinSupportVersion
+    api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
     //约束布局
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
-    api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
+    //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
     //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"//将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+//将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
     //协程
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.+'//1.3.4 ;1.3.+ 下载不下来，一直报错。
-    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'//协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
+    api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
+//协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
     //基本普通依赖,一般这个就够了
     api "org.jetbrains.anko:anko:$anko_version"
     //以下依赖根据需求自己添加

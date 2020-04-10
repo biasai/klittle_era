@@ -1,8 +1,9 @@
 package cn.oi.klittle.era.base
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
+
 
 open class KBaseFragmentPagerAdapter(fm: FragmentManager?, open var fragments: List<Fragment>) : FragmentPagerAdapter(fm) {
     open override fun getItem(position: Int): Fragment {

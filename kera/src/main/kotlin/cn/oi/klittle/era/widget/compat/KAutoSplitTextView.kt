@@ -3,11 +3,11 @@ package cn.oi.klittle.era.widget.compat
 import android.content.Context
 import android.graphics.Paint
 import android.os.Build
-import android.support.v7.widget.AppCompatTextView
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.view.ViewTreeObserver
+import androidx.appcompat.widget.AppCompatTextView
 import cn.oi.klittle.era.utils.KLoggerUtils
 
 //参考链接：https://blog.csdn.net/P876643136/article/details/88082850?depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1&utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromBaidu-1

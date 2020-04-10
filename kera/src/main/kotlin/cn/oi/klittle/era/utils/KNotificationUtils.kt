@@ -14,8 +14,8 @@ import android.content.Context.NOTIFICATION_SERVICE
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationCompat.*
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationCompat.*
 
 /**
  * fixme 新版特性：现在通知栏如果有消息，应用图标就会有红色的小圆点提醒。

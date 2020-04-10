@@ -1,10 +1,10 @@
 package cn.oi.klittle.era.activity.photo.adapter
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector

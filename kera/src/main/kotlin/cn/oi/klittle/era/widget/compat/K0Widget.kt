@@ -7,7 +7,6 @@ import android.graphics.Paint
 import android.graphics.Shader
 import android.media.MediaPlayer
 import android.os.Build
-import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +15,8 @@ import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KAssetsUtils
+//import android.support.v7.widget.AppCompatTextView
+import androidx.appcompat.widget.AppCompatTextView
 
 /**
  * 0：初始和静态方法。fixme 改成继承TextView；不要继承Button(问题老多了。)

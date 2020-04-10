@@ -16,10 +16,11 @@
 
 package cn.oi.klittle.era.widget.viewpager.animationlibrary;
 
-import android.support.v4.view.ViewPager.PageTransformer;
 import android.view.View;
 
-public abstract class KABaseTransformer implements PageTransformer {
+import androidx.viewpager.widget.ViewPager;
+
+public abstract class KABaseTransformer implements ViewPager.PageTransformer {
 
 	/**
 	 * Called each {@link #transformPage(View, float)}.

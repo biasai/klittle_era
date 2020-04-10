@@ -1,8 +1,7 @@
 package cn.oi.klittle.era.widget.recycler
 
-import android.support.v7.widget.RecyclerView
-import android.support.v7.widget.LinearLayoutManager
-import android.util.Log
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 
 //MoreOnScrollListener 实现里面的loadMore()加载更多方法即可。
 

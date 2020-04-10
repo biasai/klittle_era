@@ -3,22 +3,14 @@ package cn.oi.klittle.era.widget.viewpager
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Color
-import android.support.v4.view.ViewCompat
-//import android.support.design.widget.TabLayout
+import androidx.core.view.ViewCompat
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.K1Widget
 import cn.oi.klittle.era.widget.compat.KView
-import org.jetbrains.anko.runOnUiThread
-//import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onClick
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Deferred
 
 //                        fixme 使用案例
 //                        var tab = kTabLayout { }.apply {
@@ -111,7 +103,7 @@ open class KTabLayout : TabLayout {
     @SuppressLint("WrongConstant")
     private fun initCon() {
         try{
-            setTabMode(android.support.design.widget.TabLayout.MODE_SCROLLABLE);//tab个数过多显示不全时，可以滑动显示。
+            setTabMode(TabLayout.MODE_SCROLLABLE);//tab个数过多显示不全时，可以滑动显示。
             //tab.setTabMode(TabLayout.MODE_FIXED);//tab个数会全部显示出来。
             setTabTextColors(Color.GRAY, Color.WHITE);//普通颜色和选中颜色
             setSelectedTabIndicatorColor(Color.WHITE);//tab滑动条的颜色(透明色Color.TRANSPARENT也有效)

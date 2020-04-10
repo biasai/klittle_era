@@ -1,9 +1,8 @@
 package cn.oi.klittle.era.widget.recycler
 
 import android.content.Context
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
-import cn.oi.klittle.era.utils.KLoggerUtils
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import java.lang.Exception
 
 /**

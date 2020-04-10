@@ -2,8 +2,9 @@ package cn.oi.klittle.era.activity.photo.config;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.support.annotation.StyleRes;
 
+
+import androidx.annotation.StyleRes;
 
 import java.util.ArrayList;
 import java.util.List;

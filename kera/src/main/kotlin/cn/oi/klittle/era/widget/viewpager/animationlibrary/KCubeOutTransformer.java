@@ -18,6 +18,9 @@ package cn.oi.klittle.era.widget.viewpager.animationlibrary;
 
 import android.view.View;
 
+/**
+ * setPageTransformer(true, KCubeOutTransformer())//3D立体翻转效果；比KFlipHorizontalTransformer（）立体效果要好。
+ */
 public class KCubeOutTransformer extends KABaseTransformer {
 
 	@Override

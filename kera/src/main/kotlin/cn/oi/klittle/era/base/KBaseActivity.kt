@@ -10,12 +10,12 @@ import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentActivity
 import android.view.View
 import android.view.ViewTreeObserver
 import android.view.Window
 import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.config.PictureConfig
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
@@ -55,9 +55,9 @@ import kotlinx.coroutines.delay
  * fixme 注意Frament和Activity的状态栏和导航栏样式是一致的，引用的是同一个Window
  * fixme Dialog是独立的Window。样式和Activity不一样。
  * fixme Activity，Fragment，Dialgo都分别添加了状态栏和导航栏的控制方法。
- * 不要基础AppCompatActivity（屁事太大，对主题Theme.AppCompat有要求。）
+ * 不要基础AppCompatActivity（屁事太大，对主题Theme.AppCompat有要求。）AppCompatActivity也继承于FragmentActivity
  */
-open class KBaseActivity : FragmentActivity() {
+open class KBaseActivity : AppCompatActivity() {
     open fun getActivity(): KBaseActivity {
         return this
     }

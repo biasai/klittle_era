@@ -2,15 +2,15 @@ package cn.oi.klittle.era.widget.drawerLayout.utils;
 
 import android.app.Activity;
 import android.graphics.Point;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.ViewDragHelper;
+
+import androidx.customview.widget.ViewDragHelper;
+import androidx.drawerlayout.widget.DrawerLayout;
 
 import java.lang.reflect.Field;
 
 import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.widget.drawerLayout.KDrawerLayout;
-import cn.oi.klittle.era.widget.drawerLayout.KViewDragHelper;
 
 /**
  * fixme 控制左右滑动菜单的边缘滑动距离。

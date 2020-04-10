@@ -1,14 +1,13 @@
 package cn.oi.klittle.era.popu
 
 import android.content.Context
-import android.graphics.Color
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.View.OVER_SCROLL_NEVER
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KPopuWindowUtils

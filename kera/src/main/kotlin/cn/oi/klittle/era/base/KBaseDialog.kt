@@ -9,7 +9,6 @@ import android.graphics.PixelFormat
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
-import android.support.v4.view.ViewPager
 import android.view.*
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.entity.feature.KBlur
@@ -25,6 +24,7 @@ import android.opengl.ETC1.getWidth
 import android.opengl.ETC1.getHeight
 import android.R.attr.gravity
 import android.app.AlertDialog
+import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.widget.compat.KMyEditText
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async

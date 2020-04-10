@@ -2,9 +2,9 @@ package cn.oi.klittle.era.activity.preview
 
 import android.content.Context
 import android.graphics.Color
-import android.support.v4.view.ViewPager
 import android.view.Gravity
 import android.view.View
+import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
@@ -13,7 +13,6 @@ import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.toolbar.KToolbar
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.viewpager.KViewPager
 import org.jetbrains.anko.*

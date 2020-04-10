@@ -2,7 +2,7 @@ package cn.oi.klittle.era.entity.utils
 
 import android.content.Context
 import android.graphics.Bitmap
-import android.support.v4.app.NotificationManagerCompat
+import androidx.core.app.NotificationManagerCompat
 import android.widget.RemoteViews
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.utils.KLoggerUtils

@@ -3,7 +3,6 @@ package cn.oi.klittle.era.widget.scrollable;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.v4.view.ViewPager;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -11,6 +10,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.LinearLayout;
 import android.widget.Scroller;
+
+import androidx.viewpager.widget.ViewPager;
 
 public class KScrollableLayout extends LinearLayout {
 

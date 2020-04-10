@@ -1,7 +1,7 @@
 package cn.oi.klittle.era.widget.recycler.adapter
 
-import android.support.v7.widget.RecyclerView
 import android.view.animation.AnimationUtils
+import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseUi
 

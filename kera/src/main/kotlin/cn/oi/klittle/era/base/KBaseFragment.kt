@@ -6,8 +6,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.view.*
+import androidx.fragment.app.Fragment
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.KAssetsUtils
 import org.jetbrains.anko.act

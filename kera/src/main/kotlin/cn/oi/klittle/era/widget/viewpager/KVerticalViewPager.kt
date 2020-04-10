@@ -1,13 +1,13 @@
 package cn.oi.klittle.era.widget.viewpager
 
 import android.content.Context
-import android.support.v4.view.GestureDetectorCompat
-import android.support.v4.view.ViewPager
+import androidx.core.view.GestureDetectorCompat
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.viewpager.widget.ViewPager
 
 /**
  * 继承垂直VerticalViewPager；用法和 KViewPager一样。代码是完全复制过来的。
@@ -36,8 +36,8 @@ open class KVerticalViewPager : VerticalViewPager {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
-    var isScroll: Boolean = false//true 能滑动，false不能滑动。默认不能触摸滑动
-    var isFastScroll: Boolean = false
+    var isScroll: Boolean = true//fixme true 能滑动，false不能滑动。默认能触摸滑动
+    var isFastScroll: Boolean = false//fixme 是否可以快速滑动。
         //true快速滑动[也会禁止掉触摸滑动]，手指轻轻一划。就到下一页。false不能快速滑动
         set(value) {
             if (value) {
