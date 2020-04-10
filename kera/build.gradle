@@ -88,24 +88,24 @@ dependencies {
     api 'com.android.support:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
     api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
-    //约束布局
+    //fixme 约束布局;内部已经适配了androidx
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
     //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
     //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-//将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
+    //将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
     //协程
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.+'//1.3.4 ;1.3.+ 下载不下来，一直报错。
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
-//协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
+    //协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
     //基本普通依赖,一般这个就够了
     api "org.jetbrains.anko:anko:$anko_version"
     //以下依赖根据需求自己添加
-    // RecyclerView-v7
+    //fixme RecyclerView 内部已经适配了androidx
     api "org.jetbrains.anko:anko-recyclerview-v7:$anko_version"
     //fixme 以下是第三方库
     implementation files('libs\\dom4j-1.6.1.jar')//fixme 引用jar包；拥有自动生成string.xml文件。
@@ -123,7 +123,7 @@ dependencies {
     api 'com.github.lzyzsd:jsbridge:1.0.4'//这个稳定一点(建议使用这个)，自己复制拷贝过来的不稳定。
     implementation 'com.github.bumptech.glide:glide:4.5.0'//Glide图片加载
     //fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
-    //图表库
+    //fixme 图表库;与androidx不冲突。亲测。
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
