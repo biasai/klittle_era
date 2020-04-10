@@ -77,12 +77,12 @@ gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最�
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
-    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
-    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
+//    testImplementation 'junit:junit:4.12'
+//    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+//    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+//    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
+//    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
+//    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
     //解决方法数过多
     api 'com.android.support:multidex:1.0.2'
     //包含了AppTheme和Appcompat主題。
