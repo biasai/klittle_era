@@ -73,7 +73,7 @@ configurations.all {
 //ext.anko_version = '0.10.5'
 ext.anko_version = '0.10.8'
 //fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
-gradle.ext.sinSupportVersion = '28.0.0'//27.1.1
+gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
