@@ -23,6 +23,8 @@ import java.lang.Exception
  */
 abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null) : Fragment() {
 
+    var act = activity
+
     //触摸点击效果。isRipple是否具备波浪效果
     open fun onPress(view: View?, isRipple: Boolean = true) {
         KBaseView.onPress(view, isRipple)
@@ -51,6 +53,11 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     open fun onCreateView(): View? {
         //return UI { }.view//使用Anko布局
         return null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        act=null
     }
 
     //通过ID获取控件
@@ -145,7 +152,7 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
      * 在Activity应用<meta-data>元素。
      */
     open fun getMetaDataFromActivity(key: String): String? {
-        if (activity==null){
+        if (activity == null) {
             return null
         }
         val info = activity!!.packageManager
@@ -159,7 +166,7 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
      * 在application应用<meta-data>元素。
      */
     open fun getMetaDataFromApplication(key: String): String? {
-        if (activity==null){
+        if (activity == null) {
             return null
         }
         val appInfo = activity!!.packageManager
@@ -204,7 +211,7 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     }
 
     open fun getBundle(): Bundle? {
-        if (activity==null){
+        if (activity == null) {
             return null
         }
         activity!!.intent?.let {
