@@ -85,11 +85,15 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                 setLayoutParams(layoutParams)
 
                 //外层容器
-                containerView = RelativeLayout(context).lparams {
+//                containerView = RelativeLayout(context).lparams {
+//                    width = wrapContent
+//                    height = wrapContent
+//                }
+//                addView(containerView)
+                containerView=relativeLayout {  }.lparams {
                     width = wrapContent
                     height = wrapContent
                 }
-                addView(containerView)
                 containerView?.apply {
                     relativeLayout {
                         var layoutParams = RelativeLayout.LayoutParams(wrapContent, wrapContent)
