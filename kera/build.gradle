@@ -143,9 +143,9 @@ dependencies {
     //fixme 要保证依赖版本一致；目前anko '0.10.8'版本的androidx依赖版本是  '1.0.0'；如果版本不一致，可能会报错。报什么清单合并（merge）失败。
     api 'androidx.appcompat:appcompat:'+gradle.ext.androidxVersion
     api 'androidx.core:core-ktx:'+gradle.ext.androidxVersion
-    api 'androidx.constraintlayout:constraintlayout:'+gradle.ext.androidxVersion//约束布局
     api 'androidx.recyclerview:recyclerview:'+gradle.ext.androidxVersion
     api 'androidx.viewpager:viewpager:'+gradle.ext.androidxVersion
-    api 'androidx.multidex:multidex:2.0.1'//解决方法数过多
     api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
+    api 'androidx.constraintlayout:constraintlayout:1.1.3'//fixme 约束布局(1.0.0找不到)
+    api 'androidx.multidex:multidex:2.0.1'//fixme 解决方法数过多
 }
