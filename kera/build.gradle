@@ -86,10 +86,10 @@ dependencies {
     //implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
     //解决方法数过多
     //api 'com.android.support:multidex:2.0.1'
-    api 'androidx.multidex:multidex:2.0.1'//fixme 适配androidx
+    //api 'androidx.multidex:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
     //api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
-    api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
+    //api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
     //fixme 约束布局;内部已经适配了androidx
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
     //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
@@ -138,4 +138,14 @@ dependencies {
     //api 'com.google.zxing:core:3.3.2'
     api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；
     //api 'com.github.zxing.zxing:core:zxing-3.4.0'//7.0以下会崩溃，只支持7.0及以上的版本（api24）
+
+    //fixme androidx适配;虽然anko已经添加了以下依赖，但是为了jitpack打包成功，还需要再引用一次依赖；
+    //fixme 要保证依赖版本一致；目前anko '0.10.8'版本的androidx依赖版本是  '1.0.0'；如果版本不一致，可能会报错。报什么清单合并（merge）失败。
+    api 'androidx.appcompat:appcompat:'+gradle.ext.androidxVersion
+    api 'androidx.core:core-ktx:'+gradle.ext.androidxVersion
+    api 'androidx.constraintlayout:constraintlayout:'+gradle.ext.androidxVersion//约束布局
+    api 'androidx.recyclerview:recyclerview:'+gradle.ext.androidxVersion
+    api 'androidx.viewpager:viewpager:'+gradle.ext.androidxVersion
+    api 'androidx.multidex:multidex:2.0.1'//解决方法数过多
+    api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
 }
