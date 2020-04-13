@@ -18,6 +18,9 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 
 //        //数据
 //        var list = mutableListOf<String>()
+//                            list.add("1")
+//                            list.add("2")
+//                            list.add("3")
 //        var sp = KSpinnerPop(this, list)
 //        //创建recyclerView内部item视图,参数为下标position
 //            sp?.onCreateView(popWidth = kpx.screenWidth()) {
@@ -102,20 +105,39 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                             pop?.dismiss()//fixme 防止触摸屏幕外不消失弹窗。
                         }
                         //左边容器
-                        leftView = RelativeLayout(context)?.apply {
+//                        leftView = RelativeLayout(context)?.apply {
+//                            id = kpx.id("spinnerPop_leftView")
+//                        }?.lparams {
+//                            width = wrapContent
+//                            height = wrapContent
+//                            alignParentLeft()
+//                            bottomOf(kpx.id("spinnerPop_topView"))
+//                        }
+//                        addView(leftView)
+                        leftView=relativeLayout {
                             id = kpx.id("spinnerPop_leftView")
-                        }?.lparams {
+                        }.lparams {
                             width = wrapContent
                             height = wrapContent
                             alignParentLeft()
                             bottomOf(kpx.id("spinnerPop_topView"))
                         }
-                        addView(leftView)
 
                         //上方容器
-                        topView = RelativeLayout(context)?.apply {
+//                        topView = RelativeLayout(context)?.apply {
+//                            id = kpx.id("spinnerPop_topView")
+//                        }?.lparams {
+//                            width = wrapContent
+//                            height = wrapContent
+//                            alignParentTop()
+//                            leftView?.let {
+//                                rightOf(it)
+//                            }
+//                        }
+//                        addView(topView)
+                        topView=relativeLayout {
                             id = kpx.id("spinnerPop_topView")
-                        }?.lparams {
+                        }.lparams {
                             width = wrapContent
                             height = wrapContent
                             alignParentTop()
@@ -123,11 +145,11 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                                 rightOf(it)
                             }
                         }
-                        addView(topView)
 
                         //中间容器，recyclerView容器
-                        centerView = RelativeLayout(context)
-                        addView(centerView)
+//                        centerView = RelativeLayout(context)
+//                        addView(centerView)
+                        centerView=relativeLayout {  }
                         centerView?.apply {
                             id = kpx.id("spinnerPop_centerView")
                             frameLayout {
@@ -165,9 +187,20 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                         }
 
                         //下方容器
-                        bottomView = RelativeLayout(context)?.apply {
+//                        bottomView = RelativeLayout(context)?.apply {
+//                            id = kpx.id("spinnerPop_bottomView")
+//                        }?.lparams {
+//                            width = wrapContent
+//                            height = wrapContent
+//                            alignParentBottom()
+//                            leftView?.let {
+//                                rightOf(it)
+//                            }
+//                        }
+//                        addView(bottomView)
+                        bottomView=relativeLayout {
                             id = kpx.id("spinnerPop_bottomView")
-                        }?.lparams {
+                        }.lparams {
                             width = wrapContent
                             height = wrapContent
                             alignParentBottom()
@@ -175,12 +208,24 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                                 rightOf(it)
                             }
                         }
-                        addView(bottomView)
 
                         //右边容器
-                        rightView = RelativeLayout(context)?.apply {
+//                        rightView = RelativeLayout(context)?.apply {
+//                            id = kpx.id("spinnerPop_rightView")
+//                        }?.lparams {
+//                            width = wrapContent
+//                            height = wrapContent
+//                            centerView?.let {
+//                                rightOf(it)
+//                            }
+//                            topView?.let {
+//                                bottomOf(it)
+//                            }
+//                        }
+//                        addView(rightView)
+                        rightView=relativeLayout {
                             id = kpx.id("spinnerPop_rightView")
-                        }?.lparams {
+                        }.lparams {
                             width = wrapContent
                             height = wrapContent
                             centerView?.let {
@@ -190,7 +235,6 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                                 bottomOf(it)
                             }
                         }
-                        addView(rightView)
 
                     }
                 }
