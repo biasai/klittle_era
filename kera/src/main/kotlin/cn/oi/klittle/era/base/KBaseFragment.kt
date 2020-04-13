@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.base
 
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -10,8 +11,8 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.KAssetsUtils
-import org.jetbrains.anko.act
-import org.jetbrains.anko.support.v4.act
+//import org.jetbrains.anko.act
+//import org.jetbrains.anko.support.v4.act//不要引用这个，防止androdx冲突
 import java.lang.Exception
 
 /**
@@ -143,20 +144,26 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     /**
      * 在Activity应用<meta-data>元素。
      */
-    open fun getMetaDataFromActivity(key: String): String {
-        val info = act.packageManager
-                .getActivityInfo(act.componentName,
+    open fun getMetaDataFromActivity(key: String): String? {
+        if (activity==null){
+            return null
+        }
+        val info = activity!!.packageManager
+                .getActivityInfo(activity?.componentName,
                         PackageManager.GET_META_DATA)
-        val msg = info.metaData.getString(key)
+        val msg = info?.metaData?.getString(key)
         return msg
     }
 
     /**
      * 在application应用<meta-data>元素。
      */
-    open fun getMetaDataFromApplication(key: String): String {
-        val appInfo = act.packageManager
-                .getApplicationInfo(act.packageName,
+    open fun getMetaDataFromApplication(key: String): String? {
+        if (activity==null){
+            return null
+        }
+        val appInfo = activity!!.packageManager
+                .getApplicationInfo(activity!!.packageName,
                         PackageManager.GET_META_DATA)
 
         return appInfo.metaData.getString(key)
@@ -197,7 +204,10 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     }
 
     open fun getBundle(): Bundle? {
-        act.intent?.let {
+        if (activity==null){
+            return null
+        }
+        activity!!.intent?.let {
             it.extras?.let {
                 return it
             }
@@ -218,31 +228,31 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     }
 
     open fun startActivity(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivity(clazz, bundle, act)
+        KUiHelper.goActivity(clazz, bundle, activity)
     }
 
     open fun goActivity(clazz: Class<*>) {
-        KUiHelper.goActivity(clazz, act)
+        KUiHelper.goActivity(clazz, activity)
     }
 
     open fun goActivity(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivity(clazz, bundle, act)
+        KUiHelper.goActivity(clazz, bundle, activity)
     }
 
     open fun goActivity(intent: Intent) {
-        KUiHelper.goActivity(intent, act)
+        KUiHelper.goActivity(intent, activity)
     }
 
     open fun goActivityForResult(clazz: Class<*>) {
-        KUiHelper.goActivityForResult(clazz, act)
+        KUiHelper.goActivityForResult(clazz, activity)
     }
 
     open fun goActivityForResult(clazz: Class<*>, bundle: Bundle) {
-        KUiHelper.goActivityForResult(clazz, bundle, act)
+        KUiHelper.goActivityForResult(clazz, bundle, activity)
     }
 
     open fun goActivityForResult(intent: Intent) {
-        KUiHelper.goActivityForResult(intent, act)
+        KUiHelper.goActivityForResult(intent, activity)
     }
 
     companion object {
