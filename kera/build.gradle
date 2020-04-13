@@ -75,7 +75,7 @@ configurations.all {
 ext.anko_version = '0.10.8'//fixme 这个版本的anko内部已经适配了androidx;不需要再引用：implementation 'androidx.core:core-ktx:1.0.2'
 //fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
 gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
-
+gradle.ext.androidxVersion = '1.0.0'//androidx的版本号，anko目前的依赖版本好像也是1.0.0；目前最新的是1.0.2（新建工程就知道）；但是最新版的网络还下载不了。
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //testImplementation 'junit:junit:4.12'
@@ -87,7 +87,8 @@ dependencies {
     //解决方法数过多
     api 'com.android.support:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
-    api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
+    //api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
+    api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
     //fixme 约束布局;内部已经适配了androidx
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
     //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
