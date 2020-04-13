@@ -81,18 +81,19 @@ dependencies {
     //testImplementation 'junit:junit:4.12'
     //androidTestImplementation 'com.android.support.test:runner:1.0.2'
     //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
-    //implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
-    //implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
+    //fixme 亲测，support支持库和androidx库不冲突。为了防止jitpack打包失败，还是引用一下支持库。使用implementation即可。
+    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
+    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
+    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
     //解决方法数过多
     //api 'com.android.support:multidex:2.0.1'
     //api 'androidx.multidex:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
-    //api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
+    api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
     //api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
     //fixme 约束布局;内部已经适配了androidx
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
-    //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
+    api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
     //集成kotlin的依赖。
     //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
