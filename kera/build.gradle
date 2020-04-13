@@ -81,10 +81,10 @@ dependencies {
     //testImplementation 'junit:junit:4.12'
     //androidTestImplementation 'com.android.support.test:runner:1.0.2'
     //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //fixme 亲测，support支持库和androidx库不冲突。为了防止jitpack打包失败，还是引用一下支持库。使用implementation即可。
-    implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
-    implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
-    implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
+    //fixme 亲测，support支持库和androidx库不冲突。因为适配了androidx;support支持库即使你引用了，你也无法访问。androidx不会再允许你访问support支持库。
+    //implementation 'com.android.support:appcompat-v7:' + gradle.sinSupportVersion
+    //implementation 'com.android.support:recyclerview-v7:' + gradle.sinSupportVersion
+    //implementation 'com.android.support:support-v4:' + gradle.sinSupportVersion
     //解决方法数过多
     //api 'com.android.support:multidex:2.0.1'
     //api 'androidx.multidex:multidex:2.0.1'//fixme 适配androidx
