@@ -6,19 +6,18 @@ import android.view.View.OVER_SCROLL_NEVER
 import android.view.ViewGroup
 import android.widget.PopupWindow
 import android.widget.RelativeLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KPopuWindowUtils
 import org.jetbrains.anko.*
-import org.jetbrains.anko.recyclerview.v7.recyclerView
 //import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 //        //数据
 //        var list = mutableListOf<String>()
-//                            list.add("1")
+//                            list.add("1")//fixme 记得添加数据，不然不会显示哦。
 //                            list.add("2")
 //                            list.add("3")
 //        var sp = KSpinnerPop(this, list)
@@ -155,20 +154,19 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                             frameLayout {
                                 var layoutParams = ViewGroup.LayoutParams(wrapContent, wrapContent)
                                 setLayoutParams(layoutParams)
-                                recyclerView = recyclerView {
-                                    var linearLayoutManager = LinearLayoutManager(context)
-                                    linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-                                    layoutManager = linearLayoutManager
-                                    adapter = MyAdapter(this@KSpinnerPop, itemView)
+                                KBaseUi.apply {
+                                    recyclerView=krecyclerView {
+                                        setLinearLayoutManager(true)
+                                        adapter = MyAdapter(this@KSpinnerPop, itemView)
 
-                                    if (isNeverScroll){
-                                        setOverScrollMode(OVER_SCROLL_NEVER);//设置滑动到边缘时无效果模式
-                                        setVerticalScrollBarEnabled(false);//滚动条隐藏
+                                        if (isNeverScroll){
+                                            setOverScrollMode(OVER_SCROLL_NEVER);//设置滑动到边缘时无效果模式
+                                            setVerticalScrollBarEnabled(false);//滚动条隐藏
+                                        }
+                                    }.lparams {
+                                        width = wrapContent
+                                        height = wrapContent
                                     }
-
-                                }.lparams {
-                                    width = wrapContent
-                                    height = wrapContent
                                 }
                             }.lparams {
                                 width = wrapContent
