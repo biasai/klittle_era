@@ -31,6 +31,9 @@ abstract open class KBaseFragment(var layout: Int = 0, var content: View? = null
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        if (act==null){
+            act=activity
+        }
         if (layout <= 0) {
             content?.let {
                 return it
