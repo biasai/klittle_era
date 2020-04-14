@@ -144,7 +144,7 @@ import kotlinx.coroutines.Deferred
 //fixme 控制最大值及数值类型，常用方法。
 //decimal(0, 1)//小数点后保留位数，小数总长度(包含小数)
 //maxDecimal(2)//最大值
-//isInt=true//输入法为数字类型
+//fixme isInt=true//输入法为数字类型
 
 //inputHeightListener {}//fixme 软键盘（输入法）高度变化监听。即界面被弹窗挤上去和挤下来时，会回调。返回的是软键盘的高度。
 

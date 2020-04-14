@@ -16,6 +16,15 @@ import cn.oi.klittle.era.utils.KStringUtils
 import org.jetbrains.anko.*
 
 
+//                        var str="彭治铭（pengzhiming）"
+//                        txt {
+//                            text=str
+//                            textColor=Color.GREEN
+//                            searchTextColor=Color.RED
+//                            searchText="（"//指定颜色文本。
+//                        }
+//                        setText(null)//fixme 防止指定颜色没效果，可以清空一下。现在不需要了。现在已经修复了。
+
 /**
  * 文本框相关。
  *
@@ -773,6 +782,7 @@ open class KTextView : KAutoSplitTextView {
         }
     }
 
+    private var mSearchText:String?=null
     override fun draw(canvas: Canvas?) {
         if (txt != null) {
             texts_model = null
@@ -800,13 +810,22 @@ open class KTextView : KAutoSplitTextView {
             texts_model?.let {
                 var mtxt = it
                 it.text?.let {
-                    if (!text.toString().trim().equals(it)) {
+                    var isSearch2=false//fixme 防止指定颜色文本，没效果。
+                    mtxt?.searchText?.let {
+                        if (mtxt.searchText != null && mtxt.searchText!!.trim().length > 0 && mtxt.searchTextColor != Color.TRANSPARENT) {
+                            if (!it.equals(mSearchText)){
+                                isSearch2=true
+                            }
+                        }
+                    }
+                    if (!text.toString().trim().equals(it)||isSearch2) {
                         var isSearch = false
                         if (mtxt.searchText != null && mtxt.searchText!!.trim().length > 0 && mtxt.searchTextColor != Color.TRANSPARENT) {
                             isSearch = true
                         }
                         if (isSearch) {
                             search(KSearchEntity(mtxt.searchText, mtxt.searchTextColor, mtxt.isMul), text = it)
+                            mSearchText=mtxt.searchText
                         } else {
                             setText(it)//重新设置文本
                         }
@@ -877,6 +896,7 @@ open class KTextView : KAutoSplitTextView {
             watcher = null
             watcherMap?.clear()
             watcherMap = null
+            mSearchText=null
             if (textWatcher != null) {
                 try {
                     setOnFocusChangeListener(null)

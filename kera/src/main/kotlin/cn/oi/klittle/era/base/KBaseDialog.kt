@@ -527,6 +527,18 @@ open class KBaseDialog() {
         }
     }
 
+    /**
+     * fixme 盘点弹窗是否显示；true显示；false没显示
+     */
+    open fun isShowing():Boolean{
+        dialog?.let {
+            if (it.isShowing) {
+                return true
+            }
+        }
+        return false
+    }
+
     //关闭弹窗；一定要在recycles()之前执行
     open fun dismiss() {
         dialog?.let {
