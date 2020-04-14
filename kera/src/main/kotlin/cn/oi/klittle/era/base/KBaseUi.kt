@@ -11,6 +11,7 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.toolbar.KToolbar
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KAutoLinefeedLayout
@@ -33,8 +34,7 @@ import cn.oi.klittle.era.widget.viewpager.*
 import cn.oi.klittle.era.widget.web.KJsBridgeWebView
 import cn.oi.klittle.era.widget.web.KWebView
 import kotlinx.android.synthetic.*
-import org.jetbrains.anko.AnkoViewDslMarker
-import org.jetbrains.anko.backgroundDrawable
+import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import java.lang.Exception
 
@@ -49,7 +49,30 @@ import java.lang.Exception
 //        }
 //        setContentView(ui?.createView())
 
-//            //直接在Activity里面调用也可以哦。可以显示UI；亲测可行。
+//        fixme 调用案例，字类可以继承KBaseUi（）实现里面的createView（）方法。或者如下直接实例化。
+//        var ui=object : KBaseUi() {
+//            override fun createView(ctx: Context?): View? {
+//                var view=verticalLayout {
+//                    backgroundColor = Color.WHITE
+//                    var toolbar = KToolbar(this, ctx as Activity)?.apply {
+//                        contentView?.apply {
+//                            backgroundColor = Color.parseColor("#0078D7")
+//                        }
+//                        //左边返回文本（默认样式自带一个白色的返回图标）
+//                        leftTextView?.apply {
+//                        }
+//                        //中间文本
+//                        titleTextView?.apply {
+//                            text = "视频"
+//                        }
+//                    }
+//                }
+//                return view
+//            }
+//        }
+//        setContentView(ui?.createView(ctx))
+
+//            //fixme 直接在Activity里面调用也可以哦。可以显示UI；亲测可行。直接在Actvity中调用，就不需要再调用setContentView（）了。
 //            KBaseUi.apply {
 //                knumberProgressBar {
 //                    setProgress(10)//设置进度
@@ -85,6 +108,7 @@ abstract class KBaseUi {
     //初始化布局，交给子类去实现。ctx作为参数传进来。防止获取不到。
     //fixme 注意，这里的上下文不能是application的上下文，必须是Activity的。
     //return ctx?.UI { verticalLayout {  } }?.view
+    //fixme setContentView(ui.createView(this))//在Activity中调用。
     abstract fun createView(ctx: Context? = getActivity()): View?
 
     private var isDestroy: Boolean? = false//判断是否已经销毁；防止重复异常

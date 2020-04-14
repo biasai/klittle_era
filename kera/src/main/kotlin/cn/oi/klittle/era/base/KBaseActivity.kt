@@ -26,12 +26,9 @@ import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
-import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
-import cn.oi.klittle.era.widget.compat.KMyEditText
 import org.jetbrains.anko.act
-import java.util.concurrent.TimeUnit
 //import kotlinx.coroutines.experimental.async
 //import kotlinx.coroutines.experimental.delay
 //import org.jetbrains.anko.custom.async
@@ -62,8 +59,35 @@ open class KBaseActivity : AppCompatActivity() {
         return this
     }
 
+//           fixme 直接在Activity中调用；Activity不需要再调用setContentView（）了。
+//            UI {
+//            verticalLayout {
+//                backgroundColor=Color.WHITE
+//                var toolbar = KToolbar(this, ctx as Activity)?.apply {
+//                    contentView?.apply {
+//                        backgroundColor = Color.parseColor("#0078D7")
+//                    }
+//                    //左边返回文本（默认样式自带一个白色的返回图标）
+//                    leftTextView?.apply {
+//                    }
+//                    //中间文本
+//                    titleTextView?.apply {
+//                        text = "视频"
+//                    }
+//                }
+//
+//            }
+//        }
+
     //直接调用KBaseUi里的静态方法
     fun ui(block: KBaseUi.Companion.() -> Unit): KBaseActivity {
+        KBaseUi.apply {
+            block(this)
+        }
+        return this
+    }
+
+    fun UI(block: KBaseUi.Companion.() -> Unit): KBaseActivity {
         KBaseUi.apply {
             block(this)
         }
