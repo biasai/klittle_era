@@ -835,6 +835,7 @@ open class KEditText : KMyEditText {
 
     //fixme ==============================================================================================右下角按钮->结束
 
+    //fixme 低部横线；对gravity = Gravity.CENTER 和 gravity = Gravity.CENTER_HORIZONTAL水平居中属性无效。如果设置了这个属性，就没有效果了。
     //底线的底线。一直都存在。在最下面。实现线条重叠效果
     var line_bg: KEditLineEntity? = null
 
