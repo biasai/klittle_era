@@ -77,7 +77,7 @@ open class KBaseDialog() {
                 layoutId = null
                 dialog = null
                 ctx = null
-                showCallBack=null
+                showCallBack = null
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -542,10 +542,10 @@ open class KBaseDialog() {
         //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
     }
 
-    private var showCallBack:(()->Unit)?=null
+    private var showCallBack: (() -> Unit)? = null
     //fixme 显示窗体;顯示成功會回調。
-    open fun show2(callback: (() -> Unit)?=null) {
-        this.showCallBack=callback
+    open fun show2(callback: (() -> Unit)? = null) {
+        this.showCallBack = callback
         show()
     }
 
@@ -561,7 +561,7 @@ open class KBaseDialog() {
                                     //显示窗体，必须在window.setContentView之前调用一次。其后就可随便调show()了。
                                     dialog?.show()//fixme 顯示，最好在主線程中調用。
                                     showCallBack?.let { it() }//fixme 顯示成功回調
-                                    showCallBack=null
+                                    showCallBack = null
                                 }
                             }
                         }
@@ -650,7 +650,8 @@ open class KBaseDialog() {
         }
     }
 
-//        fixme dialog设置软键盘默认，现在好像只能在initEvent（）方法里设置才有效。其他地方好像都无效。亲测。
+//        fixme dialog设置软键盘默认，现在好像只能在initEvent（）方法里设置才有效。其他地方好像都无效。亲测。即只有在构造里面设置才有效，否则无效；initEvent（）方法在构造函数中被调用了。
+//        fixme 构造函数中设置，以及设置fitsSystemWindows=true才有效（文本输入框，任意父容器即可。）
 //        override fun initEvent() {
 //        super.initEvent()
 //        setSoftInputMode_adjustResize_hidden()//fixme 在initEvent（）设置，亲测有效。即必须在Dialog刚刚初始化完成的时候，调用才有效。
@@ -691,6 +692,7 @@ open class KBaseDialog() {
     }
 
     /**
+     * fixme Dialog中设置无效，必须要设置fitsSystemWindows=true才有效。
      * fixme adjustResize 全屏和沉浸式无效问题。在文本框输入框的任意父容器中，设置fitsSystemWindows=true即可。任意父容器即可（父容器的父容器也可以）
      * fixme fitsSystemWindows=true 父容器与子控件之间，会多出一个状态栏的间隔。等价于topPadding多出了一个状态的高度，topPadding=0也会有一个状态的高度间隔。
      * fixme 如果多个View设置了fitsSystemWindows=”true”,只有初始的view起作用，都是从第一个设置了fitsSystemWindows的view开始计算padding
