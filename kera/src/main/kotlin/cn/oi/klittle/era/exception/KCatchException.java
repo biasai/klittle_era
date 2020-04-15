@@ -51,6 +51,7 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
     }
 
     //获取系统默认的异常处理器,并且设置本类为系统默认处理器
+    //fixme 多次执行初始化，对异常处理不受影响。后面初始化的会覆盖前面的。
     public void init(Context ctx) {
         if (ctx != null) {
             try {
@@ -61,7 +62,6 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
                 e.printStackTrace();
                 KLoggerUtils.INSTANCE.e("KCatchException异常处理，初始化异常：\t" + e.getMessage());
             }
-
         }
     }
 
