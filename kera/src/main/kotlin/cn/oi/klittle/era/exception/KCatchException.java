@@ -97,7 +97,7 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
 
     static String error_key_time = "kerror_key_time";//记录错误的次数
 
-    //fixme 获取上次异常时间。
+    //fixme 获取上次异常时间。单位是毫秒。
     static public Long getErrorTime() {
         try {
             Object errorTime = KCacheUtils.INSTANCE.getSecret(error_key_time);
@@ -110,7 +110,10 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
         return 0L;
     }
 
-    //fixme 存储异常时间
+    /**
+     * fixme 存储异常时间
+     * @param time System.currentTimeMillis()；单位毫秒。
+     */
     static public void setErrorTime(long time) {
         KCacheUtils.INSTANCE.putSecret(error_key_time, time);
     }
