@@ -5,7 +5,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 
 
-open class KBaseFragmentPagerAdapter(fm: FragmentManager?, open var fragments: List<Fragment>) : FragmentPagerAdapter(fm) {
+open class KBaseFragmentPagerAdapter(fm: FragmentManager, open var fragments: List<Fragment>) : FragmentPagerAdapter(fm) {
     open override fun getItem(position: Int): Fragment {
         return fragments.get(position)//根据选中下标postion，显示当前的Fragment
     }

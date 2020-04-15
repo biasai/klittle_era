@@ -72,12 +72,14 @@ configurations.all {
 }
 //https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
 //ext.anko_version = '0.10.5'
-ext.anko_version = '0.10.8'//fixme 这个版本的anko内部已经适配了androidx;不需要再引用：implementation 'androidx.core:core-ktx:1.0.2'
+ext.anko_version = '0.10.8'//fixme anko与androidx适配不冲突。
 //fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
 gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
-gradle.ext.androidxVersion = '1.0.0'//androidx的版本号，anko目前的依赖版本好像也是1.0.0；目前最新的是1.0.2（新建工程就知道）；但是最新版的网络还下载不了。
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    //集成kotlin的依赖。
+    //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
+    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //testImplementation 'junit:junit:4.12'
     //androidTestImplementation 'com.android.support.test:runner:1.0.2'
     //androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -89,17 +91,14 @@ dependencies {
     //api 'com.android.support:multidex:2.0.1'
     //api 'androidx.multidex:multidex:2.0.1'//fixme 适配androidx
     //包含了AppTheme和Appcompat主題。
-    api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
+    //api 'com.android.support:design:' + gradle.sinSupportVersion//fixme support:design也androidx不冲突。
     //api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
-    //fixme 约束布局;内部已经适配了androidx
+    //fixme 约束布局
     //api 'com.android.support.constraint:constraint-layout:1.1.0'//1.1.0版本过低。已无法引用。
-    api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
+    //api 'com.android.support.constraint:constraint-layout:1.1.2'//1.1.2目前推荐的版本。
     api "org.jetbrains.anko:anko-constraint-layout:$anko_version"
-    //集成kotlin的依赖。
-    //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
-    api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //将 jre 改为 jdk;因为kotlin 1.2.71之后的版本已经弃用jre
-    //协程
+    //fixme 协程
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.19.1'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:0.22.5'
     //api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.+'//1.3.4 ;1.3.+ 下载不下来，一直报错。
@@ -140,13 +139,15 @@ dependencies {
     api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；
     //api 'com.github.zxing.zxing:core:zxing-3.4.0'//7.0以下会崩溃，只支持7.0及以上的版本（api24）
 
+    //fixme 我们常用的TextView文本框等，不是支持库的。是基本库的里的控件，与androidx也不冲突。
     //fixme androidx适配;虽然anko已经添加了以下依赖，但是为了jitpack打包成功，还需要再引用一次依赖；
-    //fixme 要保证依赖版本一致；目前anko '0.10.8'版本的androidx依赖版本是  '1.0.0'；如果版本不一致，可能会报错。报什么清单合并（merge）失败。
-    api 'androidx.appcompat:appcompat:'+gradle.ext.androidxVersion
-    api 'androidx.core:core-ktx:'+gradle.ext.androidxVersion
-    api 'androidx.recyclerview:recyclerview:'+gradle.ext.androidxVersion
-    api 'androidx.viewpager:viewpager:'+gradle.ext.androidxVersion
-    api 'com.google.android.material:material:'+gradle.ext.androidxVersion//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
+    //fixme 新建工程就能知道最新的androidx版本号。 anko布局与androidx适配不冲突的。亲测不影响。
+    //fixme 目前anko布局里面可能还引用了support-v4里的控件，如recyclerview,constraint约束布局等。只要我们不引用不使用，就没有问题。就不会冲突。
+    api 'androidx.core:core-ktx:1.2.0'//fixme ktx 与 appcompat的版本不统一。
+    api 'androidx.appcompat:appcompat:1.1.0'
+    api 'androidx.recyclerview:recyclerview:1.1.0'//控件的版本也是相互独立的。与androidx.appcompat版本不统一。
+    api 'androidx.viewpager:viewpager:1.0.0'//1.1.0的版本还没有。（当前时间：2020.04.15）
+    api 'com.google.android.material:material:1.1.0'//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
     api 'androidx.constraintlayout:constraintlayout:1.1.3'//fixme 约束布局(1.0.0找不到)
     api 'androidx.multidex:multidex:2.0.1'//fixme 解决方法数过多
 }

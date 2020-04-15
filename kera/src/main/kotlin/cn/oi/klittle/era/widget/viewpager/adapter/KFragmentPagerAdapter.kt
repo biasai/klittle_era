@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentPagerAdapter
 /**
  * FragmentPagerAdapter 适配器
  */
-open class KFragmentPagerAdapter(fm: FragmentManager?, var fragments: MutableList<Fragment>) : FragmentPagerAdapter(fm) {
+open class KFragmentPagerAdapter(fm: FragmentManager, var fragments: MutableList<Fragment>) : FragmentPagerAdapter(fm) {
     override fun getItem(position: Int): Fragment {
         return fragments.get(position)//根据选中下标postion，显示当前的Fragment
     }
