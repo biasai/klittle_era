@@ -139,8 +139,8 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
             long errorTime2 = System.currentTimeMillis() - getErrorTime();//fixme 两次异常的时间差
             KLoggerUtils.INSTANCE.e("App全局异常时间差:\t" + errorTime2 + "\t全局异常信息：\t" + msg);
             setErrorTime(System.currentTimeMillis());//fixme 存储异常时间
-            if (errorTime2 > 1000) {
-                //防止无限循环卡死,所以加个时间判断。大于一秒的才重启。
+            if (errorTime2 > 1500) {
+                //防止无限循环卡死,所以加个时间判断。大于1.5秒的才重启。亲测1.5秒效果最好。不要低于这个时间。以防卡死。（Activity启动的时间最多在1300毫秒之间。）
                 //fixme 测试发现，两次异常时间太短（小于1300毫秒左右），系统也无法重复。亲测。
                 KIntentUtils.INSTANCE.goRest();//fixme app应用崩溃后，自动重启（如果不重启，整个应用也是卡着的。没有任何响应。）
             } else {

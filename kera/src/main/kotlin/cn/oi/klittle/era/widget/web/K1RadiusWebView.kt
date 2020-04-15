@@ -7,21 +7,17 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebView
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.entity.widget.compat.KRadiusEntity
 import cn.oi.klittle.era.utils.KRadiusUtils
 import cn.oi.klittle.era.widget.compat.K0Widget
-import cn.oi.klittle.era.widget.compat.K1Widget
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundDrawable
-import org.jetbrains.anko.runOnUiThread
-import java.lang.Exception
 
 /**
  * 自定义WebView圆角属性，在真机上测试是有效果的。在模拟器上加载网页好像无效（这个不影响，以真机为标准）。
  */
-open class KRadiusWebView : KJsBridgeWebView {
+open class K1RadiusWebView : K0JsBridgeWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -119,7 +115,7 @@ open class KRadiusWebView : KJsBridgeWebView {
     //按下
     var radius_press: KRadiusEntity? = null
 
-    fun radius_press(block: KRadiusEntity.() -> Unit): KRadiusWebView {
+    fun radius_press(block: KRadiusEntity.() -> Unit): K1RadiusWebView {
         if (radius_press == null) {
             radius_press = gtmRadius().copy()//整个属性全部复制过来。
         }
@@ -131,7 +127,7 @@ open class KRadiusWebView : KJsBridgeWebView {
     //鼠标悬浮
     var radius_hover: KRadiusEntity? = null
 
-    fun radius_hover(block: KRadiusEntity.() -> Unit): KRadiusWebView {
+    fun radius_hover(block: KRadiusEntity.() -> Unit): K1RadiusWebView {
         if (radius_hover == null) {
             radius_hover = gtmRadius().copy()//整个属性全部复制过来。
         }
@@ -143,7 +139,7 @@ open class KRadiusWebView : KJsBridgeWebView {
     //聚焦
     var radius_focuse: KRadiusEntity? = null
 
-    fun radius_focuse(block: KRadiusEntity.() -> Unit): KRadiusWebView {
+    fun radius_focuse(block: KRadiusEntity.() -> Unit): K1RadiusWebView {
         if (radius_focuse == null) {
             radius_focuse = gtmRadius().copy()//整个属性全部复制过来。
         }
@@ -155,7 +151,7 @@ open class KRadiusWebView : KJsBridgeWebView {
     //选中
     var radius_selected: KRadiusEntity? = null
 
-    fun radius_selected(block: KRadiusEntity.() -> Unit): KRadiusWebView {
+    fun radius_selected(block: KRadiusEntity.() -> Unit): K1RadiusWebView {
         if (radius_selected == null) {
             radius_selected = gtmRadius().copy()//整个属性全部复制过来。
         }
@@ -174,7 +170,7 @@ open class KRadiusWebView : KJsBridgeWebView {
         return radius!!
     }
 
-    fun radius(block: KRadiusEntity.() -> Unit): KRadiusWebView {
+    fun radius(block: KRadiusEntity.() -> Unit): K1RadiusWebView {
         block(gtmRadius())
         requestLayout()
         return this
@@ -302,8 +298,8 @@ open class KRadiusWebView : KJsBridgeWebView {
             kradius.apply {
                 x = 0f
                 y = 0f
-                w = this@KRadiusWebView.width
-                h = this@KRadiusWebView.height
+                w = this@K1RadiusWebView.width
+                h = this@K1RadiusWebView.height
                 all_radius = 0f
                 left_top = it.left_top
                 left_bottom = it.left_bottom

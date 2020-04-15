@@ -2,13 +2,12 @@ package cn.oi.klittle.era.widget.web
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.View
 import android.view.ViewGroup
 
 /**
  * 自定义WebView
  */
-open class KWebView : KMyWebView {
+open class K3WebView : K2MyWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }

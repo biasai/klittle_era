@@ -1,18 +1,14 @@
 package cn.oi.klittle.era.widget.web
 
 import android.content.Context
-import android.graphics.Color
 import android.util.AttributeSet
-import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
-import org.jetbrains.anko.backgroundColor
 
 
 /**
  * 自定义WebView,H5基本设置
  */
-open class KMyWebView : KRadiusWebView {
+open class K2MyWebView : K1RadiusWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }

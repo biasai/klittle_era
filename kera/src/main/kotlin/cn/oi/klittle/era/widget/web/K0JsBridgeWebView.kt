@@ -60,7 +60,7 @@ import java.lang.Exception
 // setUseWideViewPort(true)//fixme true完整的显示手机屏幕;false是BridgeWebView默认样式，整个页面会被放大。
 // isLoadSuccess2()//fixme 判断页面是否加载成功
 //fixme jsBridge?.progress 必须在主线程中获取，不然异常哦。要注意。
-open class KJsBridgeWebView : BridgeWebView {
+open class K0JsBridgeWebView : KBridgeWebView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
         initWeb()//fixme 初始化

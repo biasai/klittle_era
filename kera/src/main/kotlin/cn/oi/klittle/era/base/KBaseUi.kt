@@ -11,7 +11,6 @@ import android.widget.LinearLayout
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.R
-import cn.oi.klittle.era.toolbar.KToolbar
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KAutoLinefeedLayout
@@ -31,8 +30,8 @@ import cn.oi.klittle.era.widget.seekbar.KSeekBarProgressBar
 import cn.oi.klittle.era.widget.seekbar.KVerticalSeekBarProgressBar
 import cn.oi.klittle.era.widget.video.KVideoView
 import cn.oi.klittle.era.widget.viewpager.*
-import cn.oi.klittle.era.widget.web.KJsBridgeWebView
-import cn.oi.klittle.era.widget.web.KWebView
+import cn.oi.klittle.era.widget.web.K0JsBridgeWebView
+import cn.oi.klittle.era.widget.web.K3WebView
 import kotlinx.android.synthetic.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
@@ -615,21 +614,21 @@ abstract class KBaseUi {
         }
 
         //webView
-        inline fun ViewManager.kwebView(init: (@AnkoViewDslMarker KWebView).() -> Unit): KWebView {
-            return ankoView({ ctx: Context -> KWebView(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kwebView(init: (@AnkoViewDslMarker K3WebView).() -> Unit): K3WebView {
+            return ankoView({ ctx: Context -> K3WebView(ctx) }, theme = 0) { init() }
         }
 
-        inline fun ViewManager.kWebView(init: (@AnkoViewDslMarker KWebView).() -> Unit): KWebView {
-            return ankoView({ ctx: Context -> KWebView(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kWebView(init: (@AnkoViewDslMarker K3WebView).() -> Unit): K3WebView {
+            return ankoView({ ctx: Context -> K3WebView(ctx) }, theme = 0) { init() }
         }
 
         //安卓js交互
-        inline fun ViewManager.kjsBridgeWebView(init: (@AnkoViewDslMarker KJsBridgeWebView).() -> Unit): KJsBridgeWebView {
-            return ankoView({ ctx: Context -> KJsBridgeWebView(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kjsBridgeWebView(init: (@AnkoViewDslMarker K0JsBridgeWebView).() -> Unit): K0JsBridgeWebView {
+            return ankoView({ ctx: Context -> K0JsBridgeWebView(ctx) }, theme = 0) { init() }
         }
 
-        inline fun ViewManager.kJsBridgeWebView(init: (@AnkoViewDslMarker KJsBridgeWebView).() -> Unit): KJsBridgeWebView {
-            return ankoView({ ctx: Context -> KJsBridgeWebView(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kJsBridgeWebView(init: (@AnkoViewDslMarker K0JsBridgeWebView).() -> Unit): K0JsBridgeWebView {
+            return ankoView({ ctx: Context -> K0JsBridgeWebView(ctx) }, theme = 0) { init() }
         }
 
         //KSeekBarProgressBar
