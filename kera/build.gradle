@@ -144,7 +144,7 @@ dependencies {
     //fixme 新建工程就能知道最新的androidx版本号。 anko布局与androidx适配不冲突的。亲测不影响。
     //fixme 目前anko布局里面可能还引用了support-v4里的控件，如recyclerview,constraint约束布局等。只要我们不引用不使用，就没有问题。就不会冲突。
     api 'androidx.core:core-ktx:1.0.0'//fixme ktx 与 appcompat的版本不统一。
-    api 'androidx.appcompat:appcompat:1.1.0'
+    api 'androidx.appcompat:appcompat:1.0.0'
     api 'androidx.recyclerview:recyclerview:1.1.0'//控件的版本也是相互独立的。与androidx.appcompat版本不统一。
     api 'androidx.viewpager:viewpager:1.0.0'//1.1.0的版本还没有。（当前时间：2020.04.15）
     api 'com.google.android.material:material:1.1.0'//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
