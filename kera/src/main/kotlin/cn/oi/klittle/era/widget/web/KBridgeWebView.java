@@ -8,9 +8,9 @@ import android.util.AttributeSet;
 
 import com.github.lzyzsd.jsbridge.BridgeWebView;
 
-import cn.oi.klittle.era.utils.KLoggerUtils;
+//import cn.oi.klittle.era.utils.KLoggerUtils;
 
-//fixme 解决androidx在Android 5.1部分机型报Resources$NotFoundException错误。亲测有效！
+//fixme 解决androidx在Android 5.1部分机型报Resources$NotFoundException错误。亲测有效！参考地址：https://www.jianshu.com/p/a24a47bbbfc5
 //fixme K0JsBridgeWebView继承于本类。
 public class KBridgeWebView extends BridgeWebView {
     public KBridgeWebView(Context context) {
