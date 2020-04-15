@@ -671,7 +671,7 @@ open class KHttps() {
                                     callback(KGsonUtils.parseJSONToAny<T>(it, *field))
                                 } catch (e: Exception) {
                                     //防止异常之后，finish()不执行;捕捉之后就没事了
-                                    KLoggerUtils.e("get回调处理异常：\t" + e.message)
+                                    KLoggerUtils.e("get回调处理异常：\t" + KCatchException.getExceptionMsg(e))
                                 }
                             }
                         }
@@ -679,7 +679,7 @@ open class KHttps() {
                     super.onResponse(response)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KLoggerUtils.e("get回调处理异常2：\t" + e.message)
+                    KLoggerUtils.e("get回调处理异常2：\t" + KCatchException.getExceptionMsg(e))
                 }
             }
         }, timeOut = timeOut)
