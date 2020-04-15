@@ -55,6 +55,8 @@ android {
 
 }
 
+//fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
+gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
 //写在当前moudle下的build.gradle中。公目录下的build.gradle无效。
 //即只对当前moudle有效。
 //强制让所有模块都用相同的支持库版本(v4或v7支持库)
@@ -71,40 +73,58 @@ configurations.all {
     }
 }
 
-//fixme 解决androidx版本不同的问题。
+gradle.ext.core = '1.2.0'//api 'androidx.core:core-ktx:1.2.0'
+gradle.ext.appcompat = '1.1.0'//api 'androidx.appcompat:appcompat:1.1.0'
+gradle.ext.lifecycle = '2.0.0'
+gradle.ext.versionedparcelable = '1.0.0'
+gradle.ext.fragment = '1.0.0'
+gradle.ext.material = '1.1.0'//api 'com.google.android.material:material:1.1.0'
+gradle.ext.viewpager = '1.0.0'//api 'androidx.viewpager:viewpager:1.0.0'
+gradle.ext.recyclerview = '1.1.0'//api 'androidx.recyclerview:recyclerview:1.1.0'
+gradle.ext.constraintlayout = '1.1.3'//约束布局 api 'androidx.constraintlayout:constraintlayout:1.1.3'
+//fixme 解决androidx版本不同的问题。（解决anko依赖androidx版本不一致问题；解决jitpack打包失败问题。亲测有效。）
 configurations.all {
     resolutionStrategy {
         resolutionStrategy.eachDependency { details ->
             if (details.requested.group == 'androidx.core') {
-                details.useVersion "1.2.0"
+                //details.useVersion "1.2.0"
+                details.useVersion gradle.core
             }
             if (details.requested.group == 'androidx.appcompat') {
-                details.useVersion "1.1.0"
+                //details.useVersion "1.1.0"
+                details.useVersion gradle.appcompat
             }
             if (details.requested.group == 'androidx.lifecycle') {
-                details.useVersion "2.0.0"
+                //details.useVersion "2.0.0"
+                details.useVersion gradle.lifecycle
             }
             if (details.requested.group == 'androidx.versionedparcelable') {
-                details.useVersion "1.0.0"
+                //details.useVersion "1.0.0"
+                details.useVersion gradle.versionedparcelable
             }
             if (details.requested.group == 'androidx.fragment') {
-                details.useVersion "1.0.0"
+                //details.useVersion "1.0.0"
+                details.useVersion gradle.fragment
             }
             if (details.requested.group == 'com.google.android.material') {
                 //'com.google.android.material:material:1.1.0'
-                details.useVersion "1.1.0"
+                //details.useVersion "1.1.0"
+                details.useVersion gradle.material
             }
             if (details.requested.group == 'androidx.viewpager') {
                 //'androidx.viewpager:viewpager:1.0.0'
-                details.useVersion "1.0.0"
+                //details.useVersion "1.0.0"
+                details.useVersion gradle.viewpager
             }
             if (details.requested.group == 'androidx.recyclerview') {
                 //'androidx.recyclerview:recyclerview:1.1.0'
-                details.useVersion "1.1.0"
+                //details.useVersion "1.1.0"
+                details.useVersion gradle.recyclerview
             }
             if (details.requested.group == 'androidx.constraintlayout') {
                 // 'androidx.constraintlayout:constraintlayout:1.1.3' //约束布局
-                details.useVersion "1.1.3"
+                //details.useVersion "1.1.3"
+                details.useVersion gradle.constraintlayout
             }
         }
     }
@@ -112,9 +132,7 @@ configurations.all {
 
 //https://github.com/Kotlin/anko 这里的build.gradle文件可以查看anko版本号。
 //ext.anko_version = '0.10.5'
-ext.anko_version = '0.10.8'//fixme anko与androidx适配不冲突。
-//fixme 改成28之後，如果報xml資源找不到。只需要設置一下版本號即可，如：compileSdkVersion 28 ；targetSdkVersion 28
-gradle.ext.sinSupportVersion = '28.0.0'//27.1.1；目前support:appcompat-v7最新版就是28.0.0；更高版本就是androidx了。
+ext.anko_version = '0.10.8'//fixme anko与androidx适配不冲突。（亲测'0.10.8'版本的anko添加了androidx的依赖引用）
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //集成kotlin的依赖。
@@ -165,7 +183,7 @@ dependencies {
     api 'com.github.lzyzsd:jsbridge:1.0.4'//这个稳定一点(建议使用这个)，自己复制拷贝过来的不稳定。
     implementation 'com.github.bumptech.glide:glide:4.5.0'//Glide图片加载
     //fixme 引用gitee里的代码，jitpack打包失败，无法正常访问和引用；还是github稳定一些。
-    //fixme 图表库;与androidx不冲突。亲测。
+    //fixme 图表库;与androidx不冲突。亲测。地址：https://github.com/PhilJay/MPAndroidChart
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
@@ -183,11 +201,14 @@ dependencies {
     //fixme androidx适配;虽然anko已经添加了以下依赖，但是为了jitpack打包成功，还需要再引用一次依赖；
     //fixme 新建工程就能知道最新的androidx版本号。 anko布局与androidx适配不冲突的。亲测不影响。（anko里面添加了androidx的依赖引用，亲测）
     //fixme 目前anko布局里面可能还引用了support-v4里的控件，如recyclerview,constraint约束布局等。只要我们不引用不使用，就没有问题。就不会冲突。
-    api 'androidx.core:core-ktx:1.2.0'//fixme ktx 与 appcompat的版本不统一。
-    api 'androidx.appcompat:appcompat:1.1.0'
-    api 'androidx.recyclerview:recyclerview:1.1.0'//控件的版本也是相互独立的。与androidx.appcompat版本不统一。
-    api 'androidx.viewpager:viewpager:1.0.0'//1.1.0的版本还没有。（当前时间：2020.04.15）
-    api 'com.google.android.material:material:1.1.0'//fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
-    api 'androidx.constraintlayout:constraintlayout:1.1.3'//fixme 约束布局(1.0.0找不到)
+    api 'androidx.core:core-ktx:' + gradle.core//fixme ktx 与 appcompat的版本不统一。
+    api 'androidx.appcompat:appcompat:' + gradle.appcompat
+    api 'androidx.recyclerview:recyclerview:' + gradle.recyclerview
+    //控件的版本也是相互独立的。与androidx.appcompat版本不统一。
+    api 'androidx.viewpager:viewpager:' + gradle.viewpager//1.1.0的版本还没有。（当前时间：2020.04.15）
+    api 'com.google.android.material:material:' + gradle.material
+    //fixme 适配androidx的design主题，与anko布局内部的依赖不冲突。
+    api 'androidx.constraintlayout:constraintlayout:' + gradle.constraintlayout
+    //fixme 约束布局(1.0.0找不到)
     api 'androidx.multidex:multidex:2.0.1'//fixme 解决方法数过多
 }
