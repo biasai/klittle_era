@@ -88,9 +88,9 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
                 String result = writer.toString();
                 return result;
             } catch (Exception e) {
-                e.getMessage();
+                //e.getMessage();
             }
-            return ex.toString();
+            return ex.getMessage();
         }
         return "";
     }
