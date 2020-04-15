@@ -39,6 +39,47 @@ import cn.oi.klittle.era.utils.KProportionUtils;
 public class KBaseApplication extends Application {
 
     @Override
+    public void onCreate() {
+        try {
+            // TODO Auto-generated method stub
+            super.onCreate();
+            sInstance = this;
+            closeAndroidPDialog();
+            //fixme 应用全局异常错误监听(在onCreate（）里初始化一次，防止未执行。)
+            KCatchException.getInstance().init(sInstance);//可以多次执行，多次执行对异常处理不受影响。
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    //初始化
+    public static KBaseApplication getInstance() {
+        if (sInstance == null) {
+            try {
+                //如果配置文件没有声明，也没有手动初始化。则通过反射自动初始化。【反射是最后的手段，效率不高】
+                //通过反射，手动获取上下文。
+                final Object activityThread = getActivityThread();
+                if (null != activityThread) {
+                    try {
+                        final Method getApplication = activityThread.getClass().getDeclaredMethod("getApplication");
+                        getApplication.setAccessible(true);
+                        Context applicationContext = (Context) getApplication.invoke(activityThread);
+                        setsInstance(applicationContext);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+                //fixme 应用全局异常错误监听
+                KCatchException.getInstance().init(sInstance);
+            } catch (Exception e) {
+                e.printStackTrace();
+                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t" + e.getMessage());
+            }
+        }
+        return sInstance;
+    }
+
+    @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
         //解决方法数过多问题；
@@ -105,33 +146,6 @@ public class KBaseApplication extends Application {
         return null;
     }
 
-    //初始化
-    public static KBaseApplication getInstance() {
-        if (sInstance == null) {
-            try {
-                //如果配置文件没有声明，也没有手动初始化。则通过反射自动初始化。【反射是最后的手段，效率不高】
-                //通过反射，手动获取上下文。
-                final Object activityThread = getActivityThread();
-                if (null != activityThread) {
-                    try {
-                        final Method getApplication = activityThread.getClass().getDeclaredMethod("getApplication");
-                        getApplication.setAccessible(true);
-                        Context applicationContext = (Context) getApplication.invoke(activityThread);
-                        setsInstance(applicationContext);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                //fixme 应用全局异常错误监听
-                KCatchException.getInstance().init(sInstance);
-            } catch (Exception e) {
-                e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t" + e.getMessage());
-            }
-        }
-        return sInstance;
-    }
-
     //如果没有在配置文件中配置，则需要手动调用以下方法，手动初始化BaseApplication
     //不会调用onCreate()等什么周期
     //BaseApplication.setsInstance(getApplication());
@@ -144,17 +158,6 @@ public class KBaseApplication extends Application {
         }
     }
 
-    @Override
-    public void onCreate() {
-        try {
-            // TODO Auto-generated method stub
-            super.onCreate();
-            sInstance = this;
-            closeAndroidPDialog();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
     //判断是否第一次启动，true 首次启动，false不是
     public boolean isFirstStart() {

@@ -21,9 +21,14 @@ import cn.oi.klittle.era.utils.KLoggerUtils;
 /**
  * fixme 初始化；应用全局异常捕捉。用户没有进行try{}捕捉时，会被全局捕捉。本地捕捉了，就不会调用全局捕捉。
  * 已经在KBaseApplication里初始化了。
- * KCatchException.getInstance().init(sInstance);
+ * KCatchException.getInstance().init(sInstance);//可以多次重复初始化，对异常处理没有影响。
  * fixme 注意，在onCreate()发生异常(如：0作为除数会异常陷入死循环重启，布局异常好像不会陷入死循环)，会陷入死循环重启。系统会自动重启的。不是我手动重启的。所以这个要注意一哈。(在小米手机上测试的)；布局异常好像没事。
+ * fixme 亲测与腾讯Bugly异常收集，不冲突。互不影响。
  */
+
+//getErrorTime()获取上次异常时间，
+//setErrorTime(System.currentTimeMillis());//fixme 存储异常时间
+
 public class KCatchException implements Thread.UncaughtExceptionHandler {
 
     //本类实例
@@ -84,7 +89,25 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
         this.exceptionCallback = exceptionCallback;
     }
 
-    String error_key_time = "kerror_key_time";//记录错误的次数
+    static String error_key_time = "kerror_key_time";//记录错误的次数
+
+    //fixme 获取上次异常时间。
+    static public Long getErrorTime() {
+        try {
+            Object errorTime = KCacheUtils.INSTANCE.getSecret(error_key_time);
+            if (errorTime != null && errorTime.toString().length() > 0) {
+                return (Long) errorTime;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0L;
+    }
+
+    //fixme 存储异常时间
+    static public void setErrorTime(long time) {
+        KCacheUtils.INSTANCE.putSecret(error_key_time, time);
+    }
 
     //自定义错误处理器;在uncaughtException()方法里手动调用了。
     private boolean handlerException(Throwable ex) {
@@ -97,16 +120,12 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
             exceptionCallback.catchException(msg);//异常监听回调。
         }
         try {
-            Object errorTime = KCacheUtils.INSTANCE.getSecret(error_key_time);
-            long errorTime2 = 0;
-            if (errorTime != null) {
-                errorTime2 = (Long) errorTime;
-            }
-            errorTime2 = System.currentTimeMillis() - errorTime2;//fixme 两次异常的时间差
+            long errorTime2 = System.currentTimeMillis() - getErrorTime();//fixme 两次异常的时间差
             KLoggerUtils.INSTANCE.e("App全局异常时间差:\t" + errorTime2 + "\t全局异常信息：\t" + msg);
-            KCacheUtils.INSTANCE.putSecret(error_key_time, System.currentTimeMillis());
-            if (errorTime2 > 800) {
-                //防止无限循环卡死
+            setErrorTime(System.currentTimeMillis());//fixme 存储异常时间
+            if (errorTime2 > 1000) {
+                //防止无限循环卡死,所以加个时间判断。大于一秒的才重启。
+                //fixme 测试发现，两次异常时间太短（小于1300毫秒左右），系统也无法重复。亲测。
                 KIntentUtils.INSTANCE.goRest();//fixme app应用崩溃后，自动重启（如果不重启，整个应用也是卡着的。没有任何响应。）
             } else {
                 KLoggerUtils.INSTANCE.e("全局异常，关闭App");
