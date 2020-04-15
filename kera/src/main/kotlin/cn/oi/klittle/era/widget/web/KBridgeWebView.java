@@ -16,7 +16,7 @@ import com.github.lzyzsd.jsbridge.BridgeWebView;
 public class KBridgeWebView extends BridgeWebView {
 
     //context是系统的。mContext是自己的。
-    public Context mContext=null;//fixme 保存原始的上下文(可以正常转换成之前的Activity)；防止5.1版本的上下文不是原始的上下文(5.1的是新建的，不能转成之前的Activity)。
+    public Context mContext=null;//fixme 保存原始的上下文(可以正常转换成之前的Activity)；防止5.1版本的上下文不是原始的上下文(android 5.1的是新建的，不能转成之前的Activity)。
 
     public Context getmContext() {
         return mContext;
@@ -72,7 +72,7 @@ public class KBridgeWebView extends BridgeWebView {
         // Android Lollipop 5.0 & 5.1
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {//LOLLIPOP 21(5.0);M 23(6.0)
             try {
-                return context.createConfigurationContext(new Configuration());//fixme 新建了一个Context；已经不是之前的Context了。是两个不同的对象。
+                return context.createConfigurationContext(new Configuration());//fixme 新建了一个Context；已经不是之前的Context了。是两个不同的对象。(不能转换成之前的Activity了)
             } catch (Exception e) {
                 e.printStackTrace();
             }
