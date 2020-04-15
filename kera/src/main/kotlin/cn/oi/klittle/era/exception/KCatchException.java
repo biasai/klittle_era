@@ -28,6 +28,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils;
 
 //getErrorTime()获取上次异常时间，
 //setErrorTime(System.currentTimeMillis());//fixme 存储异常时间
+//KCatchException.getExceptionMsg(e)//fixme 获取详细的异常处理信息，可精确到具体的代码。
 
 public class KCatchException implements Thread.UncaughtExceptionHandler {
 
