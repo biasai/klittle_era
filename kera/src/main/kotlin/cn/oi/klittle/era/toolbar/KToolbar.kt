@@ -107,7 +107,7 @@ import kotlinx.coroutines.Deferred
 //                }
 //            }
 //        }
-
+//fixme KToobar里的控件基本都设置了 isRecycleAutoBg=false；不释放位图。
 /**
  * 顶部标题栏
  */
@@ -273,6 +273,7 @@ open class KToolbar {
                                 textSize = toolbarTextSize
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER
+                                isRecycleAutoBg=false
                             }.lparams {
                                 width = wrapContent
                                 height = wrapContent
@@ -285,6 +286,7 @@ open class KToolbar {
                                 textSize = toolbarTextSize
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER
+                                isRecycleAutoBg=false
                             }.lparams {
                                 width = wrapContent
                                 height = wrapContent
@@ -300,6 +302,7 @@ open class KToolbar {
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER or Gravity.RIGHT
                                 rightPadding = toolbarOffset
+                                isRecycleAutoBg=false
                             }.lparams {
                                 centerVertically()
                                 alignParentRight()
@@ -313,6 +316,7 @@ open class KToolbar {
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER or Gravity.RIGHT
                                 rightPadding = toolbarOffset
+                                isRecycleAutoBg=false
                             }.lparams {
                                 centerVertically()
                                 leftOf(kpx.id("txt_right"))
