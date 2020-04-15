@@ -53,9 +53,15 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
     //获取系统默认的异常处理器,并且设置本类为系统默认处理器
     public void init(Context ctx) {
         if (ctx != null) {
-            this.mContext = ctx;
-            mDefaultException = Thread.getDefaultUncaughtExceptionHandler();
-            Thread.setDefaultUncaughtExceptionHandler(this);
+            try {
+                this.mContext = ctx;
+                mDefaultException = Thread.getDefaultUncaughtExceptionHandler();
+                Thread.setDefaultUncaughtExceptionHandler(this);
+            } catch (Exception e) {
+                e.printStackTrace();
+                KLoggerUtils.INSTANCE.e("KCatchException异常处理，初始化异常：\t" + e.getMessage());
+            }
+
         }
     }
 
