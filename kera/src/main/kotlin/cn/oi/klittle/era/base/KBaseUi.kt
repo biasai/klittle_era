@@ -32,6 +32,7 @@ import cn.oi.klittle.era.widget.video.KVideoView
 import cn.oi.klittle.era.widget.viewpager.*
 import cn.oi.klittle.era.widget.web.K0JsBridgeWebView
 import cn.oi.klittle.era.widget.web.K3WebView
+import cn.oi.klittle.era.widget.web.KBridgeWebView
 import kotlinx.android.synthetic.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
@@ -207,6 +208,9 @@ abstract class KBaseUi {
                         //KLoggerUtils.e("======================================================释放")
                         //log打印太过频繁且内容相同，可以不会打印。
                         //fixme 打印有时可能不会打印出来。但是代码已经执行了，只是没有打印出来而已。（放心已经执行了）
+                    } else if (view is KBridgeWebView) {
+                        //webView销毁
+                        view?.onDestroy()
                     } else if (view is KVideoView) {
                         //视频销毁
                         view?.onDestory()

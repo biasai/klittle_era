@@ -359,8 +359,9 @@ open class K0JsBridgeWebView : KBridgeWebView {
     /**
      * fixme 销毁;最后记得置空。
      */
-    open fun onDestroy() {
+    override fun onDestroy() {
         try {
+            super.onDestroy()
             curl = null
             ctime = null
             loadCallBack = null
