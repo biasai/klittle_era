@@ -74,18 +74,23 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
      */
     static public String getExceptionMsg(Throwable ex) {
         if (ex != null) {
-            //获取错误原因
-            Writer writer = new StringWriter();
-            PrintWriter printWriter = new PrintWriter(writer);
-            ex.printStackTrace(printWriter);
-            Throwable cause = ex.getCause();
-            while (cause != null) {
-                cause.printStackTrace(printWriter);
-                cause = cause.getCause();
+            try {
+                //获取错误原因
+                Writer writer = new StringWriter();
+                PrintWriter printWriter = new PrintWriter(writer);
+                ex.printStackTrace(printWriter);
+                Throwable cause = ex.getCause();
+                while (cause != null) {
+                    cause.printStackTrace(printWriter);
+                    cause = cause.getCause();
+                }
+                printWriter.close();
+                String result = writer.toString();
+                return result;
+            } catch (Exception e) {
+                e.getMessage();
             }
-            printWriter.close();
-            String result = writer.toString();
-            return result;
+            return ex.toString();
         }
         return "";
     }
@@ -113,6 +118,7 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
 
     /**
      * fixme 存储异常时间
+     *
      * @param time System.currentTimeMillis()；单位毫秒。
      */
     static public void setErrorTime(long time) {
