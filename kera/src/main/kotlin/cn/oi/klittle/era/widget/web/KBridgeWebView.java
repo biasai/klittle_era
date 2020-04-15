@@ -50,7 +50,11 @@ public class KBridgeWebView extends BridgeWebView {
     private static Context getFixedContext(Context context) {
         // Android Lollipop 5.0 & 5.1
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            return context.createConfigurationContext(new Configuration());
+            try {
+                return context.createConfigurationContext(new Configuration());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
         return context;
     }
