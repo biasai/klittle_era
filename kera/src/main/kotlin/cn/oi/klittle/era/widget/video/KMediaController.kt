@@ -72,12 +72,12 @@ open class KMediaController {
     }
 
     //全屏
-    open fun screen(){
+    open fun screen() {
         videoView?.let {
             it.context?.let {
-                if (it is Activity){
-                    if (!it.isFinishing){
-                        KUiHelper.goScreenVideoActivity(it,videoView?.path)
+                if (it is Activity) {
+                    if (!it.isFinishing) {
+                        KUiHelper.goScreenVideoActivity(it, videoView?.path)
                     }
                 }
             }
@@ -148,7 +148,8 @@ open class KMediaController {
 //                        canvas.drawCircle(x, y, kpx.x(12f), paint)
 //                    }
                     //fixme 防止宽高获取不到，防止滑动块显示异常；最好在布局加载完成之后，在设置进度。
-                    onGlobalLayoutListener {
+                    //fixme isAlways = true，防止布局发生变化。防止不实时，不准确。
+                    onGlobalLayoutListener(isAlways = true) {
                         dst {
                             width = w - kpx.x(24)
                         }
@@ -205,4 +206,19 @@ open class KMediaController {
             viewGroup?.addView(relativeLayout, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
         }
     }
+
+    //销毁
+    fun onDestroy() {
+        relativeLayout = null
+        videoView?.onDestory()
+        videoView = null
+        play = null
+        seekbar?.onDestroy()
+        seekbar = null
+        currentPosition = null
+        duration = null
+        screen?.onDestroy()
+        screen = null
+    }
+
 }

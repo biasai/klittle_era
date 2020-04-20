@@ -55,7 +55,8 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
             .subscribeOn(Schedulers.io())//执行线程在io线程(子线程)
             .observeOn(AndroidSchedulers.mainThread())//回调线程在主线程
 
-
+    var timeOut: Long = 35000//fixme 弹框超时时间默认设置为35秒;单位是毫秒。
+    private var showTime: Long? = 0//记录显示的时间
     var disposable: Disposable? = null
     //观察者
     private var observe: Observer<Boolean>? = object : Observer<Boolean> {
@@ -92,8 +93,19 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
         }
     }
 
-    private var showTime: Long? = 0//记录显示的时间
-    var timeOut: Long = 35000//fixme 弹框超时时间默认设置为35秒;单位是毫秒。
+    private fun dispose() {
+        try {
+            //使用RxJava完成弹框超时设置。亲测可行。
+            if (observe != null && timeOut > 0) {//timeOut小于等于0不做超时判断
+                showTime = System.currentTimeMillis()//记录显示的时间
+                disposable?.dispose()//旧的回调取消
+                observable?.subscribe(observe)//开启新的回调计时
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     var timeOutInfo: String? = getString(R.string.ktimeout)//连接超时信息设置。
     fun timeOut(timeOut: Long): KProgressDialog {
         this.timeOut = timeOut
@@ -122,19 +134,6 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
         this.timeOutCallback = timeOutCallback
     }
 
-
-    private fun dispose() {
-        try {
-            //使用RxJava完成弹框超时设置。亲测可行。
-            if (observe != null && timeOut > 0) {//timeOut小于等于0不做超时判断
-                showTime = System.currentTimeMillis()//记录显示的时间
-                disposable?.dispose()//旧的回调取消
-                observable?.subscribe(observe)//开启新的回调计时
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     override fun show() {
         super.show()

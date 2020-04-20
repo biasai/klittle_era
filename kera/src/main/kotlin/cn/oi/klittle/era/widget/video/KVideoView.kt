@@ -7,6 +7,7 @@ import android.net.Uri
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.VideoView
+import cn.oi.klittle.era.utils.KFileUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRegexUtils
 import cn.oi.klittle.era.utils.KStringUtils
@@ -15,6 +16,36 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Deferred
 import org.jetbrains.anko.runOnUiThread
+
+//                fixme 调用案例
+//                var video: KVideoView? = null
+//                relativeLayout {
+//                    backgroundColor=Color.BLACK//fixme 不要直接给Video设置背景色，会覆盖视频内容的。video没有视频内容时，默认就是黑色的。
+//                    video = kvideoView {
+//                    }.lparams {
+//                        width = wrapContent
+//                        height = wrapContent
+//                        centerInParent()
+//                    }
+//                }.lparams {
+//                    width = matchParent
+//                    height = (kpx.screenWidth() / 16f * 9).toInt()//现在视频比例一般都为16：9；fixme 宽度固定最好写在父容器里，video自适应。
+//                }
+//                KMediaController(this@verticalLayout, video)
+//                var videoPath: String? = null
+//                button {
+//                    text = "视频选择"
+//                    onClick {
+//                        pictrueSelectorForPath(type = PictureConfig.TYPE_VIDEO) {
+//                            it?.let {
+//                                if (it.size > 0) {
+//                                    videoPath = it[0]
+//                                    video?.prepare(videoPath)
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
 
 //                   setVideoPath(path)//加载本地视频，同样也支持网络视频。如果字符串是网络url，同样可以播放。
 //                   //在视频预处理完成后被调用。
@@ -65,6 +96,8 @@ import org.jetbrains.anko.runOnUiThread
 //                    setVolume()//设置音量
 //                    setLooping(true)//循环播放
 //                    isLooping()//判断是否循环播放
+//                    getName()//获取视频名称(包括文件后缀名)
+//                    getName2()//获取视频名称(不包括文件后缀名)
 
 /**
  * 重写视频播放器；添加播放和暂停的监听；原生的没有。（原生的只有播放完成，播放错误监听。）
@@ -92,6 +125,31 @@ class KVideoView : VideoView {
     //mediaPlayer?.isLooping=false//fixme 是否循环播放
     var mediaPlayer: MediaPlayer? = null//fixme videoView内部封装的就是一个mediaPlayer。
     var path: String? = null//当前的播放视频路径
+
+    /**
+     * 获取视频名称（带后缀名）
+     */
+    fun getName(): String? {
+        path?.trim()?.let {
+            if (it.length>0){
+                return KFileUtils.getInstance().getFileName(it)
+            }
+        }
+        return null
+    }
+
+    /**
+     * 获取视频名称（不带后缀名）
+     */
+    fun getName2(): String? {
+        path?.trim()?.let {
+            if (it.length>0){
+                return KFileUtils.getInstance().getFileName2(it)
+            }
+        }
+        return null
+    }
+
     /**
      * 准备播放，并且画面停留在第一帧。fixme 播放完成之后，画面会停留在最后一帧。
      * @param path 播放资源路径
@@ -105,7 +163,7 @@ class KVideoView : VideoView {
                     return//fixme 防止重复
                 }
                 suspend()//fixme 释放掉之前的视频
-                this.path = path
+                this.path = path//在suspend（）后面赋值，防止被释放掉。
                 /**
                  * fixme 注意，加载完视频之后，videoView控件本身会根据视频宽高比例；自动调节控件本身的宽和高。即与视频的宽高比例保持一致。
                  */
@@ -142,6 +200,7 @@ class KVideoView : VideoView {
                                 }
                             }
                             kMediaController?.updateView()
+                            kMediaController2?.updateView()
                         }
                     }
                 }
@@ -193,6 +252,7 @@ class KVideoView : VideoView {
             }
             reStartOnSeekListener()//防止进度回调死掉
             kMediaController?.updateView()
+            kMediaController2?.updateView()
         }
         isResume = false
     }
@@ -207,6 +267,7 @@ class KVideoView : VideoView {
             it()
         }
         kMediaController?.updateView()
+        kMediaController2?.updateView()
     }
 
     //暂停
@@ -216,6 +277,7 @@ class KVideoView : VideoView {
             it()
         }
         kMediaController?.updateView()
+        kMediaController2?.updateView()
     }
 
     //fixme isPlaying判断是否正在播放;true正在播放；false没有播放
@@ -402,6 +464,13 @@ class KVideoView : VideoView {
         onSeekListener2()
     }
 
+    var kMediaController2: KMediaController2? = null
+
+    fun setMediaController(kMediaController2: KMediaController2) {
+        this.kMediaController2 = kMediaController2
+        onSeekListener2()
+    }
+
     fun onSeekListener(onSeekListener: (() -> Unit)? = null) {
         this.onSeekListener = onSeekListener
         preProcess = -1f;
@@ -432,6 +501,7 @@ class KVideoView : VideoView {
                                     preProcess = process//防止重复回调。
                                     it.runOnUiThread {
                                         kMediaController?.updateView()
+                                        kMediaController2?.updateView()
                                         this@KVideoView.onSeekListener?.let {
                                             it()//进度在主线程中回调。
                                         }
@@ -496,6 +566,7 @@ class KVideoView : VideoView {
             onSeekListener = null
             isProgress = false
             kMediaController = null
+            kMediaController2 = null
             onSeekListener(null)
             suspend()
         } catch (e: Exception) {

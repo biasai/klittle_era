@@ -31,5 +31,14 @@ open class KScreenVideoActivity : KBaseActivity() {
             ui = KScreenVideoUi()
         }
         setContentView(ui?.createView(ctx = this))
+        ui?.video?.prepare(videoPath)
+        ui?.mediaController?.leftTextView_txt?.setText(ui?.video?.getName2())//视频名称
     }
+
+    override fun finish() {
+        super.finish()
+        ui?.mediaController?.onDestroy()
+        ui?.destroy(this)
+    }
+
 }

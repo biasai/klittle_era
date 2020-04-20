@@ -94,6 +94,21 @@ public class KFileUtils {
     }
 
     /**
+     * 根据文件路径，获取文件名（不包括文件后缀）
+     *
+     * @param path
+     * @return
+     */
+    public String getFileName2(String path) {
+        try {
+            return path.substring(path.lastIndexOf("/") + 1, path.lastIndexOf("."));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    /**
      * fixme 根据文件完整路径，获取文件所在目录。
      *
      * @param path

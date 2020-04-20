@@ -153,6 +153,9 @@ open class K1Widget : K0Widget {
     open var w: Int = 0
         //fixme 真实的宽度,现在设置w或lparams里的width都可以。两个同步了。
         get() {
+            if (viewGroup==null){
+                viewGroup=this
+            }
             if (viewGroup != null) {
                 if (field == viewGroup!!.width && viewGroup!!.width > 0) {
                     return field
@@ -174,6 +177,9 @@ open class K1Widget : K0Widget {
     open var h: Int = 0
         //fixme 真实的高度。设置h或height都可以。
         get() {
+            if (viewGroup==null){
+                viewGroup=this
+            }
             if (viewGroup != null) {
                 if (field == viewGroup!!.height && viewGroup!!.height > 0) {
                     return field

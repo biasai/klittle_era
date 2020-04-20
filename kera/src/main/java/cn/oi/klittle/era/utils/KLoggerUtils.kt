@@ -67,22 +67,51 @@ object KLoggerUtils {
         }
     }
 
+    fun e(msg: String, tag: String = TAG, isLogEnable: Boolean) {
+        if (isLOG_ENABLE || isLogEnable) {
+            Log.e(tag, msg)
+        }
+    }
+
     fun e(msg: String) {
         if (isLOG_ENABLE) {
             Log.e(TAG, msg)
         }
     }
 
+    /**
+     * @param isLogEnable 是否打印Log日志；不受isLOG_ENABLE控制。
+     */
+    fun e(msg: String, isLogEnable: Boolean) {
+        if (isLOG_ENABLE || isLogEnable) {
+            Log.e(TAG, msg)
+        }
+    }
+
     fun e_long(msg: String?) {
-        KLoggerUtils.e_long(msg, TAG)
+        KLoggerUtils.e_long(msg, TAG, false)
+    }
+
+    fun e_long(msg: String?, isLogEnable: Boolean) {
+        KLoggerUtils.e_long(msg, TAG, isLogEnable)
     }
 
     /**
      * 分段打印所有日志
      */
-    fun e_long(msg: String?, tag: String = TAG) {
-        if (msg == null || !isLOG_ENABLE) {
+    fun e_long(msg: String?, tag: String = TAG, isLogEnable: Boolean) {
+        if (!isLogEnable) {
+            if (!isLOG_ENABLE) {
+                return
+            }
+        }
+        if (msg == null) {
             return
+        }
+        msg?.trim()?.let {
+            if (it.length <= 0) {
+                return
+            }
         }
         //"\n的前面必须加个空格号换行才有效，不然第一行换行无效。"
         var ln = " \n" +

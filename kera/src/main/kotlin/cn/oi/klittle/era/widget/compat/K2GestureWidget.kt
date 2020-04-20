@@ -204,6 +204,13 @@ open class K2GestureWidget : K2AnimeWidget {
             setOnTouchListener { v, event ->
                 try {
                     gestureDetectorCompat?.onTouchEvent(event)//fixme 添加手势
+                    event?.action?.let {
+                        if (it==MotionEvent.ACTION_UP){
+                            onUp?.let {
+                                it(event)
+                            }
+                        }
+                    }
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -211,6 +218,14 @@ open class K2GestureWidget : K2AnimeWidget {
             }
         }
 
+    }
+
+    //0：fixme 手指离开;这个是自己加的。手指每次离开屏幕的时候，都会调用。
+    private var onUp: ((e: MotionEvent) -> Unit)? = null
+
+    fun onUp(onUp: ((e: MotionEvent) -> Unit)? = null) {
+        this.onUp = onUp
+        enableGesture()//启用手势
     }
 
     //一：手指按下，无论是那个手势，这个方法肯定会执行，而且是最先执行。
@@ -254,6 +269,7 @@ open class K2GestureWidget : K2AnimeWidget {
     }
 
     //六：滑动事件; 向左上角滑动为正数(distanceX和distanceY)
+    //distanceX 手指向左边滑动，大于0；向右边滑动小于0。这个滑动距离是e2和e1两次之间的滑动距离。数值越大表示滑动的越快。
     //一般执行了onScroll(),最后手指离开时都会执行onFling()
     private var onScroll: ((e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float) -> Unit)? = null
 
