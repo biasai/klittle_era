@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.base.KBaseActivity
+import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.base.KBaseUi.Companion.kview
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.helper.KUiHelper
@@ -44,6 +46,9 @@ open class KMediaController2 {
 
     var leftTextView: KTextView? = null//返回键
     var leftTextView_txt: KTextView? = null//返回键旁边的文本
+    var touchPlayProgress: View? = null//手指触摸滑动时，显示进度
+    var proTextView1: KTextView? = null
+    var proTextView2: KTextView? = null
     //播放活暂停
     open fun play() {
         play?.apply {
@@ -128,6 +133,37 @@ open class KMediaController2 {
         videoView?.setMediaController(this)//fixme 绑定
         viewGroup?.context?.apply {
             relativeLayout = relativeLayout {
+                KBaseUi.apply {
+                    //手指触摸滑动时，显示进度。
+                    touchPlayProgress = linearLayout {
+                        proTextView1 = ktextView {
+                            textSize = kpx.textSizeX(36)
+                            textColor = Color.GREEN
+                        }.lparams {
+                            width = wrapContent
+                            height = wrapContent
+                        }
+                        proTextView2 = ktextView {
+                            textSize = kpx.textSizeX(36)
+                            textColor = Color.WHITE
+                        }.lparams {
+                            width = wrapContent
+                            height = wrapContent
+                        }
+                        visibility = View.INVISIBLE
+                    }.lparams {
+                        width = wrapContent
+                        height = wrapContent
+                        centerHorizontally()
+                        topMargin = kpx.screenHeight() / 3
+                        ctx?.let {
+                            if (it is KBaseActivity) {
+                                topMargin = kpx.screenHeight(it.isPortrait()) / 3
+                            }
+                        }
+                    }
+                }
+
                 //顶部，返回键
                 layout_top = linearLayout {
                     id = kpx.id("mediaController_top")
@@ -197,7 +233,7 @@ open class KMediaController2 {
                     centerHorizontally()
                     alignParentTop()
                 }
-                //中间（视频播放区域）
+                //fixme 中间（视频播放区域）;手指触摸事件。
                 relativeLayout {
                     kview {
                         //单击（进度条和返回键 隐藏和显示）
@@ -210,13 +246,28 @@ open class KMediaController2 {
                             videoView?.toggle()
                         }
                         var isOnscroll = false//是否进行了滑动
+                        var scrollTime = 0//快进值
                         //手指按下
                         onDown {
                             isOnscroll = false
+                            videoView?.currentPosition?.let {
+                                scrollTime = it
+                            }
                         }
                         //滑动快进
                         onScroll { e1, e2, distanceX, distanceY ->
                             //KLoggerUtils.e("distanceX:\t" + distanceX)
+                            videoView?.let {
+                                it.duration?.let {
+                                    scrollTime = (scrollTime - (distanceX.toFloat() / width.toFloat() * it)).toInt()
+                                }
+                                if (scrollTime > it.duration) {
+                                    scrollTime = it.duration
+                                }
+                                if (scrollTime < 0) {
+                                    scrollTime = 0
+                                }
+                            }
                             if (distanceX > 0) {
                                 //向左滑，快退
                                 isOnscroll = true
@@ -224,12 +275,23 @@ open class KMediaController2 {
                                 //向右滑，快进
                                 isOnscroll = true
                             }
+                            if (isOnscroll) {
+                                //fixme 显示滑动进度
+                                touchPlayProgress?.visibility = View.VISIBLE
+                                relativeLayout?.backgroundColor = Color.parseColor("#70000000")
+                                proTextView1?.setText(videoView?.getCurrentPositionTimeParse(scrollTime))
+                                proTextView2?.setText("/" + videoView?.getDurationTimeParse())
+                            }
                         }
                         onUp {
                             //KLoggerUtils.e("手指离开")
                             if (isOnscroll) {
-                                //进行了滑动操作
+                                //fixme 进行了滑动操作;跳到指定播放进度。
+                                videoView?.seekTo(scrollTime)
                             }
+                            //fixme 不显示滑动进度。
+                            touchPlayProgress?.visibility = View.INVISIBLE
+                            relativeLayout?.backgroundColor = Color.TRANSPARENT
                             isOnscroll = false
                         }
                     }.lparams {
@@ -340,21 +402,6 @@ open class KMediaController2 {
                             height = wrapContent
                             rightMargin = kpx.x(12)
                         }
-                        //全屏
-//                    screen = kview {
-//                        id = kpx.id("kera_media_screen")
-//                        autoBg {
-//                            width = kpx.x(64) / 2
-//                            height = kpx.x(64) / 2
-//                            autoBg(R.mipmap.kera_media_screen_)
-//                        }
-//                        onClick {
-//                            screen()
-//                        }
-//                    }.lparams {
-//                        width = kpx.x(64)
-//                        height = kpx.x(64)
-//                    }
                     }.lparams {
                         width = wrapContent
                         height = wrapContent
@@ -437,6 +484,7 @@ open class KMediaController2 {
         leftTextView = null
         leftTextView_txt?.onDestroy()
         leftTextView_txt = null
+        touchPlayProgress = null
     }
 
 }

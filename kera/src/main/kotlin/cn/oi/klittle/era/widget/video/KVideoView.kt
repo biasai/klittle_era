@@ -131,7 +131,7 @@ class KVideoView : VideoView {
      */
     fun getName(): String? {
         path?.trim()?.let {
-            if (it.length>0){
+            if (it.length > 0) {
                 return KFileUtils.getInstance().getFileName(it)
             }
         }
@@ -143,7 +143,7 @@ class KVideoView : VideoView {
      */
     fun getName2(): String? {
         path?.trim()?.let {
-            if (it.length>0){
+            if (it.length > 0) {
                 return KFileUtils.getInstance().getFileName2(it)
             }
         }
@@ -402,6 +402,14 @@ class KVideoView : VideoView {
 
     //获取当前的播放时长; 毫秒转分钟格式。如： 00:00
     fun getCurrentPositionTimeParse(): String {
+        //currentPosition当前的播放时长，单位毫秒;fixme currentPosition初始值一般是0
+        return KStringUtils.stringForTime(currentPosition)//转换为时间格式 fixme currentPosition 单位毫秒
+    }
+
+    /**
+     * @param currentPosition 自己传入的时间；转毫秒转分钟格式。如： 00:00
+     */
+    fun getCurrentPositionTimeParse(currentPosition: Int): String {
         //currentPosition当前的播放时长，单位毫秒;fixme currentPosition初始值一般是0
         return KStringUtils.stringForTime(currentPosition)//转换为时间格式 fixme currentPosition 单位毫秒
     }
