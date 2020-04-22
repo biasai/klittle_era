@@ -41,24 +41,37 @@ abstract class KAdapter<VH : RecyclerView.ViewHolder>() : RecyclerView.Adapter<V
                 }
                 vhMap?.put(position.toString(), holder)
             }
-
-//            //fixme 局部变量，不会冲突的。获取item与RecyvlerView顶部之间的距离。
-//            var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
-//            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-//                holder?.itemView?.y//fixme 与父容器RecyvlerView顶部之间的距离。
-//                if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener != null) {
-//                    holder?.itemView?.viewTreeObserver?.removeOnGlobalLayoutListener(
-//                            onGlobalLayoutListener
-//                    )//移除监听
-//                }
-//                onGlobalLayoutListener = null
-//            }
-//            holder?.itemView?.viewTreeObserver?.addOnGlobalLayoutListener(
-//                    onGlobalLayoutListener
-//            )//监听布局加载
-
+            //getItemY(holder) {}
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 获取Item与RecyvlerView顶部之间的距离。(一般在onBindViewHolder()方法里调用。)
+     * @return 回调返回，距离值y
+     */
+    fun getItemY(holder: VH, callback: ((y: Float) -> Unit)? = null) {
+        if (callback != null) {
+            //fixme 局部变量，不会冲突的。获取item与RecyvlerView顶部之间的距离。
+            var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+                var y = holder?.itemView?.y//fixme 与父容器RecyvlerView顶部之间的距离。
+                callback?.let {
+                    if (y != null) {
+                        it(y)
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener != null) {
+                    holder?.itemView?.viewTreeObserver?.removeOnGlobalLayoutListener(
+                            onGlobalLayoutListener
+                    )//移除监听
+                }
+                onGlobalLayoutListener = null
+            }
+            holder?.itemView?.viewTreeObserver?.addOnGlobalLayoutListener(
+                    onGlobalLayoutListener
+            )//监听布局加载
         }
     }
 
