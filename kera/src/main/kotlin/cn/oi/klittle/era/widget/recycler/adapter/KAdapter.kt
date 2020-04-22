@@ -1,5 +1,7 @@
 package cn.oi.klittle.era.widget.recycler.adapter
 
+import android.os.Build
+import android.view.ViewTreeObserver
 import android.view.animation.AnimationUtils
 import androidx.recyclerview.widget.RecyclerView
 import cn.oi.klittle.era.R
@@ -39,6 +41,22 @@ abstract class KAdapter<VH : RecyclerView.ViewHolder>() : RecyclerView.Adapter<V
                 }
                 vhMap?.put(position.toString(), holder)
             }
+
+//            //fixme 局部变量，不会冲突的。获取item与RecyvlerView顶部之间的距离。
+//            var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+//            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+//                holder?.itemView?.y//fixme 与父容器RecyvlerView顶部之间的距离。
+//                if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener != null) {
+//                    holder?.itemView?.viewTreeObserver?.removeOnGlobalLayoutListener(
+//                            onGlobalLayoutListener
+//                    )//移除监听
+//                }
+//                onGlobalLayoutListener = null
+//            }
+//            holder?.itemView?.viewTreeObserver?.addOnGlobalLayoutListener(
+//                    onGlobalLayoutListener
+//            )//监听布局加载
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
