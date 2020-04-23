@@ -38,15 +38,15 @@ class KScreenVideoUi : KBaseUi() {
                             alignParentBottom()
                         }
                     }
-                }.lparams {
-                    width = matchParent
-                    height = matchParent
-                }
-            }
-        }?.view
         return view
     }
 
+}.lparams {
+    width = matchParent
+    height = matchParent
+}
+}
+}?.view
     override fun destroy(activity: Activity?) {
         super.destroy(activity)
         view=null
