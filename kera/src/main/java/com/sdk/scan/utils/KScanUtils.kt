@@ -277,6 +277,7 @@ object KScanUtils {
                 isRegister = true
                 val filter = IntentFilter()
                 filter.addAction(SCAN_ACTION)
+                //fixme getContext()使用Application的上下文；生命周期就是整个应用的生命周期。建议使用Application
                 getContext()?.registerReceiver(mScanReceiver, filter)
             } catch (e: Exception) {
             }
