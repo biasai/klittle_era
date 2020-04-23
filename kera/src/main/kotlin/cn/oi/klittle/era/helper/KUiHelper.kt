@@ -176,12 +176,15 @@ object KUiHelper {
     }
 
     val videoPath_key = "videoPath"
+    var isPortrait_screenVideo: Boolean = false
     /**
      * 跳转到 视频全屏播放界面
      * @param videoPath 视频播放路径（本地和网络都可以）
+     * @param isPortrait 是否竖屏；true  竖屏；false横屏
      */
-    fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), videoPath: String?) {
+    fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), videoPath: String?, isPortrait: Boolean = false) {
         try {
+            isPortrait_screenVideo = isPortrait
             var bundle = Bundle()
             bundle.putString(videoPath_key, videoPath)
             goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)

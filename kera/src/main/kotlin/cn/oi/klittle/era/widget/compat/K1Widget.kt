@@ -8,10 +8,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.media.MediaPlayer
 import android.os.Build
 import android.util.AttributeSet
-import android.view.Gravity
-import android.view.MotionEvent
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseApplication
@@ -25,6 +21,7 @@ import org.jetbrains.anko.*
 import java.lang.Exception
 import android.graphics.Paint.FILTER_BITMAP_FLAG
 import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.view.*
 import cn.oi.klittle.era.entity.camera.KCamera
 import cn.oi.klittle.era.exception.KCatchException
 import kotlinx.coroutines.GlobalScope
@@ -153,8 +150,8 @@ open class K1Widget : K0Widget {
     open var w: Int = 0
         //fixme 真实的宽度,现在设置w或lparams里的width都可以。两个同步了。
         get() {
-            if (viewGroup==null){
-                viewGroup=this
+            if (viewGroup == null) {
+                viewGroup = this
             }
             if (viewGroup != null) {
                 if (field == viewGroup!!.width && viewGroup!!.width > 0) {
@@ -177,8 +174,8 @@ open class K1Widget : K0Widget {
     open var h: Int = 0
         //fixme 真实的高度。设置h或height都可以。
         get() {
-            if (viewGroup==null){
-                viewGroup=this
+            if (viewGroup == null) {
+                viewGroup = this
             }
             if (viewGroup != null) {
                 if (field == viewGroup!!.height && viewGroup!!.height > 0) {
@@ -1027,14 +1024,17 @@ open class K1Widget : K0Widget {
 
     //记录布局加载完成的时间。防止短时间内重复调用。
     private var onGlobalLayoutFinishTime = 0L
-
+    private var onGlobalLayoutListeneres: ArrayList<ViewTreeObserver.OnGlobalLayoutListener>? = null
     /**
      * fixme 控件加载完成的时候调用（已经具备固定的宽和高）
      * @param callback 回调返回x，y坐标(相对父容器)及宽和高
      */
     fun addOnGlobalLayoutListener(callback: ((x: Float, y: Float, width: Int, height: Int) -> Unit)? = null) {
         if (callback != null) {
-            viewTreeObserver?.addOnGlobalLayoutListener {
+            if (onGlobalLayoutListeneres == null) {
+                onGlobalLayoutListeneres = arrayListOf()
+            }
+            var listener = ViewTreeObserver.OnGlobalLayoutListener {
                 var w = width
                 var h = height
                 if (layoutParams != null) {
@@ -1054,6 +1054,8 @@ open class K1Widget : K0Widget {
                     }
                 }
             }
+            viewTreeObserver?.addOnGlobalLayoutListener(listener)
+            onGlobalLayoutListeneres?.add(listener)
         }
     }
 
@@ -1077,6 +1079,7 @@ open class K1Widget : K0Widget {
      */
 
     private var intArray = intArrayOf(0, 1)
+
     //fixme 获取在整个屏幕的Y绝对坐标。
     fun getLocationOnScreenY(): Int {
         getLocationOnScreen(intArray)
@@ -1114,11 +1117,18 @@ open class K1Widget : K0Widget {
                 //removeTextChangedListener(textWatcher)
                 //setText(null)
 
-                if (onGlobalLayoutListener != null && Build.VERSION.SDK_INT >= 16) {
-                    viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+                //fixme 移除布局监听
+                if (Build.VERSION.SDK_INT >= 16) {
+                    if (onGlobalLayoutListener != null) {
+                        viewTreeObserver?.removeOnGlobalLayoutListener(onGlobalLayoutListener)
+                    }
+                    onGlobalLayoutListeneres?.forEach {
+                        viewTreeObserver?.removeOnGlobalLayoutListener(it)
+                    }
                 }
                 onGlobalLayoutListener = null
-
+                onGlobalLayoutListeneres?.clear()
+                onGlobalLayoutListeneres = null
                 clearAnimation()
                 clearFocus()
                 clearFindViewByIdCache()

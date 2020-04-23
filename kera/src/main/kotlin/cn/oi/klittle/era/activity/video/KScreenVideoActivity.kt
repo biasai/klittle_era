@@ -13,11 +13,12 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 open class KScreenVideoActivity : KBaseActivity() {
 
     override fun isOrientation(): Boolean {
-        return false
+        return true
     }
 
     override fun isPortrait(): Boolean {
-        return false//true竖屏，false横屏
+        //return false//true竖屏，false横屏
+        return KUiHelper.isPortrait_screenVideo
     }
 
     var videoPath: String? = null//视频播放地址

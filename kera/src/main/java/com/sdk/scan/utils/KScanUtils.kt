@@ -17,7 +17,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 /**
- * 扫描工具类;引用jar包scanSDK.jar;fixme 针对旧版PDA，品牌alps，型号Alps PL-40L有效。
+ * 扫描工具类;引用jar包scanSDK.jar;fixme 针对旧版PDA，品牌alps，型号Alps PL-40L有效。依赖 scanSDK.jar
  * Created by 彭治铭 on 2019/3/12
  */
 object KScanUtils {
@@ -277,6 +277,7 @@ object KScanUtils {
                 isRegister = true
                 val filter = IntentFilter()
                 filter.addAction(SCAN_ACTION)
+                //fixme getContext()使用Application的上下文；生命周期就是整个应用的生命周期。建议使用Application
                 getContext()?.registerReceiver(mScanReceiver, filter)
             } catch (e: Exception) {
             }
@@ -287,7 +288,7 @@ object KScanUtils {
      * 取消广播注册
      */
     fun unregisterReceiver() {
-        if (isRegister) {
+        if (isRegister&&mScanReceiver!=null) {
             try {
                 getContext()?.unregisterReceiver(mScanReceiver)
                 isRegister = false

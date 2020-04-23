@@ -77,7 +77,13 @@ open class KMediaController {
             it.context?.let {
                 if (it is Activity) {
                     if (!it.isFinishing) {
-                        KUiHelper.goScreenVideoActivity(it, videoView?.path)
+                        var isPortrait=false//横屏
+                        videoView?.let {
+                            if (it.height>it.width){
+                                isPortrait=true//fixme 如果视频高度大于宽度，设置为竖屏。(根据宽高比，自动选择横屏，竖屏。)
+                            }
+                        }
+                        KUiHelper.goScreenVideoActivity(it, videoView?.path,isPortrait)
                     }
                 }
             }

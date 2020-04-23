@@ -188,10 +188,11 @@ dependencies {
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
     //fixme 以下是扫描库
-    api files('libs/scanSDK.jar')//pda扫描库
+    api files('libs/scanSDK.jar')//pda扫描库；旧版
     //fixme PDA RFID读卡器(ID卡)；新版PDA,型号Alps PDA；包含了jniLibs里的libnative-lib.so和libserial_port.so
-    api files('libs/iodev2.jar')//pda读卡器
-    api files('libs/serialport.jar')//pda读卡器
+    api files('libs/iodev2.jar')//pda读卡器；新版
+    api files('libs/serialport.jar')//pda读卡器；新版
+    api files('libs/scansV1.2_20101119.jar')//pda读卡器；新版 DoubleBird
     //api 'com.google.zxing:android-core:3.3.0'//这个不需要引用（最好不要引用，以防未知的错误）,引用下面其中一个就可以了。
     //api 'com.google.zxing:core:3.3.2'
     api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；

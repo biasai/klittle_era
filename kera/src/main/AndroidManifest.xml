@@ -45,7 +45,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 可修改系统设置权限 -->
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" /> <!-- 实现拦截广播 -->
+    <!--<uses-permission android:name="android.permission.WRITE_SETTINGS" /> &lt;!&ndash; 实现拦截广播 &ndash;&gt;-->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- USB权限 -->
     <uses-permission android:name="android.hardware.usb.accessory" />
     <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 获取当前栈顶的Activity -->
@@ -85,10 +85,10 @@
             android:launchMode="singleTop"
             android:theme="@style/KTheme_Activity_hasStatus" />
         <!--视频全屏播放-->
+        <!--android:screenOrientation="landscape"-->
         <activity
             android:name=".activity.video.KScreenVideoActivity"
             android:launchMode="singleTop"
-            android:screenOrientation="landscape"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/KTheme_Activity_full" />
         <!-- android:configChanges="orientation|keyboardHidden|screenSize"-->
