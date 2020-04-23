@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.widget.LinearLayout
+import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.widget.video.KMediaController2
@@ -28,7 +29,20 @@ class KScreenVideoUi : KBaseUi() {
                     }.lparams {
                         width = wrapContent
                         height = wrapContent
-                        centerInParent()
+                        ctx?.let {
+                            if (it is KBaseActivity){
+                                if (it.isPortrait()){
+                                    //竖屏（以屏幕宽为标准，即以短边为标准，另一边自适应）
+                                    width = matchParent
+                                    height = wrapContent
+                                }else{
+                                    //横屏（以屏幕高为标准，fixme 即以短边为标准，另一边自适应）
+                                    width = wrapContent
+                                    height = matchParent
+                                }
+                            }
+                        }
+                        centerInParent()//居中
                     }
                     mediaController=KMediaController2(this, video)
                     mediaController?.let {

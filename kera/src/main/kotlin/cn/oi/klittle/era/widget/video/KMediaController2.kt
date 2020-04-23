@@ -163,9 +163,16 @@ open class KMediaController2 {
                         }
                     }
                 }
-
                 //顶部，返回键
                 layout_top = linearLayout {
+                    ctx?.let {
+                        if (it is KBaseActivity){
+                            if (it.isPortrait()){
+                                //竖屏
+                                topPadding=kpx.statusHeight/3*2
+                            }
+                        }
+                    }
                     id = kpx.id("mediaController_top")
                     gravity = Gravity.CENTER_VERTICAL
                     //返回键

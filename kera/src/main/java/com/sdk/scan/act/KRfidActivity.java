@@ -21,11 +21,22 @@ import cn.oi.klittle.era.utils.KLoggerUtils;
 public class KRfidActivity extends KNfcActivity {
 
     /**
-     * fixme 判断是否位新版Alps PDA
+     * fixme 判断是否位新版Alps PDA；依赖iodev2.jar；serialport.jar
      */
     public Boolean isNewPdA_Alpas() {
         String name = KAppUtils.getDeviceName();
         if (name != null && name.equals("Alps PDA")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * fixme 判断是否位新版: DoubleBird N60；依赖 scansV1.2_20101119.jar
+     */
+    public Boolean isNewPdA_DoubleBird() {
+        String name = KAppUtils.getDeviceBrand();
+        if (name != null && name.equals("DoubleBird")) {
             return true;
         }
         return false;
