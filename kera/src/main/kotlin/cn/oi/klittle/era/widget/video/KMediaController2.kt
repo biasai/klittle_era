@@ -174,7 +174,6 @@ open class KMediaController2 {
                         }
                     }
                     id = kpx.id("mediaController_top")
-                    gravity = Gravity.CENTER_VERTICAL
                     //返回键
                     leftTextView = KTextView(this).apply {
                         id = kpx.id("mediaController_back")
@@ -187,9 +186,11 @@ open class KMediaController2 {
                             height = kpx.x(41)
                             autoBg(R.mipmap.kera_top_back_white)
                             autoBgColor = Color.WHITE
-                            isAutoCenterVertical = true
+                            isAutoCenterVertical = false
                             isAutoCenterHorizontal = false
+                            isAutoCenter=false
                             autoLeftPadding = kpx.x(24f)
+                            autoTopPadding=kpx.x(24f)
                         }
                         leftPadding = kpx.x(30)
                         isClickable = true
@@ -206,9 +207,8 @@ open class KMediaController2 {
                             }
                         }
                     }.lparams {
-                        width = kpx.y(50)
-                        height = kpx.y(50)
-                        topMargin = kpx.x(12)
+                        width = kpx.x(65)
+                        height = kpx.x(65)
                     }
                     leftTextView_txt = KTextView(this).apply {
                         id = kpx.id("mediaController_back_txt")
@@ -231,8 +231,7 @@ open class KMediaController2 {
                     }.lparams {
                         width = wrapContent
                         height = wrapContent
-                        topMargin = kpx.x(12)
-                        leftMargin = kpx.x(12)
+                        topMargin=kpx.x(15)
                     }
                 }.lparams {
                     width = matchParent
@@ -304,6 +303,8 @@ open class KMediaController2 {
                     }.lparams {
                         width = matchParent
                         height = matchParent
+                        topMargin=kpx.x(100)
+                        bottomMargin=topMargin
                     }
                 }.lparams {
                     width = matchParent

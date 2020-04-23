@@ -64,7 +64,9 @@ class KScreenVideoUi : KBaseUi() {
     override fun destroy(activity: Activity?) {
         super.destroy(activity)
         view=null
+        video?.onDestory()
         video=null
+        mediaController?.onDestroy()
         mediaController=null
     }
 }
