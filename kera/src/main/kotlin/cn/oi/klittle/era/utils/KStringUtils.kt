@@ -351,9 +351,16 @@ object KStringUtils {
      * s1 小数点前面的数，s2小数点后面的数
      */
     fun removeZero(s1: String, s2: String): String {
-        for (i in s2.length downTo 1) {
-            if (s2.substring(i - 1, i) != "0") {
-                return s1 + "." + s2.substring(0, i)
+//        for (i in s2.length downTo 1) {
+//            if (s2.substring(i - 1, i) != "0") {
+//                return s1 + "." + s2.substring(0, i)
+//            }
+//        }
+//        return s1
+        var s22= removeZero(s2)
+        s22?.trim()?.let {
+            if (it.length>0){
+                return s1 + "." +it
             }
         }
         return s1
