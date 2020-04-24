@@ -360,14 +360,32 @@ object KStringUtils {
     }
 
     /**
-     * 去除末尾的0 （包括末尾相连的0）。如：10 ->1 ; 100->1
-     * s2 一般为小数点后面的数
+     * fixme 去除末尾的0 （包括末尾相连的0）。如：10 ->1 ; 100->1；000->""空;
+     * s2 一般为小数点后面的数；不包含小数点哦。是小数点后面的字符。
      */
-    fun removeZero(s2: String): String {
-        for (i in s2.length downTo 1) {
-            if (s2.substring(i - 1, i) != "0") {
-                return s2.substring(0, i)
+    fun removeZero(s2: String?): String {
+        if (s2 == null) {
+            return ""
+        }
+        try {
+            for (i in s2.length downTo 1) {
+                if (s2.substring(i - 1, i) != "0") {
+                    return s2.substring(0, i)
+                }
             }
+            s2?.let {
+                if (it.length > 0) {
+                    var length = it.length - 1
+                    //KLoggerUtils.e("第一个:\t"+s2.substring(0, 1)+"最后一个\t"+s2.substring(length, length+1)+"\tlength：\t"+length+"\ts2:\t"+s2)
+                    //substring(0，1)包含参数一所在位置；不包含参数二。即包含下标0的字符，不包含下标1的字符。fixme 即不包含参数二所在的位置。
+                    //fixme 防止 1.00 ；2.000；后面全是0的无法去除。
+                    if (s2.substring(0, 1) == "0" && s2.substring(length, length+1) == "0") {
+                        return ""
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return s2
     }
