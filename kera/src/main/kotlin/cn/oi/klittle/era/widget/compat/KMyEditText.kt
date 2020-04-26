@@ -57,6 +57,7 @@ import kotlinx.coroutines.Deferred
 //                }
 
 //fixme 亲测在控件初始化时，调用requestFocus()获取焦点的时候，软键盘不会弹出。亲测，Activity和Dialoc初始化时获取焦点，软键盘不会弹出。
+//fixme 初始化时，软键盘不会弹出。showSoftInput()无法弹出软键盘(还没初始化完成)；调用showSoftInput2()可以弹出软键盘。
 //fixme 只有初始完成时，调用requestFocus()；软键盘才会弹出；手指点击输入框，软键盘也会弹出。
 
 open class KMyEditText : KTextView {
