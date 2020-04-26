@@ -77,6 +77,7 @@ open class KMyEditText : KTextView {
         initUi()
     }
 
+    private var mOnGlobalLayoutListener_foucse: ViewTreeObserver.OnGlobalLayoutListener? = null
     /**
      * fixme 输入框，聚焦；不弹出软键盘(隐藏软键盘)。亲测有效（Activity初始化的时候都有效）。
      * fixme 隐藏软键盘，主要是解决 setSoftInputMode_adjustResize_hidden（）模式。
@@ -88,21 +89,33 @@ open class KMyEditText : KTextView {
         try {
             requestFocus()//聚焦
             hideSoftKeyboard()//隐藏软键盘
+            //KLoggerUtils.e("width:\t" + width + "\theight:\t" + height)
+            if (Build.VERSION.SDK_INT >= 16 && mOnGlobalLayoutListener_foucse != null) {
+                viewTreeObserver?.removeOnGlobalLayoutListener(
+                        mOnGlobalLayoutListener_foucse
+                )//移除监听
+            }
+            mOnGlobalLayoutListener_foucse=null
+            if (width > 0 || height > 0) {
+                //宽和高有值，表示布局已经加载完成。
+                hideSoftKeyboard2(context, this)//fixme 以防万一
+                return
+            }
+            //fixme 以下是布局还未加载完成；监听完布局，再隐藏软键盘
             //局部变量，不会冲突的。
-            var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
-            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
-                if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener != null) {
+            mOnGlobalLayoutListener_foucse = ViewTreeObserver.OnGlobalLayoutListener {
+                if (Build.VERSION.SDK_INT >= 16 && mOnGlobalLayoutListener_foucse != null) {
                     viewTreeObserver?.removeOnGlobalLayoutListener(
-                            onGlobalLayoutListener
+                            mOnGlobalLayoutListener_foucse
                     )//移除监听
                 }
-                onGlobalLayoutListener = null
+                mOnGlobalLayoutListener_foucse = null
                 hideSoftKeyboard()//fixme 隐藏软键盘(防止不隐藏)
                 hideSoftKeyboard2(context, this)//fixme 以防万一（在这里调用，基本上百分百有效。）
                 //KLoggerUtils.e("加载完成")
             }
             viewTreeObserver?.addOnGlobalLayoutListener(
-                    onGlobalLayoutListener
+                    mOnGlobalLayoutListener_foucse
             )//监听布局加载
         } catch (e: Exception) {
             e.printStackTrace()
@@ -522,5 +535,11 @@ open class KMyEditText : KTextView {
     override fun onDestroy() {
         super.onDestroy()
         textWatcher = null
+        if (Build.VERSION.SDK_INT >= 16 && mOnGlobalLayoutListener_foucse != null) {
+            viewTreeObserver?.removeOnGlobalLayoutListener(
+                    mOnGlobalLayoutListener_foucse
+            )//移除监听
+        }
+        mOnGlobalLayoutListener_foucse = null
     }
 }
