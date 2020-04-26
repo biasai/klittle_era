@@ -15,10 +15,7 @@ import android.text.method.MovementMethod
 import android.text.method.PasswordTransformationMethod
 import android.util.AttributeSet
 import android.util.Log
-import android.view.View
-import android.view.ViewGroup
-import android.view.Window
-import android.view.WindowManager
+import android.view.*
 import android.view.accessibility.AccessibilityNodeInfo
 import android.widget.TextView
 
@@ -58,10 +55,13 @@ import kotlinx.coroutines.Deferred
 
 //fixme 亲测在控件初始化时，调用requestFocus()获取焦点的时候，软键盘不会弹出。亲测，Activity和Dialoc初始化时获取焦点，软键盘不会弹出。
 //fixme 初始化时，软键盘不会弹出。showSoftInput()无法弹出软键盘(还没初始化完成)；调用showSoftInput2()可以弹出软键盘。
-//fixme setSoftInputMode_adjustpan_hidden()默认就是这个模式； 初始化未完成，调用requestFocus（）聚焦，软键盘不会弹出来。
+//fixme setSoftInputMode_adjustpan_hidden()默认就是这个模式； 初始化未完成(初始化的时候)，调用requestFocus（）聚焦，软键盘不会弹出来。
 //fixme setSoftInputMode_adjustResize_hidden()；调用requestFocus（）聚焦软键盘会弹出来，不管是否初始化完成，软键盘都会弹出来。
 
 //fixme 只有初始完成时，调用requestFocus()；软键盘才会弹出；手指点击输入框，软键盘也会弹出。
+
+//requestFocus() 聚焦；clearFocus() 失去焦点。requestFocus_hidden（）聚焦不弹出软键盘。
+//KBaseDialog和KBaseActivity还有 setRequestFocus（）共用的聚焦方法。
 
 open class KMyEditText : KTextView {
 
@@ -75,6 +75,39 @@ open class KMyEditText : KTextView {
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
         initUi()
+    }
+
+    /**
+     * fixme 输入框，聚焦；不弹出软键盘(隐藏软键盘)。亲测有效（Activity初始化的时候都有效）。
+     * fixme 隐藏软键盘，主要是解决 setSoftInputMode_adjustResize_hidden（）模式。
+     */
+    fun requestFocus_hidden() {
+        if (isOnDestroy) {
+            return
+        }
+        try {
+            requestFocus()//聚焦
+            hideSoftKeyboard()//隐藏软键盘
+            //局部变量，不会冲突的。
+            var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+            onGlobalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+                if (Build.VERSION.SDK_INT >= 16 && onGlobalLayoutListener != null) {
+                    viewTreeObserver?.removeOnGlobalLayoutListener(
+                            onGlobalLayoutListener
+                    )//移除监听
+                }
+                onGlobalLayoutListener = null
+                hideSoftKeyboard()//fixme 隐藏软键盘(防止不隐藏)
+                hideSoftKeyboard2(context, this)//fixme 以防万一（在这里调用，基本上百分百有效。）
+                //KLoggerUtils.e("加载完成")
+            }
+            viewTreeObserver?.addOnGlobalLayoutListener(
+                    onGlobalLayoutListener
+            )//监听布局加载
+        } catch (e: Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("KMyEditText聚焦，隐藏软键盘异常：\t" + e.message)
+        }
     }
 
     companion object {
@@ -141,13 +174,14 @@ open class KMyEditText : KTextView {
                     context?.runOnUiThread {
                         if (context != null && context is Activity && !context.isFinishing) {
                             try {
+                                var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                                // (context as Activity).getCurrentFocus()?.getWindowToken() Dialog可能会为空。
                                 (context as Activity).getCurrentFocus()?.getWindowToken()?.let {
-                                    var inputManager: InputMethodManager? = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                                     inputManager?.hideSoftInputFromWindow(it, InputMethodManager.RESULT_UNCHANGED_SHOWN); //强制隐藏键盘
-                                    view?.windowToken?.let {
-                                        //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
-                                        inputManager?.hideSoftInputFromWindow(it, InputMethodManager.RESULT_UNCHANGED_SHOWN)
-                                    }
+                                }
+                                view?.windowToken?.let {
+                                    //fixme 这个能解决Dialog弹窗上面，软键盘不消失的问题。亲测。
+                                    inputManager?.hideSoftInputFromWindow(it, InputMethodManager.RESULT_UNCHANGED_SHOWN)
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -168,15 +202,13 @@ open class KMyEditText : KTextView {
         fun hideSoftKeyboard2(context: Context?, view: View? = null) {
             //fixme 基本上都能关闭软键盘，极少数异常下可能会失败，忽略不计。
             if (context != null && context is Activity && !context.isFinishing) {
-                (context as Activity)?.getCurrentFocus()?.getWindowToken()?.let {
-                    GlobalScope.async {
-                        try {
-                            hideSoftKeyboard(context, view)
-                            delay(60)//fixme 防止无效果，至少需要间隔9毫秒才有效。
-                            hideSoftKeyboard(context, view)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
+                GlobalScope.async {
+                    try {
+                        hideSoftKeyboard(context, view)
+                        delay(60)//fixme 防止无效果，至少需要间隔9毫秒才有效。
+                        hideSoftKeyboard(context, view)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
                 }
             }

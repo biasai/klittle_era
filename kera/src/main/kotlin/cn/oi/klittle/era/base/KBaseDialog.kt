@@ -46,6 +46,8 @@ import kotlinx.coroutines.delay
 //                        //coverColor=Color.parseColor("#888080FF")//要蒙上的颜色;fixme 注意要带上透明度哦。
 //                    }
 
+//fixme setRequestFocus()聚焦；一般由父容器调用。
+
 /**
  * @author 彭治铭
  */
