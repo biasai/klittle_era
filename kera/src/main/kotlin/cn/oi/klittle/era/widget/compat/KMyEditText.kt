@@ -56,6 +56,9 @@ import kotlinx.coroutines.Deferred
 //                    height = kpx.x(14)//测试发现，高度必须大于等于kpx.x(14)才有效。宽度无所谓
 //                }
 
+//fixme 亲测在控件初始化时，调用requestFocus()获取焦点的时候，软键盘不会弹出。亲测，Activity和Dialoc初始化时获取焦点，软键盘不会弹出。
+//fixme 只有初始完成时，调用requestFocus()；软键盘才会弹出；手指点击输入框，软键盘也会弹出。
+
 open class KMyEditText : KTextView {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
