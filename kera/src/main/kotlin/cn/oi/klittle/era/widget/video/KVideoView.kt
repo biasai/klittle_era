@@ -310,8 +310,10 @@ class KVideoView : VideoView {
      * 跳转道指定进度
      * @param process 进度(0~1f)
      */
-    fun seekTo(process: Float) {
-        seekTo((duration * process).toInt())
+    fun seekTo(process: Float?) {
+        if (process!=null) {
+            seekTo((duration * process).toInt())
+        }
     }
 
     private var onCompletionListener: (() -> Unit)? = null
