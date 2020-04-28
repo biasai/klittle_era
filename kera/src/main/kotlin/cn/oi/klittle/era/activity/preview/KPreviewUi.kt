@@ -2,6 +2,7 @@ package cn.oi.klittle.era.activity.preview
 
 import android.content.Context
 import android.graphics.Color
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import androidx.viewpager.widget.ViewPager
@@ -142,6 +143,9 @@ open class KPreviewUi : KBaseUi() {
                 relativeLayout {
                     viewPager = kviewPager {
                         id = kpx.id("kviewPager")
+                        if (Build.VERSION.SDK_INT>=21){
+                            transitionName = "share_kitem_img"
+                        }
                         isScrollEnable = true
                         isFastScrollEnable = false
                         if (previewAdapter == null) {

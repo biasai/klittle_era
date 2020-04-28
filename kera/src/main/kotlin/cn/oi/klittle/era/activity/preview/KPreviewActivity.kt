@@ -9,6 +9,7 @@ import cn.oi.klittle.era.utils.KAssetsUtils
 
 /**
  * fixme 图片预览;在KPictureSelector.openExternalPreview()方法里调用了
+ * fixme 共享元素名称； transitionName = "share_kitem_img"；在viewPager上。
  */
 open class KPreviewActivity : KBaseActivity() {
 

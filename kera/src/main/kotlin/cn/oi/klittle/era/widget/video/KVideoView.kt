@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
+import android.os.Build
 import android.util.AttributeSet
 import android.view.ViewGroup
 import android.widget.VideoView
@@ -120,6 +121,9 @@ class KVideoView : VideoView {
     fun initUi() {
         //fixme 播放完毕回调(isPlaying会自动变成false)，返回MediaPlayer对象
         //setOnCompletionListener {}
+        if (Build.VERSION.SDK_INT>=21){
+            transitionName="shared_kVideoView_"//fixme 默认设置一个共享元素名称；方便共享元素动画。
+        }
     }
 
     //mediaPlayer?.isLooping=false//fixme 是否循环播放

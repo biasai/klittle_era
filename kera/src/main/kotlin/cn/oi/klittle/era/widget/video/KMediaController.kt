@@ -85,7 +85,7 @@ open class KMediaController {
                             }
                             process_msec=it.currentPosition
                         }
-                        KUiHelper.goScreenVideoActivity(it, videoView?.path,process_msec,isPortrait)
+                        KUiHelper.goScreenVideoActivity(it,videoView, videoView?.path,process_msec,isPortrait)
                     }
                 }
             }

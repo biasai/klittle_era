@@ -1,6 +1,7 @@
 package cn.oi.klittle.era.activity.photo.adapter
 
 import android.graphics.Color
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -61,6 +62,9 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                         //图片
                         KTextView(this).apply {
                             id = kpx.id("item_img")
+                            if (Build.VERSION.SDK_INT >= 21) {
+                                transitionName = "share_kitem_img"
+                            }
                             autoBg {
                                 width = spanWidth
                                 height = width
@@ -109,7 +113,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                             }
                             txt_selected {
                                 textColor = Color.WHITE
-                                textSize = kpx.textSizeX(26f,false)
+                                textSize = kpx.textSizeX(26f, false)
                             }
                             gravity = Gravity.CENTER
                         }.lparams {
@@ -123,7 +127,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                             id = kpx.id("item_right_bottom")
                             text = "GIF"
                             textColor = Color.WHITE
-                            textSize = kpx.textSizeX(32,false)
+                            textSize = kpx.textSizeX(32, false)
                             //backgroundColor = Color.parseColor("#60000000")//不要背景色，感觉添加了背景不好看。
                             gravity = Gravity.CENTER
                             leftPadding = kpx.x(8)
@@ -159,7 +163,7 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                                 bottomPadding = autoTopPadding.toInt()
                             }
                             textColor = Color.WHITE
-                            textSize = kpx.textSizeX(28,false)
+                            textSize = kpx.textSizeX(28, false)
                             text = KBaseUi.getString(R.string.kcamera)//拍摄
                             gravity = Gravity.CENTER_HORIZONTAL or Gravity.BOTTOM
                         }.lparams {
@@ -268,8 +272,13 @@ open class KPhotoAdapter(var datas: MutableList<KLocalMedia>? = null) : KAdapter
                 }
                 onClick {
                     isRecyclerBitmap = false//不释放位图
-                    //图片预览
-                    KPictureSelector.openExternalPreview(index = index, meidas = datas, isCheckable = true)
+                    if (data.isVideo() || data.isAudio()) {
+                        //视频预览；适配器里视频不使用共享元素动画，原因是因为效果非常不好。
+                        KPictureSelector.openExternalPreview(index = index, meidas = datas, isCheckable = true)
+                    } else {
+                        //图片预览
+                        KPictureSelector.openExternalPreview(sharedElement = holder.item_img, index = index, meidas = datas, isCheckable = true)
+                    }
                     GlobalScope.async {
                         delay(500)
                         isRecyclerBitmap = true//恢复释放位图

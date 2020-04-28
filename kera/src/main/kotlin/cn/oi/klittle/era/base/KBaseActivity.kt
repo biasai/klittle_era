@@ -740,6 +740,29 @@ open class KBaseActivity : AppCompatActivity() {
         KUiHelper.goActivityForResult(intent, act, requestCode)
     }
 
+//    if (Build.VERSION.SDK_INT>=21) {
+//        transitionName = "sharedView"//fixme 共享元素名称；第一个Activity的View可以不写；第二个Activity的View必须写(最好还是写上)，不然没有效果。
+//    }
+    /**
+     * fixme 5.0；api 21;共享元素；过渡动画。
+     * @param sharedElement 第一个Activity的共享元素控件;必须设置 transitionName 元素名称。
+     */
+    fun goActivity(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity()) {
+        KUiHelper.goActivity(clazz, sharedElement, nowActivity)
+    }
+
+    fun goActivity(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity()) {
+        KUiHelper.goActivity(intent, sharedElement, nowActivity)
+    }
+
+    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=KUiHelper.requestCode) {
+        KUiHelper.goActivityForResult(clazz,sharedElement,nowActivity,requestCode)
+    }
+
+    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=KUiHelper.requestCode) {
+        KUiHelper.goActivityForResult(intent,sharedElement,nowActivity,requestCode)
+    }
+
     private var kTimi: KTimiAlertDialog? = null
     /**
      * 显示弹窗信息

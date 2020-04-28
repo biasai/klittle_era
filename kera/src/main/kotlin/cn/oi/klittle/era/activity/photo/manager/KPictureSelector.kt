@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Environment
 import android.text.TextUtils
 import android.transition.Fade
+import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.KPhotoActivity
 import cn.oi.klittle.era.activity.photo.config.PictureConfig
@@ -279,27 +280,43 @@ object KPictureSelector {
     var isCheckable: Boolean = false//图片预览是否具备图片选中能力
     var requestCode_preview = 203
     var resultCode_preview = 204
+
+    fun openExternalPreview(activity: Activity? = KBaseUi.getActivity(), index: Int = 0, meidas: MutableList<KLocalMedia>? = getCheckedFolder(), isCheckable: Boolean = false) {
+        openExternalPreview(activity = activity, sharedElement = null, index = index, meidas = meidas, isCheckable = isCheckable)
+    }
+
     /**
      * fixme 图片预览
+     * @param sharedElement 共享元素;fixme 不为空会进行共享元素动画跳转；预览里面：共享元素名称； transitionName = "share_kitem_img"；在viewPager上。
      * @param index 当前所在图片下标
      * @param meidas 所有图片集合
      * @param isCheckable 图片是否具备选择能力，true,图片右上角会有选中框。false则没有。
      */
-    fun openExternalPreview(activity: Activity? = KBaseUi.getActivity(), index: Int = 0, meidas: MutableList<KLocalMedia>? = getCheckedFolder(), isCheckable: Boolean = false) {
+    fun openExternalPreview(activity: Activity? = KBaseUi.getActivity(), sharedElement: View?, index: Int = 0, meidas: MutableList<KLocalMedia>? = getCheckedFolder(), isCheckable: Boolean = false) {
         meidas?.let {
             if (it.size > 0) {
                 previewIndex = index
                 previewMeidas = meidas
                 KPictureSelector.isCheckable = isCheckable
-                KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
-                activity?.apply {
-                    overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                if (Build.VERSION.SDK_INT >= 21 && sharedElement != null && sharedElement.transitionName != null) {
+                    //fixme 共享元素动画跳转
+                    KUiHelper.goActivityForResult(KPreviewActivity::class.java, sharedElement, activity, requestCode = requestCode_preview)
+                } else {
+                    //普通正常跳转
+                    KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
+                    activity?.apply {
+                        overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                    }
                 }
             }
         }
     }
 
     fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), index: Int = 0, meidas: MutableList<File>?, isCheckable: Boolean = false) {
+        openExternalPreview2(activity = activity, sharedElement = null, index = index, meidas = meidas, isCheckable = isCheckable)
+    }
+
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), sharedElement: View?, index: Int = 0, meidas: MutableList<File>?, isCheckable: Boolean = false) {
         meidas?.let {
             if (it.size > 0) {
                 var meidas2 = mutableListOf<KLocalMedia>()
@@ -315,20 +332,30 @@ object KPictureSelector {
                 previewIndex = index
                 previewMeidas = meidas2
                 KPictureSelector.isCheckable = isCheckable
-                KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
-                activity?.apply {
-                    overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                if (Build.VERSION.SDK_INT >= 21 && sharedElement != null && sharedElement.transitionName != null) {
+                    //fixme 共享元素动画跳转
+                    KUiHelper.goActivityForResult(KPreviewActivity::class.java, sharedElement, activity, requestCode = requestCode_preview)
+                } else {
+                    //普通正常跳转
+                    KUiHelper.goActivityForResult(KPreviewActivity::class.java, activity, requestCode = requestCode_preview)
+                    activity?.apply {
+                        overridePendingTransition(R.anim.kera_from_small_to_large_a5, 0)
+                    }
                 }
             }
         }
     }
 
-    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), file: File?) {
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), sharedElement: View?, file: File?) {
         if (file != null) {
             var meidas = mutableListOf<File>()
             meidas.add(file)
-            openExternalPreview2(activity, 0, meidas, false)
+            openExternalPreview2(activity=activity, sharedElement=sharedElement,index = 0, meidas=meidas, isCheckable=false)
         }
+    }
+
+    fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), file: File?) {
+        openExternalPreview2(activity=activity,sharedElement = null,file = file)
     }
 
     /**

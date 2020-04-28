@@ -6,12 +6,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
 import cn.oi.klittle.era.activity.video.KScreenVideoActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import com.sdk.Qr_code.act.KCaptureActivity
 import com.sdk.Qr_code.utils.KZxingUtils
@@ -84,7 +86,8 @@ object KUiHelper {
                 nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
+            KLoggerUtils.e("goActivity()跳转异常：\t" + e.message)
         }
     }
 
@@ -139,7 +142,8 @@ object KUiHelper {
                 nowActivity?.overridePendingTransition(R.anim.kera_slide_in_right, R.anim.kera_slide_out_left)
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
+            KLoggerUtils.e("startActivityForResult()跳转异常：\t" + e.message)
         }
     }
 
@@ -192,7 +196,79 @@ object KUiHelper {
             bundle.putString(videoPath_key, videoPath)
             goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
         } catch (e: Exception) {
-            e.printStackTrace()
+            //e.printStackTrace()
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message)
+        }
+    }
+
+    /**
+     * @param sharedElement fixme 共享元素（这里一般为VideoView）；过渡动画。
+     */
+    fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), sharedElement: View?, videoPath: String?, process_msec: Int = 0, isPortrait: Boolean = false) {
+        try {
+            isPortrait_screenVideo = isPortrait
+            process_msec_screenVideo = process_msec
+            var bundle = Bundle()
+            bundle.putString(videoPath_key, videoPath)
+            var intent = Intent(nowActivity, KScreenVideoActivity::class.java)
+            intent.putExtras(bundle)
+            goActivity(intent, sharedElement,nowActivity)
+        } catch (e: Exception) {
+            //e.printStackTrace()
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message)
+        }
+    }
+
+//    if (Build.VERSION.SDK_INT>=21) {
+//        transitionName = "sharedView"//fixme 共享元素名称；第一个Activity的View可以不写；第二个Activity的View必须写(最好还是写上)，不然没有效果。
+//    }
+    /**
+     * fixme 5.0；api 21;共享元素；过渡动画。效果非常不错。
+     * @param sharedElement fixme 第一个Activity的共享元素控件;必须设置 transitionName 元素名称。目前就只写一个共享元素的动画。多个元素不常用，就不写了（太麻烦了）。
+     */
+    fun goActivity(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity()) {
+        var intent = Intent(nowActivity, clazz)
+        goActivity(intent, sharedElement, nowActivity)
+    }
+
+    fun goActivity(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity()) {
+        if (Build.VERSION.SDK_INT >= 21 && sharedElement != null && sharedElement.transitionName != null) {
+            try {
+                if (System.currentTimeMillis() - goTime > goFastTime) {
+                    goTime = System.currentTimeMillis()
+                    //防止极短的时间内重复跳转
+                    //fixme 共享元素动画跳转；在第一个Activity跳转的时候，和第二个Activity关闭(finish())的时候也会有效果。
+                    //var intent = Intent(nowActivity, clazz)
+                    nowActivity?.startActivity(intent, ActivityOptions.makeSceneTransitionAnimation(nowActivity, sharedElement, sharedElement.transitionName).toBundle())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                KLoggerUtils.e("共享元素跳转异常：\t" + e.message)
+            }
+        } else {
+            //普通正常跳转
+            goActivity(intent, nowActivity)
+        }
+    }
+
+    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=this.requestCode) {
+        var intent = Intent(nowActivity, clazz)
+        goActivityForResult(intent, sharedElement, nowActivity, requestCode)
+    }
+
+    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=this.requestCode) {
+        try {
+            if (Build.VERSION.SDK_INT >= 21 && sharedElement != null && sharedElement.transitionName != null) {
+                if (System.currentTimeMillis() - goTime > goFastTime) {
+                    goTime = System.currentTimeMillis()
+                    nowActivity?.startActivityForResult(intent, requestCode, ActivityOptions.makeSceneTransitionAnimation(nowActivity, sharedElement, sharedElement.transitionName).toBundle())
+                }
+            } else {
+                startActivityForResult(intent, nowActivity, requestCode)
+            }
+        } catch (e: Exception) {
+            //e.printStackTrace()
+            KLoggerUtils.e("goActivityForResult()共享元素跳转异常：\t" + e.message)
         }
     }
 
