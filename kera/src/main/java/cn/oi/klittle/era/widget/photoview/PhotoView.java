@@ -3,6 +3,7 @@ package cn.oi.klittle.era.widget.photoview;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
@@ -10,6 +11,8 @@ import android.net.Uri;
 import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.widget.ImageView;
+
+import cn.oi.klittle.era.utils.KLoggerUtils;
 //import android.widget.ImageView;
 
 /**
@@ -51,6 +54,16 @@ public class PhotoView extends ImageView {
         if (pendingScaleType != null) {
             setScaleType(pendingScaleType);
             pendingScaleType = null;
+        }
+    }
+
+    @Override
+    public void draw(Canvas canvas) {
+        try {
+            super.draw(canvas);
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("cn.oi.klittle.era.widget.photoview draw()异常：\t"+e.getMessage());
         }
     }
 

@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.android.synthetic.*
 import org.jetbrains.anko.backgroundDrawable
 import java.lang.Exception
 
@@ -282,8 +281,6 @@ open class KVerticalLayout : LinearLayout {
 
                 clearAnimation()
                 clearFocus()
-                clearFindViewByIdCache()
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }

@@ -33,7 +33,6 @@ import cn.oi.klittle.era.widget.viewpager.*
 import cn.oi.klittle.era.widget.web.K0JsBridgeWebView
 import cn.oi.klittle.era.widget.web.K3WebView
 import cn.oi.klittle.era.widget.web.KBridgeWebView
-import kotlinx.android.synthetic.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import java.lang.Exception
@@ -279,7 +278,6 @@ abstract class KBaseUi {
                 setOnTouchListener(null)
                 clearAnimation()
                 clearFocus()
-                clearFindViewByIdCache()
                 visibility = View.GONE
             }
         }

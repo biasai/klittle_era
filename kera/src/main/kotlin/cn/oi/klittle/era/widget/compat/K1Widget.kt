@@ -16,7 +16,6 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
-import kotlinx.android.synthetic.*
 import org.jetbrains.anko.*
 import java.lang.Exception
 import android.graphics.Paint.FILTER_BITMAP_FLAG
@@ -1131,8 +1130,6 @@ open class K1Widget : K0Widget {
                 onGlobalLayoutListeneres = null
                 clearAnimation()
                 clearFocus()
-                clearFindViewByIdCache()
-
             } catch (e: Exception) {
                 e.printStackTrace()
             }
