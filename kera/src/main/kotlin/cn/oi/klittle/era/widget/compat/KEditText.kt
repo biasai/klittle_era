@@ -148,6 +148,7 @@ import kotlinx.coroutines.Deferred
 
 //inputHeightListener {}//fixme 软键盘（输入法）高度变化监听。即界面被弹窗挤上去和挤下来时，会回调。返回的是软键盘的高度。
 
+//hint="请输入" fixme hint文本为空时，显示的默认文本。
 open class KEditText : KMyEditText {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

@@ -5,6 +5,7 @@ import android.graphics.*
 import android.os.Build
 import android.text.*
 import android.text.style.ForegroundColorSpan
+import android.text.util.Linkify
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,10 @@ import org.jetbrains.anko.*
 //fixme setLineSpacing(kpx.x(8f),1.5f) 设置行高之后；lineHeight会自动更新。以下方法能够正确获取文本的实际高度。行间距离是行与行之间垂直距离；不是文字水平间距。
 //fixme setMore()更多显示不下时，会显示3个点；单行，多行都有效。且只对KTextView有效，文本输入框KEditText无效
 //fixme isOverFlowedMore()判断文本是否超过，是否显示了更多...
+
+//fixme setHtml() 显示html网页文本内容
+//fixme setText(edit?.text) 文本输入框能显示的；TextView也能显示。一般的emoji表情，@😒😓👯💂👸👷特殊文本都能显示。;QQ上的表情一般都不是字符而是图标。所以无法显示。
+//fixme setAutoLinkMask(Linkify.ALL) 能够自动识别电话号码(点击会自动跳转到系统打电话界面)，邮件。url
 open class KTextView : KAutoSplitTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -58,6 +63,24 @@ open class KTextView : KAutoSplitTextView {
      */
     fun getTextWidth(text: String = getText().toString()): Int {
         return paint.measureText(text).toInt()
+    }
+
+    /**
+     * 显示Html网页内容。
+     * @param source html网页内容
+     */
+    fun setHtml(source: String?) {
+        source?.trim()?.let {
+            if (it.length > 0) {
+                setText(Html.fromHtml(source));//内容
+            }
+        }
+        //setText(Html.fromHtml("不能为空,null;不然报错"));//内容
+    }
+
+    //fixme 能够自动识别电话号码(点击会自动跳转到系统打电话界面)，邮件。url
+    fun setAutoLinkMask(){
+        setAutoLinkMask(Linkify.ALL)
     }
 
     private var mLeftPadding = 0
@@ -782,7 +805,7 @@ open class KTextView : KAutoSplitTextView {
         }
     }
 
-    private var mSearchText:String?=null
+    private var mSearchText: String? = null
     override fun draw(canvas: Canvas?) {
         if (txt != null) {
             texts_model = null
@@ -810,22 +833,22 @@ open class KTextView : KAutoSplitTextView {
             texts_model?.let {
                 var mtxt = it
                 it.text?.let {
-                    var isSearch2=false//fixme 防止指定颜色文本，没效果。
+                    var isSearch2 = false//fixme 防止指定颜色文本，没效果。
                     mtxt?.searchText?.let {
                         if (mtxt.searchText != null && mtxt.searchText!!.trim().length > 0 && mtxt.searchTextColor != Color.TRANSPARENT) {
-                            if (!it.equals(mSearchText)){
-                                isSearch2=true
+                            if (!it.equals(mSearchText)) {
+                                isSearch2 = true
                             }
                         }
                     }
-                    if (!text.toString().trim().equals(it)||isSearch2) {
+                    if (!text.toString().trim().equals(it) || isSearch2) {
                         var isSearch = false
                         if (mtxt.searchText != null && mtxt.searchText!!.trim().length > 0 && mtxt.searchTextColor != Color.TRANSPARENT) {
                             isSearch = true
                         }
                         if (isSearch) {
                             search(KSearchEntity(mtxt.searchText, mtxt.searchTextColor, mtxt.isMul), text = it)
-                            mSearchText=mtxt.searchText
+                            mSearchText = mtxt.searchText
                         } else {
                             setText(it)//重新设置文本
                         }
@@ -896,7 +919,7 @@ open class KTextView : KAutoSplitTextView {
             watcher = null
             watcherMap?.clear()
             watcherMap = null
-            mSearchText=null
+            mSearchText = null
             if (textWatcher != null) {
                 try {
                     setOnFocusChangeListener(null)
