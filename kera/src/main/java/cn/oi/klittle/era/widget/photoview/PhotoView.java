@@ -62,7 +62,7 @@ public class PhotoView extends ImageView {
         try {
             super.draw(canvas);
         } catch (Exception e) {
-            e.printStackTrace();
+            //e.printStackTrace();
             KLoggerUtils.INSTANCE.e("cn.oi.klittle.era.widget.photoview draw()异常：\t"+e.getMessage());
         }
     }
