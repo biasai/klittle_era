@@ -173,6 +173,10 @@ public class KNfcActivity extends KBaseActivity {
         try {
             if (isEnableNFC()) {
                 initNfc();
+                if (isNfcSupport) {
+                    enableNfc();
+                }
+                lastClickTime_nfc = 0;//fixme 防止第一次进入，刷卡无效。
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -182,6 +186,7 @@ public class KNfcActivity extends KBaseActivity {
 
     //处理NFC触发(fixme nfc读卡会调用这个方法)
     // fixme [如果Activity还没实例化的话；onNewIntent()可能会比onCreate()先执行。];如在系统界面直接刷ic卡，然后直接跳转到该界面。
+    //fixme Activity初始化的时候，在onCreate（）前面会执行一次。
     @Override
     protected void onNewIntent(Intent intent) {
         if (isEnableNFC()) {
@@ -234,32 +239,36 @@ public class KNfcActivity extends KBaseActivity {
             super.onResume();
             if (isEnableNFC() && isNfcSupport) {
                 enableNfc();
-                new Thread() {
-                    @Override
-                    public void run() {
-                        super.run();
-                        try {
-                            //NFC开启和关闭需要时间不是实时的，所以延迟一下,单位毫秒。
-                            //测试发现，大概需要2秒的时候（太慢了，等待2秒不太好）。关很快的，就是开需要点时间。
-                            // 这里就等待200毫秒，太长了不好。（只有用户点击开关按钮之后不是马上返回，基本都没问题）
-                            sleep(200);
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    try {
-                                        if (!isNfcEnabled()) {
-                                            onNfcNotEnabled();//fixme NFC功能没有开启
+                if (!isNfcEnabled()) {
+                    //NFC功能没有开启回调
+                    //fixme 关很快的，就是开需要点时间。
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            super.run();
+                            try {
+                                //NFC开启和关闭需要时间不是实时的，所以延迟一下,单位毫秒。
+                                //测试发现，大概需要2秒的时候（太慢了，等待2秒不太好）。关很快的，就是开需要点时间。
+                                // 这里就等待200毫秒，太长了不好。（只有用户点击开关按钮之后不是马上返回，基本都没问题）
+                                sleep(200);
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            if (!isNfcEnabled()) {
+                                                onNfcNotEnabled();//fixme NFC功能没有开启
+                                            }
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
                                         }
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
                                     }
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
-                    }
-                }.start();
+                    }.start();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -359,7 +368,7 @@ public class KNfcActivity extends KBaseActivity {
     static long lastClickTime_nfc = 0;//记录最后一次刷卡时间
 
     //判断是否快速刷卡
-    static boolean isFastNfc() {
+    public static boolean isFastNfc() {
         boolean flag = false;
         long curClickTime = System.currentTimeMillis();
         if ((curClickTime - lastClickTime_nfc) <= MIN_CLICK_DELAY_TIME_nfc) {
