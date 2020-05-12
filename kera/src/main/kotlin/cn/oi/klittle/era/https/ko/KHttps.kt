@@ -103,7 +103,7 @@ open class KHttps() {
         return this
     }
 
-    open var isUiThread: Boolean = false//fixme 是否在主线程回调;在加载大数据时，最好不要在主线程。一定要在次线程false里。这样就不会卡。亲测五千多条数据。在次线程中进度条都不会卡。主线程久会卡顿。
+    open var isUiThread: Boolean = false//fixme 是否在主线程回调;在加载大数据时，最好不要在主线程。一定要在次线程false里。这样就不会卡。亲测五千多条数据。在次线程中进度条都不会卡。主线程中就会卡顿。
     //提供一个Activity，防止Activity为空
     open fun isUiThread(isUiThread: Boolean = false, activity: Activity? = getActivity()): KHttps {
         this.isUiThread = isUiThread
