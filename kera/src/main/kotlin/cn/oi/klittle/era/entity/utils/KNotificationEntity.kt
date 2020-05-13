@@ -11,7 +11,7 @@ import cn.oi.klittle.era.utils.KNotificationUtils
 //            使用案例
 //                            KNotificationEntity().apply {
 //                                id = 1//通知ID,唯一标示。区分不同的通知
-//                                clazz = MainActivity::class.java
+//                                clazz = MainActivity2::class.java
 //                                leftLargeIcon = getBitmapFromResource(R.mipmap.timg)//左边图标；KBaseUi里有这个获取位图的方法。
 //                                rightSmallIcon=R.mipmap.timg2//状态栏小图标
 //                                title = "标题"
@@ -22,7 +22,7 @@ import cn.oi.klittle.era.utils.KNotificationUtils
 //                            KGlideUtils.getBitmapFromResouce(R.mipmap.timg, kpx.x(200), kpx.x(200), isCenterCrop = true) { key, bitmap ->
 //                                KNotificationEntity().apply {
 //                                    id = 1
-//                                    clazz = MainActivity::class.java
+//                                    clazz = MainActivity2::class.java
 //                                    leftLargeIcon = bitmap//左边图标
 //                                    rightSmallIcon = R.mipmap.timg2//状态栏小图标
 //                                    title = "标题"
