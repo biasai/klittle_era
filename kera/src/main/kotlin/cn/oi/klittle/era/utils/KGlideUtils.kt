@@ -359,6 +359,7 @@ object KGlideUtils {
     }
 
     //job?.cancel()可以取消当前协程，释放资源哦。
+    //fixme 子线程，主线程都可以调用。加了了回调方法。
     fun getBitmapFromResouce(resID: Int?, overrideWidth: Int, overrideHeight: Int, sizeMultiplier: Float = 1F, isCenterCrop: Boolean = false, callBack: (key: String, bitmap: Bitmap) -> Unit): Deferred<Any?>? {
         try {
             if (resID == null) {
@@ -428,6 +429,7 @@ object KGlideUtils {
     }
 
     /**
+     * fixme 必须在子线程中调用，主线程会报错哦。
      * @param resID Res目录下图片id
      * @param overrideWidth 图片宽度
      * @param overrideHeight 图片高度
@@ -471,7 +473,7 @@ object KGlideUtils {
                 return bitmap
             }
         } catch (e: Exception) {
-            Log.e("test", "Glide Res流异常" + e.message)
+            Log.e("test", "Glide Res流异常" + e.message)//fixme You must call this method on a background thread;必须在子线程中调用，主线程会报错哦。
         }
         return null
     }

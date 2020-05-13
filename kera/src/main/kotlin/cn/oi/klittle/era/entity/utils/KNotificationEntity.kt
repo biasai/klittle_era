@@ -109,9 +109,9 @@ open class KNotificationEntity {
             if (clazz != null) {
                 if (remoteViews != null) {
                     //优先使用自定义视图
-                    KNotificationUtils.sendNotificationRemoteViews(clazz!!, remoteViews!!, rightSmallIcon, id, ticker, contentInfo, isShowWhen, time, isAutoCancel, isClear, isHIGH)
+                    KNotificationUtils.sendNotificationRemoteViews(clazz=clazz, remoteViews=remoteViews, rightSmallIcon=rightSmallIcon,notificationId=id, ticker=ticker, info=contentInfo, isShowWhen=isShowWhen, time=time, isAutoCancel=isAutoCancel, isClear=isClear, isHIGH=isHIGH)
                 } else {
-                    KNotificationUtils.sendNotification(clazz!!, leftLargeIcon!!, rightSmallIcon, id, ticker!!, contentTitle!!, contentText!!, contentInfo!!, isShowWhen, time, isAutoCancel, isClear, isHIGH)
+                    KNotificationUtils.sendNotification(clazz=clazz, leftLargeIcon=leftLargeIcon!!, rightSmallIcon=rightSmallIcon, notificationId=id, ticker=ticker, title=contentTitle, content=contentText, info=contentInfo, isShowWhen=isShowWhen, time=time, isAutoCancel=isAutoCancel, isClear=isClear, isHIGH=isHIGH)
                 }
                 callback?.let {
                     it(true)//发送成功
