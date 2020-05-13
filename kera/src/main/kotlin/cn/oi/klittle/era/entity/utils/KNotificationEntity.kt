@@ -9,14 +9,15 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KNotificationUtils
 
 //            使用案例
-//            KNotificationEntity().apply {
-//                id = 1
-//                clazz = MainActivity::class.java
-//                leftLargeIcon = getBitmapFromResource(R.mipmap.ic_launcher_round)
-//                contentTitle = "标题"
-//                contentText = "正文"
-//                sendNotify()//发送
-//            }
+//                            KNotificationEntity().apply {
+//                                id = 1//通知ID,唯一标示。区分不同的通知
+//                                clazz = MainActivity::class.java
+//                                leftLargeIcon = getBitmapFromResource(R.mipmap.timg)//左边图标；KBaseUi里有这个获取位图的方法。
+//                                rightSmallIcon=R.mipmap.timg2//状态栏小图标
+//                                title = "标题"
+//                                content = "正文"
+//                                sendNotifi()//发送
+//                            }
 
 //fixme 自定义视图通知栏
 //KNotificationEntity().apply {
@@ -24,7 +25,7 @@ import cn.oi.klittle.era.utils.KNotificationUtils
 //    clazz = MainActivity::class.java
 //    remoteViews(R.layout.notify_item)//自定义通知栏视图
 //    remoteViews?.setTextViewText(R.id.hello, "我叫彭治铭")
-//    sendNotify()//发送
+//    sendNotifi()//发送
 //}
 
 /**
@@ -51,14 +52,15 @@ open class KNotificationEntity {
      */
     var id: Int = 0//通知ID,唯一标示。区分不同的通知
     var clazz: Class<*>? = null//目标跳转Activity
+
     //calss类型这样设置即可
     fun clazz(any: Any) {
         clazz = any::class.java
     }
 
     var leftLargeIcon: Bitmap? = null//左边的大图标位图
-    var contentTitle: String? = null//标题
-    var contentText: String? = null//标题下的正文
+    var title: String? = null//标题
+    var content: String? = null//标题下的正文
 
 
     /**
@@ -104,14 +106,14 @@ open class KNotificationEntity {
      * 发生通知。
      * @param callback 回调是否发送成功。发送失败一般都是没有开启通知栏权限。
      */
-    open fun sendNotify(callback: ((isSuccess: Boolean) -> Unit)? = null) {
+    open fun sendNotifi(callback: ((isSuccess: Boolean) -> Unit)? = null) {
         if (areNotificationsEnabled()) {
             if (clazz != null) {
                 if (remoteViews != null) {
                     //优先使用自定义视图
-                    KNotificationUtils.sendNotificationRemoteViews(clazz=clazz, remoteViews=remoteViews, rightSmallIcon=rightSmallIcon,notificationId=id, ticker=ticker, info=contentInfo, isShowWhen=isShowWhen, time=time, isAutoCancel=isAutoCancel, isClear=isClear, isHIGH=isHIGH)
+                    KNotificationUtils.sendNotificationRemoteViews(clazz = clazz, remoteViews = remoteViews, rightSmallIcon = rightSmallIcon, notificationId = id, ticker = ticker, info = contentInfo, isShowWhen = isShowWhen, time = time, isAutoCancel = isAutoCancel, isClear = isClear, isHIGH = isHIGH)
                 } else {
-                    KNotificationUtils.sendNotification(clazz=clazz, leftLargeIcon=leftLargeIcon!!, rightSmallIcon=rightSmallIcon, notificationId=id, ticker=ticker, title=contentTitle, content=contentText, info=contentInfo, isShowWhen=isShowWhen, time=time, isAutoCancel=isAutoCancel, isClear=isClear, isHIGH=isHIGH)
+                    KNotificationUtils.sendNotification(clazz = clazz, leftLargeIcon = leftLargeIcon!!, rightSmallIcon = rightSmallIcon, notificationId = id, ticker = ticker, title = title, content = content, info = contentInfo, isShowWhen = isShowWhen, time = time, isAutoCancel = isAutoCancel, isClear = isClear, isHIGH = isHIGH)
                 }
                 callback?.let {
                     it(true)//发送成功
