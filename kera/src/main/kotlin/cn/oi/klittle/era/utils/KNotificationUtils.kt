@@ -99,7 +99,7 @@ object KNotificationUtils {
      * @param content 提示信息正文
      * @param ticker 状态栏一开始提醒的信息 fixme （现在好像没有效果了，7.0及以上不显示了）
      * @param info 提示信息，出现在正文之后 fixme （现在好像没有效果了，7.0及以上不显示了）
-     * @param isShowWhen 是否显示时间。右上角
+     * @param isShowWhen 是否显示时间。右上角;亲测有效。
      * @param isAutoCancel true 用户点击之后，消息会自动消息。如果为false就需要自己手动去移除了
      * @param isClear 用户是否可以手动去除通知(true,可以手动划去通知，false,无法手动去除通知)
      */

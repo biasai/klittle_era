@@ -19,6 +19,19 @@ import cn.oi.klittle.era.utils.KNotificationUtils
 //                                sendNotifi()//发送
 //                            }
 
+//                            KGlideUtils.getBitmapFromResouce(R.mipmap.timg, kpx.x(200), kpx.x(200), isCenterCrop = true) { key, bitmap ->
+//                                KNotificationEntity().apply {
+//                                    id = 1
+//                                    clazz = MainActivity::class.java
+//                                    leftLargeIcon = bitmap//左边图标
+//                                    rightSmallIcon = R.mipmap.timg2//状态栏小图标
+//                                    title = "标题"
+//                                    content = "正文"
+//                                    //ticker,和 info可有可无。现在基本度没有效果。
+//                                    sendNotifi()//发送
+//                                }
+//                            }
+
 //fixme 自定义视图通知栏
 //KNotificationEntity().apply {
 //    id = 2
