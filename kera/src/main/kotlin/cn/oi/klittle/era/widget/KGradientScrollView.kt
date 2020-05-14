@@ -15,9 +15,10 @@ import cn.oi.klittle.era.utils.KAssetsUtils
 import org.jetbrains.anko.backgroundDrawable
 import org.jetbrains.anko.runOnUiThread
 
+//fixme 如果有文本输入框：（不要设置isFocusableInTouchMode = true;不然文本输入框滑出屏幕外时，会抖动。设置成isFocusableInTouchMode = false就没事）
 //                    调用案例
 //                    kscrollView {
-//                        isHasEditTextView = true//fixme 解决弹性滑动时；输入框软键盘弹出的问题
+//                        isHasEditTextView = true//fixme 解决弹性滑动时；输入框软键盘弹出的问题；[androidx 软键盘不会再自动弹出来了,androix已经修复了这个Bug]
 //                        openUpAnime=true//开启上拉弹性效果(默认就是开启的)
 //                        openDownAnime=true//开启下拉弹性效果
 //                        //maxMoveHeightDrop_Down//最大下拉高度(0,默认就是整个控件的高度。)
@@ -31,9 +32,12 @@ import org.jetbrains.anko.runOnUiThread
 //                        dropDown {
 //                            //下拉监听
 //                        }
-//                        //autoMatrixBg() 拉伸图片
-//                        //isAutoMatris 图片是否进行拉伸。默认拉伸
-//                        //maxAutoMatrixBgScaleSeed 图片拉伸率。数字越大。变化越大。2是等距离变大
+//                    //backgroundColor=Color.BLUE fixme 背景色，会覆盖top_color等颜色和autoMatrixBg图片哦。
+//                    top_color=Color.BLUE//上半部分颜色
+//                    bottom_color=Color.LTGRAY//下半部分颜色
+//                    autoMatrixBg(R.mipmap.timg,width=kpx.screenWidth())//拉伸图片，图片会覆盖颜色，在top_color等颜色的上面。
+//                        //isAutoMatris=true 图片是否进行拉伸。默认拉伸
+//                        //maxAutoMatrixBgScaleSeed = 2f 图片拉伸率。数字越大。变化越大。2是等距离变大
 //                        verticalLayout {
 //                            //fixme 最外层只能有一个元素;切记！！
 //                        }
@@ -200,54 +204,64 @@ open class KGradientScrollView : KBounceScrollView {
             paint.isAntiAlias = true
             paint.isDither = true
             paint.style = Paint.Style.FILL_AND_STROKE
-
+            if (mContentHeight <= 0) {
+                //fixme 在dispatchTouchEvent()方法里，按下时赋值
+                mContentHeight = height
+                if (childCount > 0) {
+                    getChildAt(0).height?.let {
+                        if (it > mContentHeight) {
+                            mContentHeight = it
+                        }
+                    }
+                }
+            }
             //上半部分颜色
             if (top_color != Color.TRANSPARENT) {
                 paint.color = top_color
-                drawRect(RectF(0f, 0f, width.toFloat(), height / 2f), paint)
+                drawRect(RectF(0f, 0f, width.toFloat(), mContentHeight / 2f), paint)
             }
 
             //下半部分颜色
             if (bottom_color != Color.TRANSPARENT) {
                 paint.color = bottom_color
-                drawRect(RectF(0f, height / 2f, width.toFloat(), height.toFloat()), paint)
+                drawRect(RectF(0f, mContentHeight / 2f, width.toFloat(), mContentHeight.toFloat()), paint)
             }
 
 
             //左半部分颜色
             if (left_color != Color.TRANSPARENT) {
                 paint.color = left_color
-                drawRect(RectF(0f, 0f, width.toFloat() / 2, height.toFloat()), paint)
+                drawRect(RectF(0f, 0f, width.toFloat() / 2, mContentHeight.toFloat()), paint)
             }
 
             //右半部分颜色
             if (right_color != Color.TRANSPARENT) {
                 paint.color = right_color
-                drawRect(RectF(width / 2f, 0f, width.toFloat(), height.toFloat()), paint)
+                drawRect(RectF(width / 2f, 0f, width.toFloat(), mContentHeight.toFloat()), paint)
             }
 
             //左上角部分颜色
             if (left_top_color != Color.TRANSPARENT) {
                 paint.color = left_top_color
-                drawRect(RectF(0f, 0f, width.toFloat() / 2, height.toFloat() / 2), paint)
+                drawRect(RectF(0f, 0f, width.toFloat() / 2, mContentHeight.toFloat() / 2), paint)
             }
 
             //右上角部分颜色
             if (right_top_color != Color.TRANSPARENT) {
                 paint.color = right_top_color
-                drawRect(RectF(width / 2f, 0f, width.toFloat(), height.toFloat() / 2), paint)
+                drawRect(RectF(width / 2f, 0f, width.toFloat(), mContentHeight.toFloat() / 2), paint)
             }
 
             //左下角部分颜色
             if (left_bottom_color != Color.TRANSPARENT) {
                 paint.color = left_bottom_color
-                drawRect(RectF(0f, height / 2f, width.toFloat() / 2, height.toFloat()), paint)
+                drawRect(RectF(0f, mContentHeight / 2f, width.toFloat() / 2, mContentHeight.toFloat()), paint)
             }
 
             //右下角部分颜色
             if (right_bottom_color != Color.TRANSPARENT) {
                 paint.color = right_bottom_color
-                drawRect(RectF(width / 2f, height / 2f, width.toFloat(), height.toFloat()), paint)
+                drawRect(RectF(width / 2f, mContentHeight / 2f, width.toFloat(), mContentHeight.toFloat()), paint)
             }
 
             //水平渐变
@@ -261,7 +275,7 @@ open class KGradientScrollView : KBounceScrollView {
 
             //垂直渐变
             verticalColors?.let {
-                var shader = LinearGradient(0f, 0f, 0f, height.toFloat(), it, null, Shader.TileMode.MIRROR)
+                var shader = LinearGradient(0f, 0f, 0f, mContentHeight.toFloat(), it, null, Shader.TileMode.MIRROR)
                 paint.setShader(shader)
                 drawPaint(paint)
             }
@@ -315,6 +329,7 @@ open class KGradientScrollView : KBounceScrollView {
 
     //fixme 顶部渐变颜色,如：top_gradient_color("#ffffff","#00ffffff") 白色渐变,颜色是均匀变化的
     var top_gradient_color: IntArray? = null
+
     //fixme 顶部渐变高度
     var top_gradient_height: Float = 0f
 
@@ -337,6 +352,7 @@ open class KGradientScrollView : KBounceScrollView {
 
     //fixme 底部渐变颜色，如：bottom_gradient_color("#00ffffff","#ffffff") 白色渐变,颜色是均匀变化的
     var bottom_gradient_color: IntArray? = null
+
     //fixme 底部渐变高度
     var bottom_gradient_height: Float = 0f
 
@@ -461,6 +477,7 @@ open class KGradientScrollView : KBounceScrollView {
     //记录autoMatrixBg拉伸之后的宽度和高度
     var autoMatrixBgWidth: Int = 0
     var autoMatrixBgHeight: Int = 0
+
     //设置矩阵的宽和高，不是图片。对图片继续拉伸处理
     //fixme 设置矩阵拉伸后的宽度和高度,参数Int是实际拉伸后的宽度和高度
     open fun autoMatrixBgScale(width: Int = this.w, height: Int = this.h) {
@@ -620,6 +637,7 @@ open class KGradientScrollView : KBounceScrollView {
     }
 
     var isAutoMatris: Boolean = true//图片是否进行拉伸。默认拉伸
+
     //fixme scrollview移动的时候。画布也在一起移动。所以拉伸图片也会随scrollview一起滚动。
     // fixme 所以，再次就做下拉放大的效果。上滑的效果。基本不需要（图片都滑上去了，都看不到了）。所以就不做了。
     var maxAutoMatrixBgScaleSeed = 2f//fixme 图片拉伸率。数字越大。变化越大。2是等距离变大(滑动多少就变大多少)。不过感觉还为1的时候，效果最好。

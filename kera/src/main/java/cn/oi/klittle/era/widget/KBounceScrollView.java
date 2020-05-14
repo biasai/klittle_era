@@ -1,11 +1,13 @@
 package cn.oi.klittle.era.widget;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
 import androidx.core.widget.NestedScrollView;
+
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,15 +17,26 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.oi.klittle.era.base.KBaseView;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.widget.compat.KMyEditText;
 import kotlin.Unit;
 import kotlin.jvm.functions.Function1;
 
 /**
- * 弹性ScrollView【滑动原理，对scrollview里面的第一个View进行位置上下偏移滑动。】，没有滑动条哦。
+ * fixme 弹性ScrollView【滑动原理，对scrollview里面的第一个View进行位置上下偏移滑动。】，没有滑动条哦。
+ * fixme 解决滑动冲突问题：recyclerView?.hasFixedSize();recyclerView?.isNestedScrollingEnabled=false;（只有NestedScrollView可以滑动。）
+ * fixme isChildScoll = false;//fixme  解决子View的滑动冲突(子View如果在滑动，该属性设置为true，ScrollView就不会再滑动。)
  * Created by 彭治铭 on 2018/4/25.
  */
 public class KBounceScrollView extends NestedScrollView {
+
+    public int mContentHeight = getHeight();//fixme 获取scrollView内容的真实高度。在dispatchTouchEvent()方法里，按下时赋值。
+
+    @Override
+    public void draw(Canvas canvas) {
+        super.draw(canvas);
+
+    }
 
     public static Boolean isChildScoll = false;//fixme  解决子View的滑动冲突(子View如果在滑动，该属性设置为true，ScrollView就不会再滑动。)
 
@@ -186,6 +199,13 @@ public class KBounceScrollView extends NestedScrollView {
         switch (ev.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 isChildScoll = false;//fixme 按下时，滑动会自动恢复。
+                mContentHeight = getHeight();
+                if (getChildCount() > 0) {
+                    int hh = getChildAt(0).getHeight();
+                    if (hh > mContentHeight) {
+                        mContentHeight = hh;
+                    }
+                }
                 break;
         }
         if (!isChildScoll) {
@@ -323,12 +343,14 @@ public class KBounceScrollView extends NestedScrollView {
                 }
                 //Log.e("test","按下y：\t"+preY+"\tnowY：\t"+nowY+"\t距离:\t"+deltaY+"\t是否移动:\t"+isNeedMove());
                 downY = nowY;
-//                Log.e("test", "deltaY滑动:\t" + deltaY);
+                //Log.e("test", "deltaY滑动:\t" + deltaY);
                 // 当滚动到最上或者最下时就不会再滚动，这时移动布局/速度大于了200都是异常。不做移动处理
-                if (isNeedMove() && Math.abs(deltaY) < 200) {
+                //KLoggerUtils.INSTANCE.e("isNeedMove():\t" + isNeedMove()+"\ttop:\t"+inner.getTop());
+                if ((isNeedMove()) && Math.abs(deltaY) < 200) {
                     // 初始化头部矩形
-                    if (normal.isEmpty()) {
-                        // 保存正常的布局位置
+                    if (normal.isEmpty() || normal.right <= 0 || normal.bottom <= 0 || (normal.bottom - normal.top) != mContentHeight) {
+                        //fixme 保存正常的布局位置
+                        //KLoggerUtils.INSTANCE.e("left2:\t"+inner.getLeft()+"\ttop2:\t"+inner.getTop()+"\tright2:\t"+inner.getRight()+"\tbottom2:\t"+inner.getBottom());
                         normal.set(inner.getLeft(), inner.getTop(),
                                 inner.getRight(), inner.getBottom());
                     }
@@ -347,11 +369,13 @@ public class KBounceScrollView extends NestedScrollView {
                     if (top > maxMoveHeightDrop_Down) {
                         top = maxMoveHeightDrop_Down;
                     }
-                    if (bottom < (getHeight() - maxMoveHeightDrop_Up)) {
-                        bottom = (getHeight() - maxMoveHeightDrop_Up);
+                    //fixme getHeight() 改为mContentHeight
+                    if (bottom < (mContentHeight - maxMoveHeightDrop_Up)) {
+                        bottom = (mContentHeight - maxMoveHeightDrop_Up);
                     }
                     currentTop = top;
-                    if (top <= maxMoveHeightDrop_Down && bottom >= (getHeight() - maxMoveHeightDrop_Up) && !bAnime) {
+                    //KLoggerUtils.INSTANCE.e("top:\t" + top + "\tbottom:\t" + bottom+"\toffset:\t"+(bottom-top)+"\tmContentHeight:\t"+mContentHeight+"\tscrolly:\t"+getScrollY());
+                    if (top <= maxMoveHeightDrop_Down && bottom >= (mContentHeight - maxMoveHeightDrop_Up) && !bAnime) {
                         layout2(inner.getLeft(), top,
                                 inner.getRight(), bottom);
                     } else {
@@ -408,7 +432,7 @@ public class KBounceScrollView extends NestedScrollView {
                     return null;
                 }
             });
-            normal.setEmpty();
+            //normal.setEmpty();//fixme 不要清空，防止布局异常。
         }
     }
 
@@ -424,10 +448,12 @@ public class KBounceScrollView extends NestedScrollView {
         if (inner != null) {
             if (isHasEditTextView) {
                 try {
-                    //fixme 解决与输入文本框的冲突。
-                    requestFocus();//fixme 聚焦
-                    requestFocusFromTouch();
-                    KMyEditText.Companion.hideSoftKeyboard(getContext(),this);//隐藏软键盘（防止软键盘是不是的冒出来）
+                    //fixme 解决与输入文本框的冲突。29是android 10;10.0不需要聚焦。聚焦了反而可能会弹出软键盘。
+                    if (Build.VERSION.SDK_INT < 29) {
+                        requestFocus();//fixme 聚焦
+                        requestFocusFromTouch();
+                    }
+                    KMyEditText.Companion.hideSoftKeyboard(getContext(), this);//隐藏软键盘（防止软键盘是不是的冒出来）
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -440,9 +466,12 @@ public class KBounceScrollView extends NestedScrollView {
             }
 
             tt = t + topM;//补丁为负数同样有效。4.2的系统外补丁不支持负数。
-            if (Build.VERSION.SDK_INT <= 17 && tt < 0) {
-                inner.layout(l, t, r, b);//viewpager滑动时，会无效。
+            //KLoggerUtils.INSTANCE.e("left:\t" + l + "\ttop:\t" + t + "\tright:\t" + r + "\tbottom:\t" + b);
+            if (true || Build.VERSION.SDK_INT <= 17 && tt < 0) {
+                //fixme 建议使用这个。效果好，有保证。
+                inner.layout(l, t, r, b);//fixme viewpager滑动时，会无效;在androidx上面还未验证。
             } else {
+                //fixme 这个在androidx上面有Bug;不建议使用。效果不好。上拉会无效。
                 layoutParams.setMargins((int) (layoutParams.leftMargin), tt, (int) (layoutParams.rightMargin), (int) (layoutParams.bottomMargin));
                 inner.requestLayout();
             }
@@ -477,8 +506,9 @@ public class KBounceScrollView extends NestedScrollView {
      * @return
      */
     public boolean isNeedMove() {
-        int offset = inner.getMeasuredHeight() - getHeight();
+        int offset = inner.getMeasuredHeight() - getHeight();//fixme 这个判断没有问题。
         int scrollY = getScrollY();
+        //KLoggerUtils.INSTANCE.e("scrollY:\t"+scrollY+"\toffset:\t"+offset+"\tinner.getMeasuredHeight():\t"+inner.getMeasuredHeight()+"\tgetHeight():\t"+getHeight()+"\tmContentHeight:\t"+mContentHeight);
         // 0是顶部，后面那个是底部
         if (scrollY == 0 || scrollY == offset) {
             return true;
