@@ -13,6 +13,7 @@ import androidx.viewpager.widget.ViewPager
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.view.KAutoLinefeedCenterLayout
 import cn.oi.klittle.era.view.KAutoLinefeedLayout
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
@@ -111,6 +112,7 @@ abstract class KBaseUi {
     abstract fun createView(ctx: Context? = getActivity()): View?
 
     private var isDestroy: Boolean? = false//判断是否已经销毁；防止重复异常
+
     //fixme 子类可以重写(记得在Activity里的finish()方法中手动调用一次)
     open fun destroy(activity: Activity?) {
         isDestroy?.let {
@@ -127,6 +129,7 @@ abstract class KBaseUi {
 
 
     var destroyDelay = 1000L//fixme 单位毫秒，1000即一秒；测试一秒够了。
+
     //fixme 销毁该View及其所有的子View
     private fun destroyView(view: View?) {
         view?.postDelayed({
@@ -804,7 +807,7 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KDrawerLayout(ctx) }, theme = 0) { init() }
         }
 
-        //fixme 换行布局
+        //fixme 自动水平换行布局(向左靠齐)
         inline fun ViewManager.KAutoLinefeedLayout(init: (@AnkoViewDslMarker KAutoLinefeedLayout).() -> Unit): KAutoLinefeedLayout {
             return ankoView({ ctx: Context -> KAutoLinefeedLayout(ctx) }, theme = 0) { init() }
         }
@@ -813,6 +816,14 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KAutoLinefeedLayout(ctx) }, theme = 0) { init() }
         }
 
+        //fixme 自动水平换行布局(居中换行)
+        inline fun ViewManager.KAutoLinefeedCenterLayout(init: (@AnkoViewDslMarker KAutoLinefeedCenterLayout).() -> Unit): KAutoLinefeedCenterLayout {
+            return ankoView({ ctx: Context -> KAutoLinefeedCenterLayout(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kAutoLinefeedCenterLayout(init: (@AnkoViewDslMarker KAutoLinefeedCenterLayout).() -> Unit): KAutoLinefeedCenterLayout {
+            return ankoView({ ctx: Context -> KAutoLinefeedCenterLayout(ctx) }, theme = 0) { init() }
+        }
     }
 
 }
