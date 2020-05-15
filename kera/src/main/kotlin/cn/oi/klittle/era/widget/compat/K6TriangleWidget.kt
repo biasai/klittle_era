@@ -13,7 +13,7 @@ import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
 //                                    triangle {
 //                                        width = kpx.x(128)
 //                                        height = height
-//                                        subWidth = kpx.x(85)
+//                                        subWidth = kpx.x(85)//fixme 减去的宽度，用于实现矩形效果。
 //                                        bgHorizontalColors(Color.parseColor("#DC4E41"), Color.parseColor("#C97676"))
 //                                        text = "DEBUG"
 //                                        isBold = true
@@ -73,7 +73,7 @@ import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
 
 /**
  * 画以左上角为基准，直角三角形。
- * fixme 新增圆形清除功能。
+ * fixme 新增圆形清除功能。clearCircle()
  */
 open class K6TriangleWidget : K5LparamWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -371,6 +371,9 @@ open class K6TriangleWidget : K5LparamWidget {
     var kCirCles: MutableList<KCirCle>? = null
     /**
      * 清除圆，该圆的内容会被清空
+     * @param cx 圆心x坐标
+     * @param cy 圆心y坐标
+     * @param radius 半径
      */
     fun clearCircle(cx: Float, cy: Float, radius: Float) {
         if (kCirCles == null) {
