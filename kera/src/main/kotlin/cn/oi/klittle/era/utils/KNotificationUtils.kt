@@ -1,24 +1,23 @@
 package cn.oi.klittle.era.utils
 
-import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.widget.RemoteViews
-import cn.oi.klittle.era.base.KBaseApplication
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.os.Build
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationCompat.*
+import androidx.core.app.NotificationManagerCompat
+import cn.oi.klittle.era.base.KBaseApplication
 
 /**
  * fixme 新版特性：现在通知栏如果有消息，应用图标就会有红色的小圆点提醒（9.0的系统会有）。(10及以上的系统没有了。)
- * fixme 悬浮窗效果；9.0需要开启悬浮窗权限才会有效果；10.0系统好像已经没有悬浮窗效果了。
+ * fixme 悬浮窗效果；5.0及以上需要开启悬浮窗权限才会有效果；10.0系统好像已经没有悬浮窗效果了（只有系统应用才有，亲测）。
  * fixme KNotificationEntity 实体类中，有调用案例。
  */
 object KNotificationUtils {
@@ -73,8 +72,17 @@ object KNotificationUtils {
             builder = NotificationCompat.Builder(getContext());//内部会自动处理兼容问题。
             //builder.setPriority(PRIORITY_DEFAULT);//设置优先级
         }
-        builder.setPriority(PRIORITY_HIGH);//设置优先级,默认设置重要右下角（能够悬浮通知）
+        //builder.setPriority(PRIORITY_HIGH);//设置优先级,默认设置重要右下角（能够悬浮通知）
+        builder.setPriority(PRIORITY_MAX);//PRIORITY_MA比PRIORITY_HIGH优先级还要高。
         return builder
+    }
+
+    /**
+     * fixme 判断通知栏权限是否开启（true开启，false为开启）。只能判断。不能动态去申请。必须用户自己去手动开启。
+     * 判断的是普通的通知栏权限；不是悬浮通知权限。
+     */
+    fun areNotificationsEnabled(): Boolean {
+        return NotificationManagerCompat.from(getContext()).areNotificationsEnabled()
     }
 
 //                                fixme 调用案例
@@ -102,6 +110,7 @@ object KNotificationUtils {
      * @param isShowWhen 是否显示时间。右上角;亲测有效。
      * @param isAutoCancel true 用户点击之后，消息会自动消息。如果为false就需要自己手动去移除了
      * @param isClear 用户是否可以手动去除通知(true,可以手动划去通知，false,无法手动去除通知)
+     * @param isHIGH fixme 是否为重要提示;true会悬挂置顶（需要打开悬浮窗权限，5.0及以上有效）；【android10.0好像没有了，只有系统应用才有。普通应用没有了，亲测】
      */
     //@SuppressLint("NewApi")//api 要求16
     fun sendNotification(clazz: Class<*>?, leftLargeIcon: Bitmap?, rightSmallIcon: Int, notificationId: Int,
@@ -109,16 +118,14 @@ object KNotificationUtils {
         if (clazz == null) {
             return
         }
-        val notificationIntent = Intent(getContext(), clazz)
-        val pendingIntent = PendingIntent.getActivity(getContext(), 0, notificationIntent, 0)
         var builder = getBuilder()
+        //fixme 是否为重要提示
         if (isHIGH) {
             //builder.setPriority(PRIORITY_HIGH)
-            builder.setPriority(PRIORITY_MAX)
+            builder.setPriority(PRIORITY_MAX)//fixme 如果打开了悬浮窗权限，会悬挂置顶。（andriod5.0及以上有效。android10.0好像没有了，只有系统应用才有。普通应用没有）
         } else {
             builder.setPriority(PRIORITY_DEFAULT)
         }
-        builder.setContentIntent(pendingIntent)
         if (leftLargeIcon != null) {
             builder.setLargeIcon(leftLargeIcon)//fixme 最左边的大图标.
         }
@@ -149,6 +156,13 @@ object KNotificationUtils {
         if (info != null) {
             builder.setContentInfo(info)//fixme 提示信息，出现在正文之后
         }
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)//任何情况都会显示通知
+
+        val notificationIntent = Intent(getContext(), clazz)
+        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        val pendingIntent = PendingIntent.getActivity(getContext(), 0, notificationIntent, 0)//PendingIntent.FLAG_CANCEL_CURRENT
+        builder.setContentIntent(pendingIntent)
+
         var notification = builder.build()
         notification.defaults = Notification.DEFAULT_SOUND;// 设置为默认的声音
         if (isClear) {

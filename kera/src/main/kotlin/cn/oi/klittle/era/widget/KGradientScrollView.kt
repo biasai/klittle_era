@@ -8,6 +8,8 @@ import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.view.ContextThemeWrapper
+import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.https.bit.KBitmaps
@@ -23,19 +25,24 @@ import org.jetbrains.anko.runOnUiThread
 //                        openDownAnime=true//开启下拉弹性效果
 //                        //maxMoveHeightDrop_Down//最大下拉高度(0,默认就是整个控件的高度。)
 //                        //maxMoveHeightDrop_Up 最大上拉高度
-//                        onScrollChanged { x, y, oldx, oldy ->
-//                            //滑动时监听
-//                        }
+
+//                    //fixme 滑动时监听
+//                    onScrollChanged { x, y, oldx, oldy ->
+//                        //fixme y当前滑动的scrollY;oldy上一次滑动的scrolly
+//                        //fixme isScrollToBottom()判断是否滑动到低部。y==0表示滑动到了顶部
+//                        //KLoggerUtils.e("X:\t"+x+"\ty:\t"+y+"\t"+isScrollToBottom)
+//                    }
+//                        //fixme isScrollToBottom（）判断scrollView的scrollY是否滑动到了最低部。
 //                        dropUp{
-//                            //上拉监听
+//                            //上拉监听；it返回是上拉的距离（都是正数）
 //                        }
 //                        dropDown {
-//                            //下拉监听
-//                        }
+//                            //下拉监听；it放回的是下拉的距离（都是正数）
+//                     }
 //                    //backgroundColor=Color.BLUE fixme 背景色，会覆盖top_color等颜色和autoMatrixBg图片哦。
 //                    top_color=Color.BLUE//上半部分颜色
 //                    bottom_color=Color.LTGRAY//下半部分颜色
-//                    autoMatrixBg(R.mipmap.timg,width=kpx.screenWidth())//拉伸图片，图片会覆盖颜色，在top_color等颜色的上面。
+//                    autoMatrixBg(R.mipmap.timg,width=kpx.screenWidth())//fixme 拉伸图片，图片会覆盖颜色，在top_color等颜色的上面。
 //                        //isAutoMatris=true 图片是否进行拉伸。默认拉伸
 //                        //maxAutoMatrixBgScaleSeed = 2f 图片拉伸率。数字越大。变化越大。2是等距离变大
 //                        verticalLayout {
@@ -51,6 +58,12 @@ import org.jetbrains.anko.runOnUiThread
  */
 open class KGradientScrollView : KBounceScrollView {
 
+    //constructor(context: Context) : super(context) {}
+    //fixme setVerticalScrollBarEnabled(true)或isVerticalScrollBarEnabled=true; 显示滑动条。NestedScrollView无效（本身默认没有滑动条），ScrollView有效（默认有滑动条）
+    //fixme 现在设置R.style.kera_nestedScrollBarStyle滑动条样式。setVerticalScrollBarEnabled(true)滑动条就会显示出来。滚动的时候滑动条才会显示出来，没滑动时，滑动条不显示。
+    constructor(context: Context) : super(ContextThemeWrapper(context, R.style.kera_nestedScrollBarStyle)) {}//fixme 代码中设置style样式案例。
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -63,9 +76,6 @@ open class KGradientScrollView : KBounceScrollView {
         }
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
-
-    constructor(context: Context) : super(context) {}
-    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     init {
         setLayerType(View.LAYER_TYPE_HARDWARE, null)

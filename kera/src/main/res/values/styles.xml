@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--fixme KTheme_Activity_hasStatus_transparent 透明背景样式在极少数设备上都有问题，
         fixme 如PDA上Activity跳场动画时快速点击可能会点中桌面图标，主要是因为 A 跳转到 B 时，A关闭了，而B又是透明样式。如果A没有关闭的话，就不会有这个问题。如：启动页(会关闭) 跳 主页面。
@@ -38,7 +38,8 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题,true按钮文本默认全部大写。
         //Acitivity背景是透明的。不会有黑色。
-        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        //激活Activity中元素的过渡效果
 
         <!-- Customize your theme here. fixme: colorPrimary这个属性控制recyclerView滑动边缘时的颜色色值-->
         <item name="colorPrimary">@color/kcolorPrimary</item>
@@ -58,8 +59,9 @@
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
 
-        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
-        <item name="android:windowLayoutInDisplayCutoutMode">
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        //激活Activity中元素的过渡效果
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:ignore="NewApi">
             shortEdges <!-- default, shortEdges, never 适配全面屏齐刘海(齐刘海只对全屏时有影响，有状态栏时没有影响)。有红线提示，允许不会报错，不会影响。 -->
         </item>
 
@@ -78,8 +80,9 @@
         <item name="android:windowBackground">@android:color/white</item>//背景色
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
 
-        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
-        <item name="android:windowLayoutInDisplayCutoutMode">
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        //激活Activity中元素的过渡效果
+        <item name="android:windowLayoutInDisplayCutoutMode" tools:targetApi="o_mr1">
             shortEdges <!-- default, shortEdges, never 适配全面屏齐刘海(齐刘海只对全屏时有影响，有状态栏时没有影响)。有红线提示，允许不会报错，不会影响。 -->
         </item>
 
@@ -101,7 +104,8 @@
         <item name="android:windowIsTranslucent">false</item>
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
-        <item name="android:windowContentTransitions">true</item>//激活Activity中元素的过渡效果
+        <item name="android:windowContentTransitions" tools:targetApi="lollipop">true</item>
+        //激活Activity中元素的过渡效果
 
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/kcolorPrimary</item>
@@ -258,4 +262,12 @@
         <!-- 退出动画 -->
     </style>
 
+    <!--NestedScrollBarStyle滑动条样式；构造函数 ContextThemeWrapper(context, R.style.kera_nestedScrollBarStyle) 中引用-->
+    <!--KGradientScrollView有使用案例-->
+    <style name="kera_nestedScrollBarStyle">
+        <item name="android:scrollbarFadeDuration">250</item><!--渐隐时间，单位毫秒，系统默认一般都是250 -->
+        <item name="android:scrollbars">vertical</item><!--vertical垂直, horizontal水平 -->
+        <item name="android:fillViewport">true</item><!-- -->
+        <item name="android:orientation">vertical</item><!-- -->
+    </style>
 </resources>

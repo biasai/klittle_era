@@ -51,7 +51,7 @@ open class KNotificationEntity {
     }
 
     /**
-     * 判断通知栏权限是否开启（true开启，false为开启）。只能判断。不能动态去申请。必须用户自己去手动开启。
+     * fixme 判断通知栏权限是否开启（true开启，false为开启）。只能判断。不能动态去申请。必须用户自己去手动开启。
      * 判断的是普通的通知栏权限；不是悬浮通知权限。
      */
     fun areNotificationsEnabled(): Boolean {
@@ -132,7 +132,7 @@ open class KNotificationEntity {
                     it(true)//发送成功
                 }
             } else {
-                KLoggerUtils.e("TEST", "notification消失发送失败，目标Activity为空")
+                KLoggerUtils.e("test", "notification消失发送失败，目标Activity为空")
             }
         } else {
             callback?.let {

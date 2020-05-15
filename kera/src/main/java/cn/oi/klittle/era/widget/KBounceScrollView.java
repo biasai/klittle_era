@@ -34,8 +34,11 @@ public class KBounceScrollView extends NestedScrollView {
 
     @Override
     public void draw(Canvas canvas) {
-        super.draw(canvas);
-
+        try {
+            super.draw(canvas);
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KBounceScrollView滑动异常：\t" + e.getMessage());
+        }
     }
 
     public static Boolean isChildScoll = false;//fixme  解决子View的滑动冲突(子View如果在滑动，该属性设置为true，ScrollView就不会再滑动。)
@@ -478,14 +481,14 @@ public class KBounceScrollView extends NestedScrollView {
             //layoutParams.setMargins((int) (layoutParams.leftMargin), tt, (int) (layoutParams.rightMargin), (int) (layoutParams.bottomMargin));
             //Log.e("test", "t:\t"+t+"\ttt:\t" + tt);
             //下拉
-            if (t >= 0) {
+            if (t > 0) {
                 onDropDownAutoMatrixBg(t);
                 if (dropDown != null) {
                     dropDown.onDown(t);
                 }
             }
             //上拉
-            if (t <= 0) {
+            if (t < 0) {
                 if (dropUp != null) {
                     dropUp.onUp(Math.abs(t));
                 }
@@ -506,12 +509,24 @@ public class KBounceScrollView extends NestedScrollView {
      * @return
      */
     public boolean isNeedMove() {
-        int offset = inner.getMeasuredHeight() - getHeight();//fixme 这个判断没有问题。
-        int scrollY = getScrollY();
-        //KLoggerUtils.INSTANCE.e("scrollY:\t"+scrollY+"\toffset:\t"+offset+"\tinner.getMeasuredHeight():\t"+inner.getMeasuredHeight()+"\tgetHeight():\t"+getHeight()+"\tmContentHeight:\t"+mContentHeight);
-        // 0是顶部，后面那个是底部
-        if (scrollY == 0 || scrollY == offset) {
+//        int offset = inner.getMeasuredHeight() - getHeight();//fixme 这个判断没有问题。
+//        int scrollY = getScrollY();
+//        //KLoggerUtils.INSTANCE.e("scrollY:\t"+scrollY+"\toffset:\t"+offset+"\tinner.getMeasuredHeight():\t"+inner.getMeasuredHeight()+"\tgetHeight():\t"+getHeight()+"\tmContentHeight:\t"+mContentHeight);
+//        // 0是顶部，后面那个是底部
+//        if (scrollY == 0 || scrollY == offset) {
+//            return true;
+//        }
+        if (getScrollY() == 0 || isScrollToBottom()) {
             return true;
+        }
+        return false;
+    }
+
+    //fixme 判断是否滑动到低部
+    public boolean isScrollToBottom() {
+        int offset = inner.getMeasuredHeight() - getHeight();//fixme 这个判断没有问题。
+        if (getScrollY() == offset) {
+            return true;//滑动到低部
         }
         return false;
     }
@@ -576,6 +591,7 @@ public class KBounceScrollView extends NestedScrollView {
         this.dropUp = dropUp;
     }
 
+    //fixme 接口，下拉监听
     public interface DropUp {
         //distance是当前上拉的值，即上拉的距离。是正数。距离都是正数。
         void onUp(int distance);
