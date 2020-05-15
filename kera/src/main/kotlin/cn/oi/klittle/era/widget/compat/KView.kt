@@ -46,6 +46,38 @@ import android.view.ViewGroup
 //                            height=kpx.x(200)
 //                        }
 
+//                        fixme 对话框样式；使用到了 KAirEntry气泡实体类。
+//                        kview {
+//                            //调用案例
+//                            var airEnty = KAirEntry().apply {
+//                                direction = KAirEntry.DIRECTION_LEFT
+//                                //fixme 注意；一定要先设置宽度和高度；然后再调用。
+//                                airWidth = kpx.x(25)
+//                                airHeight = airWidth
+//                                rectWidth = kpx.x(295)-airWidth//fixme 比宽度小一点，防止边缘线被遮挡一部分。
+//                                rectHeight = kpx.x(200)-airHeight
+//                                x =airWidth//fixem (以左上角为起点标准)
+//                                y = airHeight
+//                                all_radius = kpx.x(30f)//圆角（所有的圆角；包括气泡）
+//                                isAirRadius = false//气泡是否具备圆角
+//                                bg_color = Color.LTGRAY
+//                                strokeColor = Color.CYAN
+//                                strokeWidth = kpx.x(2f)
+//                                //圆角和虚线一起使用；效果好像不是很好
+//                                //dashWidth=kpx.x(15f)
+//                                //dashGap=kpx.x(10f)
+//                            }
+//                            draw { canvas, paint ->
+//                                //画气泡
+//                                KCanvasUtils.drawAirBubbles(canvas, airEnty)
+//                            }
+//                        }.lparams {
+//                            topMargin=kpx.x(30)
+//                            leftMargin=topMargin
+//                            width=kpx.x(300)
+//                            height=kpx.x(200)
+//                        }
+
 /**
  * 一般View。继承圆角组件。
  */
