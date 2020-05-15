@@ -1,12 +1,15 @@
 package cn.oi.klittle.era.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 //                        fixme 调用案例；居中换行
 //                        KAutoLinefeedCenterLayout {
@@ -67,48 +70,60 @@ public class KAutoLinefeedCenterLayout extends ViewGroup {
     private int mRowTotalCount = 0;
 
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        int childLeft = getPaddingLeft();
-        int childTop = getPaddingTop();
-        int childRight = getMeasuredWidth() - getPaddingRight();
-        int availableWidth = childRight - childLeft;
-        int curLeft;
-        int curTop = childTop;
-        int maxHeight = 0;
-        int childHeight;
-        int childWidth;
-        int childIndex = 0;
-        for (int j = 0; j < mRowTotalCount; j++) {
-            Integer childNum = itemLineNum.get(j);
-            curLeft = childLeft + (availableWidth - itemLineWidth.get(j)) / 2;
-            int verticalMargin = 0;
-            for (int i = 0; i < childNum; i++) {
-                View child = getChildAt(childIndex++);
-                if (child.getVisibility() == View.GONE) {
-                    continue;
-                }
-                childWidth = child.getMeasuredWidth();
-                childHeight = child.getMeasuredHeight();
-                MarginLayoutParams params = (CenterLayoutParams) child.getLayoutParams();
-                int marginRight = 0, marginTop = 0, marginBottom;
-                if (params instanceof MarginLayoutParams) {
-                    marginRight = params.rightMargin;
-                    marginTop = params.topMargin;
-                    marginBottom = params.bottomMargin;
-                    if (childNum > 1 && i == 0) {
-                        verticalMargin = marginTop + marginBottom;
-                    }
-                }
-                child.layout(curLeft, curTop, curLeft + childWidth, curTop + childHeight);
-                if (maxHeight < childHeight) {
-                    maxHeight = childHeight;
-                }
-                curLeft += childWidth + mChildSpacing + marginRight;
-            }
-            curTop += maxHeight + mRowSpacing + verticalMargin;
-            maxHeight = 0;
+    public void draw(Canvas canvas) {
+        try {
+            super.draw(canvas);
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedCenterLayout->draw()异常：\t" + e.getMessage());
         }
+    }
 
+    @Override
+    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        try {
+            int childLeft = getPaddingLeft();
+            int childTop = getPaddingTop();
+            int childRight = getMeasuredWidth() - getPaddingRight();
+            int availableWidth = childRight - childLeft;
+            int curLeft;
+            int curTop = childTop;
+            int maxHeight = 0;
+            int childHeight;
+            int childWidth;
+            int childIndex = 0;
+            for (int j = 0; j < mRowTotalCount; j++) {
+                Integer childNum = itemLineNum.get(j);
+                curLeft = childLeft + (availableWidth - itemLineWidth.get(j)) / 2;
+                int verticalMargin = 0;
+                for (int i = 0; i < childNum; i++) {
+                    View child = getChildAt(childIndex++);
+                    if (child.getVisibility() == View.GONE) {
+                        continue;
+                    }
+                    childWidth = child.getMeasuredWidth();
+                    childHeight = child.getMeasuredHeight();
+                    MarginLayoutParams params = (CenterLayoutParams) child.getLayoutParams();
+                    int marginRight = 0, marginTop = 0, marginBottom;
+                    if (params instanceof MarginLayoutParams) {
+                        marginRight = params.rightMargin;
+                        marginTop = params.topMargin;
+                        marginBottom = params.bottomMargin;
+                        if (childNum > 1 && i == 0) {
+                            verticalMargin = marginTop + marginBottom;
+                        }
+                    }
+                    child.layout(curLeft, curTop, curLeft + childWidth, curTop + childHeight);
+                    if (maxHeight < childHeight) {
+                        maxHeight = childHeight;
+                    }
+                    curLeft += childWidth + mChildSpacing + marginRight;
+                }
+                curTop += maxHeight + mRowSpacing + verticalMargin;
+                maxHeight = 0;
+            }
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedCenterLayout->onLayout()异常：\t" + e.getMessage());
+        }
     }
 
     @Override

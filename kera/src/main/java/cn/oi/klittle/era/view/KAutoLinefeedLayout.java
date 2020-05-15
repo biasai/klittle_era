@@ -1,9 +1,12 @@
 package cn.oi.klittle.era.view;
 
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 //                        fixme 调用案例；向左靠齐。没有居中。
 //                        KAutoLinefeedLayout {
@@ -55,42 +58,55 @@ public class KAutoLinefeedLayout extends ViewGroup {
     }
 
     @Override
+    public void draw(Canvas canvas) {
+        try {
+            super.draw(canvas);
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->draw()异常：\t" + e.getMessage());
+        }
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         layoutHorizontal();
     }
 
     private void layoutHorizontal() {
-        final int count = getChildCount();
-        final int lineWidth = getMeasuredWidth() - getPaddingLeft()
-                - getPaddingRight();
-        int paddingTop = getPaddingTop();
-        int childTop = 0;
-        int childLeft = getPaddingLeft();
+        try {
+            final int count = getChildCount();
+            final int lineWidth = getMeasuredWidth() - getPaddingLeft()
+                    - getPaddingRight();
+            int paddingTop = getPaddingTop();
+            int childTop = 0;
+            int childLeft = getPaddingLeft();
 
-        int availableLineWidth = lineWidth;
-        int maxLineHight = 0;
+            int availableLineWidth = lineWidth;
+            int maxLineHight = 0;
 
-        for (int i = 0; i < count; i++) {
-            final View child = getChildAt(i);
-            if (child == null) {
-                continue;
-            } else if (child.getVisibility() != GONE) {
-                final int childWidth = child.getMeasuredWidth();
-                final int childHeight = child.getMeasuredHeight();
+            for (int i = 0; i < count; i++) {
+                final View child = getChildAt(i);
+                if (child == null) {
+                    continue;
+                } else if (child.getVisibility() != GONE) {
+                    final int childWidth = child.getMeasuredWidth();
+                    final int childHeight = child.getMeasuredHeight();
 
-                if (availableLineWidth < childWidth) {
-                    availableLineWidth = lineWidth;
-                    paddingTop = paddingTop + maxLineHight;
-                    childLeft = getPaddingLeft();
-                    maxLineHight = 0;
+                    if (availableLineWidth < childWidth) {
+                        availableLineWidth = lineWidth;
+                        paddingTop = paddingTop + maxLineHight;
+                        childLeft = getPaddingLeft();
+                        maxLineHight = 0;
+                    }
+                    childTop = paddingTop;
+                    setChildFrame(child, childLeft, childTop, childWidth,
+                            childHeight);
+                    childLeft += childWidth;
+                    availableLineWidth = availableLineWidth - childWidth;
+                    maxLineHight = Math.max(maxLineHight, childHeight);
                 }
-                childTop = paddingTop;
-                setChildFrame(child, childLeft, childTop, childWidth,
-                        childHeight);
-                childLeft += childWidth;
-                availableLineWidth = availableLineWidth - childWidth;
-                maxLineHight = Math.max(maxLineHight, childHeight);
             }
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->layoutHorizontal()异常：\t" + e.getMessage());
         }
     }
 
