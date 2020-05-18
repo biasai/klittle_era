@@ -5,14 +5,29 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.TransitionDrawable
 import android.os.Build
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.TranslateAnimation
 import cn.oi.klittle.era.base.KBaseView
+import cn.oi.klittle.era.utils.KBitmapUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.utils.KTimerUtils
+import org.jetbrains.anko.runOnUiThread
+
+//                                fxime 多图片渐变动画调用案例
+//                                GlobalScope.async {
+//                                var overrideWidth = kpx.x(640)
+//                                var overrideHeight = kpx.x(795)
+//                                //fixme 位图
+//                                var bm1 = KGlideUtils.getBitmapFromResouce(R.mipmap.timg, overrideWidth, overrideHeight)
+//                                var bm2 = KGlideUtils.getBitmapFromResouce(R.mipmap.timg2, overrideWidth, overrideHeight)
+//                                startTransition(bm1,bm2,durationMillis=3000)
+//                            }
 
 /**
  * 二：基本组件，动画(属性动画，只是耗性能，不耗内存。亲测只要是局部变量即用即消。),resh刷新，选择器。
@@ -54,6 +69,7 @@ open class K2AnimeWidget : K1Widget {
 
     var objectAnimatorScaleX: ObjectAnimator? = null
     var objectAnimatorScaleY: ObjectAnimator? = null
+
     //缩放动画(因为有两个属性。就不添加监听了)
     //pivotX,pivotY 变换基准点，默认居中
     fun scale(repeatCount: Int, duration: Long, vararg value: Float, pivotX: Float = w / 2f, pivotY: Float = h / 2f) {
@@ -192,6 +208,7 @@ open class K2AnimeWidget : K1Widget {
     protected var kmmAlpha: Float = 1F
 
     var kTimer: KTimerUtils.KTimer? = null
+
     //fixme 定时刷新
     fun refresh(count: Long = 60, unit: Long = 1000, firstUnit: Long = 0, callback: (num: Long) -> Unit): KTimerUtils.KTimer? {
         if (context != null && context is Activity) {
@@ -356,13 +373,77 @@ open class K2AnimeWidget : K1Widget {
         KSelectorUtils.selectorTextColor(viewGroup, KSelectorUtils.parseColor(NormalColor)!!, KSelectorUtils.parseColor(PressColor), KSelectorUtils.parseColor(SelectColor), KSelectorUtils.parseColor(FocuseColor), KSelectorUtils.parseColor(HoverColor))
     }
 
+//                                fxime 多图片渐变动画调用案例
+//                                GlobalScope.async {
+//                                var overrideWidth = kpx.x(640)
+//                                var overrideHeight = kpx.x(795)
+//                                //fixme 位图
+//                                var bm1 = KGlideUtils.getBitmapFromResouce(R.mipmap.timg, overrideWidth, overrideHeight)
+//                                var bm2 = KGlideUtils.getBitmapFromResouce(R.mipmap.timg2, overrideWidth, overrideHeight)
+//                                startTransition(bm1,bm2,durationMillis=3000)
+//                            }
+    var imageTransitionDrawable: TransitionDrawable? = null
+    var imageTransitionBitmap: ArrayList<Bitmap?>? = null//保存渐变位图；方便销毁
+
+    /**
+     * fixme 多图片渐变动画
+     * @param args 多个位图
+     * @param durationMillis 渐变时间;从第一个位图到第二个位图的过渡时间。单位毫秒。
+     */
+    fun startTransition(vararg args: Bitmap?, durationMillis: Int = 3000) {
+        try {
+            if (imageTransitionBitmap == null) {
+                imageTransitionBitmap = ArrayList()
+            }
+            destroyTransitionBitmap()
+            var drawables: Array<BitmapDrawable?> = arrayOfNulls(args.size)
+            var index = 0
+            args?.forEach {
+                drawables[index++] = KBitmapUtils.bitmapToDrawable(it)
+                imageTransitionBitmap?.add(it)//记录渐变位图
+            }
+            if (drawables.size > 0) {
+                //fixme 位图渐变对象
+                imageTransitionDrawable = TransitionDrawable(drawables)
+                context?.runOnUiThread {
+                    //fixme 必须在主线程中设置才有效。
+                    if (imageTransitionDrawable != null) {
+                        //设置背景图片为渐变图片
+                        setBackgroundDrawable(imageTransitionDrawable)
+                        //经过3000ms的图片渐变过程
+                        imageTransitionDrawable?.startTransition(durationMillis)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            KLoggerUtils.e("K2AnimeWidget->startTransition()异常：\t" + e.message)
+        }
+    }
+
+    //fixme 销毁渐变位图
+    fun destroyTransitionBitmap() {
+        imageTransitionBitmap?.forEach {
+            it?.let {
+                if (!it.isRecycled) {
+                    it.recycle()//fixme 位图销毁
+                }
+            }
+        }
+        imageTransitionBitmap?.clear()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         objectAnimatorScaleX = null
         objectAnimatorScaleY = null
         objectAnimatorRotation = null
         kTimer?.end()
-        kTimer=null
+        kTimer = null
+        destroyTransitionBitmap()
+        imageTransitionDrawable?.clearColorFilter()
+        imageTransitionDrawable = null
+        imageTransitionBitmap?.clear()
+        imageTransitionBitmap = null
     }
 
 }

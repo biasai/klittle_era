@@ -216,7 +216,7 @@ data class KAutoBgEntity(var view: View?,
      */
     var isAutoBging = false//fixme true 正在执行，false 执行完毕;私有属性，防止重复执行。
     var job_res: Deferred<Any?>? = null//job?.cancel()可以取消当前协程的任务哦。
-    fun autoBg(resId: Int?, isRGB_565: Boolean = this.isRGB_565): Deferred<Any?>? {
+    fun autoBg(resId: Int?, isRGB_565: Boolean = this.isRGB_565,callback:((bitmap:Bitmap)->Unit)?=null): Deferred<Any?>? {
         if (this.resId != resId || job_res == null || !job_res!!.isActive || job_res!!.isCancelled) {
             if (autoBg != null && !autoBg!!.isRecycled && this.resId == resId) {
                 isAutoBging = false
@@ -239,12 +239,17 @@ data class KAutoBgEntity(var view: View?,
                         job_res = KGlideUtils.getBitmapFromResouce(resId, width, height, isCenterCrop = isCenterCrop) { key, bitmap ->
                             this@KAutoBgEntity.key = key
                             autoBg = bitmap
-                            requestLayout()
                             isAutoBging = false
                             try {
                                 job_res?.cancel()//fixme 取消上一次
                             }catch (e:Exception){e.printStackTrace()}
                             job_res = null
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
+                            requestLayout()//fixme 会跳转主线程主动刷新。防止回调的后面。最后执行。
                         }
                     } else {
                         //fixme 同步
@@ -273,6 +278,11 @@ data class KAutoBgEntity(var view: View?,
                                     }
                                 }
                             }
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
                             requestLayout()//fixme 会跳转主线程主动刷新。
                         }
                         isAutoBging = false
@@ -290,7 +300,7 @@ data class KAutoBgEntity(var view: View?,
     }
 
     var job_assets: Deferred<Any?>? = null//job?.cancel()可以取消当前协程的任务哦。
-    fun autoBgFromAssets(assetsPath: String?, isRGB_565: Boolean = this.isRGB_565): Deferred<Any?>? {
+    fun autoBgFromAssets(assetsPath: String?, isRGB_565: Boolean = this.isRGB_565,callback:((bitmap:Bitmap)->Unit)?=null): Deferred<Any?>? {
         if (this.assetsPath != assetsPath || job_assets == null || !job_assets!!.isActive || job_assets!!.isCancelled) {
             if (assetsPath != null && !isAutoBging && isDraw) {
                 if (autoBg != null && !autoBg!!.isRecycled && this.assetsPath == assetsPath) {
@@ -309,10 +319,15 @@ data class KAutoBgEntity(var view: View?,
                         job_assets = KGlideUtils.getBitmapFromAssets(assetsPath, width, height, isCenterCrop = isCenterCrop) { key, bitmap ->
                             this@KAutoBgEntity.key = key
                             autoBg = bitmap
-                            requestLayout()
                             isAutoBging = false
                             job_assets?.cancel()
                             job_assets = null
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
+                            requestLayout()
                         }
                     } else {
                         if (isInSampleSize) {
@@ -340,8 +355,14 @@ data class KAutoBgEntity(var view: View?,
                                     }
                                 }
                             }
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
                             requestLayout()
                         }
+                        isAutoBging = false
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -356,7 +377,7 @@ data class KAutoBgEntity(var view: View?,
 
     var job_file: Deferred<Any?>? = null//job?.cancel()可以取消当前协程的任务哦。
     //fixme 来自sd存储卡
-    fun autoBgFromFile(filePath: String?, isRGB_565: Boolean = this.isRGB_565): Deferred<Any?>? {
+    fun autoBgFromFile(filePath: String?, isRGB_565: Boolean = this.isRGB_565,callback:((bitmap:Bitmap)->Unit)?=null): Deferred<Any?>? {
         if (this.filePath != filePath || job_file == null || !job_file!!.isActive || job_file!!.isCancelled) {
             if (autoBg != null && !autoBg!!.isRecycled && this.filePath == filePath) {
                 isAutoBging = false
@@ -375,10 +396,15 @@ data class KAutoBgEntity(var view: View?,
                         job_file = KGlideUtils.getBitmapFromPath(filePath, width, height, isCenterCrop = isCenterCrop) { key, bitmap ->
                             autoBg = bitmap
                             this@KAutoBgEntity.key = key
-                            requestLayout()
                             isAutoBging = false
                             job_file?.cancel()
                             job_file = null
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
+                            requestLayout()
                         }
                     } else {
                         //当前线程
@@ -409,8 +435,14 @@ data class KAutoBgEntity(var view: View?,
                                     }
                                 }
                             }
+                            callback?.let {
+                                if (autoBg!=null&&!autoBg!!.isRecycled){
+                                    it(autoBg!!)
+                                }
+                            }
                             requestLayout()
                         }
+                        isAutoBging = false
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -473,7 +505,7 @@ data class KAutoBgEntity(var view: View?,
      * isLoad 是否显示进度条，默认不显示
      * isRepeat fixme 是否允许重复加载（网络重复请求）;再次最好允许，防止加载相同图片的时候，加载不出。
      * fixme width,height位图的宽和高(最好手动设置一下，或者延迟一下，不能无法获取宽和高，或者先设置lparam(常态)也可以)
-     * @param finish 回调，fixme 最好等回调完成之后，再配置autoBg_press{}其他状态。防止位图为空。
+     * @param finish 位图回调，fixme 最好等回调完成之后，再配置autoBg_press{}其他状态。防止位图为空。
      */
     fun autoBgFromUrl(url: String?, isLoad: Boolean = false, isRepeat: Boolean = true, isRGB_565: Boolean = false, finish: ((bitmap: Bitmap) -> Unit)? = null): Deferred<Any?>? {
         if (url != null && !isAutoBging && isDraw) {

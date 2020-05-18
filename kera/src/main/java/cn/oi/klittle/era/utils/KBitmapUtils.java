@@ -37,31 +37,45 @@ public class KBitmapUtils {
      * @param drawable Drawable对象
      * @return 对应的Bitmap对象
      */
-    private static Bitmap drawableToBitmap(Drawable drawable) {
-        Bitmap bitmap;
-
-        //如果本身就是BitmapDrawable类型 直接转换即可
-        if (drawable instanceof BitmapDrawable) {
-            BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
-            if (bitmapDrawable.getBitmap() != null) {
-                return bitmapDrawable.getBitmap();
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+        Bitmap bitmap = null;
+        try {
+            //如果本身就是BitmapDrawable类型 直接转换即可
+            if (drawable instanceof BitmapDrawable) {
+                BitmapDrawable bitmapDrawable = (BitmapDrawable) drawable;
+                if (bitmapDrawable.getBitmap() != null) {
+                    return bitmapDrawable.getBitmap();
+                }
             }
+            //取得Drawable固有宽高
+            if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
+                //创建一个1x1像素的单位色图
+                bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+            } else {
+                //直接设置一下宽高和ARGB
+                bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+            }
+            //重新绘制Bitmap
+            Canvas canvas = new Canvas(bitmap);
+            drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+            drawable.draw(canvas);
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("KBitmapUtils->drawableToBitmap()异常：\t" + e.getMessage());
         }
-
-        //取得Drawable固有宽高
-        if (drawable.getIntrinsicWidth() <= 0 || drawable.getIntrinsicHeight() <= 0) {
-            //创建一个1x1像素的单位色图
-            bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        } else {
-            //直接设置一下宽高和ARGB
-            bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        }
-
-        //重新绘制Bitmap
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
         return bitmap;
+    }
+
+    /**
+     * 将位图Bitmap转成BitmapDrawable【Drawable的子类】
+     *
+     * @param bitmap 位图
+     * @return
+     */
+    public static BitmapDrawable bitmapToDrawable(Bitmap bitmap) {
+        if (bitmap != null && !bitmap.isRecycled()) {
+            return new BitmapDrawable(bitmap);
+        }
+        return null;
     }
 
 
@@ -134,13 +148,29 @@ public class KBitmapUtils {
         return blurBitmap(context, bitmap, blurRadius, true);
     }
 
+
+//                            fixme 毛玻璃效果，调用案例。
+//                          kview {
+//                          autoBg {
+//                              width = kpx.x(640)
+//                              height = kpx.x(795)
+//                              autoBg(R.mipmap.timg){
+//                                  autoBg= KBitmapUtils.blurBitmap(ctx, it, 25f, true)//fixme 毛玻璃效果
+//                              }
+//                          }
+//                        }.lparams {
+//                            width = kpx.x(640)
+//                            height = kpx.x(795)
+//                            topMargin = kpx.x(50)
+//                        }
+
     /**
      * 模糊图片的具体方法；fixme 用的是安卓原生 ScriptIntrinsicBlur里的算法；速度很快；效果杠杠的。
      *
      * @param context    上下文对象
      * @param bitmap     需要模糊的图片
-     * @param blurRadius 模糊等级【0 ~ 25之间】
-     * @param isRecycled 是否释放掉原图
+     * @param blurRadius 模糊等级【0 ~ 25之间】;一般都是设置25
+     * @param isRecycled 是否释放掉原图；一般都释放,设置为true
      * @return 模糊处理后的图片
      */
     public static Bitmap blurBitmap(Context context, Bitmap bitmap, float blurRadius, boolean isRecycled) {
