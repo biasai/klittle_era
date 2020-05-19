@@ -464,6 +464,32 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KGradientScrollView(ctx) }, theme = 0) { init() }
         }
 
+        //                    fixme 有垂直滚动条的弹性ScrollView;调用案例
+//                kScrollViewBar(ctx, this)?.apply {
+//                    verticalLayout {  }
+//                }
+
+        //fixme 有垂直滚动条的弹性ScrollView
+        fun kscrollViewBar(context: Context?, viewGroup: ViewGroup?): KGradientScrollView? {
+            try {
+                if (context != null && viewGroup != null) {
+                    var scrollView = LayoutInflater.from(context).inflate(
+                            R.layout.kera_widget_scrollview, viewGroup, false) as KGradientScrollView//fixme 和RecyclerView一样；在xml布局文件中加载才会有滚动条。
+                    viewGroup?.addView(scrollView)
+                    scrollView?.setVerticalScrollBarEnabled(true)
+                    scrollView?.isFillViewport = true
+                    return scrollView
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            return null
+        }
+
+        fun kScrollViewBar(context: Context?, viewGroup: ViewGroup?): KGradientScrollView? {
+            return kscrollViewBar(context, viewGroup)
+        }
+
         inline fun ViewManager.kgradientView(init: (@AnkoViewDslMarker KGradientView).() -> Unit): KGradientView {
             return ankoView({ ctx: Context -> KGradientView(ctx) }, theme = 0) { init() }
         }

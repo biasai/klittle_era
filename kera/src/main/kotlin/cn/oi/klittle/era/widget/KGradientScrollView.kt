@@ -58,10 +58,13 @@ import org.jetbrains.anko.runOnUiThread
  */
 open class KGradientScrollView : KBounceScrollView {
 
-    //constructor(context: Context) : super(context) {}
+    constructor(context: Context) : super(context) {}
+    //fixme 不要使用 ContextThemeWrapper(context, R.style.kera_nestedScrollBarStyle);布局样式会坏掉。布局会错乱！
+    //fixme 调用 kScrollViewBar(ctx, this)?.apply {}有垂直滚动条；并且布局不会错乱，亲测！
+
     //fixme setVerticalScrollBarEnabled(true)或isVerticalScrollBarEnabled=true; 显示滑动条。NestedScrollView无效（本身默认没有滑动条），ScrollView有效（默认有滑动条）
     //fixme 现在设置R.style.kera_nestedScrollBarStyle滑动条样式。setVerticalScrollBarEnabled(true)滑动条就会显示出来。滚动的时候滑动条才会显示出来，没滑动时，滑动条不显示。
-    constructor(context: Context) : super(ContextThemeWrapper(context, R.style.kera_nestedScrollBarStyle)) {}//fixme 代码中设置style样式案例。
+    //constructor(context: Context) : super(ContextThemeWrapper(context, R.style.kera_nestedScrollBarStyle)) {}//fixme 代码中设置style样式案例。布局会错乱，不要使用。
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {

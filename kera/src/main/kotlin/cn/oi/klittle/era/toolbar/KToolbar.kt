@@ -231,6 +231,11 @@ open class KToolbar {
                     //fixme 在此最外层控件，必须是线性布局，其他布局会报错。
                     contentView = KVerticalLayout(this).apply {
                         padding = 0
+                        inner {
+                            radius {
+                                bgHorizontalColors(Color.parseColor("#0078D7"), Color.parseColor("#1A86DB"))//fixme 默认背景颜色
+                            }
+                        }
                         relativeLayout {
                             //返回键
                             leftTextView = KTextView(this).apply {
