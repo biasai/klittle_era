@@ -19,7 +19,7 @@ import cn.oi.klittle.era.utils.KSelectorUtils
 import cn.oi.klittle.era.utils.KTimerUtils
 import org.jetbrains.anko.runOnUiThread
 
-//                                fxime 多图片渐变动画调用案例
+//                                fixme 两张图片渐变动画调用案例
 //                                GlobalScope.async {
 //                                var overrideWidth = kpx.x(640)
 //                                var overrideHeight = kpx.x(795)
@@ -373,7 +373,7 @@ open class K2AnimeWidget : K1Widget {
         KSelectorUtils.selectorTextColor(viewGroup, KSelectorUtils.parseColor(NormalColor)!!, KSelectorUtils.parseColor(PressColor), KSelectorUtils.parseColor(SelectColor), KSelectorUtils.parseColor(FocuseColor), KSelectorUtils.parseColor(HoverColor))
     }
 
-//                                fxime 多图片渐变动画调用案例
+    //                                fxime 多图片渐变动画调用案例
 //                                GlobalScope.async {
 //                                var overrideWidth = kpx.x(640)
 //                                var overrideHeight = kpx.x(795)
@@ -383,28 +383,49 @@ open class K2AnimeWidget : K1Widget {
 //                                startTransition(bm1,bm2,durationMillis=3000)
 //                            }
     var imageTransitionDrawable: TransitionDrawable? = null
-    var imageTransitionBitmap: ArrayList<Bitmap?>? = null//保存渐变位图；方便销毁
+    var imageTransitionBitmaps: ArrayList<Bitmap?>? = null//保存渐变位图；方便销毁
+    private var imageTransitionSize = 0
 
     /**
-     * fixme 多图片渐变动画
-     * @param args 多个位图
+     * fixme 两张图片渐变动画
+     * @param args 多个位图;fixme 目前为止只支持两张位图；多了没有效果；少于两张位图会报错；即：目前只能是两张位图。
      * @param durationMillis 渐变时间;从第一个位图到第二个位图的过渡时间。单位毫秒。
      */
     fun startTransition(vararg args: Bitmap?, durationMillis: Int = 3000) {
         try {
-            if (imageTransitionBitmap == null) {
-                imageTransitionBitmap = ArrayList()
+            destroyTransitionBitmap(*args)
+            if (args == null) {
+                return
             }
-            destroyTransitionBitmap()
+            args?.let {
+                if (it.size <= 1) {
+                    return//fixme 少于两张位图会报错；
+                }
+            }
+            if (imageTransitionBitmaps == null) {
+                imageTransitionBitmaps = ArrayList()
+            }
+            imageTransitionBitmaps?.clear()
             var drawables: Array<BitmapDrawable?> = arrayOfNulls(args.size)
             var index = 0
             args?.forEach {
                 drawables[index++] = KBitmapUtils.bitmapToDrawable(it)
-                imageTransitionBitmap?.add(it)//记录渐变位图
+                imageTransitionBitmaps?.add(it)//记录渐变位图
             }
             if (drawables.size > 0) {
                 //fixme 位图渐变对象
-                imageTransitionDrawable = TransitionDrawable(drawables)
+                if (imageTransitionDrawable == null || Build.VERSION.SDK_INT < 23 || imageTransitionSize != args.size) {
+                    imageTransitionDrawable = TransitionDrawable(drawables)
+                } else if (Build.VERSION.SDK_INT >= 23) {
+                    var index = 0
+                    drawables?.forEach {
+                        imageTransitionDrawable?.setDrawable(index, it)//需要23（6.0）以上才支持。
+                        index++
+                    }
+                }
+                args?.let {
+                    imageTransitionSize = it.size//fixme 记录上一次位图数量。数量不一致；需要重新创建TransitionDrawable（）；不然会报下标空指针异常。
+                }
                 context?.runOnUiThread {
                     //fixme 必须在主线程中设置才有效。
                     if (imageTransitionDrawable != null) {
@@ -420,30 +441,53 @@ open class K2AnimeWidget : K1Widget {
         }
     }
 
-    //fixme 销毁渐变位图
-    fun destroyTransitionBitmap() {
-        imageTransitionBitmap?.forEach {
+    /**
+     * fixme 销毁上一次渐变位图
+     * @param args 本次渐变的位图不销毁。会进行对比。可以为空。
+     */
+    fun destroyTransitionBitmap(vararg args: Bitmap?) {
+        imageTransitionBitmaps?.forEach {
             it?.let {
                 if (!it.isRecycled) {
-                    it.recycle()//fixme 位图销毁
+                    var bm = it
+                    var has = false
+                    args?.forEach {
+                        if (bm == it) {
+                            has = true
+                            return@forEach
+                        }
+                    }
+                    if (!has) {
+                        //fixme 位图不相同就销毁
+                        it.recycle()//fixme 位图销毁
+                    }
                 }
             }
         }
-        imageTransitionBitmap?.clear()
+        imageTransitionBitmaps?.clear()
+        context?.runOnUiThread {
+            setBackgroundDrawable(null)//背景置空；必须在主线程中设置；不然可能会报错。
+        }
+        //imageTransitionBitmap和imageTransitionDrawable在这里不要置空；在onDestroy（）在置空。
     }
 
     override fun onDestroy() {
-        super.onDestroy()
-        objectAnimatorScaleX = null
-        objectAnimatorScaleY = null
-        objectAnimatorRotation = null
-        kTimer?.end()
-        kTimer = null
-        destroyTransitionBitmap()
-        imageTransitionDrawable?.clearColorFilter()
-        imageTransitionDrawable = null
-        imageTransitionBitmap?.clear()
-        imageTransitionBitmap = null
+        try {
+            super.onDestroy()
+            objectAnimatorScaleX = null
+            objectAnimatorScaleY = null
+            objectAnimatorRotation = null
+            kTimer?.end()
+            kTimer = null
+            destroyTransitionBitmap(null)
+            imageTransitionDrawable?.clearColorFilter()
+            imageTransitionDrawable = null
+            imageTransitionBitmaps?.clear()
+            imageTransitionBitmaps = null
+            setBackgroundDrawable(null)//背景置空
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 }
