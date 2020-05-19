@@ -181,7 +181,7 @@ open class KWebSocketClient(serverUri: String) : WebSocketClient(URI(serverUri))
                 }
                 isHearting = false//心跳结束，跳出循环。
             } catch (e: java.lang.Exception) {
-                KLoggerUtils.e("心跳数据发送异常：\t" + e.message)
+                KLoggerUtils.e("心跳数据发送异常：\t" + e.message,isLogEnable = true)
             }
         }
     }

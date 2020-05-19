@@ -211,7 +211,7 @@ object KIntentUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("发送短信异常：\t" + e.message)
+            KLoggerUtils.e("发送短信异常：\t" + e.message,isLogEnable = true)
         }
     }
 

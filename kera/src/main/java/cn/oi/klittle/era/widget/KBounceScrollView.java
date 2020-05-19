@@ -37,7 +37,7 @@ public class KBounceScrollView extends NestedScrollView {
         try {
             super.draw(canvas);
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("KBounceScrollView滑动异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KBounceScrollView滑动异常：\t" + e.getMessage(),true);
         }
     }
 

@@ -62,7 +62,7 @@ public class KAutoLinefeedLayout extends ViewGroup {
         try {
             super.draw(canvas);
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->draw()异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->draw()异常：\t" + e.getMessage(),true);
         }
     }
 
@@ -106,7 +106,7 @@ public class KAutoLinefeedLayout extends ViewGroup {
                 }
             }
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->layoutHorizontal()异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KAutoLinefeedLayout->layoutHorizontal()异常：\t" + e.getMessage(),true);
         }
     }
 

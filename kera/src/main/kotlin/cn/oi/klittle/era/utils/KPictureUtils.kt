@@ -104,7 +104,7 @@ object KPictureUtils {
             // bm = BitmapFactory.decodeFile(path);
         } catch (e: Exception) {
             // TODO: handle exception
-            KLoggerUtils.e("相册图片路径获取失败" + e.message)
+            KLoggerUtils.e("KPictrueUtils 相册图片路径获取失败" + e.message,isLogEnable = true)
         }
         return photoPath
     }
@@ -138,7 +138,7 @@ object KPictureUtils {
             activity.startActivityForResult(intent, DEFAULT_KEYS_PICTURE_PHOTO)//自定义相册标志
             this.cllback = callback2
         } catch (e: Exception) {
-            KLoggerUtils.e("相册崩坏" + e.message)
+            KLoggerUtils.e("相册崩坏" + e.message,isLogEnable = true)
             galleryPackName?.let {
                 if (e.message?.contains(it) ?: false) {
                     if (!it.equals(packNameError)) {
@@ -315,7 +315,7 @@ object KPictureUtils {
                             }
                         } catch (e: Exception) {
                             // TODO: handle exception
-                            KLoggerUtils.e("相机崩坏2:\t" + e.message)
+                            KLoggerUtils.e("相机崩坏2:\t" + e.message,isLogEnable = true)
                             CameraPackName?.let {
                                 if (e.message?.contains(it) ?: false) {
                                     if (!it.equals(packNameError)) {
@@ -449,7 +449,7 @@ object KPictureUtils {
                     }
                 }
             }
-            KLoggerUtils.e("视频相册崩坏2" + e.message)
+            KLoggerUtils.e("视频相册崩坏2" + e.message,isLogEnable = true)
         }
 
     }
@@ -498,7 +498,7 @@ object KPictureUtils {
                     }
                 } catch (e: Exception) {
                     // TODO: handle exception
-                    KLoggerUtils.e("相机崩坏" + e.message)
+                    KLoggerUtils.e("相机崩坏" + e.message,isLogEnable = true)
                     CameraPackName?.let {
                         if (e.message?.contains(it) ?: false) {
                             if (!it.equals(packNameError)) {
@@ -533,7 +533,7 @@ object KPictureUtils {
                         }
                     } catch (e: Exception) {
                         // TODO: handle exception
-                        KLoggerUtils.e("相册图片路径获取失败" + e.message)
+                        KLoggerUtils.e("相册图片路径获取失败" + e.message,isLogEnable = true)
                     }
                     if (KPermissionUtils.requestPermissionsStorage(activity)) {
                         //有SD卡权限（可以直接操作原始图片）
@@ -573,7 +573,7 @@ object KPictureUtils {
                         }
                     }
                 } catch (e: Exception) {
-                    KLoggerUtils.e("图库相册异常:\t" + e.message)
+                    KLoggerUtils.e("图库相册异常:\t" + e.message,isLogEnable = true)
                 }
             } else if (requestCode == DEFAULT_KEYS_CROP_PHOTO) {
                 //裁剪
@@ -643,7 +643,7 @@ object KPictureUtils {
                         }
                     } catch (e: Exception) {
                         videoPath = null
-                        KLoggerUtils.e("本地视频路径获取失败:\t" + e.message);
+                        KLoggerUtils.e("本地视频路径获取失败:\t" + e.message,isLogEnable = true);
                     }
                     //Log.e("test", "视频路径:\t" + videoPath + "\t路径:\t" + getPhotoPath(activity, data) + "\t名称:\t" + fileName + "\turi路径:\t" + data.data.path)
                     videoPath?.let {
@@ -751,14 +751,14 @@ object KPictureUtils {
                 fout.close()
             } catch (e: IOException) {
                 e.printStackTrace()
-                KLoggerUtils.e("相册图片异常0" + e.message)
+                KLoggerUtils.e("相册图片异常0" + e.message,isLogEnable = true)
             }
             bitmap.recycle()//释放
             bitmap = null
         } catch (e: FileNotFoundException) {
-            KLoggerUtils.e("相册图片异常1" + e.message)
+            KLoggerUtils.e("相册图片异常1" + e.message,isLogEnable = true)
         } catch (e: Exception) {
-            KLoggerUtils.e("相册图片异常2" + e.message)
+            KLoggerUtils.e("相册图片异常2" + e.message,isLogEnable = true)
         }
     }
 

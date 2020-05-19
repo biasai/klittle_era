@@ -176,7 +176,7 @@ public class KZxingUtils {
             }
             return bitmap;
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("生成条码异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("生成条码异常：\t" + e.getMessage(),true);
             e.printStackTrace();
         }
 

@@ -9,6 +9,7 @@ import cn.oi.klittle.era.activity.photo.entity.LocalMediaFolder
 import cn.oi.klittle.era.activity.photo.manager.KLocalMediaLoader
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.utils.KFileUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import java.io.File
 
 open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
@@ -28,8 +29,24 @@ open class KPhotoPresenter(activity: FragmentActivity, var ui: KPhotoUi?) {
                 try {
                     it?.let {
                         if (it.size <= 0) {
+                            //fixme 修复图库为空时，第一张拍摄图片不显示问题。
+                            KPictureSelector.cameraFirstKLocalMedia?.let {
+                                var data = it
+                                callback?.let {
+                                    var datas = mutableListOf<KLocalMedia>()
+                                    datas.add(data)
+                                    it(datas)
+                                }
+                            }
+                            if (KPictureSelector.cameraFirstKLocalMedia == null) {
+                                KPictureSelector.currentSelectNum = 0
+                            }
                             return@let
                         }
+                        KPictureSelector.cameraFirstKLocalMedia?.let {
+                            KPictureSelector.getCheckedFolder()?.remove(it)
+                        }
+                        KPictureSelector.cameraFirstKLocalMedia = null
                         if (it.size <= KPictureSelector.checkedFolderIndex) {
                             KPictureSelector.checkedFolderIndex = 0
                         }

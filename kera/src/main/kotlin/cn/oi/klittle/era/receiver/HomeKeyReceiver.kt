@@ -31,7 +31,7 @@ class HomeKeyReceiver : BroadcastReceiver() {
                     //KLoggerUtils.e("解锁")
                 }
             } catch (e: Exception) {
-                KLoggerUtils.e("home按键监听异常：\t" + e.message)
+                KLoggerUtils.e("cn.oi.klittle.era.receiver.HomeKeyReceiver: home按键监听异常：\t" + e.message,isLogEnable = true)
             }
         }
     }

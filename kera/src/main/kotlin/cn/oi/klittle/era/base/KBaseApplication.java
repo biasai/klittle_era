@@ -73,7 +73,7 @@ public class KBaseApplication extends Application {
                 KCatchException.getInstance().init(sInstance);
             } catch (Exception e) {
                 e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t" + e.getMessage());
+                KLoggerUtils.INSTANCE.e("KBaseApplication初始化异常：\t" + e.getMessage(),true);
             }
         }
         return sInstance;

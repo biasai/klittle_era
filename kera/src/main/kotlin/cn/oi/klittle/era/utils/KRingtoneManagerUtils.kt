@@ -111,7 +111,7 @@ object KRingtoneManagerUtils {
                 //KLoggerUtils.e("初始化结束:\t" + (System.currentTimeMillis() - t))
             }
         } catch (e: Exception) {
-            KLoggerUtils.e("KRingtoneManagerUtils重置异常:\t" + e.message)
+            KLoggerUtils.e("KRingtoneManagerUtils重置异常:\t" + e.message,isLogEnable = true)
             e.printStackTrace()
         }
         isResting = false//执行完毕
@@ -273,7 +273,7 @@ object KRingtoneManagerUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("KRingtoneManagerUtils反射异常：\t" + e.message)
+            KLoggerUtils.e("KRingtoneManagerUtils反射异常：\t" + e.message,isLogEnable = true)
             try {
                 var clazz = Ringtone::class.java
                 var audio = clazz.getDeclaredField("mAudio")
@@ -286,7 +286,7 @@ object KRingtoneManagerUtils {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("KRingtoneManagerUtils反射异常2：\t" + e.message)
+                KLoggerUtils.e("KRingtoneManagerUtils反射异常2：\t" + e.message,isLogEnable = true)
             }
         }
     }

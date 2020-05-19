@@ -100,10 +100,31 @@ object KPictureSelector {
     //初始化当前选中个数
     fun initCurrentSelectNum() {
         currentSelectNum = 0
-        getCheckedFolder()?.forEach {
-            if (it.isChecked) {
-                currentSelectNum++
+        try {
+            KPictureSelector.cameraFirstKLocalMedia?.let {
+                try {
+                    if (it.isChecked) {
+                        File(it.path)?.let {
+                            if (it.exists() && it.length() > 0) {
+                                currentSelectNum = 1
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常：\t"+e.message)
+                }
             }
+            getCheckedFolder()?.forEach {
+                if (it.isChecked) {
+                    File(it.path)?.let {
+                        if (it.exists() && it.length() > 0) {
+                            currentSelectNum++
+                        }
+                    }
+                }
+            }
+        }catch (e:Exception){
+            KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常2：\t"+e.message)
         }
     }
 
@@ -230,6 +251,7 @@ object KPictureSelector {
 
     var selectionMedia: MutableList<KLocalMedia>? = null//自己记录选中的数据
     private var selectionMedia2: MutableList<KLocalMedia>? = null//用户自己传入的选中数据
+
     //默认选中的数据
     fun selectionMedia(selectionMedia: MutableList<KLocalMedia>? = KPictureSelector.selectionMedia): KPictureSelector {
         selectionMedia2 = selectionMedia
@@ -350,12 +372,12 @@ object KPictureSelector {
         if (file != null) {
             var meidas = mutableListOf<File>()
             meidas.add(file)
-            openExternalPreview2(activity=activity, sharedElement=sharedElement,index = 0, meidas=meidas, isCheckable=false)
+            openExternalPreview2(activity = activity, sharedElement = sharedElement, index = 0, meidas = meidas, isCheckable = false)
         }
     }
 
     fun openExternalPreview2(activity: Activity? = KBaseUi.getActivity(), file: File?) {
-        openExternalPreview2(activity=activity,sharedElement = null,file = file)
+        openExternalPreview2(activity = activity, sharedElement = null, file = file)
     }
 
     /**
@@ -368,6 +390,7 @@ object KPictureSelector {
     }
 
     private var selectCallback: ((selectDatas: MutableList<KLocalMedia>) -> Unit)? = null
+
     //fixme 选中回调
     fun selectCallback(callback: () -> Unit) {
         if (selectCallback != null) {
@@ -481,6 +504,15 @@ object KPictureSelector {
                 selectionMedia?.add(it)
             }
         }
+        selectionMedia?.let {
+            if (it.size<=0){
+                cameraFirstKLocalMedia?.let {
+                    if (it.isChecked){
+                        selectionMedia?.add(it)
+                    }
+                }
+            }
+        }
         return selectionMedia
     }
 
@@ -530,6 +562,8 @@ object KPictureSelector {
         return addNum(File(path))
     }
 
+    var cameraFirstKLocalMedia: KLocalMedia? = null//fixme 相册为空时；记录相机拍照的第一个图片（防止相册图片为空时，图片没有显示问题）。
+
     fun addNum(file: File?): Boolean {
         file?.let {
             if (it.path != null && it.length() > 0) {
@@ -548,6 +582,7 @@ object KPictureSelector {
                 data?.isChecked = true
                 data?.checkedNum = currentSelectNum
                 selectMap?.put(data.path!!, data)//fixme 保存选中的键值
+                cameraFirstKLocalMedia = data
                 return true//选中成功
             } else {
                 data?.isChecked = false

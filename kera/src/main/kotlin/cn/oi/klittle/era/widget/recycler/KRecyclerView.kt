@@ -527,7 +527,7 @@ open class KRecyclerView : RecyclerView {
         try {
             super.draw(c)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("RecyclerView draw异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("RecyclerView draw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 
@@ -535,7 +535,7 @@ open class KRecyclerView : RecyclerView {
         try {
             super.dispatchDraw(canvas)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("RecyclerView dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("RecyclerView dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 
@@ -543,7 +543,7 @@ open class KRecyclerView : RecyclerView {
         try {
             super.onMeasure(widthSpec, heightSpec)
         }catch (e:java.lang.Exception){
-            KLoggerUtils.e("RecyclerView onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("RecyclerView onMeasure异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.GestureDetectorCompat
 import androidx.viewpager.widget.ViewPager
-import cn.oi.klittle.era.utils.KLoggerUtils.e
 
 /**
  * 禁止滑动的ViewPager,也可以继承VerticalViewPager

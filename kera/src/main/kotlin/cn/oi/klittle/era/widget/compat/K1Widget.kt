@@ -406,7 +406,7 @@ open class K1Widget : K0Widget {
                             }
                         }
                     } catch (e: Exception) {
-                        KLoggerUtils.e("K1Widget.kt点击事件异常：\t" + KCatchException.getExceptionMsg(e))
+                        KLoggerUtils.e("K1Widget.kt点击事件异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
                     }
                 }
                 hasClick = true
@@ -795,7 +795,7 @@ open class K1Widget : K0Widget {
         try {
             super.dispatchDraw(canvas)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 
@@ -803,7 +803,7 @@ open class K1Widget : K0Widget {
         try {
             super.onMeasure(widthSpec, heightSpec)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 
@@ -840,7 +840,7 @@ open class K1Widget : K0Widget {
             } catch (e: Exception) {
                 //防止异常。
                 e.printStackTrace()
-                KLoggerUtils.e("原生 super.draw 异常：\t" + e.message)
+                KLoggerUtils.e("原生 super.draw 异常：\t" + e.message,isLogEnable = true)
             }
             canvas?.apply {
                 mCanvas = canvas
@@ -883,7 +883,7 @@ open class K1Widget : K0Widget {
             mCamera?.restore()//fixme 恢复相机的状态；防止异常
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("自定义View draw 异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义View draw 异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 

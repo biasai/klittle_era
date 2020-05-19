@@ -101,7 +101,7 @@ object KGlideUtils {
                                 it.remove(key)
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                KLoggerUtils.e("kGlideUtils remove移除键值异常1：\t" + e.message)
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常1：\t" + e.message,isLogEnable = true)
                             }
                         }
                     }
@@ -111,7 +111,7 @@ object KGlideUtils {
                                 it.remove(key)
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                KLoggerUtils.e("kGlideUtils remove移除键值异常2：\t" + e.message)
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常2：\t" + e.message,isLogEnable = true)
                             }
                         }
                     }
@@ -119,7 +119,7 @@ object KGlideUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("kGlideUtils remove移除键值异常：\t" + e.message)
+            KLoggerUtils.e("kGlideUtils remove移除键值异常：\t" + e.message,isLogEnable = true)
         }
     }
 

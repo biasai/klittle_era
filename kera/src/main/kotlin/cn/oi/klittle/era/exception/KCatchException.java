@@ -61,7 +61,7 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
                 Thread.setDefaultUncaughtExceptionHandler(this);
             } catch (Exception e) {
                 e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("KCatchException异常处理，初始化异常：\t" + e.getMessage());
+                KLoggerUtils.INSTANCE.e("KCatchException异常处理，初始化异常：\t" + e.getMessage(),true);
             }
         }
     }
@@ -144,7 +144,7 @@ public class KCatchException implements Thread.UncaughtExceptionHandler {
                 //fixme 测试发现，两次异常时间太短（小于1300毫秒左右），系统也无法重复。亲测。
                 KIntentUtils.INSTANCE.goRest();//fixme app应用崩溃后，自动重启（如果不重启，整个应用也是卡着的。没有任何响应。）
             } else {
-                KLoggerUtils.INSTANCE.e("全局异常，关闭App");
+                KLoggerUtils.INSTANCE.e("全局异常，关闭App",true);
                 android.os.Process.killProcess(android.os.Process.myPid());
                 System.exit(10);
             }

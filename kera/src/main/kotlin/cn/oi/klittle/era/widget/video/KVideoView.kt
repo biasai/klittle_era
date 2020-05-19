@@ -199,7 +199,7 @@ class KVideoView : VideoView {
                                 try {
                                     it()
                                 } catch (e: Exception) {
-                                    KLoggerUtils.e("video预加载prepare()回调异常：\t" + e.message)
+                                    KLoggerUtils.e("video预加载prepare()回调异常：\t" + e.message,isLogEnable = true)
                                     e.printStackTrace()
                                 }
                             }
@@ -553,7 +553,7 @@ class KVideoView : VideoView {
             super.suspend()
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("video销毁异常;suspend():\t" + e.message)
+            KLoggerUtils.e("video销毁异常;suspend():\t" + e.message,isLogEnable = true)
         }
     }
 

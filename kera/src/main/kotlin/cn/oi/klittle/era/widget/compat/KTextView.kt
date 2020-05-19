@@ -393,7 +393,7 @@ open class KTextView : KAutoSplitTextView {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KLoggerUtils.e("文本框数值异常：\t" + e.message)
+                    KLoggerUtils.e("KTextView 文本框数值异常：\t" + e.message,isLogEnable = true)
                 }
             }
             inputText = null

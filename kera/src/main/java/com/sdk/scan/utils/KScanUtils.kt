@@ -237,7 +237,7 @@ object KScanUtils {
                 onScanResult(barcodeType, barcodeStr)
                 stopScan()
             } catch (e: Exception) {
-                KLoggerUtils.e("扫描广播接收异常：\t" + e.message)
+                KLoggerUtils.e("KScanUtils 扫描广播接收异常：\t" + e.message,isLogEnable = true)
             }
         }
     }

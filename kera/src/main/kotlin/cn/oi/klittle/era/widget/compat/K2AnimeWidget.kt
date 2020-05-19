@@ -437,7 +437,7 @@ open class K2AnimeWidget : K1Widget {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e("K2AnimeWidget->startTransition()异常：\t" + e.message)
+            KLoggerUtils.e("K2AnimeWidget->startTransition()异常：\t" + e.message,isLogEnable = true)
         }
     }
 

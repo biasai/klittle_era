@@ -215,7 +215,7 @@ public class KNfcActivity extends KBaseActivity {
             }
         } catch (Exception e) {
             isNfcSupport = false;
-            KLoggerUtils.INSTANCE.e("NFC初始化异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(),true);
         }
     }
 
@@ -335,7 +335,7 @@ public class KNfcActivity extends KBaseActivity {
             return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));
         } catch (Exception e) {
             e.printStackTrace();
-            KLoggerUtils.INSTANCE.e("NFC读卡异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KNfcActivity NFC读卡异常：\t" + e.getMessage(),true);
         }
         return "";
     }

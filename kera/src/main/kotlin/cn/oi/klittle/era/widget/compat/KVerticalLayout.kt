@@ -206,7 +206,7 @@ open class KVerticalLayout : LinearLayout {
         try {
             super.onMeasure(widthSpec, heightSpec)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义KVerticalLayout onMeasure异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义KVerticalLayout onMeasure异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
     }
 
@@ -214,7 +214,7 @@ open class KVerticalLayout : LinearLayout {
         try {
             super.draw(canvas)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义KVerticalLayout draw异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义KVerticalLayout draw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
 
     }
@@ -258,7 +258,7 @@ open class KVerticalLayout : LinearLayout {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e("自定义KVerticalLayout dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("自定义KVerticalLayout dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
 
     }
@@ -295,7 +295,7 @@ open class KVerticalLayout : LinearLayout {
             destroyDrawingCache()
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("销毁异常:\t" + e.message)
+            KLoggerUtils.e("销毁异常:\t" + e.message,isLogEnable = true)
         }
     }
 

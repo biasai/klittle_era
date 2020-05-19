@@ -10,6 +10,7 @@ import cn.oi.klittle.era.activity.preview.KPreviewActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import java.util.concurrent.TimeUnit
 //import kotlinx.coroutines.experimental.async
@@ -28,6 +29,7 @@ open class KPhotoActivity : KBaseActivity() {
     var sp: KPhotoSelectPopu? = null
 
     var checkedFolderIndex = KPictureSelector.checkedFolderIndex//记录当前选中目录
+
     //图片下拉选择列表
     fun showPopu() {
         try {
@@ -62,6 +64,9 @@ open class KPhotoActivity : KBaseActivity() {
                     KPictureSelector.initCurrentSelectNum()//先初始化选中个数。
                     ui?.photoAdapter?.datas = it
                     ui?.photoAdapter?.notifyDataSetChanged()
+                    if (it.size <= 0) {
+                        KPictureSelector.currentSelectNum = 0
+                    }
                     checkNumCallback(KPictureSelector.currentSelectNum)
                     //标题
                     ui?.toolbar?.titleTextView?.setText(KPictureSelector.getCheckedFolderName())
@@ -143,7 +148,17 @@ open class KPhotoActivity : KBaseActivity() {
                     delay(500)
                     ui?.photoAdapter?.isRecyclerBitmap = true//恢复释放位图
                 }
-                checkNumCallback(KPictureSelector.currentSelectNum)//当前选中数
+                var has = false
+                ui?.photoAdapter?.datas?.let {
+                    if (it.size > 0) {
+                        has = true
+                    }
+                }
+                if (has) {
+                    checkNumCallback(KPictureSelector.currentSelectNum)//当前选中数
+                } else {
+                    checkNumCallback(0)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -201,6 +216,10 @@ open class KPhotoActivity : KBaseActivity() {
     override fun finish() {
         super.finish()
         try {
+            KPictureSelector.cameraFirstKLocalMedia?.let {
+                KPictureSelector.getCheckedFolder()?.remove(it)
+            }
+            KPictureSelector.cameraFirstKLocalMedia = null
             KPictureSelector?.getCheckedFolder()?.let {
                 it.forEach {
                     it.key?.let {

@@ -180,7 +180,7 @@ object KSelectorUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("selectorRippleDrawable异常：\t" + e.message)
+            KLoggerUtils.e("selectorRippleDrawable异常：\t" + e.message,isLogEnable = true)
         }
 
     }

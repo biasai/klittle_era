@@ -428,7 +428,7 @@ open class KBaseDialog() {
                 }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("弹窗毛玻璃异常:\t" + e.message)
+                KLoggerUtils.e("弹窗毛玻璃异常:\t" + e.message,isLogEnable = true)
             }
         }
     }
@@ -510,7 +510,7 @@ open class KBaseDialog() {
                 return dialog?.findViewById<T?>(id)
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("dialog控件获取异常：\t" + e.message)
+                KLoggerUtils.e("dialog控件获取异常：\t" + e.message,isLogEnable = true)
             }
         }
         return null
@@ -525,7 +525,7 @@ open class KBaseDialog() {
             //System.gc()//fixme 这个可能会阻塞程序，不要轻易调用。垃圾回收交给系统自动去处理。
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("dialog.recycles()异常：\t" + e.message)
+            KLoggerUtils.e("dialog.recycles()异常：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -548,7 +548,7 @@ open class KBaseDialog() {
                 try {
                     it.dismiss()//再关闭一次。
                 } catch (e: Exception) {
-                    KLoggerUtils.e("dialog关闭异常：\t" + e.message)
+                    KLoggerUtils.e("dialog关闭异常：\t" + e.message,isLogEnable = true)
                 }
                 //it.dismiss()//fixme 关闭;不管是在主线程，还是非主线程。都可以关闭。亲测有效。
             }
@@ -581,7 +581,7 @@ open class KBaseDialog() {
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
-                        KLoggerUtils.e("dialog显示异常：\t" + e.message)
+                        KLoggerUtils.e("dialog显示异常：\t" + e.message,isLogEnable = true)
                     }
                 }
             } catch (e: java.lang.Exception) {

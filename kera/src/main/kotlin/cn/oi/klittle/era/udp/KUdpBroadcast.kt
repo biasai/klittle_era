@@ -60,7 +60,7 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
                 socket?.broadcast = true//fixme 默认就是true;为了以防万一，还是受到设置true;单播和广播的区别不是这个属性。区别是ip
                 socket?.soTimeout = soTimeout//fixme 要在一开始的时候就设置。不要在发送或接收的时候设置。不然卡死。
             } catch (e: Exception) {
-                KLoggerUtils.e(TAG + "打开异常" + e.message)
+                KLoggerUtils.e(TAG + "KUdpBroadCast打开异常" + e.message,isLogEnable = true)
             }
     }
 
@@ -102,7 +102,7 @@ open class KUdpBroadcast(open var port: Int? = KIpPort.port(), open var ip: Stri
                 callback?.let {
                     it(KState(false, e.message))//fixme 发送失败
                 }
-                KLoggerUtils.e(TAG + "发送异常：\t" + e.message)
+                KLoggerUtils.e(TAG + "KUdpBroadcast发送异常：\t" + e.message,isLogEnable = true)
             }
         }
     }

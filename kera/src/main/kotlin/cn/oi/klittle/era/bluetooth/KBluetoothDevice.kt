@@ -114,7 +114,7 @@ class KBluetoothDevice(var gatt: BluetoothGatt?) {
             characteristic = null
             onMessage = null
         } catch (e: Exception) {
-            KLoggerUtils.e("KBluetoothDevice断开异常：\t" + e.message)
+            KLoggerUtils.e("KBluetoothDevice断开异常：\t" + e.message,isLogEnable = true)
         }
 
     }

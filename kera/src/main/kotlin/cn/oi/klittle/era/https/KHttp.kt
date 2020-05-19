@@ -923,13 +923,13 @@ object KHttp {
                     return b
                 } catch (e: Exception) {
                     //fixme 异常一 流异常
-                    KLoggerUtils.e(" 异常一 流异常:\t" + e.printStackTrace())
+                    KLoggerUtils.e("KHttp 异常一 流异常:\t" + e.printStackTrace(),isLogEnable = true)
                 } finally {
                     // 使用finally块来关闭输入流
                 }
             } catch (e: Exception) {
                 //fixme 异常二 网络链接异常
-                KLoggerUtils.e(" 异常二 网络链接异常:\t" + e.printStackTrace())
+                KLoggerUtils.e("kHttp 异常二 网络链接异常:\t" + e.printStackTrace(),isLogEnable = true)
             }
         }
         return null

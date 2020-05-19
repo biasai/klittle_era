@@ -60,7 +60,7 @@ public class KBitmapUtils {
             drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
             drawable.draw(canvas);
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("KBitmapUtils->drawableToBitmap()异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KBitmapUtils->drawableToBitmap()异常：\t" + e.getMessage(),true);
         }
         return bitmap;
     }

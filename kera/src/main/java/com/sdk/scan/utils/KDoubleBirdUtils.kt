@@ -70,7 +70,7 @@ object KDoubleBirdUtils {
                 stopScan()
                 //KLoggerUtils.e("扫描广播接收：\t"+barcodeStr)
             } catch (e: Exception) {
-                KLoggerUtils.e("扫描广播接收异常：\t" + e.message)
+                KLoggerUtils.e("扫描广播接收异常：\t" + e.message,isLogEnable = true)
             }
         }
     }

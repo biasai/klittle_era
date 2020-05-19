@@ -114,7 +114,7 @@ object KUniQueUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("32位字符串转UUID格式异常:\t" + e.message)
+            KLoggerUtils.e("32位字符串转UUID格式异常:\t" + e.message,isLogEnable = true)
         }
         return null
     }

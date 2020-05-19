@@ -13,6 +13,7 @@ import cn.oi.klittle.era.activity.photo.utils.KDateUtils
 import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPictureUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import cn.oi.klittle.era.widget.recycler.adapter.KAdapter

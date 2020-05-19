@@ -60,7 +60,7 @@ public class KDrawerLayoutUtils {
             edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (displaySize.x *
                     displayWidthPercentage)));
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Left:\t" + KCatchException.getExceptionMsg(e));
+            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Left:\t" + KCatchException.getExceptionMsg(e),true);
         }
     }
 
@@ -83,7 +83,7 @@ public class KDrawerLayoutUtils {
             edgeSizeField.setInt(leftDragger, Math.max(edgeSize, (int) (displaySize.x *
                     displayWidthPercentage)));
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Right:\t" + KCatchException.getExceptionMsg(e));
+            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Right:\t" + KCatchException.getExceptionMsg(e),true);
         }
     }
 
@@ -103,7 +103,7 @@ public class KDrawerLayoutUtils {
             drawerLayout.mLeftDragger.mEdgeSize =Math.max(edgeSize, (int) (displaySize.x *
                     displayWidthPercentage));
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Left:\t" + KCatchException.getExceptionMsg(e));
+            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Left:\t" + KCatchException.getExceptionMsg(e),true);
         }
     }
 
@@ -116,7 +116,7 @@ public class KDrawerLayoutUtils {
             drawerLayout.mRightDragger.mEdgeSize =Math.max(edgeSize, (int) (displaySize.x *
                     displayWidthPercentage));
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Right:\t" + KCatchException.getExceptionMsg(e));
+            KLoggerUtils.INSTANCE.e("DrawerLayoutUtils异常Right:\t" + KCatchException.getExceptionMsg(e),true);
         }
     }
 

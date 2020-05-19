@@ -278,7 +278,7 @@ public class KAppUtils {
                     context.startActivity(intent);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    KLoggerUtils.INSTANCE.e("安装异常：\t" + e.getMessage());
+                    KLoggerUtils.INSTANCE.e("安装异常：\t" + e.getMessage(), true);
                 }
             } else {
                 //Toast.makeText(context, "安装包解析错误", Toast.LENGTH_LONG).show();
@@ -291,7 +291,7 @@ public class KAppUtils {
                 KFileUtils.getInstance().delFile(apk.getAbsolutePath(), null, null);
             }
         } catch (Exception e) {
-            KLoggerUtils.INSTANCE.e("App安装失败:\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("App安装失败:\t" + e.getMessage(),true);
         }
     }
 

@@ -87,7 +87,7 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goActivity()跳转异常：\t" + e.message)
+            KLoggerUtils.e("goActivity()跳转异常：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -143,7 +143,7 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("startActivityForResult()跳转异常：\t" + e.message)
+            KLoggerUtils.e("startActivityForResult()跳转异常：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -197,7 +197,7 @@ object KUiHelper {
             goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message)
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -215,7 +215,7 @@ object KUiHelper {
             goActivity(intent, sharedElement,nowActivity)
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message)
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -243,7 +243,7 @@ object KUiHelper {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("共享元素跳转异常：\t" + e.message)
+                KLoggerUtils.e("共享元素跳转异常：\t" + e.message,isLogEnable = true)
             }
         } else {
             //普通正常跳转
@@ -268,7 +268,7 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goActivityForResult()共享元素跳转异常：\t" + e.message)
+            KLoggerUtils.e("goActivityForResult()共享元素跳转异常：\t" + e.message,isLogEnable = true)
         }
     }
 

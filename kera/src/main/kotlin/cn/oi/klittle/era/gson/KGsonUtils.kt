@@ -149,7 +149,7 @@ object KGsonUtils {
                     }
                     //Log.e("test","obj:\t"+obj);
                 } catch (e: Exception) {
-                    KLoggerUtils.e(msg = "get()异常:\t" + e.message)
+                    KLoggerUtils.e(msg = "get()异常:\t" + e.message,isLogEnable = true)
                 }
                 // 如果type是类类型，则前面包含"class "，后面跟类名
                 if (type == "class java.lang.String" || type.equals("class java.lang.String")) {
@@ -200,7 +200,7 @@ object KGsonUtils {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message)
+            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message,isLogEnable = true)
         }
         return jsonObject
     }

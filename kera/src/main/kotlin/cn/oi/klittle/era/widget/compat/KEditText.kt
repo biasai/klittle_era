@@ -197,7 +197,7 @@ open class KEditText : KMyEditText {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("输入框setText异常2：\t" + e.message)
+            KLoggerUtils.e("输入框setText异常2：\t" + e.message,isLogEnable = true)
         }
     }
 

@@ -88,7 +88,7 @@ public class KRfidActivity extends KNfcActivity {
                                     }
                                 }
                             } catch (Exception e) {
-                                KLoggerUtils.INSTANCE.e("读卡异常：\t" + e.getMessage());
+                                KLoggerUtils.INSTANCE.e("KRfidActivity 读卡异常：\t" + e.getMessage(),true);
                                 e.printStackTrace();
                             }
                         }

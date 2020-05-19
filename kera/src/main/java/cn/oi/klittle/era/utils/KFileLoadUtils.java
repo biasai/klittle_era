@@ -88,7 +88,7 @@ public class KFileLoadUtils {
                 cacheDir = cacheDir2;
             } catch (Exception e) {
                 e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("下载文件目录创建失败：\t" + e.getMessage());
+                KLoggerUtils.INSTANCE.e("KFileLoadUtils 下载文件目录创建失败：\t" + e.getMessage(),true);
             }
 
 
@@ -102,7 +102,7 @@ public class KFileLoadUtils {
             threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maxinumPoolSize, keepAliveTime, unit, workQueue);
         } catch (Exception e) {
             e.printStackTrace();
-            KLoggerUtils.INSTANCE.e("KFileLoadUtils初始异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("KFileLoadUtils初始异常：\t" + e.getMessage(),true);
         }
     }
 

@@ -243,7 +243,7 @@ abstract class KBaseUi {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("KBaseUi destroyViewGroup（）异常：\t" + e.message)
+                KLoggerUtils.e("KBaseUi destroyViewGroup（）异常：\t" + e.message,isLogEnable = true)
             }
         }
 

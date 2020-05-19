@@ -119,7 +119,7 @@ open class KMyEditText : KTextView {
             )//监听布局加载
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("KMyEditText聚焦，隐藏软键盘异常：\t" + e.message)
+            KLoggerUtils.e("KMyEditText聚焦，隐藏软键盘异常：\t" + e.message,isLogEnable = true)
         }
     }
 
@@ -162,7 +162,7 @@ open class KMyEditText : KTextView {
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
-                            KLoggerUtils.e("软键盘弹出异常:\t" + e.message)
+                            KLoggerUtils.e("软键盘弹出异常:\t" + e.message,isLogEnable = true)
                         }
                     }
                 }
@@ -198,7 +198,7 @@ open class KMyEditText : KTextView {
                                 }
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                KLoggerUtils.e("软键盘关闭异常:\t" + e.message)
+                                KLoggerUtils.e("软键盘关闭异常:\t" + e.message,isLogEnable = true)
                             }
                         }
                     }
@@ -464,7 +464,7 @@ open class KMyEditText : KTextView {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("输入框setText异常：\t" + e.message)
+            KLoggerUtils.e("输入框setText异常：\t" + e.message,isLogEnable = true)
         }
     }
 
