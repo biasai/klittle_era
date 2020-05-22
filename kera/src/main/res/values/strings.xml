@@ -206,6 +206,11 @@
         <item>星期五</item>
         <item>星期六</item>
     </string-array>
+    <!--指纹-->
+    <string name="ksysnotfinger">您的系统版本过低，不支持指纹功能</string>
+    <string name="kdevicenotfinger">您的手机不支持指纹功能</string>
+    <string name="kfinger_notsuoping">您还未设置锁屏，请先设置锁屏并添加一个指纹</string>
+    <string name="kfinger_needone">您至少需要在系统设置中添加一个指纹</string>
     <!--异常-->
     <string name="kpackNameError">指定包名异常</string>
 </resources>

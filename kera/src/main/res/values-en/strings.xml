@@ -161,6 +161,11 @@
     <string name="klanguage_zh_rCN">Chinese (simplified)</string>
     <string name="klanguage_zh_rTW">Chinese (traditional)</string>
     <string name="klanguage_en">English</string>
+    <!--指纹-->
+    <string name="ksysnotfinger">Your system version is too low to support the fingerprint function</string>
+    <string name="kdevicenotfinger">Your phone does not support the fingerprint function</string>
+    <string name="kfinger_notsuoping">You have not set the lock screen, please set the lock screen and add a fingerprint</string>
+    <string name="kfinger_needone">You need to add at least one fingerprint to the system Settings</string>
     <!--异常-->
     <string name="kpackNameError">Specifies a package name exception</string>
 </resources>
