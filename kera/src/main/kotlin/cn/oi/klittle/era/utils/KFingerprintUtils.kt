@@ -41,6 +41,14 @@ object KFingerprintUtils {
     /**
      * 判断是否支持指纹
      * @param isShowError 如果不支持指纹功能；是否显示错误原因。
+     */
+    fun isSupportFingerprint(isShowError: Boolean = true): Boolean {
+        return supportFingerprint(isShowError) == support_success
+    }
+
+    /**
+     * 判断是否支持指纹
+     * @param isShowError 如果不支持指纹功能；是否显示错误原因。
      * @return 4表示支持。
      */
     fun supportFingerprint(isShowError: Boolean = true): Int {
