@@ -166,6 +166,11 @@
     <string name="kdevicenotfinger">Your phone does not support the fingerprint function</string>
     <string name="kfinger_notsuoping">You have not set the lock screen, please set the lock screen and add a fingerprint</string>
     <string name="kfinger_needone">You need to add at least one fingerprint to the system Settings</string>
+    <string name="kfinger_success">Fingerprint authentication successful</string>
+    <string name="kfinger_fail">Fingerprint authentication failed, please try again</string>
+    <string name="kfinger_helpCode_5">Finger moves too fast, please try again.</string>
+    <string name="kfinger_helpCode_2">Unable to process fingerprint, please try again.</string>
+    <string name="kfinger_errorCode_7">Too many attempts. Please try again later.</string>
     <!--异常-->
     <string name="kpackNameError">Specifies a package name exception</string>
 </resources>
