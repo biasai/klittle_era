@@ -15,10 +15,13 @@ import cn.oi.klittle.era.widget.compat.KView
 import org.jetbrains.anko.*
 
 //                        fixme 调用案例
-//                        var figerDialog = KFingerPrintDialog(context)
+//                        var figerDialog:KFingerPrintDialog?=null
+//                        if (figerDialog==null) {
+//                            figerDialog = KFingerPrintDialog(context)
+//                        }
 //                        //fixme 指纹认证回调
-//                        figerDialog.startListening(true) { isSuccess, info, isCancel -> }
-//                        figerDialog.show()
+//                        figerDialog?.startListening(true) { isSuccess, info, isCancel -> }
+//                        figerDialog?.show()
 
 /**
  * 指纹认证弹框
