@@ -186,7 +186,9 @@ object KFingerprintUtils {
                         //fixme 指纹验证失败，不可再验
                         //fixme 这个回调是系统的错误，无法再继续监听指纹回调；需要重新调用回调方法。startListening（）
                         var errString = errString?.toString()//系统返回的错误信息
-                        if (errorCode == 7) {
+                        if (errorCode == 5) {
+                            errString = getString(R.string.kfinger_errorCode_5)//指纹操作已取消。(如：按home键时，会回调)
+                        } else if (errorCode == 7) {
                             errString = getString(R.string.kfinger_errorCode_7)//尝试次数过多，请稍后重试。
                         }
                         if (!isSelfCancelled) {

@@ -172,6 +172,7 @@
     <string name="kfinger_fail">Fingerprint authentication failed, please try again</string>
     <string name="kfinger_helpCode_5">Finger moves too fast, please try again.</string>
     <string name="kfinger_helpCode_2">Unable to process fingerprint, please try again.</string>
+    <string name="kfinger_errorCode_5">The fingerprint operation has been cancelled.</string>
     <string name="kfinger_errorCode_7">Too many attempts. Please try again later.</string>
     <!--异常-->
     <string name="kpackNameError">Specifies a package name exception</string>

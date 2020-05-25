@@ -156,6 +156,7 @@
     <string name="kfinger_fail">指纹认证失败，请再试一次</string>
     <string name="kfinger_helpCode_5">手指移动太快，请重试。</string>
     <string name="kfinger_helpCode_2">无法处理指纹，请重试。</string>
+    <string name="kfinger_errorCode_5">指纹操作已取消。</string>
     <string name="kfinger_errorCode_7">尝试次数过多，请稍后重试。</string>
     <string name="kpackNameError">指定包名异常</string>
     <string-array name="WheelArrayDefault">
