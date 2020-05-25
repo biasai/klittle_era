@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import cn.oi.klittle.era.R
+import cn.oi.klittle.era.activity.camera.KCameraActivity
 import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
 import cn.oi.klittle.era.activity.video.KScreenVideoActivity
 import cn.oi.klittle.era.base.KBaseActivity
@@ -72,6 +73,7 @@ object KUiHelper {
 
     private var goTime = 0L
     var goFastTime = 300L
+
     //防止极短时间内，重复跳转调用。
     fun goActivity(intent: Intent, nowActivity: Activity? = getActivity()) {
         try {
@@ -87,7 +89,7 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goActivity()跳转异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("goActivity()跳转异常：\t" + e.message, isLogEnable = true)
         }
     }
 
@@ -143,13 +145,14 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("startActivityForResult()跳转异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("startActivityForResult()跳转异常：\t" + e.message, isLogEnable = true)
         }
     }
 
     var qrCallback: ((result: String) -> Unit)? = null
+
     /**
-     * 跳转到 二维码扫描界面
+     * fixme 跳转到 二维码扫描界面
      * @param qrCallback 二维码扫描结果回调(返回选择)
      */
     fun goCaptureActivity(nowActivity: Activity? = getActivity(), qrCallback: ((result: String) -> Unit)? = null) {
@@ -159,6 +162,24 @@ object KUiHelper {
                 if (it) {
                     this.qrCallback = qrCallback
                     goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
+                } else {
+                    KPermissionUtils.showFailure()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 跳转到 自定义相机界面
+     */
+    fun goCameraActivity(nowActivity: Activity? = getActivity()) {
+        try {
+            //需要相机权限（必须）
+            KPermissionUtils.requestPermissionsCamera {
+                if (it) {
+                    goActivity(KCameraActivity::class.java, nowActivity)
                 } else {
                     KPermissionUtils.showFailure()
                 }
@@ -182,6 +203,7 @@ object KUiHelper {
     val videoPath_key = "kvideoPath"
     var isPortrait_screenVideo: Boolean = false//全屏播放，是否竖屏。
     var process_msec_screenVideo: Int = 0//记录当前播放的进度
+
     /**
      * 跳转到 视频全屏播放界面
      * @param videoPath 视频播放路径（本地和网络都可以）
@@ -197,7 +219,7 @@ object KUiHelper {
             goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message, isLogEnable = true)
         }
     }
 
@@ -212,10 +234,10 @@ object KUiHelper {
             bundle.putString(videoPath_key, videoPath)
             var intent = Intent(nowActivity, KScreenVideoActivity::class.java)
             intent.putExtras(bundle)
-            goActivity(intent, sharedElement,nowActivity)
+            goActivity(intent, sharedElement, nowActivity)
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message, isLogEnable = true)
         }
     }
 
@@ -243,7 +265,7 @@ object KUiHelper {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("共享元素跳转异常：\t" + e.message,isLogEnable = true)
+                KLoggerUtils.e("共享元素跳转异常：\t" + e.message, isLogEnable = true)
             }
         } else {
             //普通正常跳转
@@ -251,12 +273,12 @@ object KUiHelper {
         }
     }
 
-    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=this.requestCode) {
+    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int = this.requestCode) {
         var intent = Intent(nowActivity, clazz)
         goActivityForResult(intent, sharedElement, nowActivity, requestCode)
     }
 
-    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=this.requestCode) {
+    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int = this.requestCode) {
         try {
             if (Build.VERSION.SDK_INT >= 21 && sharedElement != null && sharedElement.transitionName != null) {
                 if (System.currentTimeMillis() - goTime > goFastTime) {
@@ -268,7 +290,7 @@ object KUiHelper {
             }
         } catch (e: Exception) {
             //e.printStackTrace()
-            KLoggerUtils.e("goActivityForResult()共享元素跳转异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("goActivityForResult()共享元素跳转异常：\t" + e.message, isLogEnable = true)
         }
     }
 

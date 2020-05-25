@@ -74,6 +74,10 @@
             android:name="com.sdk.Qr_code.act.KCaptureActivity"
             android:launchMode="singleTop"
             android:theme="@style/KTheme_Activity_hasStatus"></activity>
+        <activity
+            android:name="cn.oi.klittle.era.activity.camera.KCameraActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_full"></activity>
 
         <meta-data
             android:name="android.max_aspect"
