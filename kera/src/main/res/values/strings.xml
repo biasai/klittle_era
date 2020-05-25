@@ -151,6 +151,8 @@
     <string name="kfinger_needone">您至少需要在系统设置中添加一个指纹</string>
     <string name="kfinger_success">指纹认证成功</string>
     <!--指纹-->
+    <string name="kfinger_yanzhen">请验证指纹解锁</string>
+    <string name="kfinger_login">请验证指纹解锁登录</string>
     <string name="kfinger_fail">指纹认证失败，请再试一次</string>
     <string name="kfinger_helpCode_5">手指移动太快，请重试。</string>
     <string name="kfinger_helpCode_2">无法处理指纹，请重试。</string>
