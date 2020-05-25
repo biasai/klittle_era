@@ -135,6 +135,7 @@ open class KFingerPrintDialog(ctx: Context, isStatus: Boolean = true, isTranspar
         //取消
         negative?.setOnClickListener {
             dismiss()
+            KFingerprintUtils.stopListening()//fixme 停止监听
         }
         isDismiss(false)//默认不消失
     }
