@@ -198,7 +198,7 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
         }
     }
 
-    var isBackCamera: Boolean = true//fixme 是否为后置摄像头，默认是。如果手机只有后置摄像头，没有前置摄像头。拍出来的任然是后置摄像头。不会报错。
+    var isBackCamera: Boolean = true//fixme 是否为后置摄像头，默认是。如果手机只有后置摄像头，没有前置摄像头。拍出来的任然是后置摄像头。不会报错。亲测。
 
     //初始化相机camera
     private fun initCamera(isBackCamera: Boolean = this.isBackCamera) {
