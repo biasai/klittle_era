@@ -124,18 +124,21 @@ abstract class KBaseUi {
     //fixme 销毁(防止泄露)；在Activity关闭的时候，记得手动调用一次（最好在finish()方法中调用，onDestroy()不一定会执行）
     //fixme 这里要注意，最好手动传入Activity,防止错误。（防止错误，就不使用默认参数了）
     private fun destroyView(activity: Activity?) {
-        destroyView(getContentView(activity))//fixme 手动到 finish() 中调用。
+        destroyView(getContentView(activity), activity)//fixme 手动到 finish() 中调用。
     }
 
 
     var destroyDelay = 1000L//fixme 单位毫秒，1000即一秒；测试一秒够了。
 
     //fixme 销毁该View及其所有的子View
-    private fun destroyView(view: View?) {
+    private fun destroyView(view: View?, activity: Activity?) {
         view?.postDelayed({
-            destroyViewGroup(view)
+            activity?.runOnUiThread {
+                destroyViewGroup(view)//要在主线程中进行
+            }
         }, destroyDelay)//fixme 防止跳转的时候效果不好(如：看到桌面，突然消失等。)。所以延迟清除；单位毫秒
         //fixme 放心 postDelayed延迟会执行的。以前4.0之前可能不会执行；现在基本百分百都会执行。
+        //fixme 之所以要延迟，是因为直接销毁，视觉效果不会。还是延迟一会儿好。
     }
 
     //统一背景色
@@ -200,8 +203,24 @@ abstract class KBaseUi {
             }
         }
 
+        //fixme Activity调用案例：KBaseUi.destroyViewGroup(contentView);注意：要在主线程中调用，不然会异常。
         //fixme 释放控件（亲测有效，能够释放View下面所有的子View）
         fun destroyViewGroup(view: View?) {
+            if (view == null) {
+                return
+            }
+            view?.let {
+                if (it is ViewGroup) {
+                    //fixme 销毁之后，后面会把子View全部清空的。
+                    if (it.childCount <= 0 || it.getTag() == 4444) {
+                        //KLoggerUtils.e("反复销毁:\t" + it.getTag()+"\t"+it.childCount+"\t"+it.id)
+                        return//fixme 防止重复调用。
+                    } else if (it.childCount > 0) {
+                        it.setTag(4444)//fixme 标志已经销毁；防止重复销毁。以防万一。
+                        //KLoggerUtils.e("正在销毁===\t"+it.id)
+                    }
+                }
+            }
             //KLoggerUtils.e("销毁")
             try {
                 if (view != null) {
@@ -243,7 +262,7 @@ abstract class KBaseUi {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                KLoggerUtils.e("KBaseUi destroyViewGroup（）异常：\t" + e.message,isLogEnable = true)
+                KLoggerUtils.e("KBaseUi destroyViewGroup（）异常：\t" + e.message, isLogEnable = true)
             }
         }
 
@@ -281,6 +300,10 @@ abstract class KBaseUi {
                 setOnTouchListener(null)
                 clearAnimation()
                 clearFocus()
+                if (this is ViewGroup) {
+                    removeAllViews()//fixme 清除所有的子View
+                    setTag(null)
+                }
                 visibility = View.GONE
             }
         }

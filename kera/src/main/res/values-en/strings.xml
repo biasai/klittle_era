@@ -98,7 +98,10 @@
     <!--打印-->
     <string name="kprint_success">Print success</string>
     <string name="kprint_fail">Printing failed</string>
-
+    <string name="ktakePicture">Taking pictures</string>
+    <string name="ktakePicture2">Continue to take photos</string>
+    <string name="kcamera_front">Front facing camera</string>
+    <string name="kcamera_back">Rear camera</string>
     <!--二维码-->
     <string name="kqr_code">Qr code/bar code</string>
     <string name="kaiding">Turn on the light</string>
@@ -172,8 +175,10 @@
     <string name="kfinger_fail">Fingerprint authentication failed, please try again</string>
     <string name="kfinger_helpCode_5">Finger moves too fast, please try again.</string>
     <string name="kfinger_helpCode_2">Unable to process fingerprint, please try again.</string>
+    <string name="kfinger_helpCode_1">Make sure your finger covers the entire sensor.</string>
     <string name="kfinger_errorCode_5">The fingerprint operation has been cancelled.</string>
     <string name="kfinger_errorCode_7">Too many attempts. Please try again later.</string>
+    <string name="kfinger_errorCode_10">The user canceled the fingerprint operation.</string>
     <!--异常-->
     <string name="kpackNameError">Specifies a package name exception</string>
 </resources>

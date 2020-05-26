@@ -187,9 +187,11 @@ object KFingerprintUtils {
                         //fixme 这个回调是系统的错误，无法再继续监听指纹回调；需要重新调用回调方法。startListening（）
                         var errString = errString?.toString()//系统返回的错误信息
                         if (errorCode == 5) {
-                            errString = getString(R.string.kfinger_errorCode_5)//指纹操作已取消。(如：按home键时，会回调)
+                            errString = getString(R.string.kfinger_errorCode_5)//指纹操作已取消。(如：按home键时，被迫取消)；
                         } else if (errorCode == 7) {
                             errString = getString(R.string.kfinger_errorCode_7)//尝试次数过多，请稍后重试。
+                        }else if (errorCode == 10) {
+                            errString = getString(R.string.kfinger_errorCode_10)//用户取消了指纹操作。即：用户主动取消。
                         }
                         if (!isSelfCancelled) {
                             if (isShowInfo) {
@@ -207,7 +209,9 @@ object KFingerprintUtils {
                         //fixme 指纹验证失败，可再验，
                         //fixme 这个错误回调，还可以继续监听指纹回调
                         var helpString = helpString?.toString()//系统返回的错误信息
-                        if (helpCode == 2) {
+                        if (helpCode == 1) {
+                            helpString = getString(R.string.kfinger_helpCode_1)//请确保您的手指覆盖整个传感器。
+                        } else if (helpCode == 2) {
                             helpString = getString(R.string.kfinger_helpCode_2)//无法处理指纹，请重试。
                         } else if (helpCode == 5) {
                             helpString = getString(R.string.kfinger_helpCode_5)//手指移动太快，请重试。

@@ -36,6 +36,7 @@ import org.jetbrains.anko.act
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import org.jetbrains.anko.contentView
 
 
 // fixme 如果在清單xml设置了Activity横屏，android:screenOrientation="landscape"；则以下方法重寫一定要设置false不然会异常。
@@ -46,6 +47,8 @@ import kotlinx.coroutines.delay
 //override fun isPortrait(): Boolean {
 //    return false
 //}
+
+//fixme isDestroyViewGroup()是否销毁视图（子类可以重写）；默认自动销毁。在finish()里。
 
 /**
  * Created by 彭治铭 on 2018/6/24.
@@ -468,6 +471,7 @@ open class KBaseActivity : AppCompatActivity() {
     private var exitTime: Long = 0
     private var exitTime2: Long = 0
     var exitIntervalTime: Long = 2000//结束间隔时间
+
     //open var exitInfo = "再按一次退出"//退出提示信息[子类可以重写]
     open fun getExitInfo(): String {
         //return getString(R.string.kexitInfo)//"别点了，再点我就要走了"
@@ -480,12 +484,14 @@ open class KBaseActivity : AppCompatActivity() {
     }
 
     private var onBackPressed1: (() -> Unit)? = null
+
     //返回返回键第一次按下监听
     fun onBackPressed1(onBackPressed1: (() -> Unit)?) {
         this.onBackPressed1 = onBackPressed1
     }
 
     private var onBackPressed2: (() -> Unit)? = null
+
     //返回返回键第二次按下监听
     fun onBackPressed2(onBackPressed2: (() -> Unit)?) {
         this.onBackPressed2 = onBackPressed2
@@ -755,15 +761,16 @@ open class KBaseActivity : AppCompatActivity() {
         KUiHelper.goActivity(intent, sharedElement, nowActivity)
     }
 
-    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=KUiHelper.requestCode) {
-        KUiHelper.goActivityForResult(clazz,sharedElement,nowActivity,requestCode)
+    fun goActivityForResult(clazz: Class<*>, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int = KUiHelper.requestCode) {
+        KUiHelper.goActivityForResult(clazz, sharedElement, nowActivity, requestCode)
     }
 
-    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int=KUiHelper.requestCode) {
-        KUiHelper.goActivityForResult(intent,sharedElement,nowActivity,requestCode)
+    fun goActivityForResult(intent: Intent, sharedElement: View?, nowActivity: Activity? = getActivity(), requestCode: Int = KUiHelper.requestCode) {
+        KUiHelper.goActivityForResult(intent, sharedElement, nowActivity, requestCode)
     }
 
     private var kTimi: KTimiAlertDialog? = null
+
     /**
      * 显示弹窗信息
      */
@@ -787,6 +794,7 @@ open class KBaseActivity : AppCompatActivity() {
     }
 
     private var kTopTimi: KTopTimiDialog? = null
+
     /**
      * 显示弹窗信息
      */
@@ -810,6 +818,7 @@ open class KBaseActivity : AppCompatActivity() {
     }
 
     var kprogressbar: KProgressDialog? = null
+
     /**
      * fixme 显示进度条
      */
@@ -882,6 +891,7 @@ open class KBaseActivity : AppCompatActivity() {
 
     private var OnGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
     private var OnGlobalLayoutListenerCallBack: (() -> Unit)? = null
+
     //fixme 监听window视图加载；视图刷选时也会回调。即判断Activity是否加载完成
     //fixme K0Widget的加载监听也是：onGlobalLayoutListener {  }；
     //fixme 一定要在setContentView()添加布局之后，再调用，才有效。
@@ -949,9 +959,33 @@ open class KBaseActivity : AppCompatActivity() {
                 //目前动画，左进，右出。
                 //overridePendingTransition是传统动画，5.0的转场动画效果不怎么好。不建议使用
                 overridePendingTransition(R.anim.kera_slide_in_left, R.anim.kera_slide_out_right)
+                if (isDestroyViewGroup()) {
+                    destroyViewGroup()//fixme 自动销毁释放视图。
+                }
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+        }
+    }
+
+    //fixme 是否释放位图;默认销毁。子类可以重写；
+    open fun isDestroyViewGroup(): Boolean {
+        return true
+    }
+
+    private var isDestroyViewGroup = false//判断释放已经销毁，防止重复销毁。
+
+    //fixme 视图销毁
+    open fun destroyViewGroup() {
+        if (!isDestroyViewGroup) {
+            isDestroyViewGroup = true
+            contentView?.postDelayed({
+                runOnUiThread {
+                    KBaseUi.destroyViewGroup(contentView)//fixme 销毁视图。要在主线程中进行。
+                }
+            }, 1000)//fixme 防止跳转的时候效果不好(如：看到桌面，突然消失等。)。所以延迟清除；单位毫秒，1000就是一秒。
+            //fixme 放心 postDelayed延迟会执行的。以前4.0之前可能不会执行；现在基本百分百都会执行。
+            //fixme 之所以要延迟，是因为直接销毁，视觉效果不会。还是延迟一会儿好。
         }
     }
 

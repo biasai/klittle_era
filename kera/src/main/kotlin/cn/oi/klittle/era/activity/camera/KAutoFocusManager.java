@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.RejectedExecutionException;
 
+import cn.oi.klittle.era.utils.KLoggerUtils;
+
 /**
  * 自动对焦
  * User:lizhangqu(513163535@qq.com)
@@ -28,7 +30,7 @@ public class KAutoFocusManager implements Camera.AutoFocusCallback{
     private boolean focusing;
     private final boolean useAutoFocus;
     private final Camera camera;
-    private AsyncTask<?,?,?> outstandingTask;
+    public AsyncTask<?,?,?> outstandingTask;
 
     public KAutoFocusManager(Camera camera) {
         this.camera = camera;
@@ -65,11 +67,14 @@ public class KAutoFocusManager implements Camera.AutoFocusCallback{
             outstandingTask = null;
             if (!stopped && !focusing) {
                 try {
-                    camera.autoFocus(this);
-                    focusing = true;
+                    if (camera!=null) {
+                        camera.autoFocus(this);
+                        focusing = true;
+                    }
                 } catch (RuntimeException re) {
                     // Have heard RuntimeException reported in Android 4.0.x+; continue?
-                    Log.e(TAG, "Unexpected exception while focusing", re);
+                    //Log.e(TAG, "Unexpected exception while focusing", re);
+                    KLoggerUtils.INSTANCE.e("KAutoFocusManager->start()异常：\t"+re.getMessage());
                     // Try again later to keep cycle going
                     autoFocusAgainLater();
                 }
@@ -110,10 +115,10 @@ public class KAutoFocusManager implements Camera.AutoFocusCallback{
         protected Object doInBackground(Object... voids) {
             try {
                 Thread.sleep(AUTO_FOCUS_INTERVAL_MS);
+                start();
             } catch (InterruptedException e) {
                 // continue
             }
-            start();
             return null;
         }
     }

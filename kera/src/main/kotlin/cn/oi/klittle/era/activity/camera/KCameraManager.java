@@ -11,6 +11,8 @@ import java.util.regex.Pattern;
 
 import cn.oi.klittle.era.base.KBaseUi;
 import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.exception.KCatchException;
+import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
  * User:lizhangqu(513163535@qq.com)
@@ -19,9 +21,9 @@ import cn.oi.klittle.era.comm.kpx;
  */
 public class KCameraManager {
     private static final String TAG = KCameraManager.class.getName();
-    private Camera camera;
+    public Camera camera;
     private Camera.Parameters parameters;
-    private KAutoFocusManager autoFocusManager;
+    public KAutoFocusManager autoFocusManager;
     private int requestedCameraId = -1;
 
     private boolean initialized;
@@ -31,57 +33,70 @@ public class KCameraManager {
     /**
      * 打开摄像头
      *
-     * @param cameraId 摄像头id
+     * @param cameraId     摄像头id
+     * @param isBackCamera 是否为后置摄像头。
      * @return Camera
      */
-    public Camera open(int cameraId) {
-        int numCameras = Camera.getNumberOfCameras();
-        if (numCameras == 0) {
-            Log.e(TAG, "No cameras!");
-            return null;
-        }
-        boolean explicitRequest = cameraId >= 0;
-        if (!explicitRequest) {
-            // Select a camera if no explicit camera requested
-            int index = 0;
-            while (index < numCameras) {
-                Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
-                Camera.getCameraInfo(index, cameraInfo);
-                if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                    break;
+    public Camera open(int cameraId, boolean isBackCamera) {
+        try {
+            int numCameras = Camera.getNumberOfCameras();
+            if (numCameras == 0) {
+                Log.e(TAG, "No cameras!");
+                return null;
+            }
+            boolean explicitRequest = cameraId >= 0;
+            if (!explicitRequest) {
+                // Select a camera if no explicit camera requested
+                int index = 0;
+                while (index < numCameras) {
+                    Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+                    Camera.getCameraInfo(index, cameraInfo);
+                    if (isBackCamera) {
+                        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                            break;//fixme 后置摄像头
+                        }
+                    } else {
+                        if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                            break;//fixme 前置摄像头
+                        }
+                    }
+                    index++;
                 }
-                index++;
+                cameraId = index;
             }
-            cameraId = index;
-        }
-        Camera camera;
-        if (cameraId < numCameras) {
-            Log.e(TAG, "Opening camera #" + cameraId);
-            camera = Camera.open(cameraId);
-        } else {
-            if (explicitRequest) {
-                Log.e(TAG, "Requested camera does not exist: " + cameraId);
-                camera = null;
+            Camera camera;
+            if (cameraId < numCameras) {
+                Log.e(TAG, "Opening camera #" + cameraId);
+                camera = Camera.open(cameraId);
             } else {
-                Log.e(TAG, "No camera facing back; returning camera #0");
-                camera = Camera.open(0);
+                if (explicitRequest) {
+                    Log.e(TAG, "Requested camera does not exist: " + cameraId);
+                    camera = null;
+                } else {
+                    Log.e(TAG, "No camera facing back; returning camera #0");
+                    camera = Camera.open(0);
+                }
             }
+            return camera;
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("kCameraManager open摄像头打开异常：\t" + KCatchException.getExceptionMsg(e));
         }
-        return camera;
+        return null;
     }
 
     /**
      * 打开camera
      *
-     * @param holder SurfaceHolder 把相机视图投射到SurfaceView上。
+     * @param holder       SurfaceHolder 把相机视图投射到SurfaceView上。
+     * @param isBackCamera 是否为后置摄像头。
      * @throws IOException
      */
-    public synchronized void openDriver(SurfaceHolder holder)
+    public synchronized void openDriver(SurfaceHolder holder, boolean isBackCamera)
             throws IOException {
         Log.e(TAG, "openDriver");
         Camera theCamera = camera;
         if (theCamera == null) {
-            theCamera = open(requestedCameraId);//打开摄像头
+            theCamera = open(requestedCameraId, isBackCamera);//打开摄像头
             if (theCamera == null) {
                 throw new IOException();
             }
@@ -272,6 +287,8 @@ public class KCameraManager {
      */
     public synchronized void takePicture(final Camera.ShutterCallback shutter, final Camera.PictureCallback raw,
                                          final Camera.PictureCallback jpeg) {
-        camera.takePicture(shutter, raw, jpeg);
+        if (camera != null) {
+            camera.takePicture(shutter, raw, jpeg);
+        }
     }
 }
