@@ -38,6 +38,8 @@ import kotlinx.coroutines.Deferred
 //}
 
 //fixme 相机拍照，返回压缩后的图片：KPictureUtils.cameraCompress{}
+//fixme photo{}系统相册
+//fixme crop{}系统裁剪
 
 /**
  *相册，相机，视频，剪切
@@ -104,7 +106,7 @@ object KPictureUtils {
             // bm = BitmapFactory.decodeFile(path);
         } catch (e: Exception) {
             // TODO: handle exception
-            KLoggerUtils.e("KPictrueUtils 相册图片路径获取失败" + e.message,isLogEnable = true)
+            KLoggerUtils.e("KPictrueUtils 相册图片路径获取失败" + e.message, isLogEnable = true)
         }
         return photoPath
     }
@@ -115,7 +117,8 @@ object KPictureUtils {
     val DEFAULT_KEYS_VIDEO_PHOTO = 3831//视频相册
     val DEFAULT_KEYS_VIDEO_CAPTURE = 3832//视频录制
     var cllback: ((file: File) -> Unit)? = null//fixme 回调，返回是原始数据文件哦。是本地原文件
-    //打开相册【不需要任何权限，亲测百分百可用】,系统会跳出一个相册选择框。无法跳过这一步【无解】。
+
+    //fixme 打开系统相册【不需要任何权限，亲测百分百可用】,系统会跳出一个相册选择框。无法跳过这一步【无解】。
     //只能选择一个。系统没有多选。都是单选。
     var galleryPackName: String? = null//相册包名
     var packNameError = KBaseUi.getString(R.string.kpackNameError)//"指定包名异常"
@@ -138,7 +141,7 @@ object KPictureUtils {
             activity.startActivityForResult(intent, DEFAULT_KEYS_PICTURE_PHOTO)//自定义相册标志
             this.cllback = callback2
         } catch (e: Exception) {
-            KLoggerUtils.e("相册崩坏" + e.message,isLogEnable = true)
+            KLoggerUtils.e("相册崩坏" + e.message, isLogEnable = true)
             galleryPackName?.let {
                 if (e.message?.contains(it) ?: false) {
                     if (!it.equals(packNameError)) {
@@ -263,6 +266,7 @@ object KPictureUtils {
     //var cramefile: File? = null//相机照片
     var cramePath: String? = null//相机照片路径
     var CameraPackName: String? = null//相机包名
+
     //相机拍照【需要相机权限,如果清单里不写明相机权限,部分设备默认是开启。但是有的设备就不行，可能异常奔溃。所以保险还是在清单里加上权限声明】
     //fixme 相机拍照，不会对图片进行压缩处理。
     //fixme 亲测相机拍摄，还需要SD卡存储的权限
@@ -315,7 +319,7 @@ object KPictureUtils {
                             }
                         } catch (e: Exception) {
                             // TODO: handle exception
-                            KLoggerUtils.e("相机崩坏2:\t" + e.message,isLogEnable = true)
+                            KLoggerUtils.e("相机崩坏2:\t" + e.message, isLogEnable = true)
                             CameraPackName?.let {
                                 if (e.message?.contains(it) ?: false) {
                                     if (!it.equals(packNameError)) {
@@ -337,6 +341,7 @@ object KPictureUtils {
     }
 
     var cropfile: File? = null//裁剪文件
+
     //图片剪辑【可以在相册，拍照回调成功后手动调用哦。】,兼容7.0。模拟器上没有上面效果。6.0的真机都没问题。7.0的真机没有测试。
     //w:h 宽和高的比率
     //width:height实际裁剪的宽和高的具体值。
@@ -449,12 +454,13 @@ object KPictureUtils {
                     }
                 }
             }
-            KLoggerUtils.e("视频相册崩坏2" + e.message,isLogEnable = true)
+            KLoggerUtils.e("视频相册崩坏2" + e.message, isLogEnable = true)
         }
 
     }
 
     var cameraVideoFile: File? = null//视频录制文件
+
     /**
      * 跳转系统相机视频拍摄【需要相机权限】,进行视频录制
      * 手机拍摄的格式一般都是mp4的格式。
@@ -498,7 +504,7 @@ object KPictureUtils {
                     }
                 } catch (e: Exception) {
                     // TODO: handle exception
-                    KLoggerUtils.e("相机崩坏" + e.message,isLogEnable = true)
+                    KLoggerUtils.e("相机崩坏" + e.message, isLogEnable = true)
                     CameraPackName?.let {
                         if (e.message?.contains(it) ?: false) {
                             if (!it.equals(packNameError)) {
@@ -533,7 +539,7 @@ object KPictureUtils {
                         }
                     } catch (e: Exception) {
                         // TODO: handle exception
-                        KLoggerUtils.e("相册图片路径获取失败" + e.message,isLogEnable = true)
+                        KLoggerUtils.e("相册图片路径获取失败" + e.message, isLogEnable = true)
                     }
                     if (KPermissionUtils.requestPermissionsStorage(activity)) {
                         //有SD卡权限（可以直接操作原始图片）
@@ -573,7 +579,7 @@ object KPictureUtils {
                         }
                     }
                 } catch (e: Exception) {
-                    KLoggerUtils.e("图库相册异常:\t" + e.message,isLogEnable = true)
+                    KLoggerUtils.e("图库相册异常:\t" + e.message, isLogEnable = true)
                 }
             } else if (requestCode == DEFAULT_KEYS_CROP_PHOTO) {
                 //裁剪
@@ -643,7 +649,7 @@ object KPictureUtils {
                         }
                     } catch (e: Exception) {
                         videoPath = null
-                        KLoggerUtils.e("本地视频路径获取失败:\t" + e.message,isLogEnable = true);
+                        KLoggerUtils.e("本地视频路径获取失败:\t" + e.message, isLogEnable = true);
                     }
                     //Log.e("test", "视频路径:\t" + videoPath + "\t路径:\t" + getPhotoPath(activity, data) + "\t名称:\t" + fileName + "\turi路径:\t" + data.data.path)
                     videoPath?.let {
@@ -751,14 +757,14 @@ object KPictureUtils {
                 fout.close()
             } catch (e: IOException) {
                 e.printStackTrace()
-                KLoggerUtils.e("相册图片异常0" + e.message,isLogEnable = true)
+                KLoggerUtils.e("相册图片异常0" + e.message, isLogEnable = true)
             }
             bitmap.recycle()//释放
             bitmap = null
         } catch (e: FileNotFoundException) {
-            KLoggerUtils.e("相册图片异常1" + e.message,isLogEnable = true)
+            KLoggerUtils.e("相册图片异常1" + e.message, isLogEnable = true)
         } catch (e: Exception) {
-            KLoggerUtils.e("相册图片异常2" + e.message,isLogEnable = true)
+            KLoggerUtils.e("相册图片异常2" + e.message, isLogEnable = true)
         }
     }
 

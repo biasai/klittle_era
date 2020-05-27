@@ -103,6 +103,38 @@ object KStringUtils {
         return true//空
     }
 
+    //获取手机号格式，如：	15312345678 -> 153 1234 5678
+    fun getTelStr(tel: String?): String? {
+        removeBlank(tel)?.let {
+            if (it.length >= 9) {// fixme 普通手机号一般长度是11位。也有其他长度的。
+                //fixme substring(包括开始下标，不包括结束下标)
+                return it.substring(0, 3) + " " + it.substring(3, 7) + " " + it.substring(7)
+            }
+        }
+        return null
+    }
+
+    //获取手机号格式2，如：	15312345678 -> 153 **** 5678
+    fun getTelStr2(tel: String?): String? {
+        removeBlank(tel)?.let {
+            if (it.length >= 9) {// fixme 普通手机号一般长度是11位。也有其他长度的。
+                //fixme substring(包括开始下标，不包括结束下标)
+                return it.substring(0, 3) + " " + "****" + " " + it.substring(7)
+            }
+        }
+        return null
+    }
+
+    //去除文本内的所有空格
+    fun removeBlank(text: String?): String? {
+        removeEnter(text)?.let {
+            it.trim()?.let {
+                return it.replace(" ", "")
+            }
+        }
+        return ""
+    }
+
     //去除换行符(清楚有效)
     fun removeEnter(text: String?): String? {
         return text?.replace("\r", "")?.replace("\n", "")
@@ -357,10 +389,10 @@ object KStringUtils {
 //            }
 //        }
 //        return s1
-        var s22= removeZero(s2)
+        var s22 = removeZero(s2)
         s22?.trim()?.let {
-            if (it.length>0){
-                return s1 + "." +it
+            if (it.length > 0) {
+                return s1 + "." + it
             }
         }
         return s1
@@ -386,7 +418,7 @@ object KStringUtils {
                     //KLoggerUtils.e("第一个:\t"+s2.substring(0, 1)+"最后一个\t"+s2.substring(length, length+1)+"\tlength：\t"+length+"\ts2:\t"+s2)
                     //substring(0，1)包含参数一所在位置；不包含参数二。即包含下标0的字符，不包含下标1的字符。fixme 即不包含参数二所在的位置。
                     //fixme 防止 1.00 ；2.000；后面全是0的无法去除。
-                    if (s2.substring(0, 1) == "0" && s2.substring(length, length+1) == "0") {
+                    if (s2.substring(0, 1) == "0" && s2.substring(length, length + 1) == "0") {
                         return ""
                     }
                 }

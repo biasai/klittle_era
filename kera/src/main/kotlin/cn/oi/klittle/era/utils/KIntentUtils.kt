@@ -9,6 +9,7 @@ import android.content.Intent
 import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
+import android.provider.ContactsContract
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import cn.oi.klittle.era.base.KBaseActivityManager
@@ -211,7 +212,42 @@ object KIntentUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("发送短信异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("发送短信异常：\t" + e.message, isLogEnable = true)
+        }
+    }
+
+    val requestCode_people = 3811;
+    var peopleCallback: ((name: String?, tel: String?) -> Unit)? = null
+//                        fixme 获取联系人，调用案例。
+//                        KIntentUtils.goPeople() { name, tel ->
+//                            KLoggerUtils.e("姓名：\t" + name + "\t手机号：\t" + tel+"\t"+KStringUtils.getTelStr(tel)+"\t"+KStringUtils.getTelStr2(tel))
+//                        }
+    /**
+     * fixme 跳转手机系统通讯录，并获取联系人姓名和号码。
+     * @param peopleCallback 回调。返回联系人姓名和手机号。
+     */
+    fun goPeople(activity: Activity? = getActivity(), peopleCallback: ((name: String?, tel: String?) -> Unit)? = null) {
+        try {
+            if (activity != null && !activity.isFinishing) {
+                KPermissionUtils.requestPermissionsAccount(activity) {
+                    if (it) {
+                        //需要手机通讯录权限
+//                        <!--获取通讯录权限-->
+//                        <uses-permission android:name="android.permission.READ_CONTACTS" />
+//                        <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+                        this.peopleCallback = peopleCallback
+                        //var uri: Uri? = Uri.parse("content://contacts/people");//fixme 这个会弹窗 联系人，文件夹选择框。
+                        //var intent = Intent(Intent.ACTION_PICK, uri)
+                        var intent = Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI)//fixme 这个直接跳转到手机联系人。
+                        activity.startActivityForResult(intent, requestCode_people)
+                    } else {
+                        KPermissionUtils.showFailure(activity)//显示申请权限失败提示。
+                    }
+                }
+            }
+        } catch (e: java.lang.Exception) {
+            this.peopleCallback = null
+            KLoggerUtils.e("跳转通讯录联系人异常：\t" + e.message, isLogEnable = true)
         }
     }
 
@@ -452,6 +488,7 @@ object KIntentUtils {
     }
 
     val BLUTOOTH_REQUESTCODE_DISCOVER = 357
+
     //fixme 回调。(在BaseActivity的onActivityResult方法中已经配置好)
     var BluetoothDiscoverCallback: ((isOpen: Boolean) -> Unit)? = null
 
@@ -475,6 +512,7 @@ object KIntentUtils {
 
     //fixme 回调。(在BaseActivity的onActivityResult方法中已经配置好)
     val BLUTOOTH_REQUEST_ENABLE_BT = 257
+
     //蓝牙打开回调。true打开，false没有打开
     var BluetoothOpenCallback: ((isOpen: Boolean) -> Unit)? = null
 
@@ -521,6 +559,7 @@ object KIntentUtils {
     }
 
     var isGoRest: Boolean = false//fixme 判断是否为手动重启
+
     //fixme App重启
     fun goRest() {
         goRest(getActivity())
@@ -530,16 +569,16 @@ object KIntentUtils {
     fun goRest(activity: Activity?) {
         try {
             if (activity != null && !activity.isFinishing) {
-                var isGoRest=true
+                var isGoRest = true
                 KCacheUtils.getLong(restTime)?.let {
                     //KLoggerUtils.e("重启时间2：\t"+(System.currentTimeMillis() - it))
                     if ((System.currentTimeMillis() - it) < 1500) {//两次重启间隔时间不能少于1.5秒。手动操作最快一般都在1051。比一秒大。
-                        isGoRest=false
+                        isGoRest = false
                         return//fixme 防止应用异常无限重启卡死。
                     }
                 }
                 //KLoggerUtils.e("是否重启：\t"+isGoRest)
-                if (isGoRest){
+                if (isGoRest) {
                     KCacheUtils.putLong(restTime, System.currentTimeMillis())//fixme 保存当前重启的时间。
                     var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)

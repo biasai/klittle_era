@@ -1,5 +1,10 @@
 package cn.oi.klittle.era.base
 
+//import kotlinx.coroutines.experimental.async
+//import kotlinx.coroutines.experimental.delay
+//import org.jetbrains.anko.custom.async
+//import kotlinx.coroutines.GlobalScope
+import android.R.attr
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -7,6 +12,7 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
@@ -28,14 +34,10 @@ import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
-import org.jetbrains.anko.act
-//import kotlinx.coroutines.experimental.async
-//import kotlinx.coroutines.experimental.delay
-//import org.jetbrains.anko.custom.async
-//import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import org.jetbrains.anko.act
 import org.jetbrains.anko.contentView
 
 
@@ -553,6 +555,24 @@ open class KBaseActivity : AppCompatActivity() {
                 if (Build.VERSION.SDK_INT >= 23) {
                     KPermissionUtils.onRequestPermissionsResult(Settings.canDrawOverlays(getApplicationContext()))
                 }
+            } else if (requestCode === KIntentUtils.requestCode_people) {
+                //fixme 手机通讯录
+                if (data == null || KIntentUtils.peopleCallback == null) {
+                    return
+                }
+                //处理返回的data,获取选择的联系人信息
+                var uri: Uri = data.getData()
+                var contacts: Array<String>? = KPhoneUtils.getPhoneContacts(uri, this)
+                contacts?.let {
+                    if (it.size >= 2) {
+                        var name = it[0]//名称
+                        var tel = it[1]//手机号；fixme 默认格式是 153 1234 5678；中间有空格。
+                        KIntentUtils.peopleCallback?.let {
+                            it(name, KStringUtils.removeBlank(tel))//fixme 回调返回；removeBlank（）去除中间的空格。
+                        }
+                    }
+                }
+                KIntentUtils.peopleCallback = null
             } else if (resultCode === Activity.RESULT_OK) {
             }
         } catch (e: Exception) {

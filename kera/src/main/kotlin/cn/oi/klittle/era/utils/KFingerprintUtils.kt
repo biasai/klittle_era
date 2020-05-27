@@ -71,21 +71,41 @@ object KFingerprintUtils {
      */
     fun supportFingerprint(isShowError: Boolean = true): Int {
         if (Build.VERSION.SDK_INT < 23) {
-            KToast.showInfo(getString(R.string.ksysnotfinger))//您的系统版本过低，不支持指纹功能
+            if (isShowError) {
+                KToast.showInfo(getString(R.string.ksysnotfinger))//您的系统版本过低，不支持指纹功能
+            }
             return support_error_1
         } else {
             //键盘锁管理者
-            var keyguardManager: KeyguardManager = getContext()?.getSystemService(KeyguardManager::class.java)
+            var keyguardManager: KeyguardManager? = getContext()?.getSystemService(KeyguardManager::class.java)
+            if (keyguardManager == null) {
+                if (isShowError) {
+                    KToast.showInfo(getString(R.string.kdevicenotfinger))//您的手机不支持指纹功能
+                }
+                return support_error_2
+            }
             //指纹管理者
-            var fingerprintManager: FingerprintManager = getContext()?.getSystemService(FingerprintManager::class.java)
+            var fingerprintManager: FingerprintManager? = getContext()?.getSystemService(FingerprintManager::class.java)
+            if (fingerprintManager == null) {
+                if (isShowError) {
+                    KToast.showInfo(getString(R.string.kdevicenotfinger))//您的手机不支持指纹功能
+                }
+                return support_error_2
+            }
             if (!fingerprintManager.isHardwareDetected) { //判断硬件支不支持指纹
-                KToast.showInfo(getString(R.string.kdevicenotfinger))//您的手机不支持指纹功能
+                if (isShowError) {
+                    KToast.showInfo(getString(R.string.kdevicenotfinger))//您的手机不支持指纹功能
+                }
                 return support_error_2
             } else if (!keyguardManager.isKeyguardSecure) { //还未设置锁屏
-                KToast.showInfo(getString(R.string.kfinger_notsuoping))//您还未设置锁屏，请先设置锁屏并添加一个指纹
+                if (isShowError) {
+                    KToast.showInfo(getString(R.string.kfinger_notsuoping))//您还未设置锁屏，请先设置锁屏并添加一个指纹
+                }
                 return support_error_3
             } else if (!fingerprintManager.hasEnrolledFingerprints()) { //指纹未登记
-                KToast.showInfo(getString(R.string.kfinger_needone))//您至少需要在系统设置中添加一个指纹
+                if (isShowError) {
+                    KToast.showInfo(getString(R.string.kfinger_needone))//您至少需要在系统设置中添加一个指纹
+                }
                 return support_error_4
             }
         }
@@ -190,7 +210,7 @@ object KFingerprintUtils {
                             errString = getString(R.string.kfinger_errorCode_5)//指纹操作已取消。(如：按home键时，被迫取消)；
                         } else if (errorCode == 7) {
                             errString = getString(R.string.kfinger_errorCode_7)//尝试次数过多，请稍后重试。
-                        }else if (errorCode == 10) {
+                        } else if (errorCode == 10) {
                             errString = getString(R.string.kfinger_errorCode_10)//用户取消了指纹操作。即：用户主动取消。
                         }
                         if (!isSelfCancelled) {

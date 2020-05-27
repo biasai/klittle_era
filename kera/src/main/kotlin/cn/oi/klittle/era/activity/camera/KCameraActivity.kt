@@ -13,6 +13,7 @@ import android.view.SurfaceView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
@@ -28,7 +29,7 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
     override fun surfaceCreated(holder: SurfaceHolder?) {
         if (!hasSurface) {
             hasSurface = true
-            initCamera(holder,isBackCamera)
+            initCamera(holder, isBackCamera)
         }
     }
 
@@ -73,16 +74,14 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
                     button {
                         text = getString(R.string.kcamera_front)//fixme "前置摄像头"
                         onClick {
-                            isBackCamera = false//fixme 前置摄像头
-                            resetCamera()//fixme 重新初始化相机
+                            resumeCamera(false)//fixme 前置摄像头,重新初始化相机
                         }
                     }
 
                     button {
                         text = getString(R.string.kcamera_back)//fixme "后置摄像头"
                         onClick {
-                            isBackCamera = true//fixme 后置摄像头
-                            resetCamera()//fixme 重新初始化相机
+                            resumeCamera(true)//fixme 后置摄像头,重新初始化相机
                         }
                     }
 
@@ -93,12 +92,12 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
                         onClick {
                             //判断相机是否销毁
                             if (isRecycleCamera) {
-                                resetCamera()//fixme 重新初始化相机
+                                resumeCamera()//fixme 重新初始化相机
                                 text = getString(R.string.ktakePicture)//fixme "拍照"
                             } else {
                                 //拍照
                                 takePicture() {
-                                    KLoggerUtils.e("位图\t" + it.isRecycled + "\t宽：\t" + it.width + "\t高：\t" + it.height)
+                                    KLoggerUtils.e("拍摄位图\t" + it.isRecycled + "\t宽：\t" + it.width + "\t高：\t" + it.height)
                                     text = getString(R.string.ktakePicture2)//fixme "继续拍照"
                                     backgroundDrawable = BitmapDrawable(it)
                                 }
@@ -118,7 +117,7 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
 
     override fun onResume() {
         super.onResume()
-        resetCamera()//相机初始或重制
+        resumeCamera()//相机初始或重制
     }
 
     override fun onPause() {
@@ -136,13 +135,39 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
         super.finish()
     }
 
-    var isRecycleCamera = false //fixme 判断相机是否释放；true(已经释放，不能拍摄)；false(没有释放，可以拍摄)
+    var isRecycleCamera = true //fixme 判断相机是否释放；true(已经释放，不能拍摄)；false(没有释放，可以拍摄)
+    var isBackCamera: Boolean = true//fixme 是否为后置摄像头，默认是。如果手机只有后置摄像头，没有前置摄像头。拍出来的仍然是后置摄像头。不会报错。亲测。
 
-    //fixme 重置和初始化相机
-    public open fun resetCamera() {
-        recycleCamera() //必须先停止
-        initCamera() //再重置。才能继续重新拍照。
+    //fixme 判断是否有前置摄像头。必须调用了 initCamera（)后才有效。
+    //fixme 不一定准确。少部分设备，依然无法正确判断是否有前置摄像头。没有前置摄像头的设备，也可能返回true
+    //fixme 极少部分设备无法判断，但是大部分设备还是有效的。
+    fun isHasFrontCamera(): Boolean {
+        KCameraManager.sHasFrontCamera?.let {
+            return it
+        }
+        return true
+    }
+
+    /**
+     * fixme 重置和初始化相机
+     * @param isBackCamera true 后置摄像头；false前置摄像头
+     */
+    public open fun resumeCamera(isBackCamera: Boolean = this.isBackCamera) {
+        //KLoggerUtils.e("isBackCamera:\t"+isBackCamera+"\t this.isBackCamera:\t"+ this.isBackCamera+"\tisRecycleCamera:\t"+isRecycleCamera)
+        if (isBackCamera == this.isBackCamera && !isRecycleCamera) {
+            return//防止前置或后置摄像机重复初始化。
+        }
+        this.isBackCamera = isBackCamera
+        try {
+            recycleCamera() //必须先停止
+            initCamera(isBackCamera) //再重置。才能继续重新拍照。
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("KCameraActivity->resumeCamera()异常：\t" + KCatchException.getExceptionMsg(e))
+        }
         isRecycleCamera = false//fixme 相机重置，可以进行拍摄操作。
+        if (!isBackCamera && !isHasFrontCamera()) {
+            this.isBackCamera = true;//fixme 没有前置摄像头。仍然是后置摄像头。
+        }
     }
 
     //fixme 停止camera，释放资源操作
@@ -198,10 +223,9 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
         }
     }
 
-    var isBackCamera: Boolean = true//fixme 是否为后置摄像头，默认是。如果手机只有后置摄像头，没有前置摄像头。拍出来的任然是后置摄像头。不会报错。亲测。
-
     //初始化相机camera
     private fun initCamera(isBackCamera: Boolean = this.isBackCamera) {
+        this.isBackCamera = isBackCamera
         cameraManager = KCameraManager()
         //预览相机里的画面，
         // fixme 注意，不要调用surfaceView.setVisibility(View.VISIBLE);和surfaceView.setVisibility(View.INVISIBLE);不然会闪屏或黑屏一下。
@@ -234,9 +258,9 @@ open class KCameraActivity : KBaseActivity(), SurfaceHolder.Callback {
         }
         try {
             // 打开Camera硬件设备
-            cameraManager!!.openDriver(surfaceHolder, isBackCamera)
+            cameraManager?.openDriver(surfaceHolder, isBackCamera)
             // 创建一个handler来打开预览，并抛出一个运行时异常
-            cameraManager!!.startPreview()
+            cameraManager?.startPreview()
         } catch (ioe: Exception) {
             KLoggerUtils.e("相机打开异常:\t" + ioe.message)
         }

@@ -30,6 +30,8 @@ public class KCameraManager {
     private boolean previewing;
     private final Pattern COMMA_PATTERN = Pattern.compile(",");
 
+    public static boolean sHasFrontCamera = true;//fixme 判断是否有前置摄像头。
+
     /**
      * 打开摄像头
      *
@@ -44,6 +46,9 @@ public class KCameraManager {
                 Log.e(TAG, "No cameras!");
                 return null;
             }
+            if (!isBackCamera) {
+                sHasFrontCamera = false;//fixme 没有前置置摄像头。
+            }
             boolean explicitRequest = cameraId >= 0;
             if (!explicitRequest) {
                 // Select a camera if no explicit camera requested
@@ -53,10 +58,13 @@ public class KCameraManager {
                     Camera.getCameraInfo(index, cameraInfo);
                     if (isBackCamera) {
                         if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                            //KLoggerUtils.INSTANCE.e("后置摄像头");
                             break;//fixme 后置摄像头
                         }
                     } else {
                         if (cameraInfo.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                            //KLoggerUtils.INSTANCE.e("前置摄像头\t"+cameraInfo.facing+"\t"+Camera.CameraInfo.CAMERA_FACING_FRONT+"\t"+index);
+                            sHasFrontCamera = true;//fixme 有前置摄像头；不一定准确，有些设备没有前置摄像头，仍然可能会执行这一步。极少部分设备无法判断，但是大部分设备还是有效的。
                             break;//fixme 前置摄像头
                         }
                     }
@@ -66,15 +74,22 @@ public class KCameraManager {
             }
             Camera camera;
             if (cameraId < numCameras) {
-                Log.e(TAG, "Opening camera #" + cameraId);
+                if (!isBackCamera) {
+                    sHasFrontCamera = true;//fixme 有前置置摄像头;不一定准确，有些设备没有前置摄像头，仍然可能会执行这一步。
+                }
+                //KLoggerUtils.INSTANCE.e("Opening camera #" + cameraId);
                 camera = Camera.open(cameraId);
+                //KLoggerUtils.INSTANCE.e("Opening camera #" + cameraId+"\t"+camera);
             } else {
                 if (explicitRequest) {
-                    Log.e(TAG, "Requested camera does not exist: " + cameraId);
+                    //KLoggerUtils.INSTANCE.e("Requested camera does not exist: " + cameraId);
                     camera = null;
                 } else {
-                    Log.e(TAG, "No camera facing back; returning camera #0");
-                    camera = Camera.open(0);
+                    if (!isBackCamera) {
+                        sHasFrontCamera = false;//fixme 没有前置置摄像头。
+                    }
+                    //KLoggerUtils.INSTANCE.e("No camera facing back; returning camera #0");
+                    camera = Camera.open(0);//fixme 后置摄像头默认就是0;前置摄像头一般都为1。
                 }
             }
             return camera;
@@ -118,13 +133,13 @@ public class KCameraManager {
             parameters = camera.getParameters();
             int w = parameters.getPreviewSize().width;
             int h = parameters.getPreviewSize().height;
-            //标准尺寸，相机拍照是以横屏为主的。所以宽大于高。
+            //fixme 标准尺寸，相机拍照是以横屏为主的。所以宽大于高。
             //int width = 1920;
             //int height = 1080;
             int width = kpx.INSTANCE.screenWidth(false);
             int height = kpx.INSTANCE.screenHeight(false, KBaseUi.Companion.getActivity());
             if (width > 1920) {
-                width = 1920;
+                width = 1920;//fixme 设定一个最大值，防止部分设备相机异常崩溃。如果超过这个值，少数设备是会异常的。
             }
             if (height > 1080) {
                 height = 1080;
@@ -150,7 +165,7 @@ public class KCameraManager {
                 }
 //                Log.e("test", "预览 width:" + size.width + "\theight:\t" + size.height);
             }
-//            Log.e("test", "预览尺寸：\t宽:\t" + w + "\t高:\t" + h);
+            //Log.e("test", "预览尺寸：\t宽:\t" + w + "\t高:\t" + h);
             parameters.setPreviewSize(w, h);//相机预览尺寸，如果和SurfaceView比例不同。照片预览会拉伸。不需要设置，使用默认的即可。
             parameters.setPictureFormat(ImageFormat.JPEG);//图片格式
             parameters.setJpegQuality(100);//图片的质量
@@ -288,7 +303,12 @@ public class KCameraManager {
     public synchronized void takePicture(final Camera.ShutterCallback shutter, final Camera.PictureCallback raw,
                                          final Camera.PictureCallback jpeg) {
         if (camera != null) {
-            camera.takePicture(shutter, raw, jpeg);
+            try {
+                camera.takePicture(shutter, raw, jpeg);
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("KCameraManager.java takePicture相机拍摄异常：\t" + KCatchException.getExceptionMsg(e));
+            }
+
         }
     }
 }
