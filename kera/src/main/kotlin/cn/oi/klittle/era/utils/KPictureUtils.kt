@@ -20,6 +20,7 @@ import java.io.*
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.activity.photo.utils.KDCIMUtils
+import cn.oi.klittle.era.exception.KCatchException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -71,13 +72,23 @@ object KPictureUtils {
     //视频录制路径
     fun getAppVideoPath(context: Context): String {
         //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/video"
-        return KCacheUtils.getCachePath() + "/video"
+        //return KCacheUtils.getCachePath() + "/video"
+        //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
+        //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
+        //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
+        //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
+        return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/video"//context.packageName获取的是应用app的包名。
     }
 
     //文件裁剪路径
     fun getAppCropPath(context: Context): String {
         //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/crop"
-        return KCacheUtils.getCachePath() + "/crop"
+        //return KCacheUtils.getCachePath() + "/crop"
+        //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
+        //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
+        //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
+        //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
+        return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/crop"//context.packageName获取的是应用app的包名。
     }
 
     //获取相册图片路径
@@ -156,6 +167,7 @@ object KPictureUtils {
 
     /**
      * fixme 调用相机拍照成功后，需要通知系统。这样系统相册里才能看到该图片。只对系统相机拍摄的照片才有效(亲测！)。应用本身内的图片无效。
+     * fixme 只对存储在SD卡上的文件才有效，应用自带的缓存目录。系统依然读不出来。
      * @param file 照片文件。
      */
     fun updateFileFromDatabase_add(file: File, activity: Activity? = KBaseUi.getActivity()) {
@@ -342,6 +354,14 @@ object KPictureUtils {
 
     var cropfile: File? = null//裁剪文件
 
+    //                               fixme 裁剪调用案例
+//                            KPictureUtils.crop(srcfile,1,1){
+//                                KLoggerUtils.e("裁剪：\t"+it.absolutePath)
+//                            }
+    fun crop(file: File, w: Int, h: Int, callback2: (file: File) -> Unit) {
+        crop(KBaseUi.getActivity(), file, w, h, -1, -1, callback2)
+    }
+
     //图片剪辑【可以在相册，拍照回调成功后手动调用哦。】,兼容7.0。模拟器上没有上面效果。6.0的真机都没问题。7.0的真机没有测试。
     //w:h 宽和高的比率
     //width:height实际裁剪的宽和高的具体值。
@@ -354,58 +374,71 @@ object KPictureUtils {
             if (activity == null || activity.isFinishing) {
                 return
             }
-            //fixme AssetsUtils.getInstance().getBitmapFromFile(it.path, true,false)
-            //fixme [注意了哦。如果图片剪切了，就不要读取缓存哦。]
-            cropfile = KFileUtils.getInstance().copyFile(file, getAppCropPath(activity), file.name)
-            val intent = Intent("com.android.camera.action.CROP")
-            //resolveActivity()查询是否有第三方能够启动该intent
-            if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                var fileUri: Uri
-                if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
-                    //相机里面也使用了这个，多次使用不会出错。可以重复使用，不冲突。
-                    fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
-                            cropfile!!)
+            //fixme 申请SD卡权限。
+            KPermissionUtils.requestPermissionsStorage {
+                if (it) {
+                    try {
+                        //fixme AssetsUtils.getInstance().getBitmapFromFile(it.path, true,false)
+                        //fixme [注意了哦。如果图片剪切了，就不要读取缓存哦。]
+                        cropfile = KFileUtils.getInstance().copyFile(file, getAppCropPath(activity), file.name)
+                        val intent = Intent("com.android.camera.action.CROP")
+                        //resolveActivity()查询是否有第三方能够启动该intent;fixme 不要使用。系统自带的裁剪可能查不出来，不可能，不要使用。
+                        //if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                        if (true) {
+                            var fileUri: Uri
+                            if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
+                                //相机里面也使用了这个，多次使用不会出错。可以重复使用，不冲突。
+                                fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
+                                        cropfile!!)
+                            } else {
+                                fileUri = Uri.fromFile(cropfile)//这个是原图
+                            }
+                            //剪辑图片之后，保存的位置。
+                            //这个是裁剪之后的图,截图保存的uri必须使用Uri.fromFile(),之前测试是这样，现在好像又不是这样了。也需要使用FileProvider了
+                            //保存位置只能是SD卡或者file源文件位置。无法指定我们app的私有目录。
+                            //var cropUri = Uri.fromFile(cropfile)
+                            var cropUri = fileUri//两个uri指向同一个才有效。这样裁剪才能访问我们app的私有目录。亲测。
+                            //以下两个addFlags必不可少。
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                            intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
+                            intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
+                            //告诉系统需要裁剪,以下這兩个参数可有可无，为了兼容性，两个都设置成true,以防万一。
+                            intent.putExtra("crop", "true")
+                            intent.putExtra("scale", true)//缩放功能禁止不了，系统裁剪，肯定自带缩放的功能。无法固定大小，只能固定宽高比例裁剪。总之缩放功能禁止不了，无论你设置true还是false都一样。自带缩放。
+                            //width:height 裁剪框的宽高比
+                            //intent.putExtra("aspectX", 1);
+                            //intent.putExtra("aspectY", 1);
+                            intent.putExtra("aspectX", w)
+                            intent.putExtra("aspectY", h)
+                            //裁剪的宽和高。具体的数值。
+                            // [亲测，真实有效,不管数值是多少（小于0无效，其他都有效，多大都有效）。
+                            // 宽高比例不对，会对图片进行拉伸。即会变形。]
+                            //图片太小会模糊，太大不会模糊。
+                            if (width > 0 && height > 0) {
+                                //如果不传，就会根据裁剪，自定义决定大小。
+                                //必须是Int类型才有效。
+                                intent.putExtra("outputX", width);
+                                intent.putExtra("outputY", height);
+                            }
+                            intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
+                            intent.putExtra("noFaceDetection", true)//去除默认的人脸识别，否则和剪裁匡重叠
+                            intent.setDataAndType(fileUri, "image/*")//读取的uri,即要裁剪的uri
+                            intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri)//截图保存的uri必须使用Uri.fromFile()
+                            intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())//输出格式
+                            activity.startActivityForResult(intent, DEFAULT_KEYS_CROP_PHOTO)//自定义剪辑标志
+                            this.cllback = callback2
+                        }
+                    } catch (e: Exception) {
+                        KLoggerUtils.e("调用系统裁剪异常:\t" + KCatchException.getExceptionMsg(e))
+                    }
                 } else {
-                    fileUri = Uri.fromFile(cropfile)//这个是原图
+                    KPermissionUtils.showFailure(activity)
                 }
-                //剪辑图片之后，保存的位置。
-                //这个是裁剪之后的图,截图保存的uri必须使用Uri.fromFile(),之前测试是这样，现在好像又不是这样了。也需要使用FileProvider了
-                //保存位置只能是SD卡或者file源文件位置。无法指定我们app的私有目录。
-                //var cropUri = Uri.fromFile(cropfile)
-                var cropUri = fileUri//两个uri指向同一个才有效。这样裁剪才能访问我们app的私有目录。亲测。
-                //以下两个addFlags必不可少。
-                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                intent.addFlags(Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-                intent.addFlags(Intent.FLAG_GRANT_PREFIX_URI_PERMISSION)
-                //告诉系统需要裁剪,以下這兩个参数可有可无，为了兼容性，两个都设置成true,以防万一。
-                intent.putExtra("crop", "true")
-                intent.putExtra("scale", true)//缩放功能禁止不了，系统裁剪，肯定自带缩放的功能。无法固定大小，只能固定宽高比例裁剪。总之缩放功能禁止不了，无论你设置true还是false都一样。自带缩放。
-                //width:height 裁剪框的宽高比
-                //intent.putExtra("aspectX", 1);
-                //intent.putExtra("aspectY", 1);
-                intent.putExtra("aspectX", w)
-                intent.putExtra("aspectY", h)
-                //裁剪的宽和高。具体的数值。
-                // [亲测，真实有效,不管数值是多少（小于0无效，其他都有效，多大都有效）。
-                // 宽高比例不对，会对图片进行拉伸。即会变形。]
-                //图片太小会模糊，太大不会模糊。
-                if (width > 0 && height > 0) {
-                    //如果不传，就会根据裁剪，自定义决定大小。
-                    //必须是Int类型才有效。
-                    intent.putExtra("outputX", width);
-                    intent.putExtra("outputY", height);
-                }
-                intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
-                intent.putExtra("noFaceDetection", true)//去除默认的人脸识别，否则和剪裁匡重叠
-                intent.setDataAndType(fileUri, "image/*")//读取的uri,即要裁剪的uri
-                intent.putExtra(MediaStore.EXTRA_OUTPUT, cropUri)//截图保存的uri必须使用Uri.fromFile()
-                intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())//输出格式
-                activity.startActivityForResult(intent, DEFAULT_KEYS_CROP_PHOTO)//自定义剪辑标志
-                this.cllback = callback2
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("调用系统裁剪异常2:\t" + KCatchException.getExceptionMsg(e))
         }
     }
 
@@ -420,9 +453,17 @@ object KPictureUtils {
      * fixme 之所以返回的是图片，是因为该是视频存储在云端。视频还没下载下来，所以返回的图片。
      * fixme 如果该视频已经下载下来了。肯定返回的就是视频。视频还没下载下来。只能返回图片了。
      */
-    fun video(activity: Activity, callback2: (file: File) -> Unit) {
+    fun video(activity: Activity? = KBaseUi.getActivity(), callback2: (file: File) -> Unit) {
+        if (activity == null) {
+            return
+        }
+        activity?.let {
+            if (it.isFinishing) {
+                return
+            }
+        }
         try {
-            val intent = Intent(Intent.ACTION_PICK)
+            var intent = Intent(Intent.ACTION_PICK)
             if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
                 intent.type = "video/*"
                 intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
@@ -462,62 +503,77 @@ object KPictureUtils {
     var cameraVideoFile: File? = null//视频录制文件
 
     /**
+     * fixme 系统视频拍摄录制。
      * 跳转系统相机视频拍摄【需要相机权限】,进行视频录制
      * 手机拍摄的格式一般都是mp4的格式。
      */
-    fun cameraVideo(activity: Activity, callback2: (file: File) -> Unit) {
-        KPermissionUtils.requestPermissionsCamera(activity) {
-            if (it) {
-                try {
-                    var fileUri: Uri? = null
-                    val path = getAppVideoPath(activity)//相机视频拍摄存储位置。不使用SD卡。使用自己应用私有SD卡目录，这样就不需要外部的SD卡权限。
-                    cameraVideoFile = KFileUtils.getInstance().createFile(path, System.currentTimeMillis().toString() + ".mp4")//视频拍摄基本都是MP4格式。每次都以当前毫秒数重新创建拍摄文件。
-                    cameraVideoFile?.let {
-                        if (Build.VERSION.SDK_INT >= 23) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
-                            //getPackageName()和${applicationId}显示的都是当前应用的包名。无论是在library还是moudle中，都是一样的。都显示的是当前应用moudle的。与类库无关。请放心使用。
-                            fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
-                                    it)
-                        } else {
-                            fileUri = Uri.fromFile(cameraVideoFile)
-                        }
-                        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-                        if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
-                            intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
-                            //以下两个addFlags必不可少。【以防万一出错】
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
-                            intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1)
-                            intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)//必不可少。拍摄视频使用自定义文件路径。如果没有。默认使用系统的路径。那样就需要申请SD卡权限。不使用系统默认的。
-
-                            if (CameraPackName == null) {
-                                CameraPackName = KAppUtils.getCameraPackName(activity)//获取系统相机包名
-                            }
-                            CameraPackName?.let {
-                                if (!it.equals(packNameError)) {
-                                    intent.setPackage(CameraPackName)//指定系统相机（不会再跳选择框了。欧耶！）
-                                }
-                            }
-
-                            activity.startActivityForResult(intent, DEFAULT_KEYS_VIDEO_CAPTURE)
-                            this.cllback = callback2
-                        }
-                    }
-                } catch (e: Exception) {
-                    // TODO: handle exception
-                    KLoggerUtils.e("相机崩坏" + e.message, isLogEnable = true)
-                    CameraPackName?.let {
-                        if (e.message?.contains(it) ?: false) {
-                            if (!it.equals(packNameError)) {
-                                CameraPackName = packNameError
-                                camera(activity, callback2)
-                            }
-                        }
-                    }
-                }
-            } else {
-                KPermissionUtils.showFailure(activity, KPermissionUtils.perMissionTypeCamera)
+    fun cameraVideo(activity: Activity? = KBaseUi.getActivity(), callback2: (file: File) -> Unit) {
+        if (activity == null) {
+            return
+        }
+        activity?.let {
+            if (it.isFinishing) {
+                return
             }
         }
+        //fixme 获取SD卡的权限
+        KPermissionUtils.requestPermissionsStorage {
+            if (it) {
+                KPermissionUtils.requestPermissionsCamera(activity) {
+                    if (it) {
+                        try {
+                            var fileUri: Uri? = null
+                            val path = getAppVideoPath(activity)//相机视频拍摄存储位置。不使用SD卡。使用自己应用私有SD卡目录，这样就不需要外部的SD卡权限。
+                            cameraVideoFile = KFileUtils.getInstance().createFile(path, System.currentTimeMillis().toString() + ".mp4")//视频拍摄基本都是MP4格式。每次都以当前毫秒数重新创建拍摄文件。
+                            cameraVideoFile?.let {
+                                if (Build.VERSION.SDK_INT >= 23) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
+                                    //getPackageName()和${applicationId}显示的都是当前应用的包名。无论是在library还是moudle中，都是一样的。都显示的是当前应用moudle的。与类库无关。请放心使用。
+                                    fileUri = FileProvider.getUriForFile(activity, activity.getPackageName() + ".kera.provider", //与android:authorities="${applicationId}.kera.provider"对应上
+                                            it)
+                                } else {
+                                    fileUri = Uri.fromFile(cameraVideoFile)
+                                }
+                                val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                                if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
+                                    intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
+                                    //以下两个addFlags必不可少。【以防万一出错】
+                                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
+                                    intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1)
+                                    intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri)//必不可少。拍摄视频使用自定义文件路径。如果没有。默认使用系统的路径。那样就需要申请SD卡权限。不使用系统默认的。
+
+                                    if (CameraPackName == null) {
+                                        CameraPackName = KAppUtils.getCameraPackName(activity)//获取系统相机包名
+                                    }
+                                    CameraPackName?.let {
+                                        if (!it.equals(packNameError)) {
+                                            intent.setPackage(CameraPackName)//指定系统相机（不会再跳选择框了。欧耶！）
+                                        }
+                                    }
+
+                                    activity.startActivityForResult(intent, DEFAULT_KEYS_VIDEO_CAPTURE)
+                                    this.cllback = callback2
+                                }
+                            }
+                        } catch (e: Exception) {
+                            // TODO: handle exception
+                            KLoggerUtils.e("相机崩坏" + e.message, isLogEnable = true)
+                            CameraPackName?.let {
+                                if (e.message?.contains(it) ?: false) {
+                                    if (!it.equals(packNameError)) {
+                                        CameraPackName = packNameError
+                                        camera(activity, callback2)
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        KPermissionUtils.showFailure(activity, KPermissionUtils.perMissionTypeCamera)
+                    }
+                }
+            }
+        }
+
     }
 
 
@@ -584,9 +640,31 @@ object KPictureUtils {
             } else if (requestCode == DEFAULT_KEYS_CROP_PHOTO) {
                 //裁剪
                 //此时的data是空的。直接返回临时保存的裁剪文件
+                cropfile?.let {
+                    if (it.exists() && it.length() > 0) {
+                        //fixme 再发送一次广播（防止第一次没有收到）。多次发送不会有影响。
+                        activity?.let {
+                            if (!it.isFinishing) {
+                                //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                                it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(cropfile)))
+                            }
+                        }
+                    }
+                }
                 cllback?.let {
                     if (cropfile != null && cropfile?.exists() ?: false && cropfile!!.length() > 0) {
                         it(cropfile!!)
+                    }
+                }
+                cropfile?.let {
+                    if (it.exists() && it.length() > 0) {
+                        //fixme 再发送一次广播（防止第一次没有收到）。多次发送不会有影响。
+                        activity?.let {
+                            if (!it.isFinishing) {
+                                //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                                it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(cropfile)))
+                            }
+                        }
                     }
                 }
             } else if (requestCode == DEFAULT_KEYS_CAMARA_PHOTO) {
@@ -665,8 +743,21 @@ object KPictureUtils {
                 //相机，视频录制
                 cameraVideoFile?.let {
                     if (it.exists() && it.length() > 0) {
+                        activity?.let {
+                            if (!it.isFinishing) {
+                                //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                                it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(cameraVideoFile)))
+                            }
+                        }
                         cllback?.let {
                             it(cameraVideoFile!!)
+                        }
+                        //fixme 再发送一次广播（防止第一次没有收到）。多次发送不会有影响。
+                        activity?.let {
+                            if (!it.isFinishing) {
+                                //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                                it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(cameraVideoFile)))
+                            }
                         }
                     }
                 }

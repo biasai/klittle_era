@@ -1,11 +1,17 @@
 package cn.oi.klittle.era.utils
 
-import android.text.TextUtils
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.base.KBaseApplication
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
+
+//                            fixme 调用案例，传入原图片地址即可。只能压缩图片；视频压缩不支持。
+//                            KLubanUtils.compress(it.absolutePath, KPictureSelector.minimumCompressSize) {
+//                                if (it != null) {
+//                                    KLoggerUtils.e("压缩地址：\t"+it+"\t大小：\t"+File(it).length())
+//                                }
+//                            }
 
 /**
  * 鲁班压缩；效果杠杠的。最解决微信的压缩方法。
@@ -13,6 +19,7 @@ import java.io.File
  * fixme gif动态图压缩之后，就没有效果了。所以动态图也不支持压缩。
  */
 object KLubanUtils {
+
 
     /**
      * 鲁班压缩
