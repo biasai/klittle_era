@@ -47,7 +47,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 //        prensenter?.destroy()//销毁
 //    }
 
-class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callback {
+open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callback {
     private var cameraManager: KCameraManager? = null
 
     var isRecycleCamera = true //fixme 判断相机是否释放；true(已经释放，不能拍摄)；false(没有释放，可以拍摄)
@@ -72,7 +72,7 @@ class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callb
     //fixme 判断是否有前置摄像头。必须调用了 initCamera（)后才有效。
     //fixme 不一定准确。少部分设备，依然无法正确判断是否有前置摄像头。没有前置摄像头的设备，也可能返回true
     //fixme 极少部分设备无法判断，但是大部分设备还是有效的。
-    fun isHasFrontCamera(): Boolean {
+    open fun isHasFrontCamera(): Boolean {
         KCameraManager.sHasFrontCamera?.let {
             return it
         }
@@ -264,7 +264,7 @@ class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callb
     }
 
     //销毁
-    fun destroy() {
+    open fun destroy() {
         recycleCamera()
         cameraManager = null
         surfaceView = null
