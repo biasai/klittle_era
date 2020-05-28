@@ -1,7 +1,10 @@
 package cn.oi.klittle.era.utils
 
+import android.content.Intent
+import android.net.Uri
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.base.KBaseUi
 import top.zibin.luban.Luban
 import top.zibin.luban.OnCompressListener
 import java.io.File
@@ -59,6 +62,16 @@ object KLubanUtils {
                         //压缩成功
                         //KLoggerUtils.e("压缩成功：\t" + file)
                         callback(file?.absolutePath)
+                        file?.let {
+                            if (it.exists() && it.length() > 0) {
+                                KBaseUi.getActivity()?.let {
+                                    if (!it.isFinishing) {
+                                        //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。(只对SD卡上的路径有效。)
+                                        it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     override fun onError(e: Throwable?) {

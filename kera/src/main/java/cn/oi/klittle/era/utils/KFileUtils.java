@@ -21,6 +21,9 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import cn.oi.klittle.era.base.KBaseUi;
+import cn.oi.klittle.era.exception.KCatchException;
+
 /**
  * Created by 彭治铭 on 2018/1/21.
  */
@@ -232,6 +235,72 @@ public class KFileUtils {
     }
 
     /**
+     * fixme 判断两个文件是否相同，是否是同一个文件。
+     *
+     * @param file
+     * @param file2
+     * @return
+     */
+    public boolean isSameFile(File file, File file2) {
+        if (file == null || file2 == null) {
+            return false;
+        }
+        if (file.getAbsolutePath().equals(file2.getAbsolutePath())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * fixme 判断两个文件是否相同，是否是同一个文件;调用案例：KFileUtils.getInstance().delFile(it)
+     *
+     * @param filePath  文件的完整路径，包括后缀名。
+     * @param filePath2
+     * @return
+     */
+    public boolean isSameFile(String filePath, String filePath2) {
+        if (filePath == null || filePath2 == null) {
+            return false;
+        }
+        if (filePath.trim().toLowerCase().equals(filePath2.trim().toLowerCase())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * fixme 删除文件，会通知系统。更新该文件夹。
+     *
+     * @param file 删除文件
+     */
+    public void delFile(File file) {
+        if (file == null) {
+            return;
+        }
+        try {
+            if (file.exists()) {
+                String path = file.getAbsolutePath();
+                file.delete();//fixme 删除
+                KPictureUtils.INSTANCE.updateFileFromDatabase_del(path, KBaseUi.Companion.getActivity());//fixme 告诉系统，该文件已经删除。更新文件。
+            }
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("kfileUtils文件删除异常：\t" + KCatchException.getExceptionMsg(e));
+        }
+    }
+
+    /**
+     * fixme 删除文件，会通知系统。更新该文件夹。
+     *
+     * @param filePath 文件的完整路径。包括文件后缀名。
+     */
+    public void delFile(String filePath) {
+        if (filePath == null || filePath.trim().length() <= 0) {
+            return;
+        }
+        delFile(new File(filePath));
+    }
+
+    /**
      * 删除文件
      *
      * @param path 文件完整路径，包括文件后缀名 （以path为主，当path为null时，dir和name才有效）
@@ -240,17 +309,21 @@ public class KFileUtils {
      */
     public void delFile(String path, String dir, String name) {
         try {
+            String filePath = null;
             if (path == null) {
                 File file = new File(dir, name);
                 if (file.exists()) {
+                    filePath = file.getAbsolutePath();
                     file.delete();
                 }
             } else {
                 File file = new File(path);
                 if (file.exists()) {
+                    filePath = file.getAbsolutePath();
                     file.delete();
                 }
             }
+            KPictureUtils.INSTANCE.updateFileFromDatabase_del(filePath, KBaseUi.Companion.getActivity());//fixme 告诉系统，该文件已经删除。更新文件。
         } catch (Exception e) {
             // TODO: handle exception
             Log.e("文件删除异常", "异常信息" + e.getMessage());
@@ -302,6 +375,7 @@ public class KFileUtils {
                     file.delete();//fixme 删除目录
                 }
             }
+            KPictureUtils.INSTANCE.updateDirFromDatabase_del(delpath, KBaseUi.Companion.getActivity());//fixme 告诉系统，该文件已经删除。更新目录。
         } catch (Exception e) {
             Log.e("test", "删除所有文件异常:\t" + e.getMessage());
         }
@@ -372,6 +446,7 @@ public class KFileUtils {
             }
             out.close();
             in.close();
+            KPictureUtils.INSTANCE.updateFileFromDatabase_add(destFile, KBaseUi.Companion.getActivity());//fixme 通知系统。更新该文件目录。（只对SD卡上的目录有效。）
         } catch (Exception e) {
             KLoggerUtils.INSTANCE.e("test", "文件复制异常:\t" + e.getMessage());
         }
@@ -398,6 +473,7 @@ public class KFileUtils {
             }
             out.close();
             inputStream.close();
+            KPictureUtils.INSTANCE.updateFileFromDatabase_add(destFile, KBaseUi.Companion.getActivity());//fixme 通知系统。更新该文件目录。（只对SD卡上的目录有效。）
         } catch (Exception e) {
             Log.e("test", "流转换文件异常:\t" + e.getMessage());
         }
@@ -455,6 +531,7 @@ public class KFileUtils {
                 Log.e("test", "Bitmap位图保存异常2:\t" + e.getMessage());
             }
         }
+        KPictureUtils.INSTANCE.updateFileFromDatabase_add(file, KBaseUi.Companion.getActivity());//fixme 通知系统。更新该文件目录。（只对SD卡上的目录有效。）
         return file;
     }
 
@@ -485,6 +562,7 @@ public class KFileUtils {
                 Log.e("test", "Bitmap位图保存异常2:\t" + e.getMessage());
             }
         }
+        KPictureUtils.INSTANCE.updateFileFromDatabase_add(file, KBaseUi.Companion.getActivity());//fixme 通知系统。更新该文件目录。（只对SD卡上的目录有效。）
         return file;
     }
 

@@ -170,13 +170,18 @@ object KPictureUtils {
      * fixme 只对存储在SD卡上的文件才有效，应用自带的缓存目录。系统依然读不出来。
      * @param file 照片文件。
      */
-    fun updateFileFromDatabase_add(file: File, activity: Activity? = KBaseUi.getActivity()) {
+    fun updateFileFromDatabase_add(file: File?, activity: Activity? = KBaseUi.getActivity()) {
+        if (file == null) {
+            return
+        }
         activity?.let {
             if (!it.isFinishing) {
                 try {
-                    //fixme 关闭发送很快的，不需要协程。不耗时。
-                    //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
-                    it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))//fixme 这里不要使用FileProvider；不然无效（图片选择器会无法读取）。
+                    if (file != null && file.exists() && file.length() > 0) {
+                        //fixme 关闭发送很快的，不需要协程。不耗时。
+                        //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                        it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))//fixme 这里不要使用FileProvider；不然无效（图片选择器会无法读取）。
+                    }
                 } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
@@ -214,7 +219,7 @@ object KPictureUtils {
         if (dirPath == null) {
             return
         }
-        if (dirPath.length <= 0) {
+        if (dirPath.trim().length <= 0) {
             return
         }
         //fixme 更新系统相册是耗时操作，所以放在协程里。文件夹里的照片数量越多越耗时。
