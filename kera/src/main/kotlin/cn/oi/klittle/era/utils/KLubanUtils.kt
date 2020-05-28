@@ -88,10 +88,10 @@ object KLubanUtils {
     }
 
     /**
-     * 压缩后的文件保存目录。是目录，不是文件。
+     * fixme 压缩后的文件保存目录。是目录，不是文件。
      */
     fun getTargetDir(): String {
-        return KPictureSelector.getCompressPath()
+        return KPictureSelector.getCompressPath()//fixme 压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（建议还是不要被系统相册读取比较好）
     }
 
     /**

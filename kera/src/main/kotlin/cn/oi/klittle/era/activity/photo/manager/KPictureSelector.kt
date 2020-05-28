@@ -34,7 +34,7 @@ object KPictureSelector {
         return KPictureUtils.getCameraPath()
     }
 
-    //获取压缩路径
+    //fixme 获取压缩路径
     fun getCompressPath(): String {
         File(compressPath)?.apply {
             if (!exists()) {
@@ -143,6 +143,7 @@ object KPictureSelector {
         return this
     }
 
+    //fixme 压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（建议还是不要被系统相册读取比较好）
     private var compressPath: String = KCacheUtils.getCachePath() + "/compress"//fixme 压缩路径（本应用缓存路径）,相机拍照路径是SD存储卡。
 
     fun setCompressPath(compressPath: String) {
