@@ -47,8 +47,9 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 //        prensenter?.destroy()//销毁
 //    }
 
+//fixme 自定义相机拍摄(拍照)
 open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callback {
-    private var cameraManager: KCameraManager? = null
+    public var cameraManager: KCameraManager? = null
 
     var isRecycleCamera = true //fixme 判断相机是否释放；true(已经释放，不能拍摄)；false(没有释放，可以拍摄)
     var isBackCamera: Boolean = true//fixme 是否为后置摄像头，默认是。如果手机只有后置摄像头，没有前置摄像头。拍出来的仍然是后置摄像头。不会报错。亲测。

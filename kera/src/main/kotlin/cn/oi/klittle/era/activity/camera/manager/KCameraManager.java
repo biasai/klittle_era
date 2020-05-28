@@ -23,6 +23,7 @@ public class KCameraManager {
     private Camera.Parameters parameters;
     public KAutoFocusManager autoFocusManager;
     private int requestedCameraId = -1;
+    public int cameraId = 0;//fixme 相机id
 
     private boolean initialized;
     private boolean previewing;
@@ -68,6 +69,7 @@ public class KCameraManager {
                     index++;
                 }
                 cameraId = index;
+                this.cameraId = cameraId;//fixme 记录当前相机id
             }
             Camera camera;
             if (cameraId < numCameras) {
@@ -87,6 +89,7 @@ public class KCameraManager {
                     }
                     //KLoggerUtils.INSTANCE.e("No camera facing back; returning camera #0");
                     camera = Camera.open(0);//fixme 后置摄像头默认就是0;前置摄像头一般都为1。
+                    this.cameraId = 0;//fixme 记录当前相机id
                 }
             }
             return camera;
@@ -107,7 +110,7 @@ public class KCameraManager {
             throws IOException {
         Camera theCamera = camera;
         if (theCamera == null) {
-            initialized=false;
+            initialized = false;
             theCamera = open(requestedCameraId, isBackCamera);//打开摄像头
             if (theCamera == null) {
                 throw new IOException();
