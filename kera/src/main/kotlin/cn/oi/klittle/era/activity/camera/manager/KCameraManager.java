@@ -1,8 +1,7 @@
-package cn.oi.klittle.era.activity.camera;
+package cn.oi.klittle.era.activity.camera.manager;
 
 import android.graphics.ImageFormat;
 import android.hardware.Camera;
-import android.util.Log;
 import android.view.SurfaceHolder;
 
 
@@ -20,7 +19,6 @@ import cn.oi.klittle.era.utils.KLoggerUtils;
  * Time: 10:56
  */
 public class KCameraManager {
-    private static final String TAG = KCameraManager.class.getName();
     public Camera camera;
     private Camera.Parameters parameters;
     public KAutoFocusManager autoFocusManager;
@@ -43,7 +41,6 @@ public class KCameraManager {
         try {
             int numCameras = Camera.getNumberOfCameras();
             if (numCameras == 0) {
-                Log.e(TAG, "No cameras!");
                 return null;
             }
             if (!isBackCamera) {
@@ -108,9 +105,9 @@ public class KCameraManager {
      */
     public synchronized void openDriver(SurfaceHolder holder, boolean isBackCamera)
             throws IOException {
-        Log.e(TAG, "openDriver");
         Camera theCamera = camera;
         if (theCamera == null) {
+            initialized=false;
             theCamera = open(requestedCameraId, isBackCamera);//打开摄像头
             if (theCamera == null) {
                 throw new IOException();
@@ -211,7 +208,6 @@ public class KCameraManager {
      * 关闭camera
      */
     public synchronized void closeDriver() {
-        Log.e(TAG, "closeDriver");
         if (camera != null) {
             camera.release();
             camera = null;
@@ -222,7 +218,6 @@ public class KCameraManager {
      * 开始预览
      */
     public synchronized void startPreview() {
-        Log.e(TAG, "startPreview");
         Camera theCamera = camera;
         if (theCamera != null && !previewing) {
             theCamera.startPreview();
@@ -235,7 +230,6 @@ public class KCameraManager {
      * 关闭预览
      */
     public synchronized void stopPreview() {
-        Log.e(TAG, "stopPreview");
         if (autoFocusManager != null) {
             autoFocusManager.stop();
             autoFocusManager = null;
@@ -250,7 +244,6 @@ public class KCameraManager {
      * 打开闪光灯
      */
     public synchronized void openLight() {
-        Log.e(TAG, "openLight");
         if (camera != null) {
             parameters = camera.getParameters();
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -285,7 +278,6 @@ public class KCameraManager {
      * 关闭闪光灯
      */
     public synchronized void offLight() {
-        Log.e(TAG, "offLight");
         if (camera != null) {
             parameters = camera.getParameters();
             parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);

@@ -1,4 +1,4 @@
-package cn.oi.klittle.era.activity.camera;
+package cn.oi.klittle.era.activity.camera.manager;
 
 import android.hardware.Camera;
 import android.os.AsyncTask;
