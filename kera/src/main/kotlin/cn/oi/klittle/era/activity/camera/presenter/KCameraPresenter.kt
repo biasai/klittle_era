@@ -227,12 +227,16 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
                     //KLoggerUtils.e("位图宽：\t" + landBitmap.width + "\t位图高：\t" + landBitmap.height)
                     // 定义矩阵对象
                     var matrix = Matrix();
-                    // 缩放原图
-                    matrix.postScale(1f, 1f);
-                    // 顺时针旋转90度
-                    matrix.postRotate(90f);//竖屏拍出来的照片，仍然是横屏的，需要对图片进行旋转90度（横屏图片转竖屏图片）
                     if (!isBackCamera) {
-                        matrix.postRotate(180f);//fixme 前置摄像头，还要到转一次，不然是倒象。
+                        //fixme 缩放原图;sx -1 上下颠倒；sy-1 左右颠倒。
+                        matrix.postScale(1f, -1f);
+                        matrix.postRotate(270f);//fixme 前置摄像头
+                    } else {
+                        //fixme 后置摄像头
+                        //缩放原图
+                        matrix.postScale(1f, 1f);
+                        // 顺时针旋转90度
+                        matrix.postRotate(90f);//竖屏拍出来的照片，仍然是横屏的，需要对图片进行旋转90度（横屏图片转竖屏图片）
                     }
                     //fixme 竖屏位图
                     var portbitmap = Bitmap.createBitmap(landBitmap, 0, 0, landBitmap.getWidth(), landBitmap.getHeight(),

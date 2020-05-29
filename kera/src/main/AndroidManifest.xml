@@ -78,7 +78,10 @@
             android:name="cn.oi.klittle.era.activity.camera.KCameraActivity"
             android:launchMode="singleTop"
             android:theme="@style/KTheme_Activity_full"></activity>
-
+        <activity
+            android:name="cn.oi.klittle.era.activity.camera.KCameraRecorderActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_full"></activity>
         <meta-data
             android:name="android.max_aspect"
             android:value="3.4" /> <!-- 开机广播，静态注册 -->

@@ -248,9 +248,16 @@ public class KCameraManager {
      */
     public synchronized void openLight() {
         if (camera != null) {
-            parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            camera.setParameters(parameters);
+            try {
+                parameters = camera.getParameters();
+                if (parameters!=null) {
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+                    camera.setParameters(parameters);
+                }
+            } catch (Exception e) {
+                //没有前置摄像头，打开前置摄像头时可能异常
+                KLoggerUtils.INSTANCE.e("openLight()开灯异常：\t" + KCatchException.getExceptionMsg(e), true);
+            }
         }
     }
 
@@ -261,16 +268,23 @@ public class KCameraManager {
      */
     public synchronized boolean judgeLight() {
         if (camera != null) {
-            Camera.Parameters parameters = camera.getParameters();
-            String flashMode = parameters.getFlashMode();
-            //Log.e("test", "flashMode:\t" + flashMode + "\t开:\t" + Parameters.FLASH_MODE_TORCH + "\t关:\t" + Parameters.FLASH_MODE_OFF);
-            if (flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH)) {
-                //Log.e("test", "开");
-                return true;
-            }
-            if (flashMode.equals(Camera.Parameters.FLASH_MODE_OFF)) {
-                //Log.e("test", "关");
-                return false;
+            try {
+                Camera.Parameters parameters = camera.getParameters();
+                String flashMode = parameters.getFlashMode();
+                if (flashMode != null) {
+                    //Log.e("test", "flashMode:\t" + flashMode + "\t开:\t" + Parameters.FLASH_MODE_TORCH + "\t关:\t" + Parameters.FLASH_MODE_OFF);
+                    if (flashMode.equals(Camera.Parameters.FLASH_MODE_TORCH)) {
+                        //Log.e("test", "开");
+                        return true;
+                    }
+                    if (flashMode.equals(Camera.Parameters.FLASH_MODE_OFF)) {
+                        //Log.e("test", "关");
+                        return false;
+                    }
+                }
+            } catch (Exception e) {
+                //没有前置摄像头，打开前置摄像头时可能异常
+                KLoggerUtils.INSTANCE.e("judgeLight()判断是否开灯异常：\t" + KCatchException.getExceptionMsg(e), true);
             }
         }
         return false;
@@ -282,9 +296,16 @@ public class KCameraManager {
      */
     public synchronized void offLight() {
         if (camera != null) {
-            parameters = camera.getParameters();
-            parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            camera.setParameters(parameters);
+            try {
+                parameters = camera.getParameters();
+                if (parameters!=null) {
+                    parameters.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+                    camera.setParameters(parameters);
+                }
+            } catch (Exception e) {
+                //没有前置摄像头，打开前置摄像头时可能异常
+                KLoggerUtils.INSTANCE.e("offLight()关灯异常：\t" + KCatchException.getExceptionMsg(e));
+            }
         }
     }
 

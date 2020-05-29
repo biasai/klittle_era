@@ -27,47 +27,24 @@
     <string name="KYesterday">Yesterday</string>
 
     <!--星座(按阳历计算)-->
-    <string-array name="KConstellation">
-        <item>Aquarius</item>
-        <item>Pisces</item>
-        <item>Aries</item>
-        <item>Taurus</item>
-        <item>Gemini</item>
-        <item>Cancer</item>
-        <item>Leo</item>
-        <item>Virgo</item>
-        <item>Libra</item>
-        <item>Scorpio</item>
-        <item>Sagittarius</item>
-        <item>Capricorn</item>
-    </string-array>
+    <string name="KGetVerificationCode">Get verification code</string>
 
     <!--星期-->
-    <string-array name="KWeek">
-        <item>Sunday</item>
-        <item>Monday</item>
-        <item>Tuesday</item>
-        <item>Wednesday</item>
-        <item>Thursday</item>
-        <item>Friday</item>
-        <item>Saturday</item>
-    </string-array>
+    <string name="KVerificationCode">Verification code</string>
 
     <!--验证码-->
-    <string name="KGetVerificationCode">Get verification code</string>
-    <string name="KVerificationCode">Verification code</string>
     <string name="KNotEmptyOfPhone">The cell phone number cannot be empty</string>
     <string name="KPleaseInputCorrectPhone">Please input the correct mobile phone number</string>
     <string name="KEmptyOfTextPhone">The phone text box is empty</string>
-
-    <!--网络相关-->
     <string name="ktimeout">Connection timeout</string>
     <string name="kconnetfailure">The connection fails</string>
-    <string name="kconnetfailure_filedown">Download failed, network connection timeout</string>
 
-    <!--按钮KButton-->
+    <!--网络相关-->
+    <string name="kconnetfailure_filedown">Download failed, network connection timeout</string>
     <string name="ktelError">The phone number format is not correct</string>
     <string name="ktelEmptyError">The cell phone number cannot be empty</string>
+
+    <!--按钮KButton-->
     <string name="kpasswordError">The password format is incorrect</string>
     <string name="kpasswordEmptyError">The password cannot be empty</string>
     <string name="kpassword2Error">The passwords entered do not match</string>
@@ -83,54 +60,60 @@
     <string name="kbankNoEmptyError">The bank card number cannot be empty</string>
     <string name="kemailError">The mailbox format is incorrect</string>
     <string name="kemailEmptyError">The mailbox cannot be empty</string>
-
-    <!--弹框-->
     <string name="ktishi">prompt</string>
     <string name="kcancel">cancel</string>
+
+    <!--弹框-->
     <string name="kconfirm">confirm</string>
     <string name="kgone">complete</string>
     <string name="kchoose">please select a</string>
-
-    <!--Toast提示语句-->
     <string name="kexitInfo">Don\'t order any more. I\'m leaving</string>
     <string name="kexitInfo2">Press again to exit!</string>
 
-    <!--打印-->
+    <!--Toast提示语句-->
     <string name="kprint_success">Print success</string>
     <string name="kprint_fail">Printing failed</string>
+
+    <!--打印-->
     <string name="ktakePicture">Taking pictures</string>
     <string name="ktakePicture2">Continue to take photos</string>
     <string name="kcamera_front">Front facing camera</string>
     <string name="kcamera_back">Rear camera</string>
-    <!--二维码-->
     <string name="kqr_code">Qr code/bar code</string>
     <string name="kaiding">Turn on the light</string>
     <string name="kguangding">Turn off the lights</string>
+    <string name="kcamera_luxiang">video</string>
+    <string name="kcamera_luxiang_start">Start the video</string>
+    <string name="kcamera_luxiang_stop">Stop the video</string>
+    <string name="kcamera_start">start</string>
+    <string name="kcamera_pause">suspended</string>
+    <!--    相机-->
+
+
     <string name="kqr_timi">Place the qr code/barcode in the box</string>
     <string name="kqr_fair">Failed to identify a valid qr code</string>
-
+    <!--二维码-->
     <string name="kfaxianxinbanben">Discover new version</string>
-
     <string name="textCopySuccess">Copy success</string>
     <string name="textCopy">Text copied</string>
-
-    <!--NFC读卡-->
     <string name="knfc_no">The device does not support NFC card reading function</string>
     <string name="knf_set">Please enable NFC function in system Settings first!</string>
+
+    <!--NFC读卡-->
     <string name="kgo_set">to set up</string>
     <string name="knf_timi">NFC card reading function needs to be enabled. Is it enabled?</string>
-
-    <!--分享-->
     <string name="kdialogTitle">Le le alone than all le le</string>
     <string name="kinstallqq">Please install QQ first</string>
+
+    <!--分享-->
     <string name="kinstallww">Install WeChat first</string>
     <string name="kinstallwb">Please install weibo first</string>
     <string name="ksharefile">Share files</string>
     <string name="ksharefilenot">File sharing does not exist</string>
-
-    <!--文件下载-->
     <string name="kfiledown">File downloaded</string>
     <string name="kappdown">The App has been downloaded</string>
+
+    <!--文件下载-->
     <string name="kappdownfail">Download failed</string>
     <string name="kfaxianapp">Find the App</string>
     <string name="kshifouxiazai">Download it?</string>
@@ -139,12 +122,12 @@
     <string name="kerror_code">The error code</string>
     <string name="kapkFailr">Installation package parsing error</string>
     <string name="kapkFailr2">Download failed, please download again!</string>
-    <!--下拉刷新，上拉加载更多-->
     <string name="kloadMore">Being loaded...</string>
     <string name="kloadMoreComplete">No more data。</string>
-    <!--图片选择器-->
+    <!--下拉刷新，上拉加载更多-->
     <string name="kxiangjijiaojuan">CameraRoll</string>
     <string name="kpreview">preview</string>
+    <!--图片选择器-->
     <string name="kchoose_photo">Please select a</string>
     <string name="kcomplete">Has been completed</string>
     <string name="kcamera">Shot</string>
@@ -157,16 +140,16 @@
     <string name="kpicture_camera_roll">CameraRoll</string>
     <string name="kpicture_empty_title">No video or photos\n</string>
     <string name="kpicture_empty_audio_title">No audio file\n</string>
-    <!--铃声-->
     <string name="kringtone">The bell</string>
-    <!--多国语言-->
     <string name="klanguage_zh">Chinese</string>
+    <!--铃声-->
     <string name="klanguage_zh_rCN">Chinese (simplified)</string>
+    <!--多国语言-->
     <string name="klanguage_zh_rTW">Chinese (traditional)</string>
     <string name="klanguage_en">English</string>
-    <!--指纹-->
     <string name="kfinger_yanzhen">Please verify fingerprint unlocking</string>
     <string name="kfinger_login">Please verify fingerprint unlock login</string>
+    <!--指纹-->
     <string name="ksysnotfinger">Your system version is too low to support the fingerprint function</string>
     <string name="kdevicenotfinger">Your phone does not support the fingerprint function</string>
     <string name="kfinger_notsuoping">You have not set the lock screen, please set the lock screen and add a fingerprint</string>
@@ -179,6 +162,29 @@
     <string name="kfinger_errorCode_5">The fingerprint operation has been cancelled.</string>
     <string name="kfinger_errorCode_7">Too many attempts. Please try again later.</string>
     <string name="kfinger_errorCode_10">The user canceled the fingerprint operation.</string>
-    <!--异常-->
     <string name="kpackNameError">Specifies a package name exception</string>
+    <string-array name="KConstellation">
+        <item>Aquarius</item>
+        <item>Pisces</item>
+        <item>Aries</item>
+        <item>Taurus</item>
+        <item>Gemini</item>
+        <item>Cancer</item>
+        <item>Leo</item>
+        <item>Virgo</item>
+        <item>Libra</item>
+        <item>Scorpio</item>
+        <item>Sagittarius</item>
+        <item>Capricorn</item>
+    </string-array>
+    <!--异常-->
+    <string-array name="KWeek">
+        <item>Sunday</item>
+        <item>Monday</item>
+        <item>Tuesday</item>
+        <item>Wednesday</item>
+        <item>Thursday</item>
+        <item>Friday</item>
+        <item>Saturday</item>
+    </string-array>
 </resources>

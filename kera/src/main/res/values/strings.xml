@@ -76,19 +76,25 @@
     <!--弹框-->
     <string name="kexitInfo">别点了，再点我就要走了</string>
     <string name="kexitInfo2">再按一次退出!</string>
+    <!--Toast提示语句-->
     <string name="kprint_success">打印成功</string>
     <string name="kprint_fail">打印失败</string>
     <string name="kqr_code">二维码/条码</string>
+    <!--打印-->
 
-    <!--Toast提示语句-->
     <string name="kaiding">开灯</string>
     <string name="kguangding">关灯</string>
     <string name="ktakePicture">拍照</string>
     <string name="ktakePicture2">继续拍照</string>
     <string name="kcamera_front">前置摄像头</string>
     <string name="kcamera_back">后置摄像头</string>
+    <string name="kcamera_luxiang">录像</string>
+    <string name="kcamera_luxiang_start">开始录像</string>
+    <string name="kcamera_luxiang_stop">停止录像</string>
+    <string name="kcamera_start">开始</string>
+    <string name="kcamera_pause">暂停</string>
+    <!--  相机-->
 
-    <!--打印-->
     <string name="kqr_timi">将二维码/条码放入框内，即可自动扫描</string>
     <string name="kqr_fair">未能识别有效二维码</string>
 

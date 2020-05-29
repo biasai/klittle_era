@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.camera.KCameraActivity
+import cn.oi.klittle.era.activity.camera.KCameraRecorderActivity
 import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
 import cn.oi.klittle.era.activity.video.KScreenVideoActivity
 import cn.oi.klittle.era.base.KBaseActivity
@@ -172,14 +173,38 @@ object KUiHelper {
     }
 
     /**
-     * fixme 跳转到 自定义相机界面
+     * fixme 跳转到 自定义相机拍摄
+     * @param isBackCamera true后置摄像头；false前置摄像头
      */
-    fun goCameraActivity(nowActivity: Activity? = getActivity()) {
+    fun goCameraActivity(isBackCamera: Boolean = true,nowActivity: Activity? = getActivity()) {
         try {
             //需要相机权限（必须）
             KPermissionUtils.requestPermissionsCamera {
                 if (it) {
-                    goActivity(KCameraActivity::class.java, nowActivity)
+                    var intent = Intent(nowActivity, KCameraActivity::class.java)
+                    intent.putExtra("isBackCamera", isBackCamera)
+                    goActivity(intent)
+                } else {
+                    KPermissionUtils.showFailure()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    /**
+     * fixme 跳转到 自定义相机录像
+     * @param isBackCamera true后置摄像头；false前置摄像头
+     */
+    fun goKCameraRecorderActivity(isBackCamera: Boolean = true,nowActivity: Activity? = getActivity()) {
+        try {
+            //需要相机权限（必须）
+            KPermissionUtils.requestPermissionsCamera {
+                if (it) {
+                    var intent = Intent(nowActivity, KCameraRecorderActivity::class.java)
+                    intent.putExtra("isBackCamera", isBackCamera)
+                    goActivity(intent)
                 } else {
                     KPermissionUtils.showFailure()
                 }

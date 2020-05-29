@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.SurfaceView
 import cn.oi.klittle.era.R
-import cn.oi.klittle.era.activity.camera.presenter.KCameraPresenter
+import cn.oi.klittle.era.activity.camera.presenter.KCameraRecorderPresenter
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KLoggerUtils
@@ -14,27 +14,26 @@ import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
 /**
- * fixme 自定义相机开发；速度还行。
+ * fixme 自定义相机录像
  */
-open class KCameraActivity : KBaseActivity() {
+open class KCameraRecorderActivity : KBaseActivity() {
 
-    var prensenter: KCameraPresenter? = null
+    var prensenter: KCameraRecorderPresenter? = null
     var surfaceView: SurfaceView? = null//fixme 相机视图会投放到SurfaceView上面。
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initUi()//初始化视图，里面初始了surfaceView
         if (prensenter == null) {
-            prensenter = KCameraPresenter(surfaceView)
+            prensenter = KCameraRecorderPresenter(surfaceView)
             intent?.let {
                 it.extras?.get("isBackCamera")?.let {
-                    if (it is Boolean){
-                        prensenter?.isBackCamera=it//fixme true后置摄像头，false前置摄像头
+                    if (it is Boolean) {
+                        prensenter?.isBackCamera = it//fixme true后置摄像头，false前置摄像头
                     }
                 }
             }
-
         }
- }
+    }
 
     //fixme 初始化视图，子类可以重写。一定要初始化surfaceView
     public open fun initUi() {
@@ -79,29 +78,23 @@ open class KCameraActivity : KBaseActivity() {
                     }
 
                     button {
-                        text = getString(R.string.ktakePicture)//fixme "拍照"
+                        text = getString(R.string.kcamera_luxiang_start)//fixme 开始录像
                         textSize = kpx.textSizeX(36)
                         textColor = Color.CYAN
                         onClick {
-                            //判断相机是否销毁
-                            prensenter?.let {
-                                if (it.isRecycleCamera) {
-                                    it?.resumeCamera()//fixme 重新初始化相机
-                                    text = getString(R.string.ktakePicture)//fixme "拍照"
-                                } else {
-                                    //拍照
-                                    it?.takePicture() {
-                                        KLoggerUtils.e("拍摄位图\t" + it.isRecycled + "\t宽：\t" + it.width + "\t高：\t" + it.height)
-                                        text = getString(R.string.ktakePicture2)//fixme "继续拍照"
-                                        backgroundDrawable = BitmapDrawable(it)
-                                    }
-                                }
-                            }
+                            prensenter?.startRecord()
                         }
-                    }.lparams {
-                        width = kpx.x(1080) / 4
-                        height = kpx.x(1920) / 4
                     }
+
+                    button {
+                        text = getString(R.string.kcamera_luxiang_stop)//fixme 停止录像
+                        textSize = kpx.textSizeX(36)
+                        textColor = Color.CYAN
+                        onClick {
+                            prensenter?.stopRecord()
+                        }
+                    }
+
                 }.lparams {
                     width = matchParent
                     height = matchParent
