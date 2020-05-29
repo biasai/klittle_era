@@ -31,6 +31,7 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
@@ -518,6 +519,7 @@ open class KBaseActivity : AppCompatActivity() {
             KPermissionUtils.onRequestPermissionsResult(getActivity(), requestCode, permissions, grantResults)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("onRequestPermissionsResult（）系统权限申请回调异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 

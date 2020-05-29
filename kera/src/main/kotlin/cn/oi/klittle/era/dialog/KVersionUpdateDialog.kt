@@ -24,8 +24,10 @@ import java.lang.Exception
 open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = true) : KBaseDialog(ctx, R.layout.kera_dialog_version_update, isStatus, isTransparent) {
     //进度条
     val numprogressbar: KNumberProgressBar? by lazy { findViewById<KNumberProgressBar>(R.id.numprogressbar) }
+
     //apk下载链接
     var url: String? = null
+
     //文件名，包括后缀。如果为null或""空，会自动获取网络上的名称。
     var srcFileName: String? = null
 
@@ -55,14 +57,15 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
         isDismiss(false)//触摸屏幕不会消失
     }
 
-    //下载
+    //fixme 下载
     open fun loadDown() {
         try {
             ctx?.runOnUiThread {
                 isLoading = true
                 isLoading()
                 url?.let {
-                    KFileLoadUtils.getInstance().downLoad(ctx, url, srcFileName, object : KFileLoadUtils.RequestCallBack {
+                    //fixme 默认为apk下载。
+                    KFileLoadUtils.getInstance(true).downLoad(ctx, url, srcFileName, object : KFileLoadUtils.RequestCallBack {
                         override fun onStart() {
                             //开始下载
                         }
@@ -98,6 +101,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                                     KAppUtils.installation(ctx, file)
                                     numprogressbar?.setProgress(0)//进度条恢复到0
                                 }
+                                //KLoggerUtils.e("下载文件：\t"+file?.absolutePath)
                             }
                         }
 
@@ -131,6 +135,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
     }
 
     var isForceLoad = false//是否强制下载
+
     //判断是否强制下载
     fun isForceLoad() {
         try {
@@ -152,6 +157,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
     }
 
     var isLoading = false//是否正在下载
+
     //判断是否正在下载
     fun isLoading() {
         try {

@@ -89,17 +89,17 @@ public class KFileUtils {
     /**
      * 根据文件路径，获取文件名（包括文件后缀）
      *
-     * @param path
+     * @param path  fixme file.name或file.absolutePath都可以。亲测有效。 文件名或文件的完整路径都可以。
      * @return
      */
     public String getFileName(String path) {
-        return path.substring(path.lastIndexOf("/") + 1);
+        return path.substring(path.lastIndexOf("/") + 1);//fixme path.lastIndexOf("/") 不包含时，返回的是 -1
     }
 
     /**
      * 根据文件路径，获取文件名（不包括文件后缀）
      *
-     * @param path
+     * @param path fixme file.name或file.absolutePath都可以。亲测有效。
      * @return
      */
     public String getFileName2(String path) {
@@ -109,6 +109,26 @@ public class KFileUtils {
             e.printStackTrace();
         }
         return "";
+    }
+
+    /**
+     * 获取文件名（包括文件名后缀）
+     *
+     * @param file
+     * @return
+     */
+    public String getFileName(File file) {
+        return file.getName();//fixme 包括文件名后缀
+    }
+
+    /**
+     * 获取文件名（不包括文件名后缀）
+     *
+     * @param file
+     * @return
+     */
+    public String getFileName2(File file) {
+        return getFileName2(file.getAbsolutePath());
     }
 
     /**
@@ -124,15 +144,6 @@ public class KFileUtils {
         return null;
     }
 
-    /**
-     * 获取文件名（包括文件名后缀）
-     *
-     * @param file
-     * @return
-     */
-    public String getFileName(File file) {
-        return file.getName();//包括后缀
-    }
 
     /**
      * 创建文件
@@ -337,13 +348,15 @@ public class KFileUtils {
     }
 
     /**
-     * 删除某个文件夹下的所有文件夹和文件
+     * fixme 删除某个文件夹下的所有文件夹和文件;亲测有效。
      *
      * @param delpath 文件夹路径
      * @param suffix  fixme 后缀(如: .apk 包含点.) 删除对应该格式的文件。如果为空;则删除所有类型的文件。
      */
     public boolean delAllFiles(String delpath, String suffix) {
+        boolean isSuccess = false;//判断是否删除成功。
         try {
+            //KLoggerUtils.INSTANCE.e("文件删除：\t"+delpath+"\tsuffix:\t"+suffix);
             if (delpath == null || delpath.length() <= 0) {
                 return false;
             }
@@ -353,8 +366,10 @@ public class KFileUtils {
             File file = new File(delpath);
             //isDirectory()判断是否为目录
             if (!file.isDirectory()) {
+                //KLoggerUtils.INSTANCE.e("删除文件：\t"+file.getAbsolutePath()+"\t"+file.getName());
                 if (containSuffix(file.getName(), suffix)) {
-                    file.delete();//fixme 删除文件
+                    isSuccess = file.delete();//fixme 删除文件，成功删除，会返回true。
+                    //KLoggerUtils.INSTANCE.e("文件删除：\t"+b);
                 }
             } else if (file.isDirectory()) {
                 String[] filelist = file.list();
@@ -364,7 +379,8 @@ public class KFileUtils {
                     if (!delfile.isDirectory()) {
                         //Log.e("test","删除:\t"+delfile.getName());
                         if (containSuffix(delfile.getName(), suffix)) {
-                            delfile.delete();//fixme 删除文件
+                            isSuccess = delfile.delete();//fixme 删除文件，会返回true。
+                            //KLoggerUtils.INSTANCE.e("文件删除2：\t"+b);
                         }
                     } else if (delfile.isDirectory()) {
                         delAllFiles(delpath + "/" + filelist[i], suffix);//fixme 闭合
@@ -379,7 +395,7 @@ public class KFileUtils {
         } catch (Exception e) {
             Log.e("test", "删除所有文件异常:\t" + e.getMessage());
         }
-        return true;
+        return isSuccess;
     }
 
     //fixme file.getName() 文件名(包含.后缀)
@@ -387,7 +403,7 @@ public class KFileUtils {
     /**
      * 判断文件名是否包含该后缀；即判断该文件是否属于该格式
      *
-     * @param fileName 文件名
+     * @param fileName 文件名(完整文件名，包括后缀。) file.getName()会获取文件的后缀名。如：202005231651317840.apk
      * @param suffix   fixme 后缀(如: .apk 包含点.)
      * @return
      */

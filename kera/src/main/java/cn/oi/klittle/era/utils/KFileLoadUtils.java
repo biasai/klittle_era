@@ -60,7 +60,7 @@ import cn.oi.klittle.era.base.KBaseUi;
 //            })
 
 /**
- * 文件下载工具类，支持断点下载。
+ * fixme 文件下载工具类，支持断点下载(不会重复下载)。
  * 上传就不需要单独写工具类了【所谓的上传就是将文件(File file)作为参数通过Http协议Post提交即可】,如：params.addBodyParameter(key, file);
  * Created by 彭治铭 on 2017/5/24.
  */
@@ -70,6 +70,25 @@ public class KFileLoadUtils {
     private ThreadPoolExecutor threadPoolExecutor;
     //fixme 文件下载目录
     public String cacheDir;
+    public boolean isApk = true;//fixme 下载的是否为APK安装包。默认是的。
+
+    //fixme 设置下载路径
+    public void setCacheDir(Boolean isApk) {
+        if (isApk != null) {
+            if (isApk) {
+                //apk下载目录
+                if (cacheDir == null || this.isApk != isApk) {
+                    this.cacheDir = KPathManagerUtils.INSTANCE.getApkLoadDownPath();
+                }
+            } else {
+                if (cacheDir == null || this.isApk != isApk) {
+                    this.cacheDir = KPathManagerUtils.INSTANCE.getFileLoadDownPath();
+                }
+            }
+            this.isApk = isApk;
+        }
+    }
+
     //判断该uri是否正在下载
     private Map<String, Boolean> mapLoad;
     private Map<String, RequestCallBack> mapCallback;
@@ -77,21 +96,20 @@ public class KFileLoadUtils {
     //构造函数
     private KFileLoadUtils() {
         try {
-            Context context = KBaseApplication.getInstance();
+            //Context context = KBaseApplication.getInstance();
             //this.cacheDir = context.getApplicationContext().getFilesDir().getAbsolutePath();//这个地址，文件无法分享。(内部位置无法分享出去),不需要权限
-            this.cacheDir = context.getApplicationContext().getExternalCacheDir().getAbsolutePath();//这个位置，可以分享。（SD卡的东西可以分享出去）,不需要权限。推荐使用这个
+            //this.cacheDir = context.getApplicationContext().getExternalCacheDir().getAbsolutePath();//这个位置，可以分享。（SD卡的东西可以分享出去）,不需要权限。推荐使用这个
             //this.cacheDir=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getPath();//需要SD卡权限
-
-            try {
-                String cacheDir2 = cacheDir + "/down";//fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
-                new File(cacheDir2).mkdirs();//fixme 创建目录
-                cacheDir = cacheDir2;
-            } catch (Exception e) {
-                e.printStackTrace();
-                KLoggerUtils.INSTANCE.e("KFileLoadUtils 下载文件目录创建失败：\t" + e.getMessage(),true);
-            }
-
-
+//            this.cacheDir = KPathManagerUtils.INSTANCE.getFileLoadDownPath();//fixme 通用获取下载路径。
+//            try {
+//                String cacheDir2 = cacheDir + "/down";//fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
+//                new File(cacheDir2).mkdirs();//fixme 创建目录
+//                cacheDir = cacheDir2;
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                KLoggerUtils.INSTANCE.e("KFileLoadUtils 下载文件目录创建失败：\t" + e.getMessage(), true);
+//            }
+            setCacheDir(isApk);//fixme 设置下载路径
             mapLoad = new HashMap<>();
             mapCallback = new HashMap<>();
             int corePoolSize = Runtime.getRuntime().availableProcessors() + 2;
@@ -102,7 +120,7 @@ public class KFileLoadUtils {
             threadPoolExecutor = new ThreadPoolExecutor(corePoolSize, maxinumPoolSize, keepAliveTime, unit, workQueue);
         } catch (Exception e) {
             e.printStackTrace();
-            KLoggerUtils.INSTANCE.e("KFileLoadUtils初始异常：\t" + e.getMessage(),true);
+            KLoggerUtils.INSTANCE.e("KFileLoadUtils初始异常：\t" + e.getMessage(), true);
         }
     }
 
@@ -111,6 +129,20 @@ public class KFileLoadUtils {
         if (fileDown == null) {
             fileDown = new KFileLoadUtils();
         }
+        return fileDown;
+    }
+
+    /**
+     * 初始化
+     *
+     * @param isApk 是否下载apk
+     * @return
+     */
+    public static KFileLoadUtils getInstance(Boolean isApk) {
+        if (fileDown == null) {
+            fileDown = new KFileLoadUtils();
+        }
+        fileDown.setCacheDir(isApk);
         return fileDown;
     }
 
@@ -388,8 +420,8 @@ public class KFileLoadUtils {
             try {
                 RequestCallBack requestCallBack1 = mapCallback.get(uri);
                 if (requestCallBack1 != null) {
-                    String errorMsg=e.getMessage();
-                    if (errorMsg!=null&&(errorMsg.contains("recvfrom failed") || errorMsg.contains("Connection timed out") || errorMsg.toLowerCase().contains("failed to connect"))){
+                    String errorMsg = e.getMessage();
+                    if (errorMsg != null && (errorMsg.contains("recvfrom failed") || errorMsg.contains("Connection timed out") || errorMsg.toLowerCase().contains("failed to connect"))) {
                         errorMsg = KBaseUi.Companion.getString(R.string.kconnetfailure_filedown);//下载失败，网络连接超时
                     }
                     if (context != null && context instanceof Activity) {

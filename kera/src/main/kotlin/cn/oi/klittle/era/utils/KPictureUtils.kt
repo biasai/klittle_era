@@ -50,76 +50,22 @@ object KPictureUtils {
     //文件路径[需要file_paths.xml才能访问]
     //fixme 本应用，相机拍摄的图片会保存在该位置。
     fun getCameraPath(context: Context = KBaseApplication.getInstance()): String {
-        //defaultConfig {
-        //targetSdkVersion 23//getExternalFilesDir才能正常访问，无需权限。但是如果是22及以下。就需要开启SD卡读取权限。
-        //}
-        //return getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath();
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/cache"
-        //return KCacheUtils.getCachePath() + "/img"
-        try {
-            //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
-            //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
-            //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
-            //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
-            return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/CameraImage"//context.packageName获取的是应用app的包名。
-            //return Environment.getExternalStorageDirectory().absolutePath + "/PictureSelector/CameraImage/" //第三方图片选择器的相机拍照图片路径。
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }
-        return KCacheUtils.getCachePath() + "/CameraImage"//fixme 如果异常，就使用本应用路径。最好不要使用本应用缓存。一个应用的缓存空间好像是有限的。
+        return KPathManagerUtils.getCameraPath(context)
     }
 
     //视频录制路径
-    fun getAppVideoPath(context: Context): String {
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/video"
-        //return KCacheUtils.getCachePath() + "/video"
-        //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
-        //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
-        //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
-        //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
-        return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/video"//context.packageName获取的是应用app的包名。
+    fun getAppVideoPath(context: Context = KBaseApplication.getInstance()): String {
+        return KPathManagerUtils.getAppVideoPath(context)
     }
 
     //文件裁剪路径
     fun getAppCropPath(context: Context): String {
-        //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/crop"
-        //return KCacheUtils.getCachePath() + "/crop"
-        //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
-        //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
-        //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
-        //fixme 相机图片系统路径：/storage/emulated/0/DCIM/Camera/
-        return Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/crop"//context.packageName获取的是应用app的包名。
+        return KPathManagerUtils.getAppCropPath(context)
     }
 
     //获取相册图片路径
     fun getPhotoPath(activtiy: Activity, data: Intent): String? {
-        var photoPath: String? = null
-        try {
-            val uri = data.data
-            // 获取相册图片路径
-            val proj = arrayOf(MediaStore.Images.Media.DATA)
-            // 好像是android多媒体数据库的封装接口，具体的看Android文档
-            var cursor: Cursor? = null
-            if (Build.VERSION.SDK_INT >= 19) {//4.4版本
-                //managedQuery()现在已经被getContentResolver().query()替代了，不过它们的参数都是一样的。效果也是一样的。
-                cursor = activtiy.getContentResolver().query(uri!!, proj, null, null, null)
-            } else {
-                //低版本
-                cursor = activtiy.managedQuery(uri, proj, null, null, null)
-            }
-            // 按我个人理解 这个是获得用户选择的图片的索引值
-            val column_index = cursor!!
-                    .getColumnIndexOrThrow(MediaStore.Images.Media.DATA)
-            // 将光标移至开头 ，这个很重要，不小心很容易引起越界
-            cursor.moveToFirst()
-            // 最后根据索引值获取图片路径
-            photoPath = cursor.getString(column_index)
-            // bm = BitmapFactory.decodeFile(path);
-        } catch (e: Exception) {
-            // TODO: handle exception
-            KLoggerUtils.e("KPictrueUtils 相册图片路径获取失败" + e.message, isLogEnable = true)
-        }
-        return photoPath
+        return KPathManagerUtils.getPhotoPath(activtiy, data)
     }
 
     val DEFAULT_KEYS_PICTURE_PHOTO = 3828//相册图库选择
@@ -299,8 +245,9 @@ object KPictureUtils {
                     if (it) {
                         try {
                             val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                            //resolveActivity()查询是否有第三方能够启动该intent
-                            if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                            //resolveActivity()查询是否有第三方能够启动该intent;fixme resolveActivity()靠不住。建议不要使用。
+                            //if (intent.resolveActivity(activity.getPackageManager()) != null) {
+                            if (true) {
                                 //PNG格式的不能显示在相册中
                                 var cramefile = KFileUtils.getInstance().createFile(getCameraPath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
                                 cramePath = cramefile?.absolutePath
@@ -469,7 +416,9 @@ object KPictureUtils {
         }
         try {
             var intent = Intent(Intent.ACTION_PICK)
-            if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
+            //fixme resolveActivity()靠不住，建议不要使用。
+            //if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
+            if (activity != null && !activity.isFinishing()) {
                 intent.type = "video/*"
                 intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
                 //intent.action = Intent.ACTION_PICK//不能再调用intent.addCategory(),会出错。
@@ -539,7 +488,9 @@ object KPictureUtils {
                                     fileUri = Uri.fromFile(cameraVideoFile)
                                 }
                                 val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-                                if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
+                                //fixme resolveActivity()建议不要使用，靠不住。
+                                //if (activity != null && !activity.isFinishing() && intent.resolveActivity(activity.getPackageManager()) != null) {
+                                if (activity != null && !activity.isFinishing()) {
                                     intent.putExtra("return-data", false)//true的话直接返回bitmap，可能会很占内存 不建议
                                     //以下两个addFlags必不可少。【以防万一出错】
                                     intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -581,10 +532,10 @@ object KPictureUtils {
 
     }
 
-
+    //fixme 权限申请回调结果；
     fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
         try {
-            //Log.e("test","requestCode：\t"+requestCode+"\tresultCode:\t"+resultCode+"\tdata:\t"+data+"\tdata.data:\t"+data?.data)
+            //KLoggerUtils.e("requestCode：\t" + requestCode + "\tresultCode:\t" + resultCode + "\tdata:\t" + data + "\tdata.data:\t" + data?.data)
             //resultCode 0 系统设置默认就是取消。
             if (requestCode == DEFAULT_KEYS_PICTURE_PHOTO && data != null && data.data != null) {
                 //相册

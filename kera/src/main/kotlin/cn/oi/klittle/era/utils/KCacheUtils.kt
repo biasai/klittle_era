@@ -57,22 +57,26 @@ object KCacheUtils {
     //缓存目录
     fun getCacheDir(): File {
         //KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());//这个是之前用的。
-        return KBaseApplication.getInstance().cacheDir
+        //return KBaseApplication.getInstance().cacheDir
+        return KPathManagerUtils.getCacheDir()
     }
 
     //缓存目录的路径,不需要SD卡权限
     fun getCachePath(): String {
-        return getCacheDir().absolutePath//fixme 在应用cache目录下，如：/data/user/0/com.应用包名/cache
+        //return getCacheDir().absolutePath//fixme 在应用cache目录下，如：/data/user/0/com.应用包名/cache
+        return KPathManagerUtils.getCachePath()
     }
 
     //fixme 私有缓存目录
     fun getCacheDirSecret(): File {
-        return KBaseApplication.getInstance().getFilesDir()
+        //return KBaseApplication.getInstance().getFilesDir()
+        return KPathManagerUtils.getCacheDirSecret()
     }
 
     //fixme 私有缓存目录的路径,不需要SD卡权限
     fun getCachePathSecret(): String {
-        return getCacheDirSecret().absolutePath//fixme 在应用files目录下。如：/data/user/0/com.应用包名/files
+        //return getCacheDirSecret().absolutePath//fixme 在应用files目录下。如：/data/user/0/com.应用包名/files
+        return KPathManagerUtils.getCachePathSecret()
     }
 
     //获取缓存目录大小

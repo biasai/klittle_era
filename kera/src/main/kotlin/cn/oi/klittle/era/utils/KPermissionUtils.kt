@@ -93,6 +93,7 @@ object KPermissionUtils {
     val DANGEROUS_PERMISSION_RECEIVE_SMS = arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS)//读取手机短信的权限
     val DANGEROUS_PERMISSION_BLUE_TOOTH = arrayOf(Manifest.permission.BLUETOOTH, Manifest.permission.BLUETOOTH_ADMIN, Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION)//打开关闭，蓝牙的权限
     val DANGEROUS_PERMISSION_NFC = arrayOf(Manifest.permission.NFC, Manifest.permission.BIND_NFC_SERVICE)//NFC的权限
+
     // requestCode 权限请求码(统一使用这个)[fixme 数字标志为 0~6万，负数会奔溃，高于7万也会奔溃。]
     val READ_PHONE_STATE_REQUEST_CODE = 3820//权限请求标志
 
@@ -418,6 +419,7 @@ object KPermissionUtils {
     }
 
     private var maxNfcRequest = 0;//以防万一；防止权限无限申请。
+
     //fixme NFC权限申请[无法动态判断;始终返回true;NFC权限真心无法判断，系统不会告诉你NFC的权限。];
     //fixme NFC权限会在首次启动应用的时候，自动弹出申请权限；其后都不会再申请；如果拒绝了，你无法判断权限是否开启，只能手动进行权限设置。
     fun requestPermissionsNFC(activity: Activity? = getActivity(), onRequestPermissionsResult2: ((isAllow: Boolean) -> Unit)? = null): Boolean {
@@ -723,11 +725,11 @@ object KPermissionUtils {
             //snackView.setBackgroundResource(R.drawable.shape_drawable_snackbar);
             val snackbar_text = snackView.findViewById<View>(R.id.snackbar_text) as TextView
             snackbar_text.setTextColor(Color.parseColor("#ffffff"))//设置通知文本的颜色，白色
-            snackbar_text?.textSize= kpx.textSizeX(30,false)
+            snackbar_text?.textSize = kpx.textSizeX(30, false)
             //snackbar_text.setTextSize(textSize);
             val snackbar_action = snackView.findViewById<View>(R.id.snackbar_action) as TextView
             snackbar_action.setTextColor(Color.parseColor("#FF3B80"))//点击文本的颜色,绯红
-            snackbar_action?.textSize= kpx.textSizeX(33,false)
+            snackbar_action?.textSize = kpx.textSizeX(33, false)
             //snackbar_action.setTextSize(textSize);
             //snackbar_action.setBackground(null);
             snackbar_action.setBackgroundDrawable(null)
@@ -736,14 +738,22 @@ object KPermissionUtils {
     }
 
     var onRequestPermissionsResult: ((isAllow: Boolean) -> Unit)? = null
+
     //权限请求成功回调，返回参数为属于什么类型的权限申请。
     fun onRequestPermissionsResult(isAllow: Boolean) {
         //isAllow true权限允许，false权限禁止
+        //var call = onRequestPermissionsResult
         onRequestPermissionsResult?.let {
-            it(isAllow)
-            onRequestPermissionsResult = null
+            onRequestPermissionsResult = null//fixme 一定要在it(isAllow)之前置空。这样不会对后面权限申请的回调产生影响。
+            //onRequestPermissionsResult置空了，对it不会受影响。
+            it(isAllow)//fixme 这里面，onRequestPermissionsResult回调有可能发生改变；所以要在之前置空。
+            //KLoggerUtils.e("call:\t" + call + "\tonRequestPermissionsResult:\t" + onRequestPermissionsResult + "\t" + (call == onRequestPermissionsResult))
+            //fixme 注意，一定是两个回调相同时才能置空。防止回调发生改变。即：防止两次权限申请，第二次没有回调。
+//            if (call == onRequestPermissionsResult) {
+//                onRequestPermissionsResult = null
+//            }
+//            call = null
         }
-        this.onRequestPermissionsResult
     }
 
     //权限申请失败时，显示的界面，需要手动调用。如果不喜欢这个界面。需要自己去额外实现。

@@ -31,8 +31,12 @@ object KPictureSelector {
 
     //获取本应用拍照图片路径
     fun getCameraPath(): String {
-        return KPictureUtils.getCameraPath()
+        //return KPictureUtils.getCameraPath()
+        return KPathManagerUtils.getCameraPath()
     }
+
+    //fixme 压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（建议还是不要被系统相册读取比较好）
+    private var compressPath: String = KPathManagerUtils.getCompressPath()
 
     //fixme 获取压缩路径
     fun getCompressPath(): String {
@@ -44,6 +48,11 @@ object KPictureSelector {
             }
         }
         return compressPath
+    }
+
+    //fixme 设置压缩路径
+    fun setCompressPath(compressPath: String) {
+        KPictureSelector.compressPath = compressPath
     }
 
     var imageSpanCount = 3//图片适配器列表每行的列数。
@@ -111,7 +120,7 @@ object KPictureSelector {
                         }
                     }
                 } catch (e: Exception) {
-                    KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常：\t"+e.message)
+                    KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常：\t" + e.message)
                 }
             }
             getCheckedFolder()?.forEach {
@@ -123,8 +132,8 @@ object KPictureSelector {
                     }
                 }
             }
-        }catch (e:Exception){
-            KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常2：\t"+e.message)
+        } catch (e: Exception) {
+            KLoggerUtils.e("KPictureSelector->initCurrentSelectNum()异常2：\t" + e.message)
         }
     }
 
@@ -141,13 +150,6 @@ object KPictureSelector {
     fun isCamera(isCamera: Boolean): KPictureSelector {
         this.isCamera = isCamera
         return this
-    }
-
-    //fixme 压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（建议还是不要被系统相册读取比较好）
-    private var compressPath: String = KCacheUtils.getCachePath() + "/compress"//fixme 压缩路径（本应用缓存路径）,相机拍照路径是SD存储卡。
-
-    fun setCompressPath(compressPath: String) {
-        KPictureSelector.compressPath = compressPath
     }
 
 
@@ -506,9 +508,9 @@ object KPictureSelector {
             }
         }
         selectionMedia?.let {
-            if (it.size<=0){
+            if (it.size <= 0) {
                 cameraFirstKLocalMedia?.let {
-                    if (it.isChecked){
+                    if (it.isChecked) {
                         selectionMedia?.add(it)
                     }
                 }

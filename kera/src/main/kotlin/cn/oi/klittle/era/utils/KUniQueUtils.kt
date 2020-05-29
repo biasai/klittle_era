@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Build
 import android.telephony.TelephonyManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.socket.KIpPort
 import org.jetbrains.anko.db.NULL
 import java.util.*
 
@@ -17,6 +18,7 @@ import java.util.*
 //                    var uuid2=UUID.fromString("d9bc5194-431d-49ed-b3b6-4a1b72005934")
 
 /**
+ * fixme 获取设备唯一标识。
  * uuid的格式是：8-4-4-4-12 共32个字符，加上中间的横杆就是36位。如：d9bc5194-431d-49ed-b3b6-4a1b72005934
  * var uuid=UUID.randomUUID()//生成一个随机的uuid
  * var uuid2=UUID.fromString("d9bc5194-431d-49ed-b3b6-4a1b72005934")//生成一个指定的uuid,格式必须是 8-4-4-4-12
@@ -26,6 +28,12 @@ object KUniQueUtils {
 
     private fun getContext(): Context {
         return KBaseApplication.getInstance().applicationContext
+    }
+
+    //fixme 获取mac地址
+    ////通过wifi（与wifi是否开启没有关系，亲测能够获取） 获取mac地址[物理地址，不会变。理论上是不变，因为是出厂时被厂家烧在网卡上的。但不能保证绝对。]
+    fun getMacAddress(): String {
+        return KIpPort.getMacAddress()
     }
 
     /**
@@ -114,7 +122,7 @@ object KUniQueUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("32位字符串转UUID格式异常:\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("32位字符串转UUID格式异常:\t" + e.message, isLogEnable = true)
         }
         return null
     }

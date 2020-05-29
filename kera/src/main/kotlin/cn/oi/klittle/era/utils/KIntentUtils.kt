@@ -107,7 +107,7 @@ object KIntentUtils {
         return false
     }
 
-    //fixme 跳转到本应用详情界面
+    //fixme 跳转到本应用详情界面（里面有清除应用全部缓存数据的方法，系统自带的。）
     fun goAppDetailedSetting(activity: Activity? = getActivity()) {
         try {
             if (activity != null && !activity.isFinishing) {
