@@ -49,23 +49,23 @@ object KPictureUtils {
 
     //文件路径[需要file_paths.xml才能访问]
     //fixme 本应用，相机拍摄的图片会保存在该位置。
-    fun getCameraPath(context: Context = KBaseApplication.getInstance()): String {
-        return KPathManagerUtils.getCameraPath(context)
+    fun getCameraPath(): String {
+        return KPathManagerUtils.getCameraPath()
     }
 
     //视频录制路径
-    fun getAppVideoPath(context: Context = KBaseApplication.getInstance()): String {
-        return KPathManagerUtils.getAppVideoPath(context)
+    fun getAppVideoPath(): String {
+        return KPathManagerUtils.getAppVideoPath()
     }
 
     //文件裁剪路径
-    fun getAppCropPath(context: Context): String {
-        return KPathManagerUtils.getAppCropPath(context)
+    fun getAppCropPath(): String {
+        return KPathManagerUtils.getAppCropPath()
     }
 
     //获取相册图片路径
-    fun getPhotoPath(activtiy: Activity, data: Intent): String? {
-        return KPathManagerUtils.getPhotoPath(activtiy, data)
+    fun getPhotoPath(data: Intent?,activtiy: Activity?= KPathManagerUtils.getActivity()): String? {
+        return KPathManagerUtils.getPhotoPath(data,activtiy)
     }
 
     val DEFAULT_KEYS_PICTURE_PHOTO = 3828//相册图库选择
@@ -249,7 +249,7 @@ object KPictureUtils {
                             //if (intent.resolveActivity(activity.getPackageManager()) != null) {
                             if (true) {
                                 //PNG格式的不能显示在相册中
-                                var cramefile = KFileUtils.getInstance().createFile(getCameraPath(activity), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
+                                var cramefile = KFileUtils.getInstance().createFile(getCameraPath(), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
                                 cramePath = cramefile?.absolutePath
                                 var fileUri: Uri
                                 if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。22是5.1的系统。
@@ -332,7 +332,7 @@ object KPictureUtils {
                     try {
                         //fixme AssetsUtils.getInstance().getBitmapFromFile(it.path, true,false)
                         //fixme [注意了哦。如果图片剪切了，就不要读取缓存哦。]
-                        cropfile = KFileUtils.getInstance().copyFile(file, getAppCropPath(activity), file.name)
+                        cropfile = KFileUtils.getInstance().copyFile(file, getAppCropPath(), file.name)
                         val intent = Intent("com.android.camera.action.CROP")
                         //resolveActivity()查询是否有第三方能够启动该intent;fixme 不要使用。系统自带的裁剪可能查不出来，不可能，不要使用。
                         //if (intent.resolveActivity(activity.getPackageManager()) != null) {
@@ -477,7 +477,7 @@ object KPictureUtils {
                     if (it) {
                         try {
                             var fileUri: Uri? = null
-                            val path = getAppVideoPath(activity)//相机视频拍摄存储位置。不使用SD卡。使用自己应用私有SD卡目录，这样就不需要外部的SD卡权限。
+                            val path = getAppVideoPath()//相机视频拍摄存储位置。不使用SD卡。使用自己应用私有SD卡目录，这样就不需要外部的SD卡权限。
                             cameraVideoFile = KFileUtils.getInstance().createFile(path, System.currentTimeMillis().toString() + ".mp4")//视频拍摄基本都是MP4格式。每次都以当前毫秒数重新创建拍摄文件。
                             cameraVideoFile?.let {
                                 if (Build.VERSION.SDK_INT >= 23) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
@@ -545,7 +545,7 @@ object KPictureUtils {
                     var photoPath: String? = null
                     var photoName: String? = null
                     try {
-                        photoPath = getPhotoPath(activity, data)// 获取相册图片原始路径
+                        photoPath = getPhotoPath(data,activity)// 获取相册图片原始路径
                         photoPath?.let {
                             photoName = it.substring(it.lastIndexOf("/") + 1)
                         }
@@ -574,7 +574,7 @@ object KPictureUtils {
                         }
                         if (file == null) {
                             //创建新图片文件
-                            file = KFileUtils.getInstance().createFile(getCameraPath(activity), photoName)
+                            file = KFileUtils.getInstance().createFile(getCameraPath(), photoName)
                             // 将Uri图片的内容复制到file上
                             writeFile(activity.getContentResolver(),
                                     file, uri)
@@ -679,7 +679,7 @@ object KPictureUtils {
                         // 视频路径：MediaStore.Audio.Media.DATA。相册里面的视频可以获取。但是本地视频里的视频，路径无法获取。
                         videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
                         if (videoPath == null) {
-                            videoPath = getPhotoPath(activity, data)//这个能获取图片路径，自然也能获取视频路径。
+                            videoPath = getPhotoPath(data,activity)//这个能获取图片路径，自然也能获取视频路径。
                         }
                     } catch (e: Exception) {
                         videoPath = null

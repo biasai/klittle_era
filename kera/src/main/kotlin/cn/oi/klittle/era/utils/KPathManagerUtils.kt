@@ -7,6 +7,7 @@ import android.database.Cursor
 import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
+import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.exception.KCatchException
 import java.io.File
@@ -21,6 +22,14 @@ import java.io.File
  * fixme 缓存，图片，相机照片。所有路径通用管理。
  */
 public object KPathManagerUtils {
+
+    fun getContext(): Context {
+        return KBaseApplication.getInstance()
+    }
+
+    fun getActivity(): Activity? {
+        return KBaseActivityManager.getInstance().stackTopActivity
+    }
 
     /**
      * fixme KCacheUtils 缓存类路径；不需要SD卡权限。
@@ -54,7 +63,7 @@ public object KPathManagerUtils {
 
     //文件路径[需要file_paths.xml才能访问]
     //fixme 5.本应用，相机拍摄的图片会保存在该位置:/storage/emulated/0/com.example.myapplication/CameraImage
-    open fun getCameraPath(context: Context = KBaseApplication.getInstance()): String {
+    open fun getCameraPath(): String {
         //defaultConfig {
         //targetSdkVersion 23//getExternalFilesDir才能正常访问，无需权限。但是如果是22及以下。就需要开启SD卡读取权限。
         //}
@@ -63,6 +72,7 @@ public object KPathManagerUtils {
         //return KCacheUtils.getCachePath() + "/img"
         var path: String? = null
         try {
+            var context=KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -89,11 +99,12 @@ public object KPathManagerUtils {
     }
 
     //fixme 6.视频录制路径
-    open fun getAppVideoPath(context: Context): String {
+    open fun getAppVideoPath(): String {
         //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/video"
         //return KCacheUtils.getCachePath() + "/video"
         var path: String? = null
         try {
+            var context=KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -119,11 +130,12 @@ public object KPathManagerUtils {
     }
 
     //fixme 7.文件裁剪路径
-    open fun getAppCropPath(context: Context): String {
+    open fun getAppCropPath(): String {
         //return context.getFilesDir().getAbsoluteFile().getAbsolutePath() + "/crop"
         //return KCacheUtils.getCachePath() + "/crop"
         var path: String? = null
         try {
+            var context=KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -149,7 +161,13 @@ public object KPathManagerUtils {
     }
 
     //fixme 8.获取相册图片路径
-    open fun getPhotoPath(activtiy: Activity, data: Intent): String? {
+    open fun getPhotoPath(data: Intent?,activtiy: Activity?=getActivity()): String? {
+        if (activtiy==null){
+            return null
+        }
+        if (data==null){
+            return null
+        }
         var photoPath: String? = null
         try {
             val uri = data.data

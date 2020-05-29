@@ -9,6 +9,7 @@ import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
 import android.view.SurfaceView
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.utils.KPathManagerUtils
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -67,7 +68,7 @@ class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KCamera
     private fun getOutputMediaFile(type: Int): File? {
         var mediaFile: File? = null
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            val filePath = "/sdcard/WaterCamera"
+            val filePath =KPathManagerUtils.getAppVideoPath()//fixme 获取视频保存路径
             val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
             if (type == MEDIA_TYPE_IMAGE) {
                 mediaFile = File(filePath + File.separator.toString() +
