@@ -488,6 +488,14 @@ object KStringUtils {
         return null
     }
 
+    fun getDataSize(data: Int): String? {
+        return getDataSize(data.toDouble())
+    }
+
+    fun getDataSize(data: Long): String? {
+        return getDataSize(data.toDouble())
+    }
+
     /**
      * @param data 单位MB。返回的结果不会带有MB两个字。返回格式 "0.00"
      * @return

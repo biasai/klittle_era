@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.RejectedExecutionException;
 
+import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -74,7 +75,8 @@ public class KAutoFocusManager implements Camera.AutoFocusCallback{
                 } catch (RuntimeException re) {
                     // Have heard RuntimeException reported in Android 4.0.x+; continue?
                     //Log.e(TAG, "Unexpected exception while focusing", re);
-                    KLoggerUtils.INSTANCE.e("KAutoFocusManager->start()异常：\t"+re.getMessage());
+                    //fixme 很少发生异常，就算发生异常了，对拍照和录像都没有什么影响。
+                    KLoggerUtils.INSTANCE.e("KAutoFocusManager->start()异常：\t"+ KCatchException.getExceptionMsg(re),true);
                     // Try again later to keep cycle going
                     autoFocusAgainLater();
                 }

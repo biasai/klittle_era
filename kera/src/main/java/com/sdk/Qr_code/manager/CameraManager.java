@@ -36,6 +36,7 @@ import com.sdk.Qr_code.code.PlanarYUVLuminanceSource;
 import com.sdk.Qr_code.code.PreviewCallback;
 
 import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -182,24 +183,28 @@ public final class CameraManager {
     private int currentCameraType = -1;//当前打开的摄像头标记
 
     private Camera openCamera(int type) {
-        int frontIndex = -1;
-        int backIndex = -1;
-        int cameraCount = Camera.getNumberOfCameras();
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        for (int cameraIndex = 0; cameraIndex < cameraCount; cameraIndex++) {
-            Camera.getCameraInfo(cameraIndex, info);
-            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-                frontIndex = cameraIndex;//前置摄像头
-            } else if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
-                backIndex = cameraIndex;//后置摄像头
+        try {
+            int frontIndex = -1;
+            int backIndex = -1;
+            int cameraCount = Camera.getNumberOfCameras();
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            for (int cameraIndex = 0; cameraIndex < cameraCount; cameraIndex++) {
+                Camera.getCameraInfo(cameraIndex, info);
+                if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                    frontIndex = cameraIndex;//前置摄像头
+                } else if (info.facing == Camera.CameraInfo.CAMERA_FACING_BACK) {
+                    backIndex = cameraIndex;//后置摄像头
+                }
             }
-        }
 
-        currentCameraType = type;
-        if (type == FRONT && frontIndex != -1) {
-            return Camera.open(frontIndex);
-        } else if (type == BACK && backIndex != -1) {
-            return Camera.open(backIndex);
+            currentCameraType = type;
+            if (type == FRONT && frontIndex != -1) {
+                return Camera.open(frontIndex);
+            } else if (type == BACK && backIndex != -1) {
+                return Camera.open(backIndex);
+            }
+        } catch (Exception e) {
+            KLoggerUtils.INSTANCE.e("openCamera()异常：\t" + KCatchException.getExceptionMsg(e), true);
         }
         return null;
     }
@@ -209,9 +214,13 @@ public final class CameraManager {
      */
     public void closeDriver() {
         if (camera != null) {
-            FlashlightManager.disableFlashlight();
-            camera.release();
-            camera = null;
+            try {
+                FlashlightManager.disableFlashlight();
+                camera.release();
+                camera = null;
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("closeDriver()异常：\t" + KCatchException.getExceptionMsg(e), true);
+            }
         }
     }
 
@@ -220,8 +229,12 @@ public final class CameraManager {
      */
     public void startPreview() {
         if (camera != null && !previewing) {
-            camera.startPreview();
-            previewing = true;
+            try {
+                camera.startPreview();
+                previewing = true;
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("startPreview()异常：\t" + KCatchException.getExceptionMsg(e), true);
+            }
         }
     }
 
@@ -230,13 +243,17 @@ public final class CameraManager {
      */
     public void stopPreview() {
         if (camera != null && previewing) {
-            if (!useOneShotPreviewCallback) {
-                camera.setPreviewCallback(null);
+            try {
+                if (!useOneShotPreviewCallback) {
+                    camera.setPreviewCallback(null);
+                }
+                camera.stopPreview();
+                previewCallback.setHandler(null, 0);
+                autoFocusCallback.setHandler(null, 0);
+                previewing = false;
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("stopPreview()异常：\t" + KCatchException.getExceptionMsg(e), true);
             }
-            camera.stopPreview();
-            previewCallback.setHandler(null, 0);
-            autoFocusCallback.setHandler(null, 0);
-            previewing = false;
         }
     }
 
@@ -352,10 +369,16 @@ public final class CameraManager {
      */
     public synchronized void openLight() {
         if (camera != null) {
-            Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
-            camera.setParameters(parameters);
-            judgeLight();
+            try {
+                Parameters parameters = camera.getParameters();
+                if (parameters != null) {
+                    parameters.setFlashMode(Parameters.FLASH_MODE_TORCH);
+                    camera.setParameters(parameters);
+                    judgeLight();
+                }
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("openLight()异常：\t" + KCatchException.getExceptionMsg(e));
+            }
         }
     }
 
@@ -364,10 +387,16 @@ public final class CameraManager {
      */
     public synchronized void offLight() {
         if (camera != null) {
-            Parameters parameters = camera.getParameters();
-            parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
-            camera.setParameters(parameters);
-            judgeLight();
+            try {
+                Parameters parameters = camera.getParameters();
+                if (parameters != null) {
+                    parameters.setFlashMode(Parameters.FLASH_MODE_OFF);
+                    camera.setParameters(parameters);
+                    judgeLight();
+                }
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("offLight()异常：\t" + KCatchException.getExceptionMsg(e), true);
+            }
         }
     }
 
@@ -378,16 +407,24 @@ public final class CameraManager {
      */
     public synchronized boolean judgeLight() {
         if (camera != null) {
-            Parameters parameters = camera.getParameters();
-            String flashMode = parameters.getFlashMode();
-            //Log.e("test", "flashMode:\t" + flashMode + "\t开:\t" + Parameters.FLASH_MODE_TORCH + "\t关:\t" + Parameters.FLASH_MODE_OFF);
-            if (flashMode.equals(Parameters.FLASH_MODE_TORCH)) {
-                //Log.e("test", "开");
-                return true;
-            }
-            if (flashMode.equals(Parameters.FLASH_MODE_OFF)) {
-                //Log.e("test", "关");
-                return false;
+            try {
+                Parameters parameters = camera.getParameters();
+                if (parameters != null) {
+                    String flashMode = parameters.getFlashMode();
+                    if (flashMode != null) {
+                        //Log.e("test", "flashMode:\t" + flashMode + "\t开:\t" + Parameters.FLASH_MODE_TORCH + "\t关:\t" + Parameters.FLASH_MODE_OFF);
+                        if (flashMode.equals(Parameters.FLASH_MODE_TORCH)) {
+                            //Log.e("test", "开");
+                            return true;
+                        }
+                        if (flashMode.equals(Parameters.FLASH_MODE_OFF)) {
+                            //Log.e("test", "关");
+                            return false;
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                KLoggerUtils.INSTANCE.e("judgeLight()异常：\t" + KCatchException.getExceptionMsg(e),true);
             }
         }
         return false;

@@ -143,6 +143,7 @@
     <string name="ksubmit">提交中</string>
     <string name="kpicture_error">图片已损坏</string>
     <string name="kpicture_video_error">视频已损坏</string>
+    <string name="kpicture_video_error2">视频不存在或已损坏</string>
     <string name="kpicture_audio_error">音频已损坏</string>
     <string name="kpicture_all_audio">所有音频</string>
     <string name="kpicture_camera_roll">相机胶卷</string>

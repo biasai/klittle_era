@@ -27,7 +27,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import org.jetbrains.anko.*
 
-//      fixme 这个是争对全屏播放做的布局。
+//      fixme 这个是针对全屏播放做的布局。
 //      调用案例，参数一是父容器布局，参数二是KVideoView
 //      KMediaController2(this@verticalLayout, video)
 

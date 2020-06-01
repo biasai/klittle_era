@@ -1,14 +1,24 @@
 package cn.oi.klittle.era.activity.camera.presenter
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.hardware.Camera
+import android.media.AudioManager
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import cn.oi.klittle.era.activity.camera.manager.KCameraManager
+import cn.oi.klittle.era.base.KBaseActivityManager
+import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
+import com.sdk.scan.RFID.KUtil.context
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+
 
 //    fixme 自定义相机调用案例
 //    var prensenter: KCameraPresenter? = null
@@ -49,6 +59,15 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 
 //fixme 自定义相机拍摄(拍照)
 open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.Callback {
+
+    fun getContext(): Context {
+        return KBaseApplication.getInstance()
+    }
+
+    fun getActivity(): Activity? {
+        return KBaseActivityManager.getInstance().stackTopActivity
+    }
+
     public var cameraManager: KCameraManager? = null
 
     var isRecycleCamera = true //fixme 判断相机是否释放；true(已经释放，不能拍摄)；false(没有释放，可以拍摄)
@@ -143,18 +162,44 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
 
     /**
      * fixme 拍照(拍照完成之后，surfaceView画面会暂停在当前拍摄的画面。)
+     * @param isShutSound fixme true关闭系统自带的快门声；false不关闭(会响起系统自带的快门声。)。
      * @param callback fixme 位图回调；返回的竖屏位图（高大于宽）。
      */
-    public open fun takePicture(callback: ((bitmap: Bitmap) -> Unit)) {
+    public open fun takePicture(isShutSound: Boolean = false, callback: ((bitmap: Bitmap) -> Unit)) {
         if (!isRecycleCamera) {
             cameraManager?.camera?.let {
                 this.callback = callback
+                setStreamMute(isShutSound)//最好放在takePicture（）之前调用。
                 //只有重置过的才能继续拍照。在此加重置判断。防止奔溃
                 cameraManager?.takePicture(null, null, myjpegCallback);
             }
         }
     }
 
+    /**
+     * fixme 是否关闭拍照，录像时的系统自带快门声音。拍照和录像时，每次都要调用。亲测有效。最好放在拍照，录像方法之前调用一下。
+     * @param isShutSound fixme true关闭快门声，false不关闭。默认关闭。
+     */
+    public open fun setStreamMute(isShutSound: Boolean = true) {
+        if (isShutSound) {
+            //关闭系统快门声。
+            try {
+                var audioManager = getContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, true)//关闭声音
+                GlobalScope.async {
+                    try {
+                        delay(1500)
+                        var audioManager = getContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
+                        audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, false)//恢复声音
+                    } catch (e: Exception) {
+                        KLoggerUtils.e("setStreamMute()异常2：\t" + KCatchException.getExceptionMsg(e))
+                    }
+                }
+            } catch (e: Exception) {
+                KLoggerUtils.e("setStreamMute()异常：\t" + KCatchException.getExceptionMsg(e))
+            }
+        }
+    }
 
     //初始化相机camera
     private fun initCamera(isBackCamera: Boolean = this.isBackCamera) {

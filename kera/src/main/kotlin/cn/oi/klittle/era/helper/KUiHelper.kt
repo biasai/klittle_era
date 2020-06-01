@@ -15,10 +15,12 @@ import cn.oi.klittle.era.activity.video.KScreenVideoActivity
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
 import com.sdk.Qr_code.act.KCaptureActivity
 import com.sdk.Qr_code.utils.KZxingUtils
+import java.io.File
 
 /**
  * Created by 彭治铭 on 2018/4/25.
@@ -176,10 +178,10 @@ object KUiHelper {
      * fixme 跳转到 自定义相机拍摄
      * @param isBackCamera true后置摄像头；false前置摄像头
      */
-    fun goCameraActivity(isBackCamera: Boolean = true,nowActivity: Activity? = getActivity()) {
+    fun goCameraActivity(isBackCamera: Boolean = true, nowActivity: Activity? = getActivity()) {
         try {
             //需要相机权限（必须）
-            KPermissionUtils.requestPermissionsCamera {
+            KPermissionUtils.requestPermissionsCamera(nowActivity) {
                 if (it) {
                     var intent = Intent(nowActivity, KCameraActivity::class.java)
                     intent.putExtra("isBackCamera", isBackCamera)
@@ -197,14 +199,28 @@ object KUiHelper {
      * fixme 跳转到 自定义相机录像
      * @param isBackCamera true后置摄像头；false前置摄像头
      */
-    fun goKCameraRecorderActivity(isBackCamera: Boolean = true,nowActivity: Activity? = getActivity()) {
+    fun goKCameraRecorderActivity(isBackCamera: Boolean = true, nowActivity: Activity? = getActivity()) {
         try {
-            //需要相机权限（必须）
-            KPermissionUtils.requestPermissionsCamera {
+            //fixme 1.录像视频的使用，还需要SD卡操作的权限哦。不然录像文件会报打不开的异常哦。
+            KPermissionUtils.requestPermissionsStorage {
                 if (it) {
-                    var intent = Intent(nowActivity, KCameraRecorderActivity::class.java)
-                    intent.putExtra("isBackCamera", isBackCamera)
-                    goActivity(intent)
+                    //fixme 2.需要相机权限（必须）
+                    KPermissionUtils.requestPermissionsCamera(nowActivity) {
+                        if (it) {
+                            //fixme 3.录像还需要录音权限;不然会异常报错。
+                            KPermissionUtils.requestPermissionsRecording(nowActivity) {
+                                if (it) {
+                                    var intent = Intent(nowActivity, KCameraRecorderActivity::class.java)
+                                    intent.putExtra("isBackCamera", isBackCamera)
+                                    goActivity(intent)
+                                } else {
+                                    KPermissionUtils.showFailure()
+                                }
+                            }
+                        } else {
+                            KPermissionUtils.showFailure()
+                        }
+                    }
                 } else {
                     KPermissionUtils.showFailure()
                 }
@@ -237,11 +253,21 @@ object KUiHelper {
      */
     fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), videoPath: String?, process_msec: Int = 0, isPortrait: Boolean = false) {
         try {
-            isPortrait_screenVideo = isPortrait
-            process_msec_screenVideo = process_msec
-            var bundle = Bundle()
-            bundle.putString(videoPath_key, videoPath)
-            goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
+            videoPath?.trim()?.let {
+                if (it.length > 0) {
+                    File(it)?.let {
+                        if (it.exists() && it.length() > 0) {
+                            isPortrait_screenVideo = isPortrait
+                            process_msec_screenVideo = process_msec
+                            var bundle = Bundle()
+                            bundle.putString(videoPath_key, videoPath)
+                            goActivity(KScreenVideoActivity::class.java, bundle, nowActivity)
+                        } else {
+                            KToast.showError(getString(R.string.kpicture_video_error2))//视频不存在或已损坏
+                        }
+                    }
+                }
+            }
         } catch (e: Exception) {
             //e.printStackTrace()
             KLoggerUtils.e("goScreenVideoActivity()跳转异常：\t" + e.message, isLogEnable = true)
@@ -253,13 +279,23 @@ object KUiHelper {
      */
     fun goScreenVideoActivity(nowActivity: Activity? = getActivity(), sharedElement: View?, videoPath: String?, process_msec: Int = 0, isPortrait: Boolean = false) {
         try {
-            isPortrait_screenVideo = isPortrait
-            process_msec_screenVideo = process_msec
-            var bundle = Bundle()
-            bundle.putString(videoPath_key, videoPath)
-            var intent = Intent(nowActivity, KScreenVideoActivity::class.java)
-            intent.putExtras(bundle)
-            goActivity(intent, sharedElement, nowActivity)
+            videoPath?.trim()?.let {
+                if (it.length > 0) {
+                    File(it)?.let {
+                        if (it.exists() && it.length() > 0) {
+                            isPortrait_screenVideo = isPortrait
+                            process_msec_screenVideo = process_msec
+                            var bundle = Bundle()
+                            bundle.putString(videoPath_key, videoPath)
+                            var intent = Intent(nowActivity, KScreenVideoActivity::class.java)
+                            intent.putExtras(bundle)
+                            goActivity(intent, sharedElement, nowActivity)
+                        } else {
+                            KToast.showError(getString(R.string.kpicture_video_error2))//视频不存在或已损坏
+                        }
+                    }
+                }
+            }
         } catch (e: Exception) {
             //e.printStackTrace()
             KLoggerUtils.e("goScreenVideoActivity()跳转异常2：\t" + e.message, isLogEnable = true)

@@ -9,7 +9,9 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.camera.presenter.KCameraRecorderPresenter
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.utils.KStringUtils
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
@@ -79,19 +81,18 @@ open class KCameraRecorderActivity : KBaseActivity() {
 
                     button {
                         text = getString(R.string.kcamera_luxiang_start)//fixme 开始录像
-                        textSize = kpx.textSizeX(36)
-                        textColor = Color.CYAN
                         onClick {
                             prensenter?.startRecord()
                         }
                     }
 
                     button {
-                        text = getString(R.string.kcamera_luxiang_stop)//fixme 停止录像
-                        textSize = kpx.textSizeX(36)
-                        textColor = Color.CYAN
+                        text = getString(R.string.kcamera_luxiang_stop)//fixme 停止录像；返回录像文件。
                         onClick {
-                            prensenter?.stopRecord()
+                            prensenter?.stopRecord(){
+                                KLoggerUtils.e("录像文件：\t"+it.absolutePath+"\t大小：\t"+KStringUtils.getDataSize(it.length()))
+                                KUiHelper.goScreenVideoActivity(videoPath = it.absolutePath,isPortrait = true)//跳转视频播放界面
+                            }
                         }
                     }
 
@@ -110,7 +111,7 @@ open class KCameraRecorderActivity : KBaseActivity() {
 
     override fun onPause() {
         super.onPause()
-        prensenter?.recycleCamera()//停止camera，释放资源操作
+        prensenter?.stopRecord()//停止录像
     }
 
     override fun finish() {

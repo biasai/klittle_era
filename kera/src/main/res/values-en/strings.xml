@@ -135,6 +135,7 @@
     <string name="ksubmit">submit</string>
     <string name="kpicture_error">The picture is corrupted</string>
     <string name="kpicture_video_error">The video is corrupted</string>
+    <string name="kpicture_video_error2">The video does not exist or is damaged</string>
     <string name="kpicture_audio_error">The audio is corrupted</string>
     <string name="kpicture_all_audio">All audio</string>
     <string name="kpicture_camera_roll">CameraRoll</string>

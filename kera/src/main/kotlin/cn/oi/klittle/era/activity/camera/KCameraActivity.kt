@@ -90,7 +90,7 @@ open class KCameraActivity : KBaseActivity() {
                                     text = getString(R.string.ktakePicture)//fixme "拍照"
                                 } else {
                                     //拍照
-                                    it?.takePicture() {
+                                    it?.takePicture(true) {
                                         KLoggerUtils.e("拍摄位图\t" + it.isRecycled + "\t宽：\t" + it.width + "\t高：\t" + it.height)
                                         text = getString(R.string.ktakePicture2)//fixme "继续拍照"
                                         backgroundDrawable = BitmapDrawable(it)

@@ -265,7 +265,7 @@ object KPermissionUtils {
         }
     }
 
-    //录音权限申请
+    //录音权限申请（亲测，可以动态申请。）
     fun requestPermissionsRecording(activity: Activity? = getActivity(), onRequestPermissionsResult2: ((isAllow: Boolean) -> Unit)? = null): Boolean {
         perMissionType = perMissionTypeRecording
         if (isVersion23()) {

@@ -121,8 +121,8 @@ class KVideoView : VideoView {
     fun initUi() {
         //fixme 播放完毕回调(isPlaying会自动变成false)，返回MediaPlayer对象
         //setOnCompletionListener {}
-        if (Build.VERSION.SDK_INT>=21){
-            transitionName="shared_kVideoView_"//fixme 默认设置一个共享元素名称；方便共享元素动画。
+        if (Build.VERSION.SDK_INT >= 21) {
+            transitionName = "shared_kVideoView_"//fixme 默认设置一个共享元素名称；方便共享元素动画。
         }
     }
 
@@ -199,7 +199,7 @@ class KVideoView : VideoView {
                                 try {
                                     it()
                                 } catch (e: Exception) {
-                                    KLoggerUtils.e("video预加载prepare()回调异常：\t" + e.message,isLogEnable = true)
+                                    KLoggerUtils.e("video预加载prepare()回调异常：\t" + e.message, isLogEnable = true)
                                     e.printStackTrace()
                                 }
                             }
@@ -262,6 +262,7 @@ class KVideoView : VideoView {
     }
 
     private var isResume = false
+
     //重新播放（从第一帧开始播放，不是继续播放）；
     override fun resume() {
         isResume = true
@@ -315,17 +316,26 @@ class KVideoView : VideoView {
      * @param process 进度(0~1f)
      */
     fun seekTo(process: Float?) {
-        if (process!=null) {
+        if (process != null) {
             seekTo((duration * process).toInt())
         }
     }
 
     private var onCompletionListener: (() -> Unit)? = null
+
     //fixme 自己的播放完成回调。建议使用。(修复播放完成之后，currentPosition时间不准确的问题)
     fun onCompletionListener(onCompletionListener: (() -> Unit)? = null) {
-        this.onCompletionListener = onCompletionListener
+        this.onCompletionListener = onCompletionListener//fixme 播放完成回调，实时更新。
         if (onCompletionListener != null) {
             setOnCompletionListener(getOnCompletionListener())
+        }
+    }
+
+    //fixme 防止currentPosition时间不准确；还是自己主动调用一次比较好。亲测有效。
+    private fun onCompletionListener2() {
+        if (onCompletionListener == null) {
+            onCompletionListener {
+            }
         }
     }
 
@@ -350,6 +360,7 @@ class KVideoView : VideoView {
 
     private var leftVolume: Float? = null
     private var rightVolume: Float? = null
+
     /**
      * 控制音量，左声道和有声道（范围0~1）
      */
@@ -497,7 +508,9 @@ class KVideoView : VideoView {
         }
     }
 
+    //绑定KMediaController2的时候，会主动调用一次。
     private fun onSeekListener2() {
+        onCompletionListener2()
         isProgress = true
         job?.cancel()//取消协程
         job = GlobalScope.async {
@@ -508,6 +521,7 @@ class KVideoView : VideoView {
                     } else {
                         process = 0f
                     }
+                    //KLoggerUtils.e("进度：process\t"+process+"\tcurrentPosition:\t"+currentPosition+"\tduration:\t"+duration+"\tisOnComplet:\t"+isOnComplet)
                     this@KVideoView?.context?.let {
                         if (it is Activity) {
                             if (!it.isFinishing) {
@@ -553,11 +567,12 @@ class KVideoView : VideoView {
             super.suspend()
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("video销毁异常;suspend():\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("video销毁异常;suspend():\t" + e.message, isLogEnable = true)
         }
     }
 
     var isDestory = false//判断是否销毁
+
     //销毁
     fun onDestory() {
         try {
