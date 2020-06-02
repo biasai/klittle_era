@@ -4,27 +4,23 @@ import android.app.Activity
 import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.media.ExifInterface
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-import cn.oi.klittle.era.base.KBaseApplication
-import cn.oi.klittle.era.base.KBaseUi
-import java.io.*
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.activity.photo.utils.KDCIMUtils
+import cn.oi.klittle.era.base.KBaseUi
 import cn.oi.klittle.era.exception.KCatchException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Deferred
+import java.io.*
 
 
 //fixme 注意调用前，需要在Activity中添加以下方法。[不过我已经在BaseActivity中添加以下方法了，如果继承了BaseActvity就不用再写了]
@@ -64,8 +60,8 @@ object KPictureUtils {
     }
 
     //获取相册图片路径
-    fun getPhotoPath(data: Intent?,activtiy: Activity?= KPathManagerUtils.getActivity()): String? {
-        return KPathManagerUtils.getPhotoPath(data,activtiy)
+    fun getPhotoPath(data: Intent?, activtiy: Activity? = KPathManagerUtils.getActivity()): String? {
+        return KPathManagerUtils.getPhotoPath(data, activtiy)
     }
 
     val DEFAULT_KEYS_PICTURE_PHOTO = 3828//相册图库选择
@@ -125,7 +121,7 @@ object KPictureUtils {
                 try {
                     if (file != null && file.exists() && file.length() > 0) {
                         //fixme 关闭发送很快的，不需要协程。不耗时。
-                        //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。
+                        //fixme 发送系统广播，这样图片选择器就能够读取到该图片文件了。基本对所有机型都有效。
                         it?.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(file)))//fixme 这里不要使用FileProvider；不然无效（图片选择器会无法读取）。
                     }
                 } catch (e: java.lang.Exception) {
@@ -149,12 +145,18 @@ object KPictureUtils {
     }
 
     /**
-     * fixme 删除文件后更新数据库  通知媒体库更新文件
+     * fixme 删除文件后更新数据库  通知媒体库更新文件;
      * @param filepath fixme 文件的完整路径。如：/data/user/0/com.example.myapplication/cache/compress/1585131992658549.jpeg
      */
     public fun updateFileFromDatabase_del(filepath: String, context: Context? = KBaseUi.getActivity()) {
-        var dirPath = KFileUtils.getInstance().getFileDir(filepath)//根据文件的完整路径，获取文件所在文件夹路径。
-        updateDirFromDatabase_del(dirPath, context)
+        if (context == null) {
+            return
+        }
+        GlobalScope.async {
+            MediaScannerConnection.scanFile(context, arrayOf(filepath), null, null)//fixme 通知系统更新。该文件已经删除。亲测有效。基本对所有设备都有效。pda也有效。
+        }
+        //var dirPath = KFileUtils.getInstance().getFileDir(filepath)//根据文件的完整路径，获取文件所在文件夹路径。
+        //updateDirFromDatabase_del(dirPath, context)
     }
 
     /**
@@ -172,7 +174,7 @@ object KPictureUtils {
         GlobalScope.async {
             try {
                 //var ltime=System.currentTimeMillis()
-                //fixme 以下方法，亲测有效。在协程里面也有效，非主线程也有效。
+                //fixme 以下方法，亲测有效。在协程里面也有效，非主线程也有效。这个更新文件夹。大多数设备都有效。pda测试好像无效。
                 var where = MediaStore.Audio.Media.DATA + " like \"" + dirPath + "%" + "\""
                 context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)//fixme 文件夹内的照片数量越多，越耗时。
 //          var i = context?.getContentResolver()?.delete(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, where, null)
@@ -545,7 +547,7 @@ object KPictureUtils {
                     var photoPath: String? = null
                     var photoName: String? = null
                     try {
-                        photoPath = getPhotoPath(data,activity)// 获取相册图片原始路径
+                        photoPath = getPhotoPath(data, activity)// 获取相册图片原始路径
                         photoPath?.let {
                             photoName = it.substring(it.lastIndexOf("/") + 1)
                         }
@@ -679,7 +681,7 @@ object KPictureUtils {
                         // 视频路径：MediaStore.Audio.Media.DATA。相册里面的视频可以获取。但是本地视频里的视频，路径无法获取。
                         videoPath = cursor.getString(cursor.getColumnIndexOrThrow(MediaStore.Video.Media.DATA))
                         if (videoPath == null) {
-                            videoPath = getPhotoPath(data,activity)//这个能获取图片路径，自然也能获取视频路径。
+                            videoPath = getPhotoPath(data, activity)//这个能获取图片路径，自然也能获取视频路径。
                         }
                     } catch (e: Exception) {
                         videoPath = null

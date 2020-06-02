@@ -370,6 +370,9 @@ public class KFileUtils {
                 if (containSuffix(file.getName(), suffix)) {
                     isSuccess = file.delete();//fixme 删除文件，成功删除，会返回true。
                     //KLoggerUtils.INSTANCE.e("文件删除：\t"+b);
+                    if (isSuccess){
+                        KPictureUtils.INSTANCE.updateFileFromDatabase_del(file.getAbsolutePath(), KBaseUi.Companion.getActivity());//fixme 文件删除通知
+                    }
                 }
             } else if (file.isDirectory()) {
                 String[] filelist = file.list();
@@ -381,6 +384,9 @@ public class KFileUtils {
                         if (containSuffix(delfile.getName(), suffix)) {
                             isSuccess = delfile.delete();//fixme 删除文件，会返回true。
                             //KLoggerUtils.INSTANCE.e("文件删除2：\t"+b);
+                            if (isSuccess){
+                                KPictureUtils.INSTANCE.updateFileFromDatabase_del(delfile.getAbsolutePath(), KBaseUi.Companion.getActivity());//fixme 文件删除通知
+                            }
                         }
                     } else if (delfile.isDirectory()) {
                         delAllFiles(delpath + "/" + filelist[i], suffix);//fixme 闭合

@@ -188,7 +188,7 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
                 audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, true)//关闭声音
                 GlobalScope.async {
                     try {
-                        delay(1500)
+                        delay(2000)
                         var audioManager = getContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
                         audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, false)//恢复声音
                     } catch (e: Exception) {

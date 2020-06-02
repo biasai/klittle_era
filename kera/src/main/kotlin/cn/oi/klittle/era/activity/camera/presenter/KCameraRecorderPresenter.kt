@@ -7,6 +7,7 @@ import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
 import android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
 import android.view.SurfaceView
 import cn.oi.klittle.era.exception.KCatchException
+import cn.oi.klittle.era.utils.KFileUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPathManagerUtils
 import cn.oi.klittle.era.utils.KPictureUtils
@@ -23,7 +24,6 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
     var mMediaRecorder: MediaRecorder? = null
     var isRecorder: Boolean = false//fixme 判断是否正在录像
 
-
     /**
      * fixme 开始录像（需要权限：1.SD卡；2.相机；3.录音三种权限。不然会报错异常。）
      * fixme 重新录像，会删除之前旧的录像文件哦。
@@ -35,11 +35,11 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
             if (isRecorder) {
                 return//fixme 正在录制，防止重复调用录制。
             }
-            isRecorder = true
-            resumeCamera(isBackCamera)//初始化或重置相机
-            if (cameraManager == null || surfaceView == null) {
+            resumeCamera(isBackCamera)//初始化或重置相机;以防万一，还是调用一次。
+            if (cameraManager == null || surfaceView == null || cameraManager?.camera == null) {
                 return
             }
+            isRecorder = true
             if (mMediaRecorder == null) {
                 mMediaRecorder = MediaRecorder()//初始化录像
             }
@@ -65,15 +65,38 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
              * 用别人的demo是没有问题的，但是我自己写的过程中总是出蜜汁BUG，
              * 而且各种方法都试了也无法解决，只能放弃了
              */
-            var mCamcorderProfile: CamcorderProfile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P)
+            var mCamcorderProfile: CamcorderProfile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P)//建议720即可。
+            //var mCamcorderProfile: CamcorderProfile = CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P)//像素质量越高，视频文件就越大。
             mMediaRecorder?.setProfile(mCamcorderProfile)
+
+            //mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);//fixme 不要调用会异常报错。
+
+//            var with = mCamcorderProfile.videoFrameWidth;
+//            cameraManager?.width?.let {
+//                if (it > 0) {
+//                    with = it
+//                }
+//            }
+//            var height = mCamcorderProfile.videoFrameHeight;
+//            cameraManager?.height?.let {
+//                if (it > 0) {
+//                    height = it
+//                }
+//            }
+//            mMediaRecorder?.setVideoEncodingBitRate(mCamcorderProfile.videoBitRate);
+//            mMediaRecorder?.setVideoFrameRate(mCamcorderProfile.videoFrameRate);
+//            mMediaRecorder?.setVideoSize(mCamcorderProfile.videoFrameWidth,
+//                    mCamcorderProfile.videoFrameHeight);
+//            mMediaRecorder?.setVideoSize(with,
+//                    height);
+
             // 设置视频文件输出的路径
             mMediaRecorder?.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString())//fixme 获取视频保存文件
             // 设置捕获视频图像的预览界面
             mMediaRecorder?.setPreviewDisplay(surfaceView?.holder?.surface)
             mMediaRecorder?.prepare()
             setStreamMute(isShutSound)//fixme 关闭或开启，系统默认的快门声音。必须放在start（）调用才有效。
-            mMediaRecorder?.start()//fixme 开始录像。
+            mMediaRecorder?.start()//fixme 开始录像;
         } catch (e: Exception) {
             KLoggerUtils.e("startRecord() 相机录像异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
@@ -86,7 +109,8 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
         try {
             mediaFile?.let {
                 if (it.exists()) {
-                    it.delete()//fixme 删除之前的旧文件。
+                    //it.delete()//删除之前的旧文件。
+                    KFileUtils.getInstance().delFile(it)//fixme 删除之前的旧文件，并通知系统更新该文件夹。
                     mediaFile = null
                 }
             }
@@ -123,18 +147,22 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
 
     /**
      * fixme 停止录像
+     * @param isShutSound fixme true 关闭系统自带的快门声，false不关闭。默认关闭。
      * @param callback 回调录像文件。如果回调为空。录像文件会自动清除。
      */
-    open fun stopRecord(callback: ((file: File) -> Unit)? = null) {
-        recycleCamera()
+    open fun stopRecord(isShutSound: Boolean = true, callback: ((file: File) -> Unit)? = null) {
         if (!isRecorder) {
             return//fixme 已经停止，防止重复停止调用。
         }
         isRecorder = false
-        //停止录像比较耗时，所以开协程。
+        setStreamMute(isShutSound)//fixme 关闭或开启，系统默认的快门声音。最好放在 mMediaRecorder?.stop()之前。
+        //停止录像，比较耗时。放在协程里。
         GlobalScope.async {
             try {
                 if (mMediaRecorder != null) {
+                    mMediaRecorder?.setOnErrorListener(null);
+                    mMediaRecorder?.setOnInfoListener(null);
+                    mMediaRecorder?.setPreviewDisplay(null);//防止stop()异常，手动置空。
                     mMediaRecorder?.stop()
                     mMediaRecorder?.reset()
                     mMediaRecorder?.release()
@@ -157,6 +185,8 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
                         }
                     }
                 }
+                //mMediaRecorder停止之后，最后在销毁相机Camera;
+                recycleCamera()//fixme 释放相机Camera;一定在mMediaRecorder?.stop()之后调用。不然可能会死机报错。（PDA报错）
             } catch (e: java.lang.Exception) {
                 KLoggerUtils.e("stopRecord() 相机录像停止异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
             }
@@ -167,6 +197,7 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
     override fun destroy() {
         super.destroy()
         stopRecord()
+        recycleCamera()//fixme 在stopRecord（）后面执行，防止mMediaRecorder?.stop()异常。
     }
 
 }

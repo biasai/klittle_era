@@ -24,6 +24,8 @@ public class KCameraManager {
     public KAutoFocusManager autoFocusManager;
     private int requestedCameraId = -1;
     public int cameraId = 0;//fixme 相机id
+    public int width=0;//fixme 记录相机预览尺寸。
+    public int height=0;
 
     private boolean initialized;
     private boolean previewing;
@@ -166,6 +168,8 @@ public class KCameraManager {
 //                Log.e("test", "预览 width:" + size.width + "\theight:\t" + size.height);
             }
             //Log.e("test", "预览尺寸：\t宽:\t" + w + "\t高:\t" + h);
+            width=w;
+            height=h;
             parameters.setPreviewSize(w, h);//相机预览尺寸，如果和SurfaceView比例不同。照片预览会拉伸。不需要设置，使用默认的即可。
             parameters.setPictureFormat(ImageFormat.JPEG);//图片格式
             parameters.setJpegQuality(100);//图片的质量
