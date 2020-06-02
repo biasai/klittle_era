@@ -157,10 +157,12 @@ data class KAutoBgEntity(var view: View?,
     }
 
     private var autoBgTime = 0L
-    //fixme 根据参数自己主动获取图片（这个方法一般都是在画布里面自动执行的。）
+    //fixme 根据参数自己主动获取图片（这个方法一般都是在画布里面自动执行的。）;亲测有效。
     fun autoBg() {
+        //KLoggerUtils.e("主动获取图片：\t"+autoCount+"\t"+maxAutoCount+"\t"+url)
         if (isDraw && autoCount <= maxAutoCount && (autoBg == null || autoBg!!.isRecycled)) {
             if (System.currentTimeMillis() - autoBgTime < 100) {
+                //KLoggerUtils.e("返回")
                 return//防止时间过短重复执行。
             }
             autoBgTime = System.currentTimeMillis()
@@ -198,8 +200,10 @@ data class KAutoBgEntity(var view: View?,
             } else if (url != null) {
                 autoCount++//fixme 网络才计数（在autoBgFromUrl()方法，图片加载成功后，会自动恢复autoCount=0）
                 if (isGlide) {
+                    //KLoggerUtils.e("网络图片")
                     autoBgFromUrl(url, false, isRepeat, isRGB_565)
                 } else {
+                    //KLoggerUtils.e("网络图片2")
                     GlobalScope.async {
                         //fixme 加载网络图片
                         autoBgFromUrl(url, false, isRepeat, isRGB_565) {
