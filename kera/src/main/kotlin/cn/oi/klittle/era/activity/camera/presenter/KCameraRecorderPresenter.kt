@@ -71,29 +71,29 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
 
             //mMediaRecorder?.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);//fixme 不要调用会异常报错。
 
-//            var with = mCamcorderProfile.videoFrameWidth;
-//            cameraManager?.width?.let {
-//                if (it > 0) {
-//                    with = it
-//                }
-//            }
-//            var height = mCamcorderProfile.videoFrameHeight;
-//            cameraManager?.height?.let {
-//                if (it > 0) {
-//                    height = it
-//                }
-//            }
-//            mMediaRecorder?.setVideoEncodingBitRate(mCamcorderProfile.videoBitRate);
-//            mMediaRecorder?.setVideoFrameRate(mCamcorderProfile.videoFrameRate);
+            var with = mCamcorderProfile.videoFrameWidth;
+            cameraManager?.width?.let {
+                if (it > 0) {
+                    with = it
+                }
+            }
+            var height = mCamcorderProfile.videoFrameHeight;
+            cameraManager?.height?.let {
+                if (it > 0) {
+                    height = it
+                }
+            }
+            mMediaRecorder?.setVideoEncodingBitRate(mCamcorderProfile.videoBitRate);
+            mMediaRecorder?.setVideoFrameRate(mCamcorderProfile.videoFrameRate);
 //            mMediaRecorder?.setVideoSize(mCamcorderProfile.videoFrameWidth,
 //                    mCamcorderProfile.videoFrameHeight);
-//            mMediaRecorder?.setVideoSize(with,
-//                    height);
+            mMediaRecorder?.setVideoSize(with,
+                    height);//fixme 视频的尺寸最好设置成camera相机的预览尺寸一样。
 
             // 设置视频文件输出的路径
             mMediaRecorder?.setOutputFile(getOutputMediaFile(MEDIA_TYPE_VIDEO).toString())//fixme 获取视频保存文件
             // 设置捕获视频图像的预览界面
-            mMediaRecorder?.setPreviewDisplay(surfaceView?.holder?.surface)
+            //mMediaRecorder?.setPreviewDisplay(surfaceView?.holder?.surface)//fixme resumeCamera()预览已经绑定相机，这里就不用再绑定了（亲测）。这里绑定感觉效果不好(开始录像的时候界面感觉会闪一下)。这里不要绑定。
             mMediaRecorder?.prepare()
             setStreamMute(isShutSound)//fixme 关闭或开启，系统默认的快门声音。必须放在start（）调用才有效。
             mMediaRecorder?.start()//fixme 开始录像;
@@ -152,44 +152,43 @@ open class KCameraRecorderPresenter(override var surfaceView: SurfaceView?) : KC
      */
     open fun stopRecord(isShutSound: Boolean = true, callback: ((file: File) -> Unit)? = null) {
         if (!isRecorder) {
+            recycleCamera()
             return//fixme 已经停止，防止重复停止调用。
         }
         isRecorder = false
-        setStreamMute(isShutSound)//fixme 关闭或开启，系统默认的快门声音。最好放在 mMediaRecorder?.stop()之前。
-        //停止录像，比较耗时。放在协程里。
-        GlobalScope.async {
-            try {
-                if (mMediaRecorder != null) {
-                    mMediaRecorder?.setOnErrorListener(null);
-                    mMediaRecorder?.setOnInfoListener(null);
-                    mMediaRecorder?.setPreviewDisplay(null);//防止stop()异常，手动置空。
-                    mMediaRecorder?.stop()
-                    mMediaRecorder?.reset()
-                    mMediaRecorder?.release()
-                    mMediaRecorder = null
-                }
-                mediaFile?.let {
-                    if (it.exists()) {
-                        if (it.length() > 0) {
-                            var file = it
-                            if (callback != null) {
-                                KPictureUtils.updateFileFromDatabase_add(it)//fixme 通知系统。录屏位置
-                                callback?.let { it(file) }//fixme 有回调就返回录像文件。
-                            } else {
-                                file?.delete()//fixme 回调为空；录像文件主动清除。没有回调，就说明不需要录屏文件。
-                                mediaFile = null
-                            }
+        try {
+            setStreamMute(isShutSound)//fixme 关闭或开启，系统默认的快门声音。最好放在 mMediaRecorder?.stop()之前。
+            //fixme 不怎么耗时，不需要防止协程里。还是不要放在协程里比较好。防止activity;onPause()的时候，调用不及时。
+            if (mMediaRecorder != null) {
+                mMediaRecorder?.setOnErrorListener(null);
+                mMediaRecorder?.setOnInfoListener(null);
+                mMediaRecorder?.setPreviewDisplay(null);//防止stop()异常，手动置空。
+                mMediaRecorder?.stop()
+                mMediaRecorder?.reset()
+                mMediaRecorder?.release()
+                mMediaRecorder = null
+            }
+            mediaFile?.let {
+                if (it.exists()) {
+                    if (it.length() > 0) {
+                        var file = it
+                        if (callback != null) {
+                            KPictureUtils.updateFileFromDatabase_add(it)//fixme 通知系统。录屏位置
+                            callback?.let { it(file) }//fixme 有回调就返回录像文件。
                         } else {
-                            it.delete()
+                            file?.delete()//fixme 回调为空；录像文件主动清除。没有回调，就说明不需要录屏文件。
                             mediaFile = null
                         }
+                    } else {
+                        it.delete()
+                        mediaFile = null
                     }
                 }
-                //mMediaRecorder停止之后，最后在销毁相机Camera;
-                recycleCamera()//fixme 释放相机Camera;一定在mMediaRecorder?.stop()之后调用。不然可能会死机报错。（PDA报错）
-            } catch (e: java.lang.Exception) {
-                KLoggerUtils.e("stopRecord() 相机录像停止异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
             }
+            //mMediaRecorder停止之后，最后在销毁相机Camera;
+            recycleCamera()//fixme 释放相机Camera;一定在mMediaRecorder?.stop()之后调用。不然可能会死机报错。（PDA报错）
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("stopRecord() 相机录像停止异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 

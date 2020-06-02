@@ -15,6 +15,7 @@ import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
 import com.sdk.scan.RFID.KUtil.context
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -176,6 +177,8 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
         }
     }
 
+    var streamMute_job: Deferred<Any?>? = null
+
     /**
      * fixme 是否关闭拍照，录像时的系统自带快门声音。拍照和录像时，每次都要调用。亲测有效。最好放在拍照，录像方法之前调用一下。
      * @param isShutSound fixme true关闭快门声，false不关闭。默认关闭。
@@ -184,13 +187,15 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
         if (isShutSound) {
             //关闭系统快门声。
             try {
+                streamMute_job?.cancel()//取消上一次的。防止冲突。
                 var audioManager = getContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
                 audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, true)//关闭声音
-                GlobalScope.async {
+                streamMute_job = GlobalScope.async {
                     try {
-                        delay(2000)
+                        delay(1000)
                         var audioManager = getContext().getSystemService(Context.AUDIO_SERVICE) as AudioManager
                         audioManager?.setStreamMute(AudioManager.STREAM_SYSTEM, false)//恢复声音
+                        streamMute_job = null
                     } catch (e: Exception) {
                         KLoggerUtils.e("setStreamMute()异常2：\t" + KCatchException.getExceptionMsg(e))
                     }
@@ -233,11 +238,13 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
             return
         }
         if (surfaceHolder == null) {
-            KLoggerUtils.e("初始化异常No SurfaceHolder provided")
+            KLoggerUtils.e("初始化异常No SurfaceHolder provided", isLogEnable = true)
         }
-        if (cameraManager!!.isOpen) {
-            KLoggerUtils.e("相机已经打开")
-            return
+        cameraManager?.let {
+            if (it.isOpen) {
+                KLoggerUtils.e("相机已经打开", isLogEnable = true)
+                return
+            }
         }
         try {
             // 打开Camera硬件设备
@@ -245,7 +252,7 @@ open class KCameraPresenter(open var surfaceView: SurfaceView?) : SurfaceHolder.
             // 创建一个handler来打开预览，并抛出一个运行时异常
             cameraManager?.startPreview()
         } catch (ioe: Exception) {
-            KLoggerUtils.e("相机打开异常:\t" + ioe.message)
+            KLoggerUtils.e("相机打开异常:\t" + ioe.message, isLogEnable = true)
         }
     }
 
