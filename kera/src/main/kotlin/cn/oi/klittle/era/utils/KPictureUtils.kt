@@ -800,7 +800,7 @@ object KPictureUtils {
             val fout = FileOutputStream(file)
             bitmap = BitmapFactory.decodeStream(cr.openInputStream(uri), null, KAssetsUtils.getInstance().optionsARGB_8888)
             //保存位图原文件
-            bitmap!!.compress(Bitmap.CompressFormat.JPEG, 100, fout)// 80是压缩率，表示压缩20%;取值范围在0~100，代表质量
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, fout)// 80是压缩率，表示压缩20%;取值范围在0~100，代表质量
             try {
                 fout.flush()
                 fout.close()
@@ -808,7 +808,7 @@ object KPictureUtils {
                 e.printStackTrace()
                 KLoggerUtils.e("相册图片异常0" + e.message, isLogEnable = true)
             }
-            bitmap.recycle()//释放
+            bitmap?.recycle()//释放
             bitmap = null
         } catch (e: FileNotFoundException) {
             KLoggerUtils.e("相册图片异常1" + e.message, isLogEnable = true)
