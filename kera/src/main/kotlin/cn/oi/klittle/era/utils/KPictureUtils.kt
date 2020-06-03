@@ -285,7 +285,7 @@ object KPictureUtils {
                             }
                         } catch (e: Exception) {
                             // TODO: handle exception
-                            KLoggerUtils.e("相机崩坏2:\t" + e.message, isLogEnable = true)
+                            KLoggerUtils.e("相机拍照崩坏:\t" + e.message, isLogEnable = true)
                             CameraPackName?.let {
                                 if (e.message?.contains(it) ?: false) {
                                     if (!it.equals(packNameError)) {
@@ -515,7 +515,7 @@ object KPictureUtils {
                             }
                         } catch (e: Exception) {
                             // TODO: handle exception
-                            KLoggerUtils.e("相机崩坏" + e.message, isLogEnable = true)
+                            KLoggerUtils.e("系统相机录像崩坏" + e.message, isLogEnable = true)
                             CameraPackName?.let {
                                 if (e.message?.contains(it) ?: false) {
                                     if (!it.equals(packNameError)) {
