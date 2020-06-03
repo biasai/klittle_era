@@ -201,7 +201,8 @@ public object KPathManagerUtils {
      * fixme KPictureSelector图片选择器路径
      */
 
-    //fixme 9.压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（建议还是不要被系统相册读取比较好）
+    //fixme 9.压缩路径，还是使用本应用的缓存目录。不要使用SD卡。防止被系统相册读取。（压缩文件建议还是不要被系统相册读取比较好）；
+    //fixme 应用内的缓存目录，系统相册读取不到。系统相册只能读SD卡上的。应用删除之后，应用内的缓存目录数据都会自动删除掉。
     open fun getCompressPath(): String {
         var path = KCacheUtils.getCachePath() + "/compress"//fixme 压缩路径（本应用缓存路径）,相机拍照路径是SD存储卡。
         try {

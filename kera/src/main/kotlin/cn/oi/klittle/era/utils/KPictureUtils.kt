@@ -207,7 +207,7 @@ object KPictureUtils {
 
     //KPictureUtils.cameraCompress { compressFile -> }
     /**
-     * fixme 相机拍照，只放回压缩后的图片。原文件会自动删除。只保留压缩后的。
+     * fixme 相机拍照，只返回压缩后的图片。原文件会自动删除。只保留压缩后的。
      */
     fun cameraCompress(activity: Activity? = KBaseUi.getActivity(), minimumCompressSize: Int = KPictureSelector.minimumCompressSize, callback2: (compressFile: File) -> Unit) {
         camera(activity) {
@@ -246,10 +246,10 @@ object KPictureUtils {
                 KPermissionUtils.requestPermissionsCamera(activity) {
                     if (it) {
                         try {
-                            val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                            var intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                             //resolveActivity()查询是否有第三方能够启动该intent;fixme resolveActivity()靠不住。建议不要使用。
                             //if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                            if (true) {
+                            if (activity != null && !activity.isFinishing()) {
                                 //PNG格式的不能显示在相册中
                                 var cramefile = KFileUtils.getInstance().createFile(getCameraPath(), "IMG_" + KCalendarUtils.getCurrentTime("yyyyMMdd_HHmmssSSS") + ".jpg")//相机拍摄的照片位置。不使用SD卡。这样就不需要SDK权限。
                                 cramePath = cramefile?.absolutePath
@@ -312,18 +312,23 @@ object KPictureUtils {
 //                            KPictureUtils.crop(srcfile,1,1){
 //                                KLoggerUtils.e("裁剪：\t"+it.absolutePath)
 //                            }
-    fun crop(file: File, w: Int, h: Int, callback2: (file: File) -> Unit) {
-        crop(KBaseUi.getActivity(), file, w, h, -1, -1, callback2)
+    fun crop(file: File, w: Int, h: Int, isDel: Boolean = true, callback2: (file: File) -> Unit) {
+        crop(KBaseUi.getActivity(), file, w, h, -1, -1, isDel, callback2)
     }
 
-    //图片剪辑【可以在相册，拍照回调成功后手动调用哦。】,兼容7.0。模拟器上没有上面效果。6.0的真机都没问题。7.0的真机没有测试。
-    //w:h 宽和高的比率
-    //width:height实际裁剪的宽和高的具体值。
-    fun crop(activity: Activity? = KBaseUi.getActivity(), file: File, w: Int, h: Int, callback2: (file: File) -> Unit) {
-        crop(activity, file, w, h, -1, -1, callback2)
+    /**
+     * fixme 图片剪辑【可以在相册，拍照回调成功后手动调用哦。】,兼容7.0。模拟器上没有上面效果。6.0的真机都没问题。7.0的真机没有测试。
+     * w:h 宽和高的比率
+     * width:height实际裁剪的宽和高的具体值。
+     * @param isDel fixme 裁剪之后，是否删除原文件。true删除（原文件与裁剪文件不同时才会删除原文件）；false不删除。
+     */
+    fun crop(activity: Activity? = KBaseUi.getActivity(), file: File, w: Int, h: Int, isDel: Boolean, callback2: (file: File) -> Unit) {
+        crop(activity, file, w, h, -1, -1, isDel, callback2)
     }
 
-    fun crop(activity: Activity? = KBaseUi.getActivity(), file: File, w: Int, h: Int, width: Int, height: Int, callback2: (file: File) -> Unit) {
+    public var isDelSrc: Boolean = true;//fixme 裁剪之后，是否删除原文件。
+    public var srcFile: File? = null//fixme 裁剪之前的原文件；在下面的 onActivityResult（）方法里。
+    fun crop(activity: Activity? = KBaseUi.getActivity(), file: File, w: Int, h: Int, width: Int, height: Int, isDel: Boolean, callback2: (file: File) -> Unit) {
         try {
             if (activity == null || activity.isFinishing) {
                 return
@@ -332,13 +337,18 @@ object KPictureUtils {
             KPermissionUtils.requestPermissionsStorage {
                 if (it) {
                     try {
+                        if (file == null || file.length() <= 0) {
+                            return@requestPermissionsStorage
+                        }
+                        this.isDelSrc = isDel
+                        this.srcFile = file
                         //fixme AssetsUtils.getInstance().getBitmapFromFile(it.path, true,false)
                         //fixme [注意了哦。如果图片剪切了，就不要读取缓存哦。]
                         cropfile = KFileUtils.getInstance().copyFile(file, getAppCropPath(), file.name)
-                        val intent = Intent("com.android.camera.action.CROP")
+                        var intent = Intent("com.android.camera.action.CROP")
                         //resolveActivity()查询是否有第三方能够启动该intent;fixme 不要使用。系统自带的裁剪可能查不出来，不可能，不要使用。
                         //if (intent.resolveActivity(activity.getPackageManager()) != null) {
-                        if (true) {
+                        if (activity != null && !activity.isFinishing()) {
                             var fileUri: Uri
                             if (Build.VERSION.SDK_INT >= 21) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
                                 //相机里面也使用了这个，多次使用不会出错。可以重复使用，不冲突。
@@ -540,7 +550,7 @@ object KPictureUtils {
             //KLoggerUtils.e("requestCode：\t" + requestCode + "\tresultCode:\t" + resultCode + "\tdata:\t" + data + "\tdata.data:\t" + data?.data)
             //resultCode 0 系统设置默认就是取消。
             if (requestCode == DEFAULT_KEYS_PICTURE_PHOTO && data != null && data.data != null) {
-                //相册
+                //fixme 相册
                 try {
                     var file: File? = null
                     val uri = data.data
@@ -596,7 +606,7 @@ object KPictureUtils {
                     KLoggerUtils.e("图库相册异常:\t" + e.message, isLogEnable = true)
                 }
             } else if (requestCode == DEFAULT_KEYS_CROP_PHOTO) {
-                //裁剪
+                //fixme 裁剪
                 //此时的data是空的。直接返回临时保存的裁剪文件
                 cropfile?.let {
                     if (it.exists() && it.length() > 0) {
@@ -609,6 +619,7 @@ object KPictureUtils {
                         }
                     }
                 }
+                //回调
                 cllback?.let {
                     if (cropfile != null && cropfile?.exists() ?: false && cropfile!!.length() > 0) {
                         it(cropfile!!)
@@ -625,8 +636,21 @@ object KPictureUtils {
                         }
                     }
                 }
+                if (isDelSrc) {
+                    //fixme 删除裁剪之前的原文件
+                    srcFile?.let {
+                        var src = it
+                        //fixme 原文件与裁剪文件不相同。才删除原文件。
+                        KFileUtils.getInstance().isSameFile(it, cropfile)?.let {
+                            if (!it) {
+                                KFileUtils.getInstance().delFile(src)//fixme 删除，内部会通知系统。该文件已经删除。
+                            }
+                        }
+                    }
+                }
+                srcFile = null//fixme 这里置空，对之前it不受影响。
             } else if (requestCode == DEFAULT_KEYS_CAMARA_PHOTO) {
-                //相机
+                //fixme 相机
                 cllback?.let {
                     cramePath?.let {
                         var cramefile = File(it)
@@ -664,7 +688,7 @@ object KPictureUtils {
 
                 }
             } else if (requestCode == DEFAULT_KEYS_VIDEO_PHOTO && data != null && data.data != null) {
-                //本地视频
+                //fixme 本地视频
                 val uri = data?.data
                 //uri.getPath() 这个路径不行。靠不住。不要用。
                 val cursor = activity.getContentResolver().query(uri!!, null, null, null, null)
@@ -698,7 +722,7 @@ object KPictureUtils {
                     }
                 }
             } else if (requestCode == DEFAULT_KEYS_VIDEO_CAPTURE && data != null && data.data != null) {
-                //相机，视频录制
+                //fixme 相机，视频录制
                 cameraVideoFile?.let {
                     if (it.exists() && it.length() > 0) {
                         activity?.let {
