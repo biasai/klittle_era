@@ -1,17 +1,17 @@
 package cn.oi.klittle.era.socket
 
-import android.util.Log
-import cn.oi.klittle.era.utils.KLoggerUtils
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.net.*
-import java.util.regex.Pattern
-import java.net.NetworkInterface.getNetworkInterfaces
-import android.content.Context.WIFI_SERVICE
+import android.content.Context
+import android.net.wifi.WifiInfo
 import android.net.wifi.WifiManager
+import android.os.Build
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.exception.KCatchException
+import cn.oi.klittle.era.utils.KLoggerUtils
+import java.io.*
+import java.net.*
+import java.net.NetworkInterface.getNetworkInterfaces
+import java.util.*
+import java.util.regex.Pattern
 
 
 /**
@@ -27,6 +27,7 @@ open class KIpPort {
         get() {
             return getHostIp4()//防止更改，每次都实时获取。
         }
+
     //外网IP4地址,要放到后台线程里处理
     var netIp4: String? = null
         get() {
@@ -42,6 +43,7 @@ open class KIpPort {
 
     companion object {
         var defaultPort = 31053//默认端口号
+
         //获取或设置端口号
         fun port(port: Int = defaultPort): Int {
             //端口号规定为16位，即允许一个IP主机有2的16次方65535个不同的端口
@@ -156,16 +158,85 @@ open class KIpPort {
             return null
         }
 
+        private var mMac: String = "02:00:00:00:00:00"//fixme  02:00:00:00:00:00是常量；如果返回这个肯定就是错误的，不是真实的mac地址
         private var mac: String? = null
+
+        //fixme 获取mac地址，亲测不需要任何权限。
         //通过wifi（与wifi是否开启没有关系，亲测能够获取） 获取mac地址[物理地址，不会变。理论上是不变，因为是出厂时被厂家烧在网卡上的。但不能保证绝对。]
         fun getMacAddress(): String {
-            if (mac == null) {
-                var wifi = KBaseApplication.getInstance().baseContext.getSystemService(KBaseApplication.WIFI_SERVICE) as WifiManager
-                var info = wifi.getConnectionInfo()
-                mac = info.getMacAddress()
+            try {
+                if (Build.VERSION.SDK_INT < 23) {
+                    if (mac == null) {
+                        var wifi = KBaseApplication.getInstance().baseContext.getSystemService(KBaseApplication.WIFI_SERVICE) as WifiManager
+                        var info = wifi.getConnectionInfo()//fixme 亲测，不需要任何权限。
+                        mac = info.getMacAddress()//6.0及以上，无法获取正在的mac地址。返回的是固定的：02:00:00:00:00:00
+                    }
+                    mac?.trim()?.let {
+                        if (it.equals(mMac)) {
+                            mac = getHightMac()
+                        }
+                    }
+                } else {
+                    if (mac == null) {
+                        mac = getHightMac()
+                    }
+                    mac?.trim()?.let {
+                        if (it.length <= 0) {
+                            mac = getHightMac()
+                        }
+                    }
+                }
+                mac?.let {
+                    return it
+                }
+            } catch (e: Exception) {
+                KLoggerUtils.e("getMacAddress()mac地址获取异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
             }
-            return mac!!
+            return mMac
         }
+
+        //fixme 6.0(api23)及以上获取mac地址。亲测可行(不需要任何权限)。能够获取设备真正的mac地址。获取出来的MAC地址都是大写的；如：98:6C:F5:55:B6:82
+        private fun getHightMac(): String? {
+            var mac: String? = ""
+            try {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+                    val wifiManage: WifiManager =
+                            KBaseApplication.getInstance().baseContext.getSystemService(Context.WIFI_SERVICE) as WifiManager
+                    val wifiInfo: WifiInfo? = wifiManage.connectionInfo
+                    mac = wifiInfo?.macAddress
+                } else {
+                    var address = ""
+                    val interfaces: Enumeration<NetworkInterface> =
+                            NetworkInterface.getNetworkInterfaces()
+                    while (interfaces.hasMoreElements()) {
+                        val netWork: NetworkInterface = interfaces.nextElement()
+                        val by = netWork.hardwareAddress
+                        if (by == null || by.isEmpty()) {
+                            continue
+                        }
+                        val builder = StringBuilder()
+                        for (b in by) {
+                            builder.append(String.format("%02X:", b))
+                        }
+                        if (builder.isNotEmpty()) {
+                            builder.deleteCharAt(builder.length - 1)
+                        }
+                        val macAddress = builder.toString()
+                        // 从路由器上在线设备的MAC地址列表，可以印证设备Wifi的 name 是 wlan0
+                        if (netWork.name == "wlan0") {
+                            address = macAddress
+                        }
+                    }
+                    mac = address
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                mac = ""
+                KLoggerUtils.e("getHightMac()mac地址获取异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+            }
+            return mac
+        }
+
     }
 
 }

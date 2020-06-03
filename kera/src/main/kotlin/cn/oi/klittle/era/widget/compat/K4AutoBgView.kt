@@ -99,6 +99,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
     }
 
     private var viewBitmap: Bitmap? = null//控件本身视图位图
+
     /**
      * 获取控件本身的位图
      * @param isRefresh 是否强制刷新；true每次都获取最新的；false 会返回旧的(fixme 默认返回旧的)。
@@ -191,6 +192,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //不可用
     var autoBg_enable: KAutoBgEntity? = null
+
     //备份真实的,用于实现两个autoBg之间的动画渐变
     private var autoBg_enable_real: KAutoBgEntity? = null
 
@@ -212,6 +214,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //按下
     var autoBg_press: KAutoBgEntity? = null
+
     //备份真实的,用于实现两个autoBg之间的动画渐变
     private var autoBg_press_real: KAutoBgEntity? = null
 
@@ -291,6 +294,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
     }
 
     var autoView: View? = this
+
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var autoBg: KAutoBgEntity? = null
     private var autoBg_real: KAutoBgEntity? = null
@@ -350,12 +354,13 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                         autoBgModel?.let {
                             //加载时图片
                             if (it.autoBg == null || it.autoBg!!.isRecycled) {
+                                //fixme 显示加载时图片
                                 autoBg_load?.let {
                                     drawAutoBg(canvas, paint, it, view)
                                 }
                             }
                         }
-                        drawAutoBg(canvas, paint, autoBgModel!!, view)
+                        drawAutoBg(canvas, paint, autoBgModel, view)//fixme autoBgModel图片为空时，会自动去获取的。
                     } else {
                         //加载时图片
                         autoBg_load?.let {
@@ -388,7 +393,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                     autoBgModel2 = autoBg2
                 }
                 if ((view.width > 0 || view.height > 0) && autoBgModel2 != null) {
-                    drawAutoBg(canvas, paint, autoBgModel2!!, view)
+                    drawAutoBg(canvas, paint, autoBgModel2, view)
                 }
             }
             //fixme 第三张图片（就搞三种图片，够了）
@@ -415,7 +420,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                     autoBgModel3 = autoBg3
                 }
                 if ((view.width > 0 || view.height > 0) && autoBgModel3 != null) {
-                    drawAutoBg(canvas, paint, autoBgModel3!!, view)
+                    drawAutoBg(canvas, paint, autoBgModel3, view)
                 }
             }
         }
@@ -536,7 +541,10 @@ open class K4AutoBgView : K3DragMotionEventWidget {
     }
 
     //画自定义背景
-    open fun drawAutoBg(canvas: Canvas, paint: Paint, autoBgModel: KAutoBgEntity, view: View) {
+    open fun drawAutoBg(canvas: Canvas, paint: Paint, autoBgModel: KAutoBgEntity?, view: View) {
+        if (autoBgModel == null) {
+            return
+        }
         view?.apply {
             var w = view.width
             var h = view.height
@@ -1240,6 +1248,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
     //判断抖动动画是否正在进行，true正在进行动画，false没有。
     var isView_jitter: Boolean = false
     var view_jitter_rotation: Float = 0F
+
     /**
      * fixme 这个实现整个控件的抖动。rotation旋转只对view有效，viewGroup无效。
      */
@@ -1347,6 +1356,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
     var autoBgrotation: Float = 0F
     var autoBgalpha = 0
     var autoBgsaturation = 0f
+
     /**
      * 两个autoBg直接的属性渐变，rotation,alpha,width,height,saturation等
      * autoBg向 -》autoBg2进行变化。
@@ -1415,6 +1425,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
 
     //当前状态
     var autoBg_current: KAutoBgEntity? = null
+
     //当前实际状态
     var autoBg_change: KAutoBgEntity? = null
 
