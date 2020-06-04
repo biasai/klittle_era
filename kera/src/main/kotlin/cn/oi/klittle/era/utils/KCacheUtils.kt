@@ -12,6 +12,10 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Deferred
 
+//KCacheUtils.clearBitmap()//fixme 清除所有位图数据
+//KCacheUtils.clearString()//fixme 清除所有json缓存数据
+//KCacheUtils.clearCacheAll { }//fixme 清除所有数据。
+
 /**
  * Created by 彭治铭 on 2018/10/25.
  * fixme 应用卸载之后，数据会自动清除。只有卸载才会清除。重新安装不会清除
@@ -24,7 +28,8 @@ import kotlinx.coroutines.Deferred
  */
 object KCacheUtils {
 
-    //fixme 公用缓存目录
+    //fixme 公用缓存目录(网络数据和图片基本都是默认用的这个)
+    //fixme KCacheUtils.put()；默认调用的也是getCache();
     fun getCache(): KCache {
         return KCache.getInstance()
     }
@@ -108,24 +113,34 @@ object KCacheUtils {
 
     //字符串标志
     private var markString = "KCachesUtils_MarkString"
+
     //Int标志
     private var markInt = "KCachesUtils_MarkInt"
+
     //Float标志
     private var markFloat = "KCachesUtils_MarkFloat"
+
     //Double标志
     private var markDouble = "KCachesUtils_Double"
+
     //Long长整型
     private var markLong = "KCachesUtils_Long"
+
     //Serializable序列化对象
     private var markAny = "KCachesUtils_Any"
+
     //Bitmap位图
     private var markBitmap = "KCachesUtils_Bitmap"
+
     //Drawable对象
     private var markDrawable = "KCachesUtils_Drawable"
+
     //ByteArray字节数组
     private var markByteArray = "KCachesUtils_ByteArray"
+
     //JSONArray数组
     private var markJSONArray = "KCachesUtils_JSONArray"
+
     //json对象
     private var markJSONObject = "KCachesUtils_JSONObject"
 
@@ -204,16 +219,17 @@ object KCacheUtils {
     //清除所有位图
     fun clearBitmap() {
         removeMark(markBitmap)
-    }
-
-    //清除所有Drawable对象
-    fun clearDrawable() {
-        removeMark(markDrawable)
+        clearByteArray()//fixme KGlideUtils缓存的位图，存储就是字节类型的。这可以清除KGlide加载的位图数据。
     }
 
     //清除所有ByteArray字节数组
     fun clearByteArray() {
         removeMark(markByteArray)
+    }
+
+    //清除所有Drawable对象
+    fun clearDrawable() {
+        removeMark(markDrawable)
     }
 
     //清除所有JSONArray json数组
@@ -758,7 +774,7 @@ object KCacheUtils {
      * @param saveTime 保存的时间，单位：秒
      */
     fun putSecret(key: String?, value: Serializable?, saveTime: Int?) {
-        if (key!=null){
+        if (key != null) {
             if (value != null && key.trim().length > 0) {
                 if (saveTime != null && saveTime > 0) {
                     getCacheSecret().put(key, value, saveTime)//有存储时间限制
@@ -773,7 +789,7 @@ object KCacheUtils {
 
     //获取可序列化Serializable对象
     fun getSecret(key: String?): Any? {
-        if (key!=null){
+        if (key != null) {
             if (key.trim().length > 0) {
                 return getCacheSecret().getAsObject(key)
             }

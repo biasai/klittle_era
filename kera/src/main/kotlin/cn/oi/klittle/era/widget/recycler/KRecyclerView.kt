@@ -187,6 +187,17 @@ import kotlinx.coroutines.delay
 //                    }
 //                }
 
+//                        fixme 下拉刷新，加载更多在：KMoreOnScrollListener类里。
+//                        swipeRefreshLayout {
+//                            //颜色进度条，参数个数没有上限。自己随意添加颜色值，int类型，多个用逗号隔开。
+//                            setColorSchemeColors(Color.parseColor("#FF8080"), Color.parseColor("#FFFF00"), Color.parseColor("#00FF40"));
+//                            onRefresh {
+//                                //正在刷新，true刷新进度圈会一直显示。false刷新进度圈会消失。刷新结束。数据加载完成。需要手动设置成false
+//                                setRefreshing(true);
+//                            }
+//                            krecyclerView {  }
+//                        }
+
 open class KRecyclerView : RecyclerView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
@@ -481,6 +492,7 @@ open class KRecyclerView : RecyclerView {
 
     //判断是否正在加载更多，防止重复加载。加载更多时，需要手动设置true，加载完了手动设置false
     var isLoadMore = false
+
     //是否加载更多完成；false 没完成，可以继续加载更多；true 加载完成（没有更多数据了,不会再回调加载更多。）
     var isLoadMoreComplete = false
     private var isHasLoadMore = false
@@ -527,7 +539,7 @@ open class KRecyclerView : RecyclerView {
         try {
             super.draw(c)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("RecyclerView draw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+            KLoggerUtils.e("RecyclerView draw异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 
@@ -535,15 +547,15 @@ open class KRecyclerView : RecyclerView {
         try {
             super.dispatchDraw(canvas)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("RecyclerView dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+            KLoggerUtils.e("RecyclerView dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 
     override fun onMeasure(widthSpec: Int, heightSpec: Int) {
         try {
             super.onMeasure(widthSpec, heightSpec)
-        }catch (e:java.lang.Exception){
-            KLoggerUtils.e("RecyclerView onMeasure异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+        } catch (e: java.lang.Exception) {
+            KLoggerUtils.e("RecyclerView onMeasure异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 

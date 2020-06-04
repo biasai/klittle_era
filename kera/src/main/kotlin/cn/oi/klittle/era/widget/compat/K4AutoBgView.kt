@@ -13,6 +13,7 @@ import android.view.animation.LinearInterpolator
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.entity.widget.compat.KAutoBgEntity
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.entity.widget.KBall
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KVibratorUtils
 
@@ -80,6 +81,8 @@ import cn.oi.klittle.era.utils.KVibratorUtils
 //                            width = px.x(45)//fixme 缩放处理（图片获取完成之后，就不会在进行压缩处理，显示的是只会进行缩放处理）
 //                            height = width//fixme 显示的时候，Canvas画布根据宽和高对位图进行缩放处理（不会压缩）
 //                        }
+
+//                        fixme ball() //两个小球动画。autoBg图片为空的时候，会显示小球动画效果。一般加载网络图片的时候。才用。
 
 //                        fixme 如果一个图标被多个控件引用，且尺寸不一样；为防止异常，这时 isRecycle=false 不要释放位图原图
 
@@ -321,11 +324,153 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         return this
     }
 
+
+    var ball_left: KBall? = null
+    private fun getMball(): KBall {
+        if (ball_left == null) {
+            ball_left = KBall()
+        }
+        if (autoView == null) {
+            autoView = this
+        }
+        return ball_left!!
+    }
+
+    var isDrawBall = true//fixme 是否绘制小球。 AutoBg图片为空的时候，才绘制小球。图片不为空的时候。就不绘制小球。
+
+    /**
+     * fixme 设置两个小球的颜色，半径和之间的间距;一般加载网络图片的时候。才用。
+     * @param color_left 左边小球的颜色
+     * @param color_right 右边小球的颜色
+     * @param radius 小球的半径
+     * @param offset 两个小球之间的距离（间隙）
+     */
+    fun ball(color_left: Int = Color.RED, color_right: Int = Color.CYAN, radius: Float = kpx.x(10f), offset: Float = kpx.x(15f)): K4AutoBgView {
+        ball_left {
+            color = color_left
+            this.radius = radius
+        }
+        ball_right {
+            color = color_right
+            this.radius = radius
+        }
+        ball_center_offset = offset
+        return this
+    }
+
+    //左边小球
+    fun ball_left(block: KBall.() -> Unit): K4AutoBgView {
+        block(getMball())
+        autoView?.invalidate()
+        autoView?.requestLayout()
+        return this
+    }
+
+    var ball_right: KBall? = null
+
+    //右边小球
+    fun ball_right(block: KBall.() -> Unit): K4AutoBgView {
+        ball_right = getMball().copy()
+        block(ball_right!!)
+        autoView?.invalidate()
+        autoView?.requestLayout()
+        return this
+    }
+
+    private var ball_offset = 2f
+    private var ball_max_centerX = 0f
+    private var ball_min_centerX = 0f
+    private var ball_center_offset = kpx.x(15f)//两个小球之间的间隙
+
     var autoBgModel: KAutoBgEntity? = null//第一张当前状态位图
     var autoBgModel2: KAutoBgEntity? = null//第二张当前状态位图
     var autoBgModel3: KAutoBgEntity? = null//第三张当前状态位图
     fun drawAuto(canvas: Canvas, paint: Paint, view: View) {
         view.apply {
+            //fixme 小球动画
+            if (ball_left != null && ball_right != null && isDrawBall) {
+                ball_left?.apply {
+                    if (centerX <= 0 && this@K4AutoBgView.width > 0) {
+                        centerX = this@K4AutoBgView.centerX() - ball_center_offset
+                    }
+                    if (centerY <= 0 && this@K4AutoBgView.height > 0) {
+                        centerY = this@K4AutoBgView.centerY()
+                    }
+                    if (radius <= 0) {
+                        radius = kpx.x(10f)
+                    }
+                }
+                ball_right?.apply {
+                    if (centerX <= 0 && this@K4AutoBgView.width > 0) {
+                        centerX = this@K4AutoBgView.centerX() + ball_center_offset
+                    }
+                    if (centerY <= 0 && this@K4AutoBgView.height > 0) {
+                        centerY = this@K4AutoBgView.centerY()
+                    }
+                    if (radius <= 0) {
+                        radius = kpx.x(10f)
+                    }
+                }
+                if (ball_max_centerX <= 0) {
+                    if (ball_left!!.centerX > ball_right!!.centerX) {
+                        ball_max_centerX = ball_left!!.centerX
+                        ball_min_centerX = ball_right!!.centerX
+                        ball_left!!.isAdd = false
+                        ball_right!!.isAdd = true
+                    } else {
+                        ball_max_centerX = ball_right!!.centerX
+                        ball_min_centerX = ball_left!!.centerX
+                        ball_left!!.isAdd = true
+                        ball_right!!.isAdd = false
+                    }
+                }
+                //先画大的球,防止重叠
+                paint.style = Paint.Style.FILL_AND_STROKE
+                if (ball_left!!.isAdd) {
+                    ball_offset = 2f
+                    paint.color = ball_right!!.color
+                    canvas.drawCircle(ball_right!!.centerX, ball_right!!.centerY, ball_right!!.radius, paint);
+                    paint.color = ball_left!!.color
+                    canvas.drawCircle(ball_left!!.centerX, ball_left!!.centerY, ball_left!!.radius, paint);
+                } else {
+                    ball_offset = 1f
+                    paint.color = ball_left!!.color
+                    canvas.drawCircle(ball_left!!.centerX, ball_left!!.centerY, ball_left!!.radius, paint);
+                    paint.color = ball_right!!.color
+                    canvas.drawCircle(ball_right!!.centerX, ball_right!!.centerY, ball_right!!.radius, paint);
+                }
+                ball_left?.let {
+                    if (it.isAdd) {
+                        it.centerX += ball_offset
+                    } else {
+                        it.centerX -= ball_offset
+                    }
+                    if (it.centerX <= ball_min_centerX) {
+                        it.centerX = ball_min_centerX
+                        it.isAdd = true
+                    }
+                    if (it.centerX >= ball_max_centerX) {
+                        it.centerX = ball_max_centerX
+                        it.isAdd = false
+                    }
+                }
+                ball_right?.let {
+                    if (it.isAdd) {
+                        it.centerX += ball_offset
+                    } else {
+                        it.centerX -= ball_offset
+                    }
+                    if (it.centerX <= ball_min_centerX) {
+                        it.centerX = ball_min_centerX
+                        it.isAdd = true
+                    }
+                    if (it.centerX >= ball_max_centerX) {
+                        it.centerX = ball_max_centerX
+                        it.isAdd = false
+                    }
+                }
+                invalidate()//fixme 小球接着刷新
+            }
             //fixme 第一张图片
             if (autoBg != null) {
                 autoBgModel = null
@@ -358,6 +503,11 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                                 autoBg_load?.let {
                                     drawAutoBg(canvas, paint, it, view)
                                 }
+                                if (autoBg_load == null) {
+                                    isDrawBall = true//fixme 绘制两个小球。
+                                }
+                            } else {
+                                isDrawBall = false//fixme 图片不为空，不绘制两个小球。
                             }
                         }
                         drawAutoBg(canvas, paint, autoBgModel, view)//fixme autoBgModel图片为空时，会自动去获取的。
@@ -1961,6 +2111,9 @@ open class K4AutoBgView : K3DragMotionEventWidget {
         }
         autoView = null
         viewGroup = null
+        ball_left = null
+        ball_right = null
+        isDrawBall = false
     }
 
     //fixme 新加方法；仅仅只是清除AutoBg位图,url等属性。不会对KAutoBgEntity对象本身制空

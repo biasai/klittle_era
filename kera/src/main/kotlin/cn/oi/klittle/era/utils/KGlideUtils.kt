@@ -20,6 +20,7 @@ import kotlinx.coroutines.Deferred
  * 使用第三方Glide加载图片；调用以下方法时必须在子线程中调用，不能在UI主线程中调用。
  * fixme Glide已经解决了本地图片旋转方向不正确的问题，图片也不会变形，默认都是居中显示。
  * fixme 以及加载速度和效果都杠杠的。谷歌推荐使用。
+ * fixme setCacheByteArrayOfStrategy()缓存网络数据，默认缓存两周时间。Khttps里面JSON数据，默认永久缓存。KHttp.getNetByteArray（）获取网络字节。网络图片用的这个方法。
  */
 object KGlideUtils {
 
@@ -73,10 +74,12 @@ object KGlideUtils {
     }
 
     /**
-     * 缓存字节流到本地
+     * fixme 缓存字节流到本地
      */
     fun setCacheByteArrayOfStrategy(key: String, byteArray: ByteArray) {
-        KCacheUtils.getCache().put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//缓存两周
+        //KCacheUtils.getCache().put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//fixme 缓存两周（亲测有效，KCacheUtils这个工具类很强大。）
+        //fixme 这个里面有存储标志的方法putMark（）；这样 KCacheUtils.clearByteArray() 可以清除所有图片数据。
+        KCacheUtils.put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//fixme 缓存两周（亲测有效，KCacheUtils这个工具类很强大。）
     }
 
 
@@ -85,6 +88,7 @@ object KGlideUtils {
     }
 
     private var keyMap = mutableMapOf<String, Int>()//判断是否重新执行。
+
     //fixme 判断是否重新执行。防止卡死。亲测有效！（基本解决了防重复和卡死的现象）;基本能够百分百解决并发问题，效果杠杠的。
     private var keyMap2 = mutableMapOf<String, Deferred<Any?>?>()
     private var minCount = 5
@@ -101,7 +105,7 @@ object KGlideUtils {
                                 it.remove(key)
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                KLoggerUtils.e("kGlideUtils remove移除键值异常1：\t" + e.message,isLogEnable = true)
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常1：\t" + e.message, isLogEnable = true)
                             }
                         }
                     }
@@ -111,7 +115,7 @@ object KGlideUtils {
                                 it.remove(key)
                             } catch (e: Exception) {
                                 e.printStackTrace()
-                                KLoggerUtils.e("kGlideUtils remove移除键值异常2：\t" + e.message,isLogEnable = true)
+                                KLoggerUtils.e("kGlideUtils remove移除键值异常2：\t" + e.message, isLogEnable = true)
                             }
                         }
                     }
@@ -119,7 +123,7 @@ object KGlideUtils {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("kGlideUtils remove移除键值异常：\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e("kGlideUtils remove移除键值异常：\t" + e.message, isLogEnable = true)
         }
     }
 
@@ -556,7 +560,9 @@ object KGlideUtils {
     }
 
     var url_signature = "url_signature_"//fixme 签名字段，如果服务器图片改变了，但是url没有变，本地想要更新图片。那可以改变这个签名值。
+
     /**
+     * fixme 获取网络图片，比较耗时，调用的时候，不要在主线程直接调用。会直接返回网络位图。
      * @param path 本地图片路径(获取网络图片url也可以。能够加载网络图片，亲测可行)
      * @param overrideWidth 图片宽度
      * @param overrideHeight 图片高度

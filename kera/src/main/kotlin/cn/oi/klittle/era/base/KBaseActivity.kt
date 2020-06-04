@@ -843,8 +843,9 @@ open class KBaseActivity : AppCompatActivity() {
 
     /**
      * fixme 显示进度条
+     * @param isLocked 是否屏蔽返回键，默认屏幕
      */
-    open fun showProgressbar() {
+    open fun showProgressbar(isLocked: Boolean = true) {
         if (!isFinishing) {
             runOnUiThread {
                 if (!isFinishing) {
@@ -852,6 +853,7 @@ open class KBaseActivity : AppCompatActivity() {
                         if (kprogressbar == null) {
                             kprogressbar = KProgressDialog(this)
                         }
+                        kprogressbar?.isLocked(isLocked)
                         kprogressbar?.show()
                     } catch (e: Exception) {
                         e.printStackTrace()

@@ -61,6 +61,7 @@ open class KHttps() {
         open var isFirstError: Boolean = true//是否为第一次错误(第一次不需要判断时间)。
         open var errorTime = System.currentTimeMillis()//错误时间
         open var errorTimeInterval = 5000//错误间隔时间，单位毫秒；即5秒内不会重复调用。
+
         //失败回调(一般都服务器连接失败)
         open var error: ((url: String?, errStr: String?, isCacle: Boolean, hasCahe: Boolean, cacleInfo: String?) -> Unit)? = null
 
@@ -104,6 +105,7 @@ open class KHttps() {
     }
 
     open var isUiThread: Boolean = false//fixme 是否在主线程回调;在加载大数据时，最好不要在主线程。一定要在次线程false里。这样就不会卡。亲测五千多条数据。在次线程中进度条都不会卡。主线程中就会卡顿。
+
     //提供一个Activity，防止Activity为空
     open fun isUiThread(isUiThread: Boolean = false, activity: Activity? = getActivity()): KHttps {
         this.isUiThread = isUiThread
@@ -188,7 +190,7 @@ open class KHttps() {
                                     }
                                 }
                                 progressbar?.isLocked(isLocked)//是否屏蔽返回键
-                                progressbar?.show2(){
+                                progressbar?.show2() {
                                     if (isDismissProgressbar) {
                                         dismissProgressbar2()//fixme 防止網絡請求已經結束了，網絡進度條還未關閉。
                                     }
@@ -276,9 +278,15 @@ open class KHttps() {
         return this
     }
 
-    open var isCacle: Boolean = false//是否缓存(访问失败的时候,会读取缓存)，默认不缓存
+    open var isCacle: Boolean = false//fixme 是否缓存(访问失败的时候,会读取缓存)，默认不缓存
     fun isCacle(isCache: Boolean = true): KHttps {
         this.isCacle = isCache
+        return this
+    }
+
+    open var saveTime: Int? = null//fixme 缓存数据时间；单位秒。空null没有时间限制,及永久存储.
+    fun saveTime(saveTime: Int? = null): KHttps {
+        this.saveTime = saveTime
         return this
     }
 
@@ -288,7 +296,7 @@ open class KHttps() {
 //                isUrlUniqueParams(false)//不要所有参数作为标志
 //                urlUniqueParams(src?.trim() + from?.trim() + to?.trim())//挑几个固定参数作为唯一标志
 
-    open var isFirstCacle: Boolean = false//fixme 是否有效读取缓存(如果有缓存,就不访问网络了);fixme 亲测有效
+    open var isFirstCacle: Boolean = false//fixme 是否优先读取缓存(true 如果有缓存,就不访问网络了。false 网络访问失败了，才读取缓存数据);fixme 亲测有效
     fun isFirstCacle(isFirstCacle: Boolean = true): KHttps {
         this.isFirstCacle = isFirstCacle
         return this
@@ -349,12 +357,6 @@ open class KHttps() {
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
-    }
-
-    open var saveTime: Int? = null//缓存数据时间；单位秒。空null没有时间限制,及永久存储.
-    fun saveTime(saveTime: Int? = null): KHttps {
-        this.saveTime = saveTime
-        return this
     }
 
     open var isRepeatRequest: Boolean = false//是否允许网络重复请求。默认不允许重复请求。
@@ -476,10 +478,13 @@ open class KHttps() {
     //参数
     //header头部参数。Get，Post都行
     open val headers: MutableMap<String, String> by lazy { mutableMapOf<String, String>() }
+
     //params属于 body子集。Get，Post都行
     open val params: MutableMap<String, String?> by lazy { mutableMapOf<String, String?>() }
+
     //files也属于params，文件上传。Pst请求
     open val files: MutableMap<String, File> by lazy { mutableMapOf<String, File>() }
+
     //params,files,body都可以同时使用。Post请求
     open var body: String? = null
 
@@ -671,7 +676,7 @@ open class KHttps() {
                                     callback(KGsonUtils.parseJSONToAny<T>(it, *field))
                                 } catch (e: Exception) {
                                     //防止异常之后，finish()不执行;捕捉之后就没事了
-                                    KLoggerUtils.e("get回调处理异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+                                    KLoggerUtils.e("get回调处理异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                                 }
                             }
                         }
@@ -679,7 +684,7 @@ open class KHttps() {
                     super.onResponse(response)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KLoggerUtils.e("get回调处理异常2：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+                    KLoggerUtils.e("get回调处理异常2：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                 }
             }
         }, timeOut = timeOut)
@@ -726,7 +731,7 @@ open class KHttps() {
                                     callback(KGsonUtils.parseJSONToAny<T>(it, *field))
                                 } catch (e: Exception) {
                                     //防止异常之后，finish()不执行;捕捉之后就没事了
-                                    KLoggerUtils.e("post回调处理异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+                                    KLoggerUtils.e("post回调处理异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                                 }
                             }
                         }
@@ -734,7 +739,7 @@ open class KHttps() {
                     super.onResponse(response)
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KLoggerUtils.e("post回调处理异常2：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+                    KLoggerUtils.e("post回调处理异常2：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                 }
             }
 
