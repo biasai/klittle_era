@@ -48,13 +48,32 @@ public object KPathManagerUtils {
     }
 
     //fixme 3.私有缓存目录:/data/user/0/com.example.myapplication/files
-    open fun getCacheDirSecret(): File {
+    open fun getCacheSecretDir(): File {
         return KBaseApplication.getInstance().getFilesDir()//fixme 获取本应用的私有缓存路径。
     }
 
     //fixme 4.私有缓存目录的路径,不需要SD卡权限
-    open fun getCachePathSecret(): String {
-        return getCacheDirSecret().absolutePath//fixme 在应用files目录下。如：/data/user/0/com.应用包名/files
+    open fun getCacheSecretPath(): String {
+        return getCacheSecretDir().absolutePath//fixme 在应用files目录下。如：/data/user/0/com.应用包名/files
+    }
+
+    //fixme 4.1 图片缓存目录
+    open fun getCacheImgDir(): File {
+        var file = File(getCachePath() + "/IMG")
+        try {
+            if (file != null && !file.exists()) {
+                file?.mkdirs() //fixme 目录不存在，则创建目录。
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("KPathManagerUtils->getCacheImgDir()路径获取异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+        }
+        return file
+    }
+
+    //fixme 4.2图片缓存目录
+    open fun getCacheImgPath(): String {
+        return getCacheImgDir().absolutePath//fixme 在应用files目录下。如：/data/user/0/com.应用包名/files
     }
 
     /**
@@ -72,7 +91,7 @@ public object KPathManagerUtils {
         //return KCacheUtils.getCachePath() + "/img"
         var path: String? = null
         try {
-            var context=KBaseApplication.getInstance()
+            var context = KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -104,7 +123,7 @@ public object KPathManagerUtils {
         //return KCacheUtils.getCachePath() + "/video"
         var path: String? = null
         try {
-            var context=KBaseApplication.getInstance()
+            var context = KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -135,7 +154,7 @@ public object KPathManagerUtils {
         //return KCacheUtils.getCachePath() + "/crop"
         var path: String? = null
         try {
-            var context=KBaseApplication.getInstance()
+            var context = KBaseApplication.getInstance()
             //fixme 相机拍照最好使用本地存储卡。其他应用也是应用，基本相机拍照都是使用的SD卡上的路径。
             //fixme 这样可以防止5.0没有使用FileProvider.getUriForFile();也能获取相机图片。不然Uri.fromFile()只能获取本地SD卡存储上的相机图片。
             //fixme 一般来说系统相机是读不出来我们保存在本地的图片的，系统相机一般只读出系统路径(DCIM)下的图片，其他位置的图片是不会读出来的。
@@ -161,11 +180,11 @@ public object KPathManagerUtils {
     }
 
     //fixme 8.获取相册图片路径
-    open fun getPhotoPath(data: Intent?,activtiy: Activity?=getActivity()): String? {
-        if (activtiy==null){
+    open fun getPhotoPath(data: Intent?, activtiy: Activity? = getActivity()): String? {
+        if (activtiy == null) {
             return null
         }
-        if (data==null){
+        if (data == null) {
             return null
         }
         var photoPath: String? = null

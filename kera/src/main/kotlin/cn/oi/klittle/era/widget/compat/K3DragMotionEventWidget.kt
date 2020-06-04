@@ -94,6 +94,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
 
     companion object {
         var isDragMotionEventing: Boolean = false//fixme 防止和左滑关闭Activity冲突。
+
         /**
          * fixme 判断viewpager是否正在滑动。
          */
@@ -135,13 +136,13 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
                                 dragJson.put("leftMargin", it.leftMargin)
                                 dragJson.put("topMargin", it.topMargin)
                                 dragJson.put("mCanvasRotation", mCanvasRotation)//fixme 保存旋转角度
-                                KCacheUtils.putSecret(getDragId(), dragJson.toString())
+                                KCacheUtils.getCacheSecret().put(getDragId(), dragJson.toString())
                             } else if (it is WindowManager.LayoutParams) {
                                 var dragJson = JSONObject()
                                 dragJson.put("leftMargin", it.x)
                                 dragJson.put("topMargin", it.y)
                                 dragJson.put("mCanvasRotation", mCanvasRotation)//fixme 保存旋转角度
-                                KCacheUtils.putSecret(getDragId(), dragJson.toString())
+                                KCacheUtils.getCacheSecret().put(getDragId(), dragJson.toString())
                             }
                         }
                     } catch (e: Exception) {
@@ -162,7 +163,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
                         layoutParams?.let {
                             if (it is RelativeLayout.LayoutParams || it is WindowManager.LayoutParams) {
                                 //fixme 防止初始化的时候layoutParams为空，而无法记录之前保存的位置。所以要在.lparams之后设置setDragId()。
-                                var str = KCacheUtils.getSecret(getDragId())
+                                var str = KCacheUtils.getCacheSecret().getAsString(getDragId())
                                 if (str != null && str.toString().trim().length > 0) {
                                     var json = JSONObject(str.toString())
                                     var leftMargin = json.getString("leftMargin").toInt()
@@ -198,6 +199,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
 
     private var parentWidth: Int = kpx.screenWidth()
     private var parentHeight: Int = kpx.screenHeight()
+
     /**
      * fixme 由于view没有获取父容器的方法；所以，必须手动传入父容器的宽度和高度。
      * fixme 父容器必须是相对布局(RelativeLayout)才有效。
@@ -212,6 +214,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
     }
 
     var dragUp: ((centerX: Int, centerY: Int, left: Int, top: Int, right: Int, bottom: Int) -> Unit)? = null
+
     /**
      * 手指离开的时候回调；fixme 返回控件在父容器中的中心坐标，及左上右下的位置
      */

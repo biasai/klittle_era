@@ -60,7 +60,7 @@ object KRingtoneManagerUtils {
                     }
                     GlobalScope.async {
                         try {
-                            KCacheUtils.putSecret(index_key, value.toString())//fixme 保存下标
+                            KCacheUtils.getCacheSecret().put(index_key, value.toString())//fixme 保存下标
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -97,7 +97,7 @@ object KRingtoneManagerUtils {
             ringtoneManager?.let {
                 var cursor = it.cursor //获取铃声表,根据表名取值
                 var count = cursor.count //获取铃声列表数量
-                KCacheUtils.getSecret(index_key)?.let {
+                KCacheUtils.getCacheSecret().getAsString(index_key)?.let {
                     it.toString().toInt()?.let {
                         index = it//fixme 获取缓存下标
                     }

@@ -77,14 +77,12 @@ object KGlideUtils {
      * fixme 缓存字节流到本地
      */
     fun setCacheByteArrayOfStrategy(key: String, byteArray: ByteArray) {
-        //KCacheUtils.getCache().put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//fixme 缓存两周（亲测有效，KCacheUtils这个工具类很强大。）
-        //fixme 这个里面有存储标志的方法putMark（）；这样 KCacheUtils.clearByteArray() 可以清除所有图片数据。
-        KCacheUtils.put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//fixme 缓存两周（亲测有效，KCacheUtils这个工具类很强大。）
+        KCacheUtils.getCacheImg().put(key, byteArray, KCacheUtils.TIME_WEEK * 2)//fixme 缓存两周（亲测有效，KCacheUtils这个工具类很强大。）
     }
 
 
     fun getCacheByteArrayOfStrategy(key: String): ByteArray? {
-        return KCacheUtils.getCache().getAsBinary(key)
+        return KCacheUtils.getCacheImg().getAsBinary(key)
     }
 
     private var keyMap = mutableMapOf<String, Int>()//判断是否重新执行。

@@ -59,11 +59,21 @@ public class KCache {
     public static KCache getInstanceSecret() {
         if (cacheSecret == null) {
             //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
-            cacheSecret = KCache.get(KCacheUtils.INSTANCE.getCacheDirSecret());
+            cacheSecret = KCache.get(KCacheUtils.INSTANCE.getCacheSecretDir());
         }
         return cacheSecret;
     }
 
+    public static KCache cacheImg;
+
+    //fixme 图片目录
+    public static KCache getInstanceImg() {
+        if (cacheImg == null) {
+            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
+            cacheImg = KCache.get(KCacheUtils.INSTANCE.getCacheImgDir());
+        }
+        return cacheImg;
+    }
 
     public static final int TIME_HOUR = 60 * 60;//1小时
     public static final int TIME_DAY = TIME_HOUR * 24;//一天

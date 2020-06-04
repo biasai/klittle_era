@@ -84,7 +84,11 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                                 }
                             } else {
                                 //fixme 缓存数据,默认在 公用缓存目录
-                                KCacheUtils.put(it, result, saveTime = saveTime)
+                                if (saveTime != null) {
+                                    KCacheUtils.getCache().put(it, result, saveTime)
+                                } else {
+                                    KCacheUtils.getCache().put(it, result)
+                                }
                             }
                         }
                     }
@@ -134,7 +138,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
                             response = KCacheUtils.getCacheAuto(hp.getJaveCacheFile()).getAsString(it)
                         } else {
                             //fixme 读取缓存数据
-                            response = KCacheUtils.getString(it)
+                            response = KCacheUtils.getCache().getAsString(it)
                         }
                     }
                 }

@@ -17,9 +17,9 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 //android:installLocation="internalOnly">
 
 
-//在主Activity中调用。
-//KCacheUtils.putSecret("app_pkg", packageName)
-//KCacheUtils.putSecret("app_cls", "MainActivity")
+//fixme 在主Activity中调用。
+//KCacheUtils.getCacheSecret().put("app_pkg", packageName)
+//KCacheUtils.getCacheSecret().put("app_cls", "MainActivity")
 
 /**
  * 开机广播监听
@@ -31,8 +31,8 @@ class PoweredUpReceiver : BroadcastReceiver() {
             try {
                 if (it.action.equals("android.intent.action.BOOT_COMPLETED")) {
                     val i = Intent()
-                    var pkg = KCacheUtils.getSecret("app_pkg")
-                    var cls = KCacheUtils.getSecret("app_cls")
+                    var pkg = KCacheUtils.getCacheSecret().getAsString("app_pkg")
+                    var cls = KCacheUtils.getCacheSecret().getAsString("app_cls")
                     //var componentName = ComponentName("tv.gamehot.gamehotbox.general", "tv.gamehot.gamehotbox.general.MainActivity");
                     if (pkg != null && cls != null) {
                         //实现开机自启动

@@ -158,7 +158,7 @@ object KPictureSelector {
         if (path != null) {
             compreePath?.let {
                 //就使用KCacheUtils.putString();即getCache()
-                KCacheUtils.putString(("kcompress_" + path).trim(), compreePath)
+                KCacheUtils.getCache().put(("kcompress_" + path).trim(), compreePath)
             }
         }
     }
@@ -170,7 +170,7 @@ object KPictureSelector {
         if (path == null) {
             return null
         }
-        KCacheUtils.getString(("kcompress_" + path).trim())?.toString()?.let {
+        KCacheUtils.getCache().getAsString(("kcompress_" + path).trim())?.toString()?.let {
             if (KFileUtils.getInstance().getFileSize(it) > 0) {//判断压缩文件是否存在
                 return it
             }

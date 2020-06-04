@@ -266,8 +266,12 @@ open class KHttps() {
     open var javaCacheDir: String = "D:\\java\\cache"//java缓存目录。
     open fun getJaveCacheFile(): File {
         var file = File(javaCacheDir)
-        if (!file.exists()) {
-            file.mkdirs()//不存在则创建
+        try {
+            if (!file.exists()) {
+                file.mkdirs()//不存在则创建
+            }
+        }catch (e:Exception){
+            KLoggerUtils.e("getJaveCacheFile()异常：\t"+KCatchException.getExceptionMsg(e),true)
         }
         return file
     }

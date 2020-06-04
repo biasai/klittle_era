@@ -54,7 +54,7 @@ object KHttp {
             //开启协程协议
             GlobalScope.async {
                 requestParams?.let {
-                    if (it.isShowLoad&&it.isSharingDialog) {
+                    if (it.isShowLoad && it.isSharingDialog) {
                         var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复
                         if (isRpeat2) {
                             //重复了
@@ -79,7 +79,7 @@ object KHttp {
                                     if (isJava) {
                                         response = KCacheUtils.getCacheAuto(getJaveCacheFile()).getAsString(it)
                                     } else {
-                                        response = KCacheUtils.getString(it)
+                                        response = KCacheUtils.getCache().getAsString(it)
                                     }
                                 }
                                 response?.let {
@@ -298,7 +298,7 @@ object KHttp {
             //开启协程协议
             GlobalScope.async {
                 requestParams?.let {
-                    if (it.isShowLoad&&it.isSharingDialog) {
+                    if (it.isShowLoad && it.isSharingDialog) {
                         var isRpeat2 = map.containsKey(getUrlUnique2(it))//判断网络是否重复
                         if (isRpeat2) {
                             //重复了
@@ -322,7 +322,7 @@ object KHttp {
                                     if (isJava) {
                                         response = KCacheUtils.getCacheAuto(getJaveCacheFile()).getAsString(it)
                                     } else {
-                                        response = KCacheUtils.getString(it)
+                                        response = KCacheUtils.getCache().getAsString(it)
                                     }
                                 }
                                 response?.let {
@@ -667,7 +667,7 @@ object KHttp {
                     //fixme 优先读取缓存数据
                     if (it.cacle) {
                         //fixme 读取缓存[网络位图，优先从本地读取]
-                        var bitmap: Bitmap? = KCacheUtils.getBitmap(it.getUrlUnique() + getWH(w, h), it.optionsRGB_565);//此次对UtilCache进行优化，内部使用了UtilAssets。优化了位图。
+                        var bitmap: Bitmap? = KCacheUtils.getCacheImg().getAsBitmap(it.getUrlUnique() + getWH(w, h), it.optionsRGB_565);//此次对UtilCache进行优化，内部使用了UtilAssets。优化了位图。
                         if (bitmap != null && !bitmap.isRecycled) {
                             if (w <= 0) {
                                 w = bitmap.width
@@ -711,7 +711,7 @@ object KHttp {
                             //fixme 延迟之后，再读一次缓存。
                             if (it.cacle) {
                                 //fixme 读取缓存[网络位图，优先从本地读取]
-                                var bitmap: Bitmap? = KCacheUtils.getBitmap(it.getUrlUnique() + getWH(w, h), it.optionsRGB_565);//此次对UtilCache进行优化，内部使用了UtilAssets。优化了位图。
+                                var bitmap: Bitmap? = KCacheUtils.getCacheImg().getAsBitmap(it.getUrlUnique() + getWH(w, h), it.optionsRGB_565);//此次对UtilCache进行优化，内部使用了UtilAssets。优化了位图。
                                 if (bitmap != null && !bitmap!!.isRecycled && bitmap!!.width > 0) {
                                     if (w <= 0) {
                                         w = bitmap!!.width
@@ -833,7 +833,13 @@ object KHttp {
                                         result?.let {
                                             if (!it.isRecycled) {
                                                 //fixme 缓存对应尺寸的位图。
-                                                KCacheUtils.put(requestParams.getUrlUnique() + getWH(w, h), result, requestParams?.saveTime)
+                                                if (requestParams?.saveTime == null) {
+                                                    KCacheUtils.getCacheImg().put(requestParams.getUrlUnique() + getWH(w, h), result)
+                                                } else {
+                                                    requestParams?.saveTime?.let {
+                                                        KCacheUtils.getCacheImg().put(requestParams.getUrlUnique() + getWH(w, h), result, it)
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -923,13 +929,13 @@ object KHttp {
                     return b
                 } catch (e: Exception) {
                     //fixme 异常一 流异常
-                    KLoggerUtils.e("KHttp 异常一 流异常:\t" + e.printStackTrace(),isLogEnable = true)
+                    KLoggerUtils.e("KHttp 异常一 流异常:\t" + e.printStackTrace(), isLogEnable = true)
                 } finally {
                     // 使用finally块来关闭输入流
                 }
             } catch (e: Exception) {
                 //fixme 异常二 网络链接异常
-                KLoggerUtils.e("kHttp 异常二 网络链接异常:\t" + e.printStackTrace(),isLogEnable = true)
+                KLoggerUtils.e("kHttp 异常二 网络链接异常:\t" + e.printStackTrace(), isLogEnable = true)
             }
         }
         return null

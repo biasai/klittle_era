@@ -571,7 +571,7 @@ object KPictureUtils {
                         file = File(photoPath)
                     } else {
                         //没有SD卡权限（不能操作原始图片）
-                        var f = KCacheUtils.getString(photoPath)
+                        var f = KCacheUtils.getCache().getAsString(photoPath)
                         f?.let {
                             file = File(it)//获取缓存文件，避免重复创建。
                             file?.let {
@@ -592,7 +592,7 @@ object KPictureUtils {
                                     file, uri)
                             photoPath?.let {
                                 file?.getPath()?.apply {
-                                    KCacheUtils.put(it, this)//存储文件路径
+                                    KCacheUtils.getCache().put(it, this)//存储文件路径
                                 }
                             }
                         }
