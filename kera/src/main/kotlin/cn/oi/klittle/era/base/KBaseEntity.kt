@@ -11,6 +11,7 @@ import java.io.Serializable
  * 基本实体类，在滚轮弹框里面有使用到。
  *
  * fixme Serializable 可序列化；继承之后才能保存到本地。
+ * fixme 一旦存储，数据结构就不能发生改变(属性名和类名都不能变，属性加一个或者少一个都不行。)，不然无法反序列化。(所以一般都不建议序列化和反序列化，而是转换Json在存储)
  */
 open class KBaseEntity : Serializable {
     open var id: String? = null

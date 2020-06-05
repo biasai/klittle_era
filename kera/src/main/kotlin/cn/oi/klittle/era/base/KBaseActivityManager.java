@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import cn.oi.klittle.era.utils.KAssetsUtils;
 import cn.oi.klittle.era.utils.KCache;
+import cn.oi.klittle.era.utils.KCache2;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -185,12 +186,7 @@ public class KBaseActivityManager {
         }
         mActivityStack.clear();
         //在Activity之后销毁，防止异常。
-        if (KCache.mInstanceMap != null) {
-            KCache.mInstanceMap.clear();
-        }
-        KCache.cache = null;
-        KCache.mInstanceMap = null;
-        //fixme 销毁所有的位图
-        KAssetsUtils.getInstance().recycleAll();
+        //fixme 销毁释放所有的位图
+        KAssetsUtils.getInstance().recycleAll();//KGlideUtils 里的位图内存缓存，也是调用的KAssetsUtils（）
     }
 }

@@ -19,7 +19,7 @@ import java.io.File
 //                                getCameraPath():	/storage/emulated/0/com.example.myapplication/CameraImage
 
 /**
- * fixme 缓存，图片，相机照片。所有路径通用管理。
+ * fixme 缓存，图片，相机照片。所有路径通用管理。注意：目录名称一旦定了，就不要轻易再改了。最好不要再改了。
  */
 public object KPathManagerUtils {
 
@@ -39,7 +39,18 @@ public object KPathManagerUtils {
     //网络json数据缓存，KHttp.GetNetBitmap 和 KGldeUtils网络位图也是缓存到这个位置的。；即都是使用的：KCacheUtils.getCache()
     open fun getCacheDir(): File {
         //KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());//这个是之前用的。
-        return KBaseApplication.getInstance().cacheDir//fixme 获取本应用的缓存路径。
+        //return KBaseApplication.getInstance().cacheDir//fixme 获取本应用的缓存路径。
+        var file = File(KBaseApplication.getInstance().cacheDir.absolutePath + "/data")
+        try {
+            if (file != null && !file.exists()) {
+                file?.mkdirs() //fixme 目录不存在，则创建目录。
+            }
+            return file
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            return KBaseApplication.getInstance().cacheDir//fixme 获取本应用的缓存路径。
+            KLoggerUtils.e("KPathManagerUtils->getCacheDir()路径获取异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+        }
     }
 
     //fixme 2.缓存目录的路径,不需要SD卡权限
@@ -59,16 +70,17 @@ public object KPathManagerUtils {
 
     //fixme 4.1 图片缓存目录
     open fun getCacheImgDir(): File {
-        var file = File(getCachePath() + "/IMG")
+        var file = File(KBaseApplication.getInstance().cacheDir.absolutePath + "/img")//之前是IMG；fixme 目录还是统一小写比较好。不要再改了。
         try {
             if (file != null && !file.exists()) {
                 file?.mkdirs() //fixme 目录不存在，则创建目录。
             }
+            return file
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             KLoggerUtils.e("KPathManagerUtils->getCacheImgDir()路径获取异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+            return KBaseApplication.getInstance().cacheDir
         }
-        return file
     }
 
     //fixme 4.2图片缓存目录

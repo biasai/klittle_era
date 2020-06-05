@@ -6,7 +6,6 @@ import android.graphics.Canvas;
 import android.graphics.PixelFormat;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -34,6 +33,8 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import cn.oi.klittle.era.exception.KCatchException;
+
 
 /**
  * 数据是保存在本地，即使app卸载了，只要本地文件还在，数据依然在。保存数据的时候，如果没指定时间的话，默认永久保存。
@@ -42,83 +43,94 @@ import java.util.concurrent.atomic.AtomicLong;
  * 并且里面还有保存时间的设置，精确到单位秒。亲测可用。
  */
 public class KCache {
-    public static KCache cache;
 
-    //初始化
-    public static KCache getInstance() {
-        if (cache == null) {
-            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
-            cache = KCache.get(KCacheUtils.INSTANCE.getCacheDir());
-        }
-        return cache;
-    }
-
-    public static KCache cacheSecret;
-
-    //fixme 私有目录
-    public static KCache getInstanceSecret() {
-        if (cacheSecret == null) {
-            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
-            cacheSecret = KCache.get(KCacheUtils.INSTANCE.getCacheSecretDir());
-        }
-        return cacheSecret;
-    }
-
-    public static KCache cacheImg;
-
-    //fixme 图片目录
-    public static KCache getInstanceImg() {
-        if (cacheImg == null) {
-            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
-            cacheImg = KCache.get(KCacheUtils.INSTANCE.getCacheImgDir());
-        }
-        return cacheImg;
-    }
-
+    private ACacheUtilManager mCache;
     public static final int TIME_HOUR = 60 * 60;//1小时
     public static final int TIME_DAY = TIME_HOUR * 24;//一天
     //private static final int MAX_SIZE = 1000 * 1000 * 50; // 50 mb
-    private static final int MAX_SIZE = 1000 * 1000 * 5000; //fixme  5000 MB,最大存储大小
-    private static final int MAX_COUNT = Integer.MAX_VALUE; //fixme  不限制存放数据的数量
-    public static Map<String, KCache> mInstanceMap = new HashMap<String, KCache>();
-    private ACacheUtilManager mCache;
+    public static final int MAX_SIZE = 1000 * 1000 * 5000; //fixme  5000 MB,最大存储大小
+    public static final int MAX_COUNT = Integer.MAX_VALUE; //fixme  不限制存放数据的数量
 
-    /**
-     * @param cacheDir 缓存目录
-     * @return
-     */
-    public static KCache get(File cacheDir) {
-        return get(cacheDir, MAX_SIZE, MAX_COUNT);
-    }
+//    public static Map<String, KCache> mInstanceMap = new HashMap<String, KCache>();
 
-    private static KCache get(File cacheDir, long max_zise, int max_count) {
-        KCache manager = null;
-        if (mInstanceMap == null) {
-            //防止異常為空。
-            mInstanceMap = new HashMap<String, KCache>();
-        }
-        //fixme 利用Map,防止重复实例化。
-        String key = cacheDir.getAbsoluteFile() + myPid() + max_zise + max_count;
-        if (mInstanceMap.containsKey(key)) {
-            manager = mInstanceMap.get(key);
-        }
-        if (manager == null) {
-            manager = new KCache(cacheDir, max_zise, max_count);
-            mInstanceMap.put(cacheDir.getAbsolutePath() + myPid(), manager);
-        }
-        return manager;
-    }
 
-    private static String myPid() {
+//    public static KCache cache;
+//
+//    //初始化
+//    public static KCache getInstance() {
+//        if (cache == null) {
+//            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
+//            cache = KCache.get(KCacheUtils.INSTANCE.getCacheDir());
+//        }
+//        return cache;
+//    }
+//
+//    public static KCache cacheSecret;
+//
+//    //fixme 私有目录
+//    public static KCache getInstanceSecret() {
+//        if (cacheSecret == null) {
+//            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
+//            cacheSecret = KCache.get(KCacheUtils.INSTANCE.getCacheSecretDir());
+//        }
+//        return cacheSecret;
+//    }
+//
+//    public static KCache cacheImg;
+//
+//    //fixme 图片目录
+//    public static KCache getInstanceImg() {
+//        if (cacheImg == null) {
+//            //cache = KCacheUtils.get(KApplication.getInstance().getFilesDir().getAbsoluteFile());
+//            cacheImg = KCache.get(KCacheUtils.INSTANCE.getCacheImgDir());
+//        }
+//        return cacheImg;
+//    }
+//
+//
+//    /**
+//     * @param cacheDir 缓存目录
+//     * @return
+//     */
+//    public static KCache get(File cacheDir) {
+//        return get(cacheDir, MAX_SIZE, MAX_COUNT);
+//    }
+//
+//    private static KCache get(File cacheDir, long max_zise, int max_count) {
+//        KCache manager = null;
+//        if (mInstanceMap == null) {
+//            //防止異常為空。
+//            mInstanceMap = new HashMap<String, KCache>();
+//        }
+//        //fixme 利用Map,防止重复实例化。
+//        String key = cacheDir.getAbsoluteFile() + myPid() + max_zise + max_count;
+//        if (mInstanceMap.containsKey(key)) {
+//            manager = mInstanceMap.get(key);
+//        }
+//        if (manager == null) {
+//            manager = new KCache(cacheDir, max_zise, max_count);
+//            mInstanceMap.put(cacheDir.getAbsolutePath() + myPid(), manager);
+//        }
+//        return manager;
+//    }
+
+    public static String myPid() {
         try {
-            return "_" + android.os.Process.myPid();//在java mian()方法中直接运行会报错哦。
+            return "_" + android.os.Process.myPid();//在java mian()方法中直接运行会报错哦;android里面不会。
         } catch (Exception e) {
             //e.printStackTrace();
         }
         return "_";
     }
 
-    private KCache(File cacheDir, long max_size, int max_count) {
+    /**
+     * fixme 构造函数
+     *
+     * @param cacheDir
+     * @param max_size
+     * @param max_count
+     */
+    public KCache(File cacheDir, long max_size, int max_count) {
         if (!cacheDir.exists() && !cacheDir.mkdirs()) {
             throw new RuntimeException("can't make dirs in "
                     + cacheDir.getAbsolutePath());
@@ -133,6 +145,9 @@ public class KCache {
      * @param value 保存的String数据
      */
     public void put(String key, String value) {
+        if (value == null || value.trim().length() <= 0) {
+            return;
+        }
         File file = mCache.newFile(key);
         BufferedWriter out = null;
         try {
@@ -489,7 +504,8 @@ public class KCache {
     }
 
     /**
-     * 读取 Serializable数据
+     * 读取 Serializable数据；
+     * fixme 通过序列化存储数据和反序列化读取数据。缺点：实体类的类名不能变，属性不能变（不能新增属性也不能减少原有数据）。即数据结构不变才有效。最好不要使用，建议使用JSON存储。putAny()；getAny()。
      *
      * @param key
      * @return Serializable 数据
@@ -506,6 +522,7 @@ public class KCache {
                 return reObject;
             } catch (Exception e) {
                 e.printStackTrace();
+                KLoggerUtils.INSTANCE.e("getAsObject()异常：\t" + KCatchException.getExceptionMsg(e), true);
                 return null;
             } finally {
                 try {
@@ -523,7 +540,6 @@ public class KCache {
             }
         }
         return null;
-
     }
 
     // =======================================

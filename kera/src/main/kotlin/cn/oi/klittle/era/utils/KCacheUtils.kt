@@ -29,23 +29,23 @@ object KCacheUtils {
      */
 
     //fixme 公用缓存目录(主要存储JSON缓存数据，普通的缓存数据)；KHttp有用到 -> (主要缓存网络Json数据)。
-    fun getCache(): KCache {
-        return KCache.getInstance()
+    fun getCache(): KCache2 {
+        return KCache2.getInstance()
     }
 
     //fixme 图片缓存目录，主要缓存图片(kGlideUtils和KHttp里GetNetBitmap()有用到) ->(主要缓存网络图片数据)
-    fun getCacheImg(): KCache {
-        return KCache.getInstanceImg()
+    fun getCacheImg(): KCache2 {
+        return KCache2.getInstanceImg()
     }
 
     //fixme 私有缓存目录。主要用于缓存重要的用户数据。将用户数据和普通的缓存数据分开。->(主要缓存重要的用户数据)
-    fun getCacheSecret(): KCache {
-        return KCache.getInstanceSecret()
+    fun getCacheSecret(): KCache2 {
+        return KCache2.getInstanceSecret()
     }
 
     //fixme 自定义目录缓存（传入的是文件目录。不是具体的文件。是目录。）
-    fun getCacheAuto(cacheDir: File): KCache {
-        return KCache.get(cacheDir)
+    fun getCacheAuto(cacheDir: File): KCache2 {
+        return KCache2.get(cacheDir)
     }
 
     //fixme 普通缓存数据清除； 亲测，getCacheImg（）图片目录和getCacheSecret（）私有目录，不会受任何影响。
@@ -155,7 +155,10 @@ object KCacheUtils {
         return KFileUtils.getDirSize(getCacheImgDir())
     }
 
+
     //fixme ========================================================================================以下简化私有目录的使用；主要是兼容以前的调用。
+    //fixme 就只对私有目录进行简化，公共目录和图片目录。就不需要了（太多了，太麻烦了，后面不好维护。）。只简化私有目录。
+    //fixme 以下全部都是使用的 putAny（） JSON数据存储哦。(序列化太鸡肋了，不要使用。数据结构一点变化都不能变)
 
     fun putSecret(key: String?, value: Serializable?) {
         putSecret(key, value, null)
@@ -172,9 +175,9 @@ object KCacheUtils {
         if (key != null) {
             if (value != null && key.trim().length > 0) {
                 if (saveTime != null && saveTime > 0) {
-                    getCacheSecret().put(key, value, saveTime)//有存储时间限制
+                    getCacheSecret().putAny(key, value, saveTime)//有存储时间限制
                 } else {
-                    getCacheSecret().put(key, value)//fixme 没有时间限制。即永久保存。
+                    getCacheSecret().putAny(key, value)//fixme 没有时间限制。即永久保存。
                 }
             } else {
                 getCacheSecret().remove(key)
@@ -183,10 +186,10 @@ object KCacheUtils {
     }
 
     //获取可序列化Serializable对象
-    fun getSecret(key: String?): Any? {
+    inline fun <reified T> getSecret(key: String?): T? {
         if (key != null) {
             if (key.trim().length > 0) {
-                return getCacheSecret().getAsObject(key)
+                return getCacheSecret().getAsAny(key)
             }
         }
         return null

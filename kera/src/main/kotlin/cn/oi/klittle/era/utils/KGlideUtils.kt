@@ -5,16 +5,14 @@ import android.util.Log
 import android.widget.ImageView
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.https.KHttp
-import cn.oi.klittle.era.https.ko.KHttps
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.Deferred
 
 /**
  * 使用第三方Glide加载图片；调用以下方法时必须在子线程中调用，不能在UI主线程中调用。
@@ -71,6 +69,11 @@ object KGlideUtils {
     //释放内存位图
     fun recycleCacheBitmapOfMemery(key: String) {
         KAssetsUtils.getInstance().recycleBitmap(key)
+    }
+
+    //fixme 内存释放所有的位图
+    fun recycleCacheBitmapOfMemeryAll() {
+        KAssetsUtils.getInstance().recycleAll()
     }
 
     /**
