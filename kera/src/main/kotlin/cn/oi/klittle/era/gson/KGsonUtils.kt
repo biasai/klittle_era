@@ -30,6 +30,8 @@ import java.util.*
  * fixme 在KBaseEntity类里面有JSON的转换案例。
  *
  * fixme Character 类型，目前好像会乱码。Character目前转换还不太支持，建议不要使用Character类型。
+ *
+ * fixme 注意，不支持類型 Character 和 Map;一般正常的json數據不會有這兩種類型。
  */
 object KGsonUtils {
 
@@ -119,6 +121,7 @@ object KGsonUtils {
                 }
                 return jsonAny
             }
+            //class java.util.HashMap
 
             //遍历类 成员属性【只对当前类有效，父类无效，即只获取本类的属性】
             //val fields = t::class.java.getDeclaredFields()
@@ -161,41 +164,76 @@ object KGsonUtils {
                     }
                     //Log.e("test","obj:\t"+obj);
                 } catch (e: Exception) {
-                    KLoggerUtils.e(msg = "get()异常:\t" + e.message, isLogEnable = true)
+                    KLoggerUtils.e(msg = "get()异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                 }
                 // 如果type是类类型，则前面包含"class "，后面跟类名
                 if (type == "class java.lang.String" || type.equals("class java.lang.String")) {
                     val value = m!!.invoke(t) as String
                     jsonObject.put(jName, value)
                 } else if (type == "double" || type.equals("class java.lang.Double")) {
-                    val value = m!!.invoke(t) as Double
-                    jsonObject.put(jName, value)
+//                    val value = m!!.invoke(t) as Double
+//                    jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Double){
+                            jsonObject.put(jName, it as Double)
+                        }
+                    }
                 } else if (type == "class java.lang.Object" || type.equals("class java.lang.Object")) {
                     val value = m!!.invoke(t)
                     jsonObject.put(jName, value)
                 } else if (type == "float" || type.equals("class java.lang.Float")) {
-                    val value = m!!.invoke(t) as Float
-                    jsonObject.put(jName, value.toDouble())
+//                    val value = m!!.invoke(t) as Float
+//                    jsonObject.put(jName, value.toDouble())
+                    m?.invoke(t)?.let {
+                        if (it is Float){
+                            jsonObject.put(jName, it as Float)
+                        }
+                    }
                 } else if (type == "int" || type.equals("class java.lang.Integer")) {
-                    val value = m!!.invoke(t) as Int
-                    jsonObject.put(jName, value)
+//                    val value = m!!.invoke(t) as Int
+//                    jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Int){
+                            jsonObject.put(jName, it as Int)
+                        }
+                    }
                 } else if (type == "boolean" || type.equals("class java.lang.Boolean")) {
-                    val value = m!!.invoke(t) as Boolean
-                    jsonObject.put(jName, value)
+                    //val value = m!!.invoke(t) as Boolean
+                    //jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Boolean){
+                            jsonObject.put(jName, it as Boolean)
+                        }
+                    }
                 } else if (type == "long" || type.equals("class java.lang.Long")) {
-                    val value = m!!.invoke(t) as Long
-                    jsonObject.put(jName, value)
+//                    val value = m!!.invoke(t) as Long
+//                    jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Long){
+                            jsonObject.put(jName, it as Long)
+                        }
+                    }
                 } else if (type == "short" || type.equals("class java.lang.Short")) {
-                    val value = m!!.invoke(t) as Short
-                    jsonObject.put(jName, value)
+//                    val value = m!!.invoke(t) as Short
+//                    jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Short){
+                            jsonObject.put(jName, it as Short)
+                        }
+                    }
                 } else if (type == "byte" || type.equals("class java.lang.Byte")) {
-                    val value = m!!.invoke(t) as Byte
-                    jsonObject.put(jName, value)
+//                    val value = m!!.invoke(t) as Byte
+//                    jsonObject.put(jName, value)
+                    m?.invoke(t)?.let {
+                        if (it is Byte){
+                            jsonObject.put(jName, it as Byte)
+                        }
+                    }
                 } else if (type == "char" || type.equals("class java.lang.Character")) {
-                    val value = m!!.invoke(t) as Character
+                    val value = m?.invoke(t) as Character
                     jsonObject.put(jName, value)
                 } else {
-                    var value = m!!.invoke(t)
+                    var value = m?.invoke(t)
                     if (value != null && value != "null" && value != "") {
                         //KLoggerUtils.e("type:\t" + type + "\t" + (value is ArrayList<*>))
                         if (type.contains("java.util.ArrayList") && (value is ArrayList<*>)) {
@@ -212,7 +250,7 @@ object KGsonUtils {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message, isLogEnable = true)
+            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
         return jsonObject
     }
@@ -276,7 +314,7 @@ object KGsonUtils {
         return response
     }
 
-    private val autoField: String = "zynxbd_autoStringField_kotlin"//自定义String字段；因为纯String文本无法转JSONObject[有键值对];
+    private val autoField: String = "zynxbd_autoStringField_kotlin"//自定义String字段；因为纯String文本无法转JSONObject[有键值对];fixme 注意，这个字段规定了，以后就不能再变了。不然不兼容。千万不要变。
 
     //FIXME JSON数据转实体类
     fun getObject(json: String?, classes: List<Class<*>>, index: Int): Any {

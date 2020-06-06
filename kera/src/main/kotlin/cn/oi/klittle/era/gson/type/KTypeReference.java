@@ -7,6 +7,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
+import cn.oi.klittle.era.utils.KLoggerUtils;
+
 //泛型传入格式：Model<Mode2>
 //fixme 传入的必须是具体的类型，如果是泛型，也必须是reified 具体的泛型。[泛型类型解析，无限。]
 public class KTypeReference<T> {
@@ -38,7 +40,7 @@ public class KTypeReference<T> {
         //格式为：com.example.myapplication3.Model<com.example.myapplication3.Mode2>
         //com.example.myapplication3.Model<java.util.ArrayList<com.example.myapplication3.Mode3>>
         type = ((ParameterizedType) superClass).getActualTypeArguments()[0];
-        //Log.e("test","类型:\t"+type);
+        //KLoggerUtils.INSTANCE.e("类型:\t"+type,true);
         String className = type.toString().trim();
         if (className.contains("<") && className.contains(">")) {
             //多层[无限层]
@@ -59,7 +61,7 @@ public class KTypeReference<T> {
                     GenericClass4 = classes.get(3);//第四层
                 }
             } catch (Exception e) {
-                Log.e("test", "class类型找不到异常无限:\t" + e.getMessage());
+                KLoggerUtils.INSTANCE.e("class类型找不到异常:\t" + e.getMessage()+"\tclassName:\t"+className,true);
             }
 
         } else {
