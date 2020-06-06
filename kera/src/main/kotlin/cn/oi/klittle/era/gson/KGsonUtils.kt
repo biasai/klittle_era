@@ -1,6 +1,7 @@
 package cn.oi.klittle.era.gson
 
 import android.util.Log
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.gson.type.KTypeReference
 import cn.oi.klittle.era.utils.KLoggerUtils
 import org.json.JSONArray
@@ -28,6 +29,7 @@ import java.util.*
  *
  * fixme 在KBaseEntity类里面有JSON的转换案例。
  *
+ * fixme Character 类型，目前好像会乱码。Character目前转换还不太支持，建议不要使用Character类型。
  */
 object KGsonUtils {
 
@@ -89,16 +91,26 @@ object KGsonUtils {
         val jsonObject = JSONObject()
         try {
             //KLoggerUtils.e("CLASS:\t" + t::class.java)
-            if (t::class.java.toString().trim().equals("class java.lang.String") || t::class.java.toString().trim().equals("class java.lang.Object")) {
+            if (t::class.java.toString().trim().equals("class java.lang.String")
+                    || t::class.java.toString().trim().equals("class java.lang.Object")) {
                 try {
                     return JSONObject(t.toString())//如果String是json格式就能顺利转换；如果不是就转换不了。
                 } catch (e: Exception) {
-                    //KLoggerUtils.e("String转JSONObject异常：\t"+e.toString())
+                    //KLoggerUtils.e("String转JSONObject异常：\t" + e.toString())
                     jsonObject.put(autoField, t.toString())//fixme 兼容String类型能够转成JSONObject
                     return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
                 }
+            } else if (t::class.java.toString().trim().equals("class java.lang.Integer")
+                    || t::class.java.toString().trim().equals("class java.lang.Long")
+                    || t::class.java.toString().trim().equals("class java.lang.Float")
+                    || t::class.java.toString().trim().equals("class java.lang.Double")
+                    || t::class.java.toString().trim().equals("class java.lang.Byte")
+                    || t::class.java.toString().trim().equals("class java.lang.Boolean")
+                    || t::class.java.toString().trim().equals("class java.lang.Short")
+                    || t::class.java.toString().trim().equals("class java.lang.Character")) {
+                jsonObject.put(autoField, t.toString())//fixme 兼容基本类型能够转成JSONObject
+                return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
             }
-
             if (t::class.java.toString().trim().equals("class java.util.ArrayList") && (t is ArrayList<*>)) {
                 //fixme 数组
                 var jsonAny = JSONArray()
@@ -149,7 +161,7 @@ object KGsonUtils {
                     }
                     //Log.e("test","obj:\t"+obj);
                 } catch (e: Exception) {
-                    KLoggerUtils.e(msg = "get()异常:\t" + e.message,isLogEnable = true)
+                    KLoggerUtils.e(msg = "get()异常:\t" + e.message, isLogEnable = true)
                 }
                 // 如果type是类类型，则前面包含"class "，后面跟类名
                 if (type == "class java.lang.String" || type.equals("class java.lang.String")) {
@@ -200,7 +212,7 @@ object KGsonUtils {
                 }
             }
         } catch (e: Exception) {
-            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message,isLogEnable = true)
+            KLoggerUtils.e(msg = "KGsonUtils实体类转JSON数据异常:\t" + e.message, isLogEnable = true)
         }
         return jsonObject
     }
@@ -269,38 +281,127 @@ object KGsonUtils {
     //FIXME JSON数据转实体类
     fun getObject(json: String?, classes: List<Class<*>>, index: Int): Any {
         var clazz = classes[index]//当前类型
-        //Log.e("test", "当前类型:\t" + clazz + "\t" + clazz.name + "\t长度:\t" + classes.size + "\t" + classes)
-        if (clazz.name.equals("java.lang.String")) {
-            json?.let {
-                if (it.contains(autoField)) {
-                    try {
-                        var jsonObject = JSONObject(it)
-                        if (jsonObject.has(autoField)) {//双重判断保险
-                            return jsonObject.getString(autoField)//fixme 兼容自定义属性字段
+        //Log.e("test", "当前类型:\t" + clazz + "\t" + clazz.name + "\t长度:\t" + classes.size + "\t" + classes + "\t數據：\t" + json)
+        try {
+            if (clazz.name.equals("java.lang.String")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField)//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
                         }
-                    } catch (e: Exception) {
+                    }
+                    return it//fixme string类型就返回整个JSON数据本身。
+                }
+                return ""
+            } else if (clazz.name.equals("java.lang.Boolean")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toBoolean()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    if (it.toString().trim().toLowerCase().equals("true")) {
+                        return it.toBoolean()
                     }
                 }
-                return it//fixme string类型就返回整个JSON数据本身。
-            }
-            return ""
-        } else if (clazz.name.equals("java.lang.Boolean")) {
-            json?.let {
-                if (it.toString().trim().toLowerCase().equals("true")) {
-                    return it.toBoolean()
+                return false
+            } else if (clazz.name.equals("java.lang.Integer")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toDouble().toInt()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    return it.toDouble().toInt()
                 }
+                return 0.toInt()
+            } else if (clazz.name.equals("java.lang.Long")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toDouble().toLong()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    return it.toDouble().toLong()
+                }
+                return 0.toLong()
+            } else if (clazz.name.equals("java.lang.Float")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toFloat()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    return it.toFloat()
+                }
+                return 0.toFloat()
+            } else if (clazz.name.equals("java.lang.Double")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toDouble()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    return it.toDouble()
+                }
+                return 0.toDouble()
+            } else if (clazz.name.equals("java.lang.Short")) {
+                json?.let {
+                    if (it.contains(autoField)) {
+                        try {
+                            var jsonObject = JSONObject(it)
+                            if (jsonObject.has(autoField)) {//双重判断保险
+                                return jsonObject.getString(autoField).toDouble().toShort()//fixme 兼容自定义属性字段
+                            }
+                        } catch (e: Exception) {
+                        }
+                    }
+                    return it.toShort()
+                }
+                return 0.toShort()
+            } else if (clazz.name.equals("java.lang.Character")) {
+                //fixme Character类型好像会乱码。
+//                json?.let {
+//                    if (it.contains(autoField)) {
+//                        try {
+//                            var jsonObject = JSONObject(it)
+//                            if (jsonObject.has(autoField)) {//双重判断保险
+//                                return jsonObject.getString(autoField)[0].toChar()//fixme 兼容自定义属性字段
+//                            }
+//                        } catch (e: Exception) {
+//                        }
+//                    }
+//                    return it[0].toChar()
+//                }
+                return 0.toChar()//也会乱码，如：��
             }
-            return false
-        } else if (clazz.name.equals("java.lang.Integer")) {
-            json?.let {
-                return it.toInt()
-            }
-            return 0
-        } else if (clazz.name.equals("java.lang.Float")) {
-            json?.let {
-                return it.toFloat()
-            }
-            return 0F
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("getObject()異常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
         var clazzT: Class<*>? = null//当前类型里面的泛型
         if (classes.size > (index + 1)) {
