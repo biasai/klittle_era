@@ -19,8 +19,6 @@ import java.util.*
  * Created by 彭治铭 on 2018/4/24.
  *
  *
- * fixme 泛型新增，支持String,Boolean，Int,Float类型。
- * fixme 支持ArrayList<>类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
  *
  * fixme 注意一哈
  * 1485.0 JSONObject 会自动去除0；变成 1485 ；如果是 1485.1 或 s1234.0 任然保存原数据；只会去除纯数字的末尾.0
@@ -28,9 +26,10 @@ import java.util.*
  * 3171.0010 会变成 3171.001 [fixme 即会去除纯数字类型的末尾0]
  *
  * fixme 在KBaseEntity类里面有JSON的转换案例。
- *
  * fixme Character 类型，目前好像会乱码。Character目前转换还不太支持，建议不要使用Character类型。
  *
+ * fixme 泛型新增，支持String,Boolean，Int,Float类型。
+ * fixme 支持ArrayList<>类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
  * fixme 注意，不支持類型 Character 和 Map;一般正常的json數據不會有這兩種類型。
  */
 object KGsonUtils {
@@ -93,27 +92,31 @@ object KGsonUtils {
         val jsonObject = JSONObject()
         try {
             //KLoggerUtils.e("CLASS:\t" + t::class.java)
-            if (t::class.java.toString().trim().equals("class java.lang.String")
-                    || t::class.java.toString().trim().equals("class java.lang.Object")) {
-                try {
-                    return JSONObject(t.toString())//如果String是json格式就能顺利转换；如果不是就转换不了。
-                } catch (e: Exception) {
-                    //KLoggerUtils.e("String转JSONObject异常：\t" + e.toString())
-                    jsonObject.put(autoField, t.toString())//fixme 兼容String类型能够转成JSONObject
+            var className = t::class.java.toString().trim()
+            if (className.contains("class java.lang.")) {//fixme=============================
+                if (className.equals("class java.lang.String")
+                        || className.equals("class java.lang.Object")) {
+                    try {
+                        return JSONObject(t.toString())//如果String是json格式就能顺利转换；如果不是就转换不了。
+                    } catch (e: Exception) {
+                        //KLoggerUtils.e("String转JSONObject异常：\t" + e.toString())
+                        jsonObject.put(autoField, t.toString())//fixme 兼容String类型能够转成JSONObject
+                        return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
+                    }
+                } else if (className.equals("class java.lang.Integer")
+                        || className.equals("class java.lang.Long")
+                        || className.equals("class java.lang.Float")
+                        || className.equals("class java.lang.Double")
+                        || className.equals("class java.lang.Byte")
+                        || className.equals("class java.lang.Boolean")
+                        || className.equals("class java.lang.Short")
+                        || className.equals("class java.lang.Character")) {
+                    jsonObject.put(autoField, t.toString())//fixme 兼容基本类型能够转成JSONObject
                     return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
                 }
-            } else if (t::class.java.toString().trim().equals("class java.lang.Integer")
-                    || t::class.java.toString().trim().equals("class java.lang.Long")
-                    || t::class.java.toString().trim().equals("class java.lang.Float")
-                    || t::class.java.toString().trim().equals("class java.lang.Double")
-                    || t::class.java.toString().trim().equals("class java.lang.Byte")
-                    || t::class.java.toString().trim().equals("class java.lang.Boolean")
-                    || t::class.java.toString().trim().equals("class java.lang.Short")
-                    || t::class.java.toString().trim().equals("class java.lang.Character")) {
-                jsonObject.put(autoField, t.toString())//fixme 兼容基本类型能够转成JSONObject
-                return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
             }
-            if (t::class.java.toString().trim().equals("class java.util.ArrayList") && (t is ArrayList<*>)) {
+
+            if (className.equals("class java.util.ArrayList") && (t is ArrayList<*>)) {
                 //fixme 数组
                 var jsonAny = JSONArray()
                 t.forEach {
@@ -167,72 +170,107 @@ object KGsonUtils {
                     KLoggerUtils.e(msg = "get()异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                 }
                 // 如果type是类类型，则前面包含"class "，后面跟类名
-                if (type == "class java.lang.String" || type.equals("class java.lang.String")) {
+                if (type.equals("class java.lang.String")) {
                     val value = m!!.invoke(t) as String
                     jsonObject.put(jName, value)
-                } else if (type == "double" || type.equals("class java.lang.Double")) {
-//                    val value = m!!.invoke(t) as Double
-//                    jsonObject.put(jName, value)
+                }else if (type.contains("class java.lang.")){//fixme 基本类型对象
+                    if (type.equals("class java.lang.Double")) {
+                        m?.invoke(t)?.let {
+                            if (it is Double) {
+                                jsonObject.put(jName, it as Double)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Object")) {
+                        val value = m!!.invoke(t)
+                        jsonObject.put(jName, value)
+                    } else if (type.equals("class java.lang.Float")) {
+                        m?.invoke(t)?.let {
+                            if (it is Float) {
+                                jsonObject.put(jName, it as Float)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Integer")) {
+                        m?.invoke(t)?.let {
+                            if (it is Int) {
+                                jsonObject.put(jName, it as Int)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Boolean")) {
+                        m?.invoke(t)?.let {
+                            if (it is Boolean) {
+                                jsonObject.put(jName, it as Boolean)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Long")) {
+                        m?.invoke(t)?.let {
+                            if (it is Long) {
+                                jsonObject.put(jName, it as Long)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Short")) {
+                        m?.invoke(t)?.let {
+                            if (it is Short) {
+                                jsonObject.put(jName, it as Short)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Byte")) {
+                        m?.invoke(t)?.let {
+                            if (it is Byte) {
+                                jsonObject.put(jName, it as Byte)
+                            }
+                        }
+                    } else if (type.equals("class java.lang.Character")) {
+                        val value = m?.invoke(t) as Character
+                        jsonObject.put(jName, value)
+                    }
+                }//fixme 基本类型
+                else if (type == "double") {
                     m?.invoke(t)?.let {
-                        if (it is Double){
+                        if (it is Double) {
                             jsonObject.put(jName, it as Double)
                         }
                     }
-                } else if (type == "class java.lang.Object" || type.equals("class java.lang.Object")) {
-                    val value = m!!.invoke(t)
-                    jsonObject.put(jName, value)
-                } else if (type == "float" || type.equals("class java.lang.Float")) {
-//                    val value = m!!.invoke(t) as Float
-//                    jsonObject.put(jName, value.toDouble())
+                } else if (type == "float") {
                     m?.invoke(t)?.let {
-                        if (it is Float){
+                        if (it is Float) {
                             jsonObject.put(jName, it as Float)
                         }
                     }
-                } else if (type == "int" || type.equals("class java.lang.Integer")) {
-//                    val value = m!!.invoke(t) as Int
-//                    jsonObject.put(jName, value)
+                } else if (type == "int") {
                     m?.invoke(t)?.let {
-                        if (it is Int){
+                        if (it is Int) {
                             jsonObject.put(jName, it as Int)
                         }
                     }
-                } else if (type == "boolean" || type.equals("class java.lang.Boolean")) {
-                    //val value = m!!.invoke(t) as Boolean
-                    //jsonObject.put(jName, value)
+                } else if (type == "boolean") {
                     m?.invoke(t)?.let {
-                        if (it is Boolean){
+                        if (it is Boolean) {
                             jsonObject.put(jName, it as Boolean)
                         }
                     }
-                } else if (type == "long" || type.equals("class java.lang.Long")) {
-//                    val value = m!!.invoke(t) as Long
-//                    jsonObject.put(jName, value)
+                } else if (type == "long") {
                     m?.invoke(t)?.let {
-                        if (it is Long){
+                        if (it is Long) {
                             jsonObject.put(jName, it as Long)
                         }
                     }
-                } else if (type == "short" || type.equals("class java.lang.Short")) {
-//                    val value = m!!.invoke(t) as Short
-//                    jsonObject.put(jName, value)
+                } else if (type == "short") {
                     m?.invoke(t)?.let {
-                        if (it is Short){
+                        if (it is Short) {
                             jsonObject.put(jName, it as Short)
                         }
                     }
-                } else if (type == "byte" || type.equals("class java.lang.Byte")) {
-//                    val value = m!!.invoke(t) as Byte
-//                    jsonObject.put(jName, value)
+                } else if (type == "byte") {
                     m?.invoke(t)?.let {
-                        if (it is Byte){
+                        if (it is Byte) {
                             jsonObject.put(jName, it as Byte)
                         }
                     }
-                } else if (type == "char" || type.equals("class java.lang.Character")) {
+                } else if (type == "char") {
                     val value = m?.invoke(t) as Character
                     jsonObject.put(jName, value)
-                } else {
+                }
+                else {
                     var value = m?.invoke(t)
                     if (value != null && value != "null" && value != "") {
                         //KLoggerUtils.e("type:\t" + type + "\t" + (value is ArrayList<*>))
@@ -319,110 +357,112 @@ object KGsonUtils {
     //FIXME JSON数据转实体类
     fun getObject(json: String?, classes: List<Class<*>>, index: Int): Any {
         var clazz = classes[index]//当前类型
+        var className = clazz.name
         //Log.e("test", "当前类型:\t" + clazz + "\t" + clazz.name + "\t长度:\t" + classes.size + "\t" + classes + "\t數據：\t" + json)
-        try {
-            if (clazz.name.equals("java.lang.String")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField)//fixme 兼容自定义属性字段
+        if (className.contains("java.lang.")) {//fixme=======================================
+            try {
+                if (className.equals("java.lang.String")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField)//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
+                        }
+                        return it//fixme string类型就返回整个JSON数据本身。
+                    }
+                    return ""
+                } else if (className.equals("java.lang.Boolean")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toBoolean()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
+                            }
+                        }
+                        if (it.toString().trim().toLowerCase().equals("true")) {
+                            return it.toBoolean()
                         }
                     }
-                    return it//fixme string类型就返回整个JSON数据本身。
-                }
-                return ""
-            } else if (clazz.name.equals("java.lang.Boolean")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toBoolean()//fixme 兼容自定义属性字段
+                    return false
+                } else if (className.equals("java.lang.Integer")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toDouble().toInt()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
                         }
+                        return it.toDouble().toInt()
                     }
-                    if (it.toString().trim().toLowerCase().equals("true")) {
-                        return it.toBoolean()
-                    }
-                }
-                return false
-            } else if (clazz.name.equals("java.lang.Integer")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toDouble().toInt()//fixme 兼容自定义属性字段
+                    return 0.toInt()
+                } else if (className.equals("java.lang.Long")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toDouble().toLong()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
                         }
+                        return it.toDouble().toLong()
                     }
-                    return it.toDouble().toInt()
-                }
-                return 0.toInt()
-            } else if (clazz.name.equals("java.lang.Long")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toDouble().toLong()//fixme 兼容自定义属性字段
+                    return 0.toLong()
+                } else if (className.equals("java.lang.Float")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toFloat()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
                         }
+                        return it.toFloat()
                     }
-                    return it.toDouble().toLong()
-                }
-                return 0.toLong()
-            } else if (clazz.name.equals("java.lang.Float")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toFloat()//fixme 兼容自定义属性字段
+                    return 0.toFloat()
+                } else if (className.equals("java.lang.Double")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toDouble()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
                         }
+                        return it.toDouble()
                     }
-                    return it.toFloat()
-                }
-                return 0.toFloat()
-            } else if (clazz.name.equals("java.lang.Double")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toDouble()//fixme 兼容自定义属性字段
+                    return 0.toDouble()
+                } else if (className.equals("java.lang.Short")) {
+                    json?.let {
+                        if (it.contains(autoField)) {
+                            try {
+                                var jsonObject = JSONObject(it)
+                                if (jsonObject.has(autoField)) {//双重判断保险
+                                    return jsonObject.getString(autoField).toDouble().toShort()//fixme 兼容自定义属性字段
+                                }
+                            } catch (e: Exception) {
                             }
-                        } catch (e: Exception) {
                         }
+                        return it.toShort()
                     }
-                    return it.toDouble()
-                }
-                return 0.toDouble()
-            } else if (clazz.name.equals("java.lang.Short")) {
-                json?.let {
-                    if (it.contains(autoField)) {
-                        try {
-                            var jsonObject = JSONObject(it)
-                            if (jsonObject.has(autoField)) {//双重判断保险
-                                return jsonObject.getString(autoField).toDouble().toShort()//fixme 兼容自定义属性字段
-                            }
-                        } catch (e: Exception) {
-                        }
-                    }
-                    return it.toShort()
-                }
-                return 0.toShort()
-            } else if (clazz.name.equals("java.lang.Character")) {
-                //fixme Character类型好像会乱码。
+                    return 0.toShort()
+                } else if (className.equals("java.lang.Character")) {
+                    //fixme Character类型好像会乱码。
 //                json?.let {
 //                    if (it.contains(autoField)) {
 //                        try {
@@ -435,11 +475,12 @@ object KGsonUtils {
 //                    }
 //                    return it[0].toChar()
 //                }
-                return 0.toChar()//也会乱码，如：��
+                    return 0.toChar()//也会乱码，如：��
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                KLoggerUtils.e("getObject()異常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
             }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-            KLoggerUtils.e("getObject()異常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
         var clazzT: Class<*>? = null//当前类型里面的泛型
         if (classes.size > (index + 1)) {
@@ -498,9 +539,10 @@ object KGsonUtils {
                     //Log.e("test","name:\t"+it.name+"\tvalue:\t"+value)
                     if (value != null && !value.trim().equals("") && !value.trim().equals("null")) {//fixme 去除null
                         var type = it.genericType.toString().trim()//属性类型
+                        //KLoggerUtils.e("type:\t"+type)
                         var name = it.name.substring(0, 1).toUpperCase() + it.name.substring(1)//属性名称【首字目进行大写】。
                         var m: Method? = null
-                        if (type == "boolean" || type.equals("class java.lang.Boolean")) {
+                        if (type == "boolean" || type.equals("class java.lang.Boolean")) {//fixme boolean是基本類型，class java.lang.Boolean是對象類型。都存在。
                             var name2 = name
                             if (name2.contains("Is")) {
                                 var index = name2.indexOf("Is")
@@ -518,19 +560,43 @@ object KGsonUtils {
                         //Log.e("test", "属性:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type)
                         if (type == "class java.lang.String" || type == "class java.lang.Object") {//Object 就是Any,class类型是相同的。
                             m?.invoke(t, value)//String类型 Object类型
-                        } else if (type == "int" || type.equals("class java.lang.Integer")) {
+                        } else if (type.contains("class java.lang.")) {//fixme 基本類型的對象
+                            if (type.equals("class java.lang.Integer")) {
+                                m?.invoke(t, value.toInt())//Int类型
+                            } else if (type.equals("class java.lang.Float")) {
+                                m?.invoke(t, value.toFloat())//Float类型
+                            } else if (type.equals("class java.lang.Double")) {
+                                m?.invoke(t, value.toDouble())//Double类型
+                            } else if (type.equals("class java.lang.Long")) {
+                                m?.invoke(t, value.toLong())//Long类型
+                            } else if (type.equals("class java.lang.Boolean")) {
+                                m?.invoke(t, value.toBoolean())//布尔类型。 "true".toBoolean() 只有true能够转换为true，其他所有值都只能转换为false
+                            } else if (type.equals("class java.lang.Short")) {
+                                m?.invoke(t, value.toShort())//Short类型
+                            } else if (type.equals("class java.lang.Byte")) {
+                                var byte = value.toInt()//不能有小数点，不然转换异常。小数点无法正常转换成Int类型。可以有负号。负数能够正常转换。
+                                if (byte > 127) {
+                                    byte = 127
+                                } else if (byte < -128) {
+                                    byte = -128
+                                }
+                                m?.invoke(t, byte.toByte())//Byte类型 ,范围是：-128~127
+                            } else if (type == "char" || type.equals("class java.lang.Character")) {
+                                m?.invoke(t, value.toCharArray()[0])//Char类型。字符只有一个字符。即单个字符。
+                            }
+                        } else if (type == "int") {//fixme 基本類型
                             m?.invoke(t, value.toInt())//Int类型
-                        } else if (type == "float" || type.equals("class java.lang.Float")) {
+                        } else if (type == "float") {
                             m?.invoke(t, value.toFloat())//Float类型
-                        } else if (type == "double" || type.equals("class java.lang.Double")) {
+                        } else if (type == "double") {
                             m?.invoke(t, value.toDouble())//Double类型
-                        } else if (type == "long" || type.equals("class java.lang.Long")) {
+                        } else if (type == "long") {
                             m?.invoke(t, value.toLong())//Long类型
-                        } else if (type == "boolean" || type.equals("class java.lang.Boolean")) {
+                        } else if (type == "boolean") {
                             m?.invoke(t, value.toBoolean())//布尔类型。 "true".toBoolean() 只有true能够转换为true，其他所有值都只能转换为false
-                        } else if (type == "short" || type.equals("class java.lang.Short")) {
+                        } else if (type == "short") {
                             m?.invoke(t, value.toShort())//Short类型
-                        } else if (type == "byte" || type.equals("class java.lang.Byte")) {
+                        } else if (type == "byte") {
                             var byte = value.toInt()//不能有小数点，不然转换异常。小数点无法正常转换成Int类型。可以有负号。负数能够正常转换。
                             if (byte > 127) {
                                 byte = 127
@@ -538,9 +604,9 @@ object KGsonUtils {
                                 byte = -128
                             }
                             m?.invoke(t, byte.toByte())//Byte类型 ,范围是：-128~127
-                        } else if (type == "char" || type.equals("class java.lang.Character")) {
+                        } else if (type == "char") {
                             m?.invoke(t, value.toCharArray()[0])//Char类型。字符只有一个字符。即单个字符。
-                        } else if (!type.equals("class java.util.HashMap") && !type.equals("class java.util.LinkedHashMap")) {//不支持Map
+                        } else if (!type.equals("class java.util.HashMap") && !type.equals("class java.util.LinkedHashMap")) {//fixme 不支持Map
                             try {
                                 //fixme 泛型标志固定一下。就用T，T1或者T2。不要用其他的。不然不好辨别。
                                 if ((type.toString().trim().equals("T") || type.toString().trim().equals("T1") || type.toString().trim().equals("T2")) && clazzT != null) {
@@ -602,7 +668,6 @@ object KGsonUtils {
                             } catch (e: Exception) {
                                 KLoggerUtils.e(msg = "kGsonUtils嵌套json解析异常:\t" + e.message)
                             }
-
                         }
                     }
                 }
