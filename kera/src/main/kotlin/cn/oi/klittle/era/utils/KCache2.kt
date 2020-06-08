@@ -75,7 +75,7 @@ class KCache2(cacheDir: File?, max_size: Long, max_count: Int) : KCache(cacheDir
 
         //fixme 对Any类型的key做独有标记，用于判断是进行了 putAny（）存储。
         fun getKeyForAny(key: String?): String {
-            return "kAny_" + key
+            return "kera_little_any_" + key//fixme 为了以后的兼容性，不能在变了。千万不要变哦。
         }
 
     }
@@ -121,9 +121,11 @@ class KCache2(cacheDir: File?, max_size: Long, max_count: Int) : KCache(cacheDir
         }
         try {
             //fixme 通过JSON数据获取，使用getAnyKey(key)。
-            getAsString(getKeyForAny(key))?.let {
+            getAsString(getKeyForAny(key))?.trim()?.let {
                 //KLoggerUtils.e("JSON数据", isLogEnable = true)
-                return parseJSONToAny<T>(it)
+                if (it.length>0) {
+                    return parseJSONToAny<T>(it)
+                }
             }
         } catch (e: Exception) {
             KLoggerUtils.e("getAsAny()JSON异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)

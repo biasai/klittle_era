@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
+import cn.oi.klittle.era.entity.file.KFakeObjectInputStream;
 import cn.oi.klittle.era.exception.KCatchException;
 
 
@@ -505,7 +506,8 @@ public class KCache {
 
     /**
      * 读取 Serializable数据；
-     * fixme 通过序列化存储数据和反序列化读取数据。缺点：实体类的类名不能变，属性不能变（不能新增属性也不能减少原有数据）。即数据结构不变才有效。最好不要使用，建议使用JSON存储。putAny()；getAny()。
+     * fixme 通过序列化存储数据和反序列化读取数据。缺点：实体类的类名不能变，属性不能变（不能新增属性也不能减少原有数据）。
+     * fixme 即数据结构不变才有效。最好不要使用，建议使用JSON存储。putAny()；getAny()。(在 KCache2里面)
      *
      * @param key
      * @return Serializable 数据
@@ -514,10 +516,13 @@ public class KCache {
         byte[] data = getAsBinary(key);
         if (data != null) {
             ByteArrayInputStream bais = null;
-            ObjectInputStream ois = null;
+            //ObjectInputStream ois = null;
+            KFakeObjectInputStream ois = null;
             try {
                 bais = new ByteArrayInputStream(data);
-                ois = new ObjectInputStream(bais);
+                //ois = new ObjectInputStream(bais);
+                ois = new KFakeObjectInputStream(bais);
+                //KLoggerUtils.INSTANCE.e("读取序列化缓存：\t"+KStringUtils.INSTANCE.bytesToString(data,null));
                 Object reObject = ois.readObject();
                 return reObject;
             } catch (Exception e) {
