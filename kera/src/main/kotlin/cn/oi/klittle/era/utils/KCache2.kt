@@ -94,6 +94,7 @@ class KCache2(cacheDir: File?, max_size: Long, max_count: Int) : KCache(cacheDir
 
     // =======================================
     //fixme 将数据，已JSON的方式存储；序列化，不靠谱。还是JSON好用。
+    //fixme putAny()存储，对应getAny（）和getAsAny（）获取。
     fun putAny(key: String?, obj: Any?) {
         if (key == null || obj == null) {
             return
