@@ -4,10 +4,12 @@ import android.util.Log
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.gson.type.KTypeReference
 import cn.oi.klittle.era.utils.KLoggerUtils
+import com.google.gson.reflect.TypeToken
 import org.json.JSONArray
 import org.json.JSONObject
 import java.lang.reflect.Method
 import java.util.*
+import kotlin.collections.HashMap
 
 
 /**
@@ -28,9 +30,11 @@ import java.util.*
  * fixme 在KBaseEntity类里面有JSON的转换案例。
  * fixme Character 类型，目前好像会乱码。Character目前转换还不太支持，建议不要使用Character类型。
  *
- * fixme 泛型新增，支持String,Boolean，Int,Float类型。
- * fixme 支持ArrayList<>类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
- * fixme 注意，不支持類型 Character 和 Map;一般正常的json數據不會有這兩種類型。
+ * fixme 泛型新增，和支持String,Boolean，Int,Float等基本类型（不支持Character字符类型）
+ * fixme 支持 Map 类型。亲测有效（使用谷歌Gson工具类转换的）。
+ * fixme 支持 ArrayList<> 类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
+ *
+ * fixme 即：目前不支持 Character 和 MutableList；其他基本都支持。
  */
 object KGsonUtils {
 
@@ -69,6 +73,18 @@ object KGsonUtils {
         //Log.e("test", "json:\t" + json)
         var kjson = parseStringToJSON(json?.toString(), *field)//解析指定字段里的json数据。
         //Log.e("test", "json2:\t" + kjson)
+        var className = T::class.java.toString().trim()
+        //KLoggerUtils.e("className:\t"+className)
+        if (className.contains("Map") && (className.equals("class java.util.HashMap")
+                        || className.equals("class java.util.LinkedHashMap") || className.equals("interface java.util.Map"))) {
+            try {
+                var type = object : TypeToken<T?>() {}.type
+                var map: T = KGsonJavaUtils.fromJson(kjson, type)//fixme JSON转Map也借助Gson谷歌第三方库。
+                return map
+            } catch (e: java.lang.Exception) {
+                KLoggerUtils.e("parseJSONToAny(),JSON转map异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+            }
+        }
         var typeReference = object : KTypeReference<T>() {}
         return getObject(kjson, typeReference.classes, 0) as T
     }
@@ -114,8 +130,13 @@ object KGsonUtils {
                     jsonObject.put(autoField, t.toString())//fixme 兼容基本类型能够转成JSONObject
                     return jsonObject//fixme 千万不要 jsonObject.toString()；这样会多出很多斜杆\\的。不要返回string类型；就返回jsonObject类型
                 }
+            } else if (className.contains("Map")) {
+                if (className.equals("class java.util.HashMap")
+                        || className.equals("class java.util.LinkedHashMap") || className.equals("interface java.util.Map")) {
+                    var json = KGsonJavaUtils.toJson(t)//fixme map转json，借助谷歌GSON工具类。
+                    return JSONObject(json)
+                }
             }
-
             if (className.equals("class java.util.ArrayList") && (t is ArrayList<*>)) {
                 //fixme 数组
                 var jsonAny = JSONArray()
@@ -173,7 +194,7 @@ object KGsonUtils {
                 if (type.equals("class java.lang.String")) {
                     val value = m!!.invoke(t) as String
                     jsonObject.put(jName, value)
-                }else if (type.contains("class java.lang.")){//fixme 基本类型对象
+                } else if (type.contains("class java.lang.")) {//fixme 基本类型对象
                     if (type.equals("class java.lang.Double")) {
                         m?.invoke(t)?.let {
                             if (it is Double) {
@@ -269,8 +290,7 @@ object KGsonUtils {
                 } else if (type == "char") {
                     val value = m?.invoke(t) as Character
                     jsonObject.put(jName, value)
-                }
-                else {
+                } else {
                     var value = m?.invoke(t)
                     if (value != null && value != "null" && value != "") {
                         //KLoggerUtils.e("type:\t" + type + "\t" + (value is ArrayList<*>))
@@ -282,7 +302,7 @@ object KGsonUtils {
                             }
                             jsonObject.put(jName, jsonAny)//
                         } else {
-                            jsonObject.put(jName, parseAnyToJSON(value))//普通实体类
+                            jsonObject.put(jName, parseAnyToJSON(value))//fixme 普通实体类,兼容Map
                         }
                     }
                 }
@@ -606,63 +626,74 @@ object KGsonUtils {
                             m?.invoke(t, byte.toByte())//Byte类型 ,范围是：-128~127
                         } else if (type == "char") {
                             m?.invoke(t, value.toCharArray()[0])//Char类型。字符只有一个字符。即单个字符。
-                        } else if (!type.equals("class java.util.HashMap") && !type.equals("class java.util.LinkedHashMap")) {//fixme 不支持Map
+                        } else {
                             try {
-                                //fixme 泛型标志固定一下。就用T，T1或者T2。不要用其他的。不然不好辨别。
-                                if ((type.toString().trim().equals("T") || type.toString().trim().equals("T1") || type.toString().trim().equals("T2")) && clazzT != null) {
-                                    //fixme 嵌套泛型。
-                                    if (clazzT.name.equals("java.util.ArrayList")) {
-                                        //fixme 嵌套泛型数组
-                                        var jsonArray = JSONArray(value)
-                                        var last = jsonArray.length()
-                                        last -= 1//最后一个下标
-                                        var list = ArrayList<Any>()
-                                        if (last >= 0) {//fixme 数据长度必须大于0，不然异常。
-                                            clazzT?.let {
-                                                var position = index + 2//fixme 注意就这里数组要加2（亲测）
-                                                for (i in 0..last) {
-                                                    //Log.e("test", "嵌套数组循环:\t" + jsonArray.getString(i) + "\t下标:\t" + position)
-                                                    var m = getObject(jsonArray.getString(i), classes, position)
-                                                    m?.let {
-                                                        list.add(it as Any)
+                                //fixme map
+                                if (type.contains("Map") && (type.contains("java.util.HashMap")
+                                                || type.contains("java.util.LinkedHashMap") || type.contains("java.util.Map"))) {
+                                    //KLoggerUtils.e("进来了:\ttype:\t"+type+"\tvalue:"+value)
+                                    try {
+                                        m?.invoke(t, KGsonJavaUtils.fromJson(value, it.genericType))//fixme JSON转Map也借助Gson谷歌第三方库。
+                                    } catch (e: java.lang.Exception) {
+                                        KLoggerUtils.e("getObject(),JSON转map异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+                                    }
+                                } else {
+                                    //fixme 泛型标志固定一下。就用T，T1或者T2。不要用其他的。不然不好辨别。
+                                    if ((type.toString().trim().equals("T") || type.toString().trim().equals("T1") || type.toString().trim().equals("T2")) && clazzT != null) {
+                                        //fixme 嵌套泛型。
+                                        if (clazzT.name.equals("java.util.ArrayList")) {
+                                            //fixme 嵌套泛型数组
+                                            var jsonArray = JSONArray(value)
+                                            var last = jsonArray.length()
+                                            last -= 1//最后一个下标
+                                            var list = ArrayList<Any>()
+                                            if (last >= 0) {//fixme 数据长度必须大于0，不然异常。
+                                                clazzT?.let {
+                                                    var position = index + 2//fixme 注意就这里数组要加2（亲测）
+                                                    for (i in 0..last) {
+                                                        //Log.e("test", "嵌套数组循环:\t" + jsonArray.getString(i) + "\t下标:\t" + position)
+                                                        var m = getObject(jsonArray.getString(i), classes, position)
+                                                        m?.let {
+                                                            list.add(it as Any)
+                                                        }
                                                     }
                                                 }
                                             }
+                                            m?.invoke(t, list)
+                                        } else {
+                                            //fixme 嵌套泛型实体类
+                                            var position = index + 1
+                                            //KLoggerUtils.e("嵌套实体类1\tvalue:\t" + value + "\tclasses:\t" + classes)
+                                            m?.invoke(t, getObject(value, classes, position))
+                                            //KLoggerUtils.e("嵌套实体类2")
                                         }
-                                        m?.invoke(t, list)
                                     } else {
-                                        //fixme 嵌套泛型实体类
-                                        var position = index + 1
-                                        //KLoggerUtils.e("嵌套实体类1\tvalue:\t" + value + "\tclasses:\t" + classes)
-                                        m?.invoke(t, getObject(value, classes, position))
-                                        //KLoggerUtils.e("嵌套实体类2")
-                                    }
-                                } else {
-                                    //Log.e("test", "属性2:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type)
-                                    //fixme 嵌套具体实体类[普通实体类不支持数组]
-                                    if (!type.contains("java.util.ArrayList")) {
+                                        //Log.e("test", "属性2:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type)
+                                        //fixme 嵌套具体实体类[普通实体类不支持数组]
+                                        if (!type.contains("java.util.ArrayList")) {
 //                                        Log.e("test", "属性2:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type+"\tclasses:\t"+classes)
 //                                        var position = index + 1
 //                                        m?.invoke(t, getObject(value, classes, position))//fixme 非数组(不行，有问题。)
 
-                                        //fixme 以下方法亲测，百分百可行！
-                                        var classes = arrayListOf<Class<*>>()
-                                        classes.add(Class.forName(type.substring("class ".length).trim()))
-                                        m?.invoke(t, getObject(value, classes, 0))//fixme 非数组
+                                            //fixme 以下方法亲测，百分百可行！
+                                            var classes = arrayListOf<Class<*>>()
+                                            classes.add(Class.forName(type.substring("class ".length).trim()))
+                                            m?.invoke(t, getObject(value, classes, 0))//fixme 非数组
 
-                                    } else {
-                                        //fixme 数组，如： java.util.ArrayList<com.example.myapplication.model.B>
-                                        //[class java.util.ArrayList, class com.example.myapplication.model.C]
-                                        //KLoggerUtils.e("数组类型：\t"+type)
-                                        //KLoggerUtils.e("value:\t"+value)
-                                        //KLoggerUtils.e("classes:\t"+classes)
-                                        var start = type.indexOf("<")
-                                        var end = type.indexOf(">")
-                                        var newType = type.substring(start + 1, end)
-                                        var newClasses: MutableList<Class<*>> = java.util.ArrayList()
-                                        newClasses.add(Class.forName("java.util.ArrayList"))
-                                        newClasses.add(Class.forName(newType))
-                                        m?.invoke(t, getObject(value, newClasses, 0))//fixme 兼容数组
+                                        } else {
+                                            //fixme 数组，如： java.util.ArrayList<com.example.myapplication.model.B>
+                                            //[class java.util.ArrayList, class com.example.myapplication.model.C]
+                                            //KLoggerUtils.e("数组类型：\t"+type)
+                                            //KLoggerUtils.e("value:\t"+value)
+                                            //KLoggerUtils.e("classes:\t"+classes)
+                                            var start = type.indexOf("<")
+                                            var end = type.indexOf(">")
+                                            var newType = type.substring(start + 1, end)
+                                            var newClasses: MutableList<Class<*>> = java.util.ArrayList()
+                                            newClasses.add(Class.forName("java.util.ArrayList"))
+                                            newClasses.add(Class.forName(newType))
+                                            m?.invoke(t, getObject(value, newClasses, 0))//fixme 兼容数组
+                                        }
                                     }
                                 }
                             } catch (e: Exception) {

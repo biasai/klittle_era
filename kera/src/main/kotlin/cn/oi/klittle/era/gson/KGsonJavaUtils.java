@@ -78,6 +78,7 @@ public abstract class KGsonJavaUtils {
     }
 
     /**
+     * fixme 对象转JSON
      * Convert object to json
      *
      * @param object
@@ -89,7 +90,13 @@ public abstract class KGsonJavaUtils {
         return includeNulls ? GSON.toJson(object) : GSON_NO_NULLS.toJson(object);
     }
 
+//    fixme json转 Map
+//    val type = object : TypeToken<HashMap<String?, TestEntity?>?>() {}.type
+//    var map:HashMap<String?, TestEntity?>?=KGsonJavaUtils.fromJson(json!!,type)
+
     /**
+     * fixme json解析成对象，如：KGsonJavaUtils.fromJson(json!!,TestEntity::class.java)
+     * fixme Gson工具类也很强大，是谷歌的。实体类多个一个字段少一个字段，无所谓，不会报错的。兼容性还是很好的。甚至类名变了也无所谓，只有字段对的上就行。
      * Convert string to given type
      *
      * @param json
