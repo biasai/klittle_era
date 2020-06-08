@@ -114,6 +114,11 @@ class KCache2(cacheDir: File?, max_size: Long, max_count: Int) : KCache(cacheDir
         return getAsAny<T>(key)
     }
 
+//     fixme 不要搞个默认String类型，还是让用户手动指明具体类型比较好。防止出错。让用户手动指明。
+//     fun getAny(key: String?): String? {
+//        return getAsAny<String>(key)
+//    }
+
     //fixme 获取任意数据类型。
     inline fun <reified T> getAsAny(key: String?): T? {
         if (key == null) {
@@ -123,7 +128,7 @@ class KCache2(cacheDir: File?, max_size: Long, max_count: Int) : KCache(cacheDir
             //fixme 通过JSON数据获取，使用getAnyKey(key)。
             getAsString(getKeyForAny(key))?.trim()?.let {
                 //KLoggerUtils.e("JSON数据", isLogEnable = true)
-                if (it.length>0) {
+                if (it.length > 0) {
                     return parseJSONToAny<T>(it)
                 }
             }
