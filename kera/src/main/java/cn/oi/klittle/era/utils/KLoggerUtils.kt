@@ -127,7 +127,7 @@ object KLoggerUtils {
             while (msg!!.length > segmentSize) {
                 val logContent = msg.substring(0, segmentSize)
                 msg = msg.replace(logContent, "")
-                e(ln + logContent, tag)
+                e(ln + logContent, tag,isLogEnable)
             }
             // 打印剩余日志
             e(ln + msg, tag,isLogEnable)
