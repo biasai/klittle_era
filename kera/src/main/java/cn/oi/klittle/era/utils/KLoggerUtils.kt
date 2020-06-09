@@ -121,7 +121,7 @@ object KLoggerUtils {
         val length = msg.length.toLong()
         // 长度小于等于限制直接打印
         if (length <= segmentSize) {
-            e(ln + msg, tag)
+            e(ln + msg, tag,isLogEnable)
         } else {
             // 循环分段打印日志
             while (msg!!.length > segmentSize) {
@@ -130,7 +130,7 @@ object KLoggerUtils {
                 e(ln + logContent, tag)
             }
             // 打印剩余日志
-            e(ln + msg, tag)
+            e(ln + msg, tag,isLogEnable)
         }
     }
 
