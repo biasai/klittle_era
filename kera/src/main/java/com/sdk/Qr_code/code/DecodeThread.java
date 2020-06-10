@@ -27,7 +27,7 @@ import android.os.Looper;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.ResultPointCallback;
-import com.sdk.Qr_code.act.CaptureActivity;
+import com.sdk.Qr_code.act.Qr_codeActivity;
 
 /**
  * This thread does all the heavy lifting of decoding the images.
@@ -38,13 +38,13 @@ final class DecodeThread extends Thread {
 
     public static final String BARCODE_BITMAP = "barcode_bitmap";
 
-    private CaptureActivity activity = null;
+    private Qr_codeActivity activity = null;
     private Activity activity2 = null;
     private Hashtable<DecodeHintType, Object> hints;
     private Handler handler;
     private CountDownLatch handlerInitLatch;
 
-    DecodeThread(CaptureActivity activity, Vector<BarcodeFormat> decodeFormats,
+    DecodeThread(Qr_codeActivity activity, Vector<BarcodeFormat> decodeFormats,
                  String characterSet, ResultPointCallback resultPointCallback) {
 
         try {

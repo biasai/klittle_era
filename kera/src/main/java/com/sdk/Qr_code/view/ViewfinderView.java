@@ -134,7 +134,7 @@ public final class ViewfinderView extends View {
         }
 
         if (frame == null) {
-            // 控制扫描框的大小及位置，在getFramingRect()方法中。
+            //fixme 控制扫描框的大小及位置，在getFramingRect()方法中。
             frame = CameraManager.get().getFramingRect();
             if (frame == null) {
                 return;
@@ -153,7 +153,7 @@ public final class ViewfinderView extends View {
             //绘制二维码结果图片
             canvas.drawBitmap(resultBitmap, frame.left, frame.top, paint);
         } else {
-            frameColor = Color.parseColor("#6D6D6D");// 灰色
+            frameColor = Color.parseColor("#6D6D6D");//fixme 灰色（框架颜色：连线）
             paint.setColor(frameColor);
             // 画框架(四个角之间的连线)
             canvas.drawRect(frame.left, frame.top, frame.right + 1,
@@ -164,7 +164,7 @@ public final class ViewfinderView extends View {
                     frame.bottom - 1, paint);//右
             canvas.drawRect(frame.left, frame.bottom - 1, frame.right + 1,
                     frame.bottom + 1, paint);//下
-            frameColor = Color.parseColor("#08C8FF");// 蓝色
+            frameColor = Color.parseColor("#08C8FF");//fixme 蓝色(四个框架角)
             paint.setColor(frameColor);
             // 画框架上的四个角（扫描框边上的角，共8个部分）
             //左上角
@@ -218,7 +218,7 @@ public final class ViewfinderView extends View {
             paint.setAlpha(200);
             paint.setTypeface(Typeface.DEFAULT_BOLD);
             paint.setTextAlign(Paint.Align.CENTER);
-            //将二维码/条码放入框内，即可自动扫描
+            //fixme 将二维码/条码放入框内，即可自动扫描
             canvas.drawText(KBaseUi.Companion.getString(R.string.kqr_timi), frame.left + (frame.right - frame.left) / 2, frame.bottom
                     + TEXT_PADDING_TOP * density, paint);
 

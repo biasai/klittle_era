@@ -12,13 +12,13 @@ import cn.oi.klittle.era.activity.camera.KCameraActivity
 import cn.oi.klittle.era.activity.camera.KCameraRecorderActivity
 import cn.oi.klittle.era.activity.ringtone.KRingtoneActivity
 import cn.oi.klittle.era.activity.video.KScreenVideoActivity
-import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KPermissionUtils
-import com.sdk.Qr_code.act.KCaptureActivity
+import com.sdk.Qr_code.act.KQr_codeActivity
+import com.sdk.Qr_code.act.KQr_codeResultActivity
 import com.sdk.Qr_code.utils.KZxingUtils
 import java.io.File
 
@@ -158,15 +158,35 @@ object KUiHelper {
      * fixme 跳转到 二维码扫描界面
      * @param qrCallback 二维码扫描结果回调(返回选择)
      */
-    fun goCaptureActivity(nowActivity: Activity? = getActivity(), qrCallback: ((result: String) -> Unit)? = null) {
+    fun goQr_codeActivity(nowActivity: Activity? = getActivity(), qrCallback: ((result: String) -> Unit)? = null) {
         try {
             //需要相机权限（必须）
             KPermissionUtils.requestPermissionsCamera {
                 if (it) {
                     this.qrCallback = qrCallback
-                    goActivityForResult(KCaptureActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
+                    goActivityForResult(KQr_codeActivity::class.java, nowActivity, KZxingUtils.requestCode_Qr)
                 } else {
                     KPermissionUtils.showFailure()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    val qr_result = "kera_qr_result"
+
+    /**
+     * fixme 跳转到 二维码扫描结果显示界面
+     * @param result 二维码扫描内容结果
+     */
+    fun goQr_codeResultActivity(result: String?, nowActivity: Activity? = getActivity()) {
+        try {
+            result?.trim()?.let {
+                if (it.length > 0) {
+                    var intent = Intent(nowActivity, KQr_codeResultActivity::class.java)
+                    intent.putExtra(qr_result, result)
+                    goActivity(intent)
                 }
             }
         } catch (e: Exception) {

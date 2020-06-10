@@ -2,18 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="cn.oi.klittle.era">
-    <!-- 原始旧包名：cn.android.support.v7.lib.sin.crown.kotlin -->
-    <!-- 原始旧包名：cn.android.support.v7.lib.eep.kera -->
-    <!-- 原始旧包名：cn.gitee.biasia.klittle.era -->
-    <!-- 现在就是使用cn.oi.klittle.era这个包名，打死不改了。并且只维护gitee码云中国，不在维护github（外网太慢了，累） -->
-    <!-- 支持了多种分辨率，那么就可以得到正确的物理尺寸了 -->
+    <!-- 网络 -->
     <application android:usesCleartextTraffic="true">
-        <!--图片预览,还是使用透明主题背景比较好-->
+        <!-- 图片预览,还是使用透明主题背景比较好 -->
         <activity
             android:name=".activity.preview.KPreviewActivity"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus_transparent" />
-        <!--图片选择器-->
+            android:theme="@style/KTheme_Activity_hasStatus_transparent" /> <!-- 图片选择器 -->
         <activity
             android:name=".activity.photo.KPhotoActivity"
             android:launchMode="singleTop"
@@ -30,58 +25,60 @@
         <!-- </provider> -->
         <!-- android:name="android.support.v4.content.FileProvider" -->
         <!-- android:authorities="${applicationId}.kera.provider" fixme 这个是一个身份标志，每个provider的authorities都不能重复相同，防止冲突。 -->
-        <!--铃声-->
+        <!-- 铃声 -->
         <activity
             android:name=".activity.ringtone.KRingtoneActivity"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus" />
-        <!--视频全屏播放-->
-        <!--android:screenOrientation="landscape"-->
+            android:theme="@style/KTheme_Activity_hasStatus" /> <!-- 视频全屏播放 -->
+        <!-- android:screenOrientation="landscape" -->
         <activity
             android:name=".activity.video.KScreenVideoActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_full" />
-        <!-- android:configChanges="orientation|keyboardHidden|screenSize"-->
+            android:theme="@style/KTheme_Activity_full" /> <!-- android:configChanges="orientation|keyboardHidden|screenSize" -->
         <activity
             android:name="com.sdk.scan.act.KNfcActivity"
             android:launchMode="singleTask">
-            <!--fixme 子类的activity最好也像下面这样配置一下。虽然测试发现没有配置也行。但最好还是配置一下-->
-            <!--fixme 配置了一下信息之后，在系统界面刷卡；系统弹框都会有提示。-->
+
+            <!-- fixme 子类的activity最好也像下面这样配置一下。虽然测试发现没有配置也行。但最好还是配置一下 -->
+            <!-- fixme 配置了一下信息之后，在系统界面刷卡；系统弹框都会有提示。 -->
             //在activity加上如下标签；nfc系统弹框弹出时；就会显示该信息
             //android:label="接收"
             //android:icon="@drawable/logo"
             //android:launchMode="singleTask" 最好设置成单例；防止刷卡时多次重复跳转。
-            <!--多个intent-filter是可以并列的。直接复制下面的即可-->
-            <!--<intent-filter>-->
-            <!--<action android:name="android.nfc.action.TECH_DISCOVERED" />-->
-            <!--</intent-filter>-->
-            <!--<meta-data-->
-            <!--android:name="android.nfc.action.TECH_DISCOVERED"-->
-            <!--android:resource="@xml/kera_nfc_tech_filter_list" />-->
-            <!--<intent-filter>-->
-            <!--<action android:name="android.nfc.action.TAG_DISCOVERED" />-->
-            <!--<category android:name="android.intent.category.DEFAULT" />-->
-            <!--</intent-filter>-->
+            <!-- 多个intent-filter是可以并列的。直接复制下面的即可 -->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.nfc.action.TECH_DISCOVERED" /> -->
+            <!-- </intent-filter> -->
+            <!-- <meta-data -->
+            <!-- android:name="android.nfc.action.TECH_DISCOVERED" -->
+            <!-- android:resource="@xml/kera_nfc_tech_filter_list" /> -->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.nfc.action.TAG_DISCOVERED" /> -->
+            <!-- <category android:name="android.intent.category.DEFAULT" /> -->
+            <!-- </intent-filter> -->
         </activity>
+        <activity
+            android:name="com.sdk.Qr_code.act.Qr_codeActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus" />
+        <activity
+            android:name="com.sdk.Qr_code.act.KQr_codeActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus" />
+        <activity
+            android:name="com.sdk.Qr_code.act.KQr_codeResultActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_hasStatus" />
+        <activity
+            android:name=".activity.camera.KCameraActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_full" />
+        <activity
+            android:name=".activity.camera.KCameraRecorderActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/KTheme_Activity_full" />
 
-        <activity
-            android:name="com.sdk.Qr_code.act.CaptureActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus"></activity>
-
-        <activity
-            android:name="com.sdk.Qr_code.act.KCaptureActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_hasStatus"></activity>
-        <activity
-            android:name="cn.oi.klittle.era.activity.camera.KCameraActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_full"></activity>
-        <activity
-            android:name="cn.oi.klittle.era.activity.camera.KCameraRecorderActivity"
-            android:launchMode="singleTop"
-            android:theme="@style/KTheme_Activity_full"></activity>
         <meta-data
             android:name="android.max_aspect"
             android:value="3.4" /> <!-- 开机广播，静态注册 -->
@@ -94,6 +91,7 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/kera_file_paths" />
         </provider>
+
         <receiver
             android:name=".receiver.PoweredUpReceiver"
             android:enabled="true"
@@ -101,8 +99,7 @@
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
-        </receiver>
-        <!--NFC读卡功能-->
+        </receiver> <!-- NFC读卡功能 -->
         <receiver
             android:name=".receiver.HomeKeyReceiver"
             android:enabled="true"
@@ -118,8 +115,7 @@
                 <!-- 解锁 -->
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
-        </receiver>
-        <!--竖屏二维码扫描-->
+        </receiver> <!-- 竖屏二维码扫描 -->
         <service
             android:name=".service.KService"
             android:excludeFromRecents="true">
@@ -147,10 +143,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
-    </application> <!-- 网络 -->
-    <protected-broadcast android:name="android.intent.action.SCREEN_OFF" /> <!-- wifi判断是否有网络,非隐私权限，因此不用考虑6.0的动态权限管理 -->
+    </application> <!-- wifi判断是否有网络,非隐私权限，因此不用考虑6.0的动态权限管理 -->
+    <protected-broadcast android:name="android.intent.action.SCREEN_OFF" />
     <protected-broadcast android:name="android.intent.action.SCREEN_ON" />
     <protected-broadcast android:name="scan.rcv.message" />
+
     <protected-broadcast android:name="com.mediatek.action.UNREAD_CHANGED" />
 
     <supports-screens
@@ -158,62 +155,56 @@
         android:largeScreens="true"
         android:normalScreens="true"
         android:resizeable="true"
-        android:smallScreens="true" />
-    <uses-feature android:name="android.hardware.camera" /> <!-- 获取wifi需要定位权限(需要动态申请)。为什么需要定位权限呢？其实很好理解的，wifi其实也是一种定位手段 -->
-    <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- 手机震动 -->
-    <uses-permission android:name="android.permission.INTERNET" /> <!-- 手电筒 -->
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" /> <!-- 手机存储卡 -->
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
+        android:smallScreens="true" /> <!-- 获取wifi需要定位权限(需要动态申请)。为什么需要定位权限呢？其实很好理解的，wifi其实也是一种定位手段 -->
+    <uses-feature android:name="android.hardware.camera" /> <!-- 手机震动 -->
+    <uses-feature android:name="android.hardware.camera.autofocus" /> <!-- 手电筒 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- 手机存储卡 -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
     <!-- 相机，二维码 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-
-    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 录音 -->
-    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 手机状态，如设备号ID,调用 JNI ,及读取设备的权限 -->
-    <uses-permission android:name="android.permission.FLASHLIGHT" /> <!-- 杀死后台进程权限 -->
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 添加快捷方式 -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 移除快捷方式 -->
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- 查询快捷方式 -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 安卓8.0系统安装app 未知来源权限。必不可少。这个权限不需要动态去申请。安装应用的时候，会自己去动态申请。 -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 显示系统悬浮窗权限（这个权限是默认关闭的） -->
-    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" /> <!-- 在屏幕最顶部显示addview -->
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- android6.0中，获取通讯录的权限是 -->
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" /> <!-- 6.0之前的版本中的权限设置是 -->
-    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" /> <!-- 读取短信的权限 -->
-    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 蓝牙权限，和wifi权限一样，无法动态判断，动态申请。必须用户手动开启。不过蓝牙权限，一般默认就是开启的。 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" /> <!-- 录音 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 手机状态，如设备号ID,调用 JNI ,及读取设备的权限 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 杀死后台进程权限 -->
+    <uses-permission android:name="android.permission.FLASHLIGHT" /> <!-- 添加快捷方式 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- 移除快捷方式 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 查询快捷方式 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- 安卓8.0系统安装app 未知来源权限。必不可少。这个权限不需要动态去申请。安装应用的时候，会自己去动态申请。 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" /> <!-- 显示系统悬浮窗权限（这个权限是默认关闭的） -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- 在屏幕最顶部显示addview -->
+    <uses-permission android:name="android.permission.KILL_BACKGROUND_PROCESSES" /> <!-- android6.0中，获取通讯录的权限是 -->
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" /> <!-- 6.0之前的版本中的权限设置是 -->
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" /> <!-- 读取短信的权限 -->
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" /> <!-- 蓝牙权限，和wifi权限一样，无法动态判断，动态申请。必须用户手动开启。不过蓝牙权限，一般默认就是开启的。 -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- 可修改系统设置权限 -->
-    <!--<uses-permission android:name="android.permission.WRITE_SETTINGS" /> &lt;!&ndash; 实现拦截广播 &ndash;&gt;-->
-    <uses-permission android:name="android.permission.RECEIVE_SMS" /> <!-- USB权限 -->
-    <uses-permission android:name="android.permission.READ_SMS" />
-    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- 获取当前栈顶的Activity -->
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- 指纹 -->
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- Use NFC feature and Permissions -->
-    <uses-permission android:name="android.hardware.usb.accessory" />
-
-    <!--fixme  android:usesCleartextTraffic="true" 可以訪問http網絡  Android P(api28);必須設置，不然無法訪問http网络，只能访问https ;參考：https://blog.csdn.net/gengkui9897/article/details/82863966-->
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <!--手机震动-->
-    <uses-permission android:name="android.permission.GET_TASKS" />
-    <!--手电筒-->
-    <uses-permission android:name="android.permission.USE_FINGERPRINT" /><!-- USE_FINGERPRINT fixme 指纹认证 -->
-    <!--手机存储卡-->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- 可修改系统设置权限 -->
+    <!-- <uses-permission android:name="android.permission.WRITE_SETTINGS" /> &lt;!&ndash; 实现拦截广播 &ndash;&gt; -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" /> <!-- USB权限 -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_SMS" /> <!-- 获取当前栈顶的Activity -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" /> <!-- 指纹 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- Use NFC feature and Permissions -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> <!-- fixme  android:usesCleartextTraffic="true" 可以訪問http網絡  Android P(api28);必須設置，不然無法訪問http网络，只能访问https ;參考：https://blog.csdn.net/gengkui9897/article/details/82863966 -->
+    <uses-permission android:name="android.hardware.usb.accessory" /> <!-- 手机震动 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 手电筒 -->
+    <uses-permission android:name="android.permission.GET_TASKS" /> <!-- USE_FINGERPRINT fixme 指纹认证 -->
+    <!-- 手机存储卡 -->
+    <uses-permission android:name="android.permission.USE_FINGERPRINT" />
     <uses-permission
         android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.NFC" />
-    <!--<uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
-    <!--相机，二维码-->
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <!--任务栈控制-->
+        tools:ignore="ProtectedPermissions" /> <!-- <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />系统quanx -->
+    <!-- 相机，二维码 -->
+    <uses-permission android:name="android.permission.NFC" /> <!-- 任务栈控制 -->
+    <uses-permission android:name="android.permission.VIBRATE" /> <!-- 系统广播 -->
     <uses-permission android:name="android.permission.FLASHLIGHT" />
-    <!--系统广播-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-permission android:name="android.permission.REORDER_TASKS" />
+
 </manifest>

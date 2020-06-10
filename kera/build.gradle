@@ -169,7 +169,7 @@ dependencies {
     //协程正式版本；之前0.19.1都是测试版;coroutines-android可以下载下来。
     //fixme 以下是第三方库
     implementation files('libs\\dom4j-1.6.1.jar')//fixme 引用jar包；拥有自动生成string.xml文件。
-    //json库
+    //fixme 谷歌json库
     api 'com.google.code.gson:gson:2.8.5'
     //地址(这个比较稳定。)：https://github.com/TooTallNate/Java-WebSocket
     //必须适使用api;使用implementation的话，在moudle里面就找不到。
@@ -193,6 +193,7 @@ dependencies {
     api files('libs/iodev2.jar')//pda读卡器；新版
     api files('libs/serialport.jar')//pda读卡器；新版
     api files('libs/scansV1.2_20101119.jar')//pda读卡器；新版 DoubleBird
+    //fixme 二维码库：https://github.com/zxing/zxing
     //api 'com.google.zxing:android-core:3.3.0'//这个不需要引用（最好不要引用，以防未知的错误）,引用下面其中一个就可以了。
     //api 'com.google.zxing:core:3.3.2'
     api 'com.google.zxing:core:3.3.3'//二维码库；之前是3.3.0;版本;3.3.3版本更好(读取速度更快)，能够兼容3.3.0的版本；不会报错；

@@ -9,7 +9,6 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.toolbar.KToolbar
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import com.sdk.Qr_code.manager.CameraManager
 import com.sdk.Qr_code.utils.KZxingUtils
@@ -41,7 +40,7 @@ import org.jetbrains.anko.*
  * fixme 子类可以仿照以下进行重写；亲测可行。
  * Created by 彭治铭 on 2019/3/27.
  */
-open class KCaptureActivity : CaptureActivity() {
+open class KQr_codeActivity : Qr_codeActivity() {
 
     /**
      * fixme 重新布局
@@ -58,6 +57,7 @@ open class KCaptureActivity : CaptureActivity() {
                 height = matchParent
             }
             //fixme 初始化父类的viewfinderView(必不可少)
+            //fixme 扫描的区域在CameraManager.get().getFramingRect()方法里。
             viewfinderView = ViewfinderView(this).apply {
 
             }.lparams {
@@ -65,31 +65,31 @@ open class KCaptureActivity : CaptureActivity() {
                 height = matchParent
             }
             KToolbar(this, ctx as Activity)?.apply {
-                contentView?.apply {
-                    //backgroundColor = Color.parseColor("#09099F")//标题栏背景颜色
-                    backgroundColor = Color.parseColor("#0078D7")
+            contentView?.apply {
+                //backgroundColor = Color.parseColor("#09099F")//标题栏背景颜色
+                backgroundColor = Color.parseColor("#0078D7")
+            }
+            //左边返回文本（默认样式自带一个白色的返回图标）
+            leftTextView?.apply {
+            }
+            //中间文本
+            titleTextView?.apply {
+                text = getString(R.string.kqr_code)//"二维码/条码"
+            }
+            //右上角图片选择器图标
+            rightTextView?.apply {
+                autoBg {
+                    width = kpx.x(45)
+                    height = width
+                    autoBgColor = Color.WHITE
+                    autoBg(R.mipmap.kera_right_top_img_select)
                 }
-                //左边返回文本（默认样式自带一个白色的返回图标）
-                leftTextView?.apply {
-                }
-                //中间文本
-                titleTextView?.apply {
-                    text = getString(R.string.kqr_code)//"二维码/条码"
-                }
-                //右上角图片选择器图标
-                rightTextView?.apply {
-                    autoBg {
-                        width = kpx.x(45)
-                        height = width
-                        autoBgColor = Color.WHITE
-                        autoBg(R.mipmap.kera_right_top_img_select)
-                    }
-                    layoutParams(kpx.x(100), kpx.x(45))
-                    onClick {
-                        pictrueSelector()//fixme 选择本地图片
-                    }
+                layoutParams(kpx.x(100), kpx.x(45))
+                onClick {
+                    pictrueSelector()//fixme 选择本地图片,识别图片二维码
                 }
             }
+        }
             //fixme 开关灯
             KTextView(this).apply {
                 radius {
@@ -125,8 +125,10 @@ open class KCaptureActivity : CaptureActivity() {
                 width = kpx.x(150)
                 height = width
                 centerHorizontally()
-                alignParentBottom()
-                bottomMargin = kpx.y(180)
+                //alignParentBottom()
+                //bottomMargin = kpx.y(180)
+                //fixme CameraManager.getRect() 二维码扫描框的位置。
+                topMargin= CameraManager.getRect().bottom+kpx.x(100)
             }
         }
     }

@@ -231,11 +231,12 @@ open class KToolbar {
                     //fixme 在此最外层控件，必须是线性布局，其他布局会报错。
                     contentView = KVerticalLayout(this).apply {
                         padding = 0
-                        inner {
-                            radius {
-                                bgHorizontalColors(Color.parseColor("#0078D7"), Color.parseColor("#1A86DB"))//fixme 默认背景颜色
-                            }
-                        }
+                        backgroundColor=Color.parseColor("#0078D7")//浅蓝色。
+//                        inner {
+//                            radius {
+//                                bgHorizontalColors(Color.parseColor("#0078D7"), Color.parseColor("#1A86DB"))//fixme 默认背景颜色,这个颜色会覆盖 backgroundColor 背景色。
+//                            }
+//                        }
                         relativeLayout {
                             //返回键
                             leftTextView = KTextView(this).apply {
@@ -252,7 +253,7 @@ open class KToolbar {
                                     width = kpx.x(60)//和PDA的返回键大小保持一致。
                                     height = width
                                     autoBg(R.mipmap.kera_ic_back)
-                                    autoBgColor = Color.WHITE
+                                    //autoBgColor = Color.WHITE
                                     isAutoCenterVertical = true
                                     isAutoCenterHorizontal = false
                                     autoLeftPadding = toolbarOffset.toFloat()

@@ -64,7 +64,7 @@ import kotlin.jvm.functions.Function1;
  * 竖屏二维码扫描(二维码，条码都能扫描)
  * 二维码识别率比较高；但是条码识别率就不一定准确(因为条码很容易失真)
  */
-public class CaptureActivity extends KBaseActivity implements Callback, OnClickListener {
+public class Qr_codeActivity extends KBaseActivity implements Callback, OnClickListener {
 
     private CaptureActivityHandler handler;
     private Vector<BarcodeFormat> decodeFormats;
@@ -141,7 +141,7 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
     private void initCamera(SurfaceHolder surfaceHolder) {
         try {
             try {
-                CameraManager cameraManager=CameraManager.get();
+                CameraManager cameraManager = CameraManager.get();
                 cameraManager.openDriver(this, surfaceHolder);
             } catch (IOException ioe) {
                 return;
@@ -277,7 +277,7 @@ public class CaptureActivity extends KBaseActivity implements Callback, OnClickL
 
     List<KLocalMedia> selectList = null;
 
-    //图片上传
+    //fixme 本地图片二维码识别。
     public void pictrueSelector() {
         try {
 //            PictureSelector.create(getActivity())

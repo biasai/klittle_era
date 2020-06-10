@@ -27,21 +27,20 @@ import android.util.Log;
 import com.google.zxing.BinaryBitmap;
 import com.google.zxing.DecodeHintType;
 import com.google.zxing.MultiFormatReader;
-import com.google.zxing.ReaderException;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
-import com.sdk.Qr_code.act.CaptureActivity;
+import com.sdk.Qr_code.act.Qr_codeActivity;
 import com.sdk.Qr_code.manager.CameraManager;
 
 final class DecodeHandler extends Handler {
 
 	private static final String TAG = DecodeHandler.class.getSimpleName();
 
-	private CaptureActivity activity=null;
+	private Qr_codeActivity activity=null;
 	private final MultiFormatReader multiFormatReader;
 
-	DecodeHandler(CaptureActivity activity,
-			Hashtable<DecodeHintType, Object> hints) {
+	DecodeHandler(Qr_codeActivity activity,
+                  Hashtable<DecodeHintType, Object> hints) {
 		multiFormatReader = new MultiFormatReader();
 		multiFormatReader.setHints(hints);
 		this.activity = activity;

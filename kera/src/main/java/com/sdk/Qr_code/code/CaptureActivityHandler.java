@@ -28,7 +28,7 @@ import android.os.Message;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
-import com.sdk.Qr_code.act.CaptureActivity;
+import com.sdk.Qr_code.act.Qr_codeActivity;
 import com.sdk.Qr_code.manager.CameraManager;
 
 /**
@@ -49,7 +49,7 @@ public final class CaptureActivityHandler extends Handler {
     private static final String TAG = CaptureActivityHandler.class
             .getSimpleName();
 
-    private CaptureActivity activity = null;
+    private Qr_codeActivity activity = null;
     private Activity activity2 = null;
     private final DecodeThread decodeThread;// 解码线程
     private State state;
@@ -61,7 +61,7 @@ public final class CaptureActivityHandler extends Handler {
         DONE// 完成
     }
 
-    public CaptureActivityHandler(CaptureActivity activity,
+    public CaptureActivityHandler(Qr_codeActivity activity,
                                   Vector<BarcodeFormat> decodeFormats, String characterSet) {
         this.activity = activity;
         decodeThread = new DecodeThread(activity, decodeFormats, characterSet,

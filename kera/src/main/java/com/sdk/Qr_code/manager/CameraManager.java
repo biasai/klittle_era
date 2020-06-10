@@ -35,8 +35,10 @@ import com.sdk.Qr_code.code.FlashlightManager;
 import com.sdk.Qr_code.code.PlanarYUVLuminanceSource;
 import com.sdk.Qr_code.code.PreviewCallback;
 
+import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.comm.kpx;
 import cn.oi.klittle.era.exception.KCatchException;
+import cn.oi.klittle.era.toolbar.KToolbar;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 
 /**
@@ -290,7 +292,21 @@ public final class CameraManager {
         }
     }
 
+    //fixme 静态方法；控制扫描框的位置。
+    public static Rect getRect() {
+        int leftOffset = kpx.INSTANCE.x(32);
+        int rightOffset = kpx.INSTANCE.screenWidth(true) - leftOffset;
+        int width = rightOffset - leftOffset;
+        int topOffset = kpx.INSTANCE.statusHeight(KBaseApplication.getInstance()) + KToolbar.Companion.getHeight() + kpx.INSTANCE.y(100);
+        int bottomOffset = topOffset + width;
+        Rect rect = new Rect(leftOffset, topOffset, rightOffset,
+                bottomOffset);
+        return rect;
+    }
+
     /**
+     * 0067305985
+     * <p>
      * getFramingRect()参照物必须是全屏的。因为相机是全屏的。ViewfinderView也必须是全屏的。这样截取的图片才能对应上
      * ViewfinderView画框，以及Camera扫码都在这个区域。
      * <p>
@@ -301,30 +317,40 @@ public final class CameraManager {
      * @return
      */
     public Rect getFramingRect() {
-        //int widthPercent = 55;
-        int widthPercent = 65;// 扫描框的百分比宽度，以整个屏幕宽带为基础,取值范围(0~100)
-        int left = 50;// 扫描框与屏幕左边的距离。以整个屏幕的百分比为基础,取值范围(0~100)
-        //int top = 30;
-        int top = 40;// 扫描框与屏幕顶部的距离。同上
-        Point screenResolution = configManager.getScreenResolution();
         if (framingRect == null || (framingRect.right - framingRect.left) <= 0 || (framingRect.bottom - framingRect.top) <= 0) {
             if (camera == null) {
                 return null;
             }
-            //screenResolution.x 屏幕的宽度
-            //screenResolution.y屏幕的高度
-            int width = (int) (screenResolution.x * widthPercent / 100);
-            int height = width;
-            int leftOffset = (int) ((screenResolution.x - width) * left / 100);
-            int topOffset = (int) ((screenResolution.y - height) * top / 100);
-            framingRect = new Rect(leftOffset, topOffset, leftOffset + width,
-                    topOffset + height);
-
+            framingRect = getRect();
             //Log.e("test", "扫描框\tleft:\t" + framingRect.left + "\ttop:\t" + framingRect.top + "\tright:\t" + framingRect.right + "\tbottom:\t" + framingRect.bottom + "\twidth:\t" + (framingRect.right - framingRect.left + "\theight:\t" + (framingRect.bottom - framingRect.top)));
-
         }
         return framingRect;
     }
+
+    Rect framingRect_QrPreview = null;//fixme 二维码扫描的实际识别区域。
+
+    /**
+     * fixme 扫描框，实际扫描的的位置。即：二维码识别的区域。
+     *
+     * @return
+     */
+    public Rect getFramingRect_QrPreview() {
+        if (framingRect_QrPreview == null || (framingRect_QrPreview.right - framingRect_QrPreview.left) <= 0 || (framingRect_QrPreview.bottom - framingRect_QrPreview.top) <= 0) {
+            if (camera == null) {
+                return null;
+            }
+            //fixme 二维码识别的区域，尽可能的大一些。
+            int leftOffset = 0;
+            int topOffset = 0;
+            int rightOffset = kpx.INSTANCE.screenWidth(true);
+            int bottomOffset = kpx.INSTANCE.screenHeight(true, KBaseApplication.getInstance()) - kpx.INSTANCE.x(100);
+            framingRect_QrPreview = new Rect(leftOffset, topOffset, rightOffset,
+                    bottomOffset);
+            //Log.e("test", "扫描框\tleft:\t" + framingRect.left + "\ttop:\t" + framingRect.top + "\tright:\t" + framingRect.right + "\tbottom:\t" + framingRect.bottom + "\twidth:\t" + (framingRect.right - framingRect.left + "\theight:\t" + (framingRect.bottom - framingRect.top)));
+        }
+        return framingRect_QrPreview;
+    }
+
 
     /**
      * 获取扫描框里的图像【fixme 扫描完成之后，截图就是这个区域的图；只对这个区域进行扫描。】
@@ -332,7 +358,7 @@ public final class CameraManager {
      */
     public Rect getFramingRectInPreview() {
         if (framingRectInPreview == null || (framingRectInPreview.right - framingRectInPreview.left) <= 0 || (framingRectInPreview.bottom - framingRectInPreview.top) <= 0) {
-            Rect rect = new Rect(getFramingRect());//获取扫描框的矩形
+            Rect rect = new Rect(getFramingRect_QrPreview());//fixme 获取二维码识别区域。
             //fixme cameraResolution.x相机的高度；cameraResolution.y相机的宽度（因为是竖屏的，所以相机的宽和高切换了。）
             Point cameraResolution = configManager.getCameraResolution();
             //screenResolution.x屏幕的宽度；screenResolution.y屏幕的高度
@@ -424,7 +450,7 @@ public final class CameraManager {
                     }
                 }
             } catch (Exception e) {
-                KLoggerUtils.INSTANCE.e("judgeLight()异常：\t" + KCatchException.getExceptionMsg(e),true);
+                KLoggerUtils.INSTANCE.e("judgeLight()异常：\t" + KCatchException.getExceptionMsg(e), true);
             }
         }
         return false;
