@@ -110,13 +110,15 @@ open class KPhotoUi : KBaseUi() {
                                 text = KBaseUi.Companion.getString(R.string.kcomplete)//已完成
                             }
                             gravity=Gravity.CENTER
+                            rightPadding=kpx.x(24)
+                            leftPadding=kpx.x(12)
                         }.lparams {
                             width = wrapContent
                             //height = wrapContent
                             height= matchParent
                             centerVertically()
                             alignParentRight()
-                            rightMargin = kpx.x(24)
+                            //rightMargin = kpx.x(24)
                         }
 
                         num = ktextView {
@@ -128,12 +130,13 @@ open class KPhotoUi : KBaseUi() {
                                 all_radius(kpx.x(200))
                             }
                             visibility=View.INVISIBLE
+                            //rightPadding=kpx.x(12)
                         }.lparams {
                             width = kpx.x(42)
                             height = width
                             centerVertically()
                             leftOf(kpx.id("kcomplete"))
-                            rightMargin = kpx.x(12)
+                            //rightMargin = kpx.x(12)
                         }
                     }.lparams {
                         width = matchParent

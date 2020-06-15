@@ -6,6 +6,7 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.base.KBaseActivity
 import cn.oi.klittle.era.utils.KAssetsUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 /**
  * fixme 图片预览;在KPictureSelector.openExternalPreview()方法里调用了
@@ -29,6 +30,7 @@ open class KPreviewActivity : KBaseActivity() {
                 //完成
                 ui?.complete?.apply {
                     onClick {
+                        //KLoggerUtils.e("点击：\t"+isSelected,true)
                         if (isSelected) {
                             complete()
                         }

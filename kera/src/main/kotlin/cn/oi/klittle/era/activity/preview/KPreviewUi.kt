@@ -198,12 +198,14 @@ open class KPreviewUi : KBaseUi() {
                                 radius {
                                     all_radius(kpx.x(200))
                                 }
+                                //rightPadding=kpx.x(12)
+                                isClickable=true
                             }.lparams {
                                 width = kpx.x(42)
                                 height = width
                                 centerVertically()
                                 leftOf(kpx.id("kcomplete"))
-                                rightMargin = kpx.x(12)
+                                //rightMargin = kpx.x(12)
                             }
                             complete = ktextView {
                                 id = kpx.id("kcomplete")
@@ -217,13 +219,16 @@ open class KPreviewUi : KBaseUi() {
                                     text = KBaseUi.Companion.getString(R.string.kcomplete)//已完成
                                 }
                                 gravity=Gravity.CENTER
+                                rightPadding=kpx.x(24)
+                                leftPadding=kpx.x(12)
+                                isClickable=true
                             }.lparams {
                                 width = wrapContent
                                 //height = wrapContent
                                 height= matchParent
                                 centerVertically()
                                 alignParentRight()
-                                rightMargin = kpx.x(24)
+                                //rightMargin = kpx.x(24)
                             }
                         }.lparams {
                             width = matchParent
