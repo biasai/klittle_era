@@ -31,6 +31,7 @@ import java.lang.Exception
 //            }
 
 /**
+ * fixme 建议尽量少用这个布局。测试发现，子控件比较多的时候，渲染速度很慢。初步估计就是我添加的 viewGroup 这个变量导致的。
  * Created by 彭治铭 on 2018/11/24.
  * 自所以用线性布局，是因为 .lparams{}默认就是线性布局，方便。
  */
