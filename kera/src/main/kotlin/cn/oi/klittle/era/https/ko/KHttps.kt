@@ -232,14 +232,12 @@ open class KHttps() {
         if (isShowLoad) {
             if (isSharingDialog) {
                 progressbar2Count--//fixme 网络进度条计算--
-                if (progressbar == progressbar2) {
-                    //共享弹窗。
-                    if (progressbar2Count <= 0) {
-                        dismissProgressbar2()//fixme 所以的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
-                        progressbar2 = null
-                    }
-                } else {
-                    dismissProgressbar2()
+                //共享弹窗。不要判断 progressbar2==progressbar；这两个可能不会相等。之前做了这个判断，而导致共享弹窗不消失问题。
+                if (progressbar2Count <= 0) {
+                    dismissProgressbar2()//fixme 所有的共享弹窗都结束了，才能关闭。即最后一个弹窗关闭。
+                    progressbar2?.dismiss()
+                    progressbar2?.onDestroy()
+                    progressbar2 = null
                 }
             } else {
                 //正常关闭弹窗
@@ -270,8 +268,8 @@ open class KHttps() {
             if (!file.exists()) {
                 file.mkdirs()//不存在则创建
             }
-        }catch (e:Exception){
-            KLoggerUtils.e("getJaveCacheFile()异常：\t"+KCatchException.getExceptionMsg(e),true)
+        } catch (e: Exception) {
+            KLoggerUtils.e("getJaveCacheFile()异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
         return file
     }

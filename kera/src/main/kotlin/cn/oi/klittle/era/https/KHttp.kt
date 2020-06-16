@@ -276,11 +276,13 @@ object KHttp {
 
     fun Post2(url: String?, requestParams: KHttps?, requestCallBack: KGenericsCallback? = null, timeOut: Int = 3000) {
         var url = url?.replace("\\", "/");//不识别反斜杠；只识别斜杠。
+        var isRentru = false//fixme 是否不执行，以防万一。
         url?.let {
             requestParams?.let {
                 if (it.isUiThread) {
                     it.activity?.let {
                         if (it.isFinishing) {
+                            isRentru = true
                             return//Activity都关闭了，不需要请求了。
                         }
                     }
@@ -289,10 +291,14 @@ object KHttp {
                     //不允许网络重复请求
                     if (map.containsKey(getUrlUnique(it))) {
                         //Log.e("test","重复了post")
+                        isRentru = true
                         return
                     }
                 }
                 map.put(getUrlUnique(it), "网络请求标志开始")//去除标志，在onFinish()方法里
+            }
+            if (isRentru) {
+                return
             }
             requestParams?.addProgressbarCount()//fixme 网络弹窗计数++
             //开启协程协议
