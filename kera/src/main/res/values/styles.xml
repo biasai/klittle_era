@@ -134,7 +134,7 @@
         <!-- true浮现在activity之上(布局居中),false覆盖当前Activity布局，全屏有效(布局以左上角为标准) -->
         <item name="android:backgroundDimEnabled">true</item>
         <!-- true为 模糊（整个屏幕显半透明状态）        false为不模糊, 透明度0.4挺好的，颜色不浅也不深。 -->
-        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:backgroundDimAmount">0.5</item>
         <!-- 屏幕透明度,只对屏幕背景有效，不影响布局内容(backgroundDimEnabled为true时才有效) -->
         <item name="android:windowFullscreen">false</item><!--true全屏显示,false会保留状态栏-->
         <item name="android:textAllCaps">false</item>//解决按钮默认全部大写问题
@@ -194,7 +194,7 @@
         <!-- true浮现在activity之上(布局居中),false覆盖当前Activity布局，全屏有效(布局以左上角为标准) -->
         <item name="android:backgroundDimEnabled">true</item>
         <!-- true为 模糊（整个屏幕显半透明状态）        false为不模糊 -->
-        <item name="android:backgroundDimAmount">0.4</item>
+        <item name="android:backgroundDimAmount">0.5</item>
         <!-- 屏幕透明度,只对屏幕背景有效，不影响布局内容(backgroundDimEnabled为true时才有效) -->
         <item name="android:windowFullscreen">true
         </item><!--windowIsFloating设置成false时全屏才有效。true全屏显示不会有状态栏,false会保留状态栏-->

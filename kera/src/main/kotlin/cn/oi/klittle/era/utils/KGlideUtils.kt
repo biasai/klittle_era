@@ -315,6 +315,7 @@ object KGlideUtils {
 
 
     /**
+     * fixme 耗时，最好在子线程中调用。主线程会异常。
      * @param path Assets目录下的图片路径;如："html/p.jpg"
      * @param overrideWidth 图片宽度
      * @param overrideHeight 图片高度

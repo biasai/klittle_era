@@ -6,6 +6,7 @@ import android.view.View
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.KToast
+import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.view.KProgressCircleView
@@ -21,6 +22,7 @@ import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import org.jetbrains.anko.space
 
 //fixme timeOutCallback新增超时事件回调。
 
@@ -36,6 +38,10 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
                 gravity = Gravity.CENTER
                 var progressView = KProgressCircleView(this.context)
                 addView(progressView)
+                space { }.lparams {
+                    width = 0
+                    height = kpx.y(100)
+                }
             }
         }.view
     }
@@ -58,6 +64,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
     var timeOut: Long = 35000//fixme 弹框超时时间默认设置为35秒;单位是毫秒。
     private var showTime: Long? = 0//记录显示的时间
     var disposable: Disposable? = null
+
     //观察者
     private var observe: Observer<Boolean>? = object : Observer<Boolean> {
         override fun onSubscribe(d: Disposable?) {
