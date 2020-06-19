@@ -36,7 +36,7 @@ class KProgressCircleView : View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(kpx.x(200), kpx.x(200))
+        setMeasuredDimension(kpx.x(150), kpx.x(150))
     }
 
     var dst: Bitmap? = null//位图图片

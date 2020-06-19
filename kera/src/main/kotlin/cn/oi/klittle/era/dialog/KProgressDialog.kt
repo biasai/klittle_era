@@ -71,9 +71,11 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
             disposable = d
         }
 
+        //fixme 连接超时回调。
         override fun onComplete() {
             showTime?.let {
                 if (System.currentTimeMillis() - it >= timeOut) {
+                    https?.cancelHttp(false)//fixme 网络连接超时，网络请求取消（回调清空）。
                     dismiss()//fixme 弹框超时关闭
                     ctx?.runOnUiThread {
                         try {
@@ -155,7 +157,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
     private fun dispose2() {
         try {
             https?.let {
-                //fixme 超时处理
+                //fixme 超时处理在 onComplete（）里，调用了 https?.cancelHttp(false)网络取消。
                 //fixme 移除网络重复请求标志；防止第二次请求时没有反应；
                 KHttp.map.remove(KHttp.getUrlUnique(it))
                 KHttp.map.remove(KHttp.getUrlUnique2(it))

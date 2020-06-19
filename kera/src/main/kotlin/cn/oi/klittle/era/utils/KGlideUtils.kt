@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.util.Log
 import android.widget.ImageView
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.https.KHttp
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
@@ -239,7 +240,7 @@ object KGlideUtils {
                 return bitmap
             }
         } catch (e: Exception) {
-            Log.e("test", "Glide File流异常" + e.message)
+           KLoggerUtils.e( "Glide File流异常:\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
         }
         return null
     }
@@ -359,7 +360,7 @@ object KGlideUtils {
                 return bitmap
             }
         } catch (e: Exception) {
-            Log.e("test", "Glide Assets流异常" + e.message)
+            KLoggerUtils.e("Glide Assets流异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
         return null
     }
@@ -479,7 +480,7 @@ object KGlideUtils {
                 return bitmap
             }
         } catch (e: Exception) {
-            Log.e("test", "Glide Res流异常" + e.message)//fixme You must call this method on a background thread;必须在子线程中调用，主线程会报错哦。
+            KLoggerUtils.e("Glide Res流异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)//fixme You must call this method on a background thread;必须在子线程中调用，主线程会报错哦。
         }
         return null
     }
@@ -624,7 +625,7 @@ object KGlideUtils {
                 return bitmap
             }
         } catch (e: Exception) {
-            Log.e("test", "Glide Url流异常" + e.message)
+            KLoggerUtils.e("Glide Url流异常:\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
         return null
     }

@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.util.Log
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.utils.KAppUtils
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KStringUtils
 import com.sdk.scan.utils.KDoubleBirdUtils
 import com.sdk.scan.utils.KScanReader
@@ -41,6 +42,9 @@ open class KScanActivity : KRfidActivity() {
         this.onScanResult = onScanResult
     }
 
+    private var pBarcodeStr: String? = null//fixme 记录上传扫描结果。
+    private var pBarcodeTime: Long = 0//fixme 记录上传扫描的时间
+
     private var isNewPdA_Alpas2 = false//是否为新版PDA
     private var isDoubleBird = false//是否为新版PDA
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,8 +53,18 @@ open class KScanActivity : KRfidActivity() {
             if (isEnableScan()) {
                 //回调监听
                 onScanResult { barcodeType, barcodeStr ->
-                    if (isEnableScan2()) {
-                        onScanResult(barcodeType, barcodeStr)
+                    if (isEnableScan2() && barcodeStr != null) {
+//                        if (barcodeStr.equals(pBarcodeStr)) {
+//                            KLoggerUtils.e("重复扫描间隔时间：\t" + (System.currentTimeMillis() - pBarcodeTime))
+//                        }
+                        if (barcodeStr.equals(pBarcodeStr) && (System.currentTimeMillis() - pBarcodeTime) <= 900) {//fixme 测试发现新版PDA两次连续扫描间距在203~361之间左右。
+                            pBarcodeTime = System.currentTimeMillis()
+                            return@onScanResult//fixme 防止相同的时间，重复扫描一个条码。
+                        } else {
+                            pBarcodeStr = barcodeStr
+                            pBarcodeTime = System.currentTimeMillis()
+                            onScanResult(barcodeType, barcodeStr)
+                        }
                     }
                 }
                 //监听扫描
@@ -163,6 +177,8 @@ open class KScanActivity : KRfidActivity() {
                 }
                 scanReader = null
             }
+            pBarcodeTime = 0
+            pBarcodeStr = null
         } catch (e: Exception) {
             e.printStackTrace()
         }

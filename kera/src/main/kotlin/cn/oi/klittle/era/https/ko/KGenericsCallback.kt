@@ -175,7 +175,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
 
     //结束，无论是成功还是失败都会调用。且最后执行
     open fun onFinish() {
-        https?.cancel()
+        https?.finish()
         https = null
     }
 }

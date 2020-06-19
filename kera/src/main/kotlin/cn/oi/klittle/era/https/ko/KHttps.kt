@@ -313,8 +313,49 @@ open class KHttps() {
         return this
     }
 
-    //fixme 网络取消(不存在真正的网络请求取消,仅仅只是取消了网络回调而已)
-    fun cancel() {
+    private var isCancelHttp: Boolean = false//判断网络请求是否已经取消。
+
+    /**
+     * fixme 主动取消网络请求(不存在真正的网络请求取消,仅仅只是取消了网络回调而已)；在KProgressDialog网络连接超时时，会调用。
+     * @param isShutDialog 是否关闭弹窗。如果是在Dialog里面已经关闭了弹窗，就不需要再关闭了。
+     */
+    fun cancelHttp(isShutDialog: Boolean) {
+        if (isCancelHttp) {
+            return
+        }
+        try {
+            isCancelHttp = true
+            var https: KHttps? = this
+            https?.let {
+                var key = KHttp.getUrlUnique(it)
+                if (KHttp.map.containsKey(key)) {
+                    KHttp.map.remove(key)
+                }
+
+                var key2 = KHttp.getUrlUnique2(it)
+                if (KHttp.map.containsKey(key2)) {
+                    KHttp.map.remove(key2)//fixme 去除网络请求标志2
+                }
+
+                it.urlUniqueParams = null
+            }
+            //fixme 关闭进度条
+            if (isShutDialog) {
+                https?.isShowLoad?.let {
+                    if (it) {
+                        https?.dismissProgressbar()
+                    }
+                }
+            }
+            https?.onDestrory()//fixme 回调置空。
+            https = null
+        } catch (e: Exception) {
+            KLoggerUtils.e("网络取消异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+        }
+    }
+
+    //fixme 在KGenericsCallback最后执行。
+    fun finish() {
         try {
             //fixme 去除网络请求标志(网络请求结束)
             //fixme [放在最前；放在https?.finish之前执行。防止finish()中再次执行网络请求无效。]
