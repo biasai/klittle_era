@@ -17,10 +17,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
 /**
- * 圆形进度条控件; fixme KProgressDialog网络进度条有使用到。
+ * 圆形进度条控件;fixme KSubmitProgressDialog提交弹框有使用到。
  * Created by 彭治铭 on 2017/9/24.
  */
-open class KProgressCircleView : View {
+open class KProgressCircleView2 : View {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         init()
         viewGroup.addView(this)
@@ -36,15 +36,14 @@ open class KProgressCircleView : View {
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         //super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(kpx.x(150), kpx.x(150))//fixme 这个改动时，要注意 KProgressDialog里面的布局。里面有用到哦。
+        setMeasuredDimension(kpx.x(150), kpx.x(150))//fixme 这个改动时，要注意 KSubmitProgressDialog里面的布局。里面有用到哦。
 
     }
 
     var dst: Bitmap? = null//位图图片
-    var load: String? = "Loading"//文本
     private fun init() {
         GlobalScope.async {
-            dst = KGlideUtils.getBitmapFromAssets("kera/progress/circleloading.png", kpx.x(128), kpx.x(128))
+            dst = KGlideUtils.getBitmapFromResouce(R.mipmap.kera_loading, kpx.x(90), kpx.x(90))
             postInvalidate()
         }
     }
@@ -68,27 +67,18 @@ open class KProgressCircleView : View {
                 }
                 if (dst != null && !dst!!.isRecycled) {
                     canvas.save()
-                    if (degress >= Float.MAX_VALUE - 4) {
+                    if (degress >= Float.MAX_VALUE - 3) {
                         degress = 0f
                     }
-                    degress += 4
+                    degress += 3
                     canvas.rotate(degress, width / 2f, height / 2f)
                     canvas.drawBitmap(dst, (width - dst!!.getWidth()) / 2f, (height - dst!!.getHeight()) / 2f, paint)//fixme 旋转的图片
                     canvas.restore()
                 }
-                load?.trim()?.let {
-                    if (it.length > 0) {
-                        paint?.let {
-                            if (load != null) {
-                                canvas.drawText(load, width / 2f, height / 2f + it.textSize / 2, paint)//fixme 文本
-                            }
-                        }
-                    }
-                }
                 invalidate()
             }
         } catch (e: Exception) {
-            KLoggerUtils.e("网络进度条异常：\t" + KCatchException.getExceptionMsg(e))
+            KLoggerUtils.e("网络提交进度条异常：\t" + KCatchException.getExceptionMsg(e))
         }
     }
 }

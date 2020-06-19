@@ -15,6 +15,8 @@ import cn.oi.klittle.era.utils.KAssetsUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KAutoLinefeedCenterLayout
 import cn.oi.klittle.era.view.KAutoLinefeedLayout
+import cn.oi.klittle.era.view.KProgressCircleView
+import cn.oi.klittle.era.view.KProgressCircleView2
 import cn.oi.klittle.era.widget.*
 import cn.oi.klittle.era.widget.MPAndroidChart.*
 import cn.oi.klittle.era.widget.book.view.KBookPageView
@@ -873,6 +875,24 @@ abstract class KBaseUi {
         inline fun ViewManager.kAutoLinefeedCenterLayout(init: (@AnkoViewDslMarker KAutoLinefeedCenterLayout).() -> Unit): KAutoLinefeedCenterLayout {
             return ankoView({ ctx: Context -> KAutoLinefeedCenterLayout(ctx) }, theme = 0) { init() }
         }
+
+        //fixme 进度条
+        inline fun ViewManager.KProgressCircleView(init: (@AnkoViewDslMarker KProgressCircleView).() -> Unit): KProgressCircleView {
+            return ankoView({ ctx: Context -> KProgressCircleView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kProgressCircleView(init: (@AnkoViewDslMarker KProgressCircleView).() -> Unit): KProgressCircleView {
+            return ankoView({ ctx: Context -> KProgressCircleView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.KProgressCircleView2(init: (@AnkoViewDslMarker KProgressCircleView2).() -> Unit): KProgressCircleView2 {
+            return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kProgressCircleView2(init: (@AnkoViewDslMarker KProgressCircleView2).() -> Unit): KProgressCircleView2 {
+            return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
+        }
+
     }
 
 }

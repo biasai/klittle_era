@@ -10,6 +10,7 @@ import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.view.KProgressCircleView
+import cn.oi.klittle.era.view.KProgressCircleView2
 import org.jetbrains.anko.*
 import cn.oi.klittle.era.widget.KToggleView
 import cn.oi.klittle.era.widget.compat.KTextView
@@ -36,7 +37,7 @@ import kotlinx.coroutines.delay
 open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = false) : KBaseDialog(ctx, isStatus = isStatus, isTransparent = isTransparent) {
 
     var bg: KToggleView? = null
-    var progress: KProgressCircleView? = null
+    var progress: KProgressCircleView2? = null
     var mession: KTextView? = null
     override fun onCreateView(context: Context): View? {
         return context.UI {
@@ -47,11 +48,12 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
                     bg = KToggleView(this).apply {
                         toggle {
                             width = kpx.x(600)
-                            height = kpx.x(300)
+                            height = kpx.x(280)
                             shadow_color = Color.BLACK
-                            shadow_radius = kpx.x(10f)
-                            all_radius(kpx.x(24f))
-                            bgHorizontalColors(Color.parseColor("#28292E"), Color.parseColor("#2B2C31"), Color.parseColor("#2A2B30"))
+                            shadow_radius = kpx.x(15f)
+                            //all_radius(kpx.x(30f))//不要圆角，圆角效果感觉不好看。
+                            //bgHorizontalColors(Color.parseColor("#28292E"), Color.parseColor("#2B2C31"), Color.parseColor("#2A2B30"))
+                            bg_color=Color.parseColor("#414141")
                         }
                     }.lparams {
                         width = matchParent
@@ -59,11 +61,11 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
                         centerInParent()
                     }
                     //左边的进度条
-                    progress = KProgressCircleView(this).apply {
-                        load = null
+                    progress = KProgressCircleView2(this).apply {
                     }.lparams {
                         centerVertically()
                         alignParentLeft()
+                        leftMargin = kpx.x(90)
                     }
                     //右边的文本框
                     mession = KTextView(this).apply {
@@ -75,8 +77,9 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
                     }.lparams {
                         alignParentLeft()
                         centerVertically()
-                        leftMargin = kpx.x(190)
+                        leftMargin = kpx.x(160)
                         width = matchParent
+                        height= wrapContent
                     }
                 }.lparams {
                     width = kpx.x(630)
@@ -143,13 +146,13 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
     }
 
     private var showTime: Long? = 0//记录显示的时间
-    var timeOut: Long = 100000//fixme 弹框超时时间默认设置为100秒;单位是毫秒。
+    var timeOut: Long = 80000//fixme 弹框超时时间默认设置为80秒;单位是毫秒。
     fun timeOut(timeOut: Long): KSubmitProgressDialog {
         this.timeOut = timeOut
         return this
     }
 
-    var timeOutInfo: String? = null//fixme 默认为空；getString(R.string.ktimeout)//连接超时信息设置。
+    var timeOutInfo: String? = getString(R.string.ktimeout)//fixme 默认为空；getString(R.string.ktimeout)//连接超时信息设置。
     fun timeOutInfo(timeOutInfo: String?): KSubmitProgressDialog {
         this.timeOutInfo = timeOutInfo
         return this
