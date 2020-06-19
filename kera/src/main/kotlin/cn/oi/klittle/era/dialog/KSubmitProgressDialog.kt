@@ -146,7 +146,7 @@ open class KSubmitProgressDialog(ctx: Context, isStatus: Boolean = true, isTrans
     }
 
     private var showTime: Long? = 0//记录显示的时间
-    var timeOut: Long = 80000//fixme 弹框超时时间默认设置为80秒;单位是毫秒。
+    var timeOut: Long = 90000//fixme 弹框超时时间默认设置为90秒;单位是毫秒。
     fun timeOut(timeOut: Long): KSubmitProgressDialog {
         this.timeOut = timeOut
         return this
