@@ -31,10 +31,12 @@ open class KBasePx {
     var density: Float = 0.toFloat()//当前设备dpi密度值比例，即 dpi/160 的比值
     var ignorex: Boolean = false//是否忽悠比例缩放
     var ignorey: Boolean = false//是否忽悠比例缩放
+
     /**
      * fixme 注意，宽（水平方向）和高（垂直方向）是会随屏幕切屏（横屏竖屏）而改变的。在此我们已竖屏为标准。
      */
     private var screenWidth = 0f//屏幕宽(以竖屏为标准，宽度比高度小)
+
     //fixme 屏幕高
     private var screenHeight = 0f
 
@@ -175,10 +177,14 @@ open class KBasePx {
         return true
     }
 
+    fun screenWidth(): Int {
+        return screenWidth(true)
+    }
+
     /**
      * fixme 获取屏幕宽，isVertical true以竖屏为标准。默认是。false以横屏为标准
      */
-    fun screenWidth(isVertical: Boolean = true): Int {
+    fun screenWidth(isVertical: Boolean): Int {
         if (isVertical) {
             if (screenWidth < screenHeight) {
                 return screenWidth.toInt()//竖屏宽度比高度小
@@ -194,10 +200,14 @@ open class KBasePx {
         }
     }
 
+    fun screenHeight(): Int {
+        return screenHeight(true, KBaseUi.getActivity())
+    }
+
     /**
      * fixme 获取屏幕高，isVertical true以竖屏为标准。默认是。false以横屏为标准
      */
-    fun screenHeight(isVertical: Boolean = true, context: Context? = KBaseUi.getActivity()): Int {
+    fun screenHeight(isVertical: Boolean, context: Context? = KBaseUi.getActivity()): Int {
         if (isVertical) {
             if (screenHeight > screenWidth) {
                 return screenHeight.toInt()//竖屏，高度比宽度大
