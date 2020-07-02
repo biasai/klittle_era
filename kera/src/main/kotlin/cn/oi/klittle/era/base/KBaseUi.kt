@@ -36,6 +36,7 @@ import cn.oi.klittle.era.widget.viewpager.*
 import cn.oi.klittle.era.widget.web.K0JsBridgeWebView
 import cn.oi.klittle.era.widget.web.K3WebView
 import cn.oi.klittle.era.widget.web.KBridgeWebView
+import com.sdk.jbox2d.KJBox2dView
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
 import java.lang.Exception
@@ -893,6 +894,14 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
         }
 
+        //fixme JBox2d物理引擎
+        inline fun ViewManager.KJBox2dView(init: (@AnkoViewDslMarker KJBox2dView).() -> Unit): KJBox2dView {
+            return ankoView({ ctx: Context -> KJBox2dView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kJBox2dView(init: (@AnkoViewDslMarker KJBox2dView).() -> Unit): KJBox2dView {
+            return ankoView({ ctx: Context -> KJBox2dView(ctx) }, theme = 0) { init() }
+        }
     }
 
 }
