@@ -202,6 +202,7 @@ open class K1Widget : K0Widget {
 
     //是否开启静态全局音频，默认关闭
     var issMediaPlayerEnable = false
+
     //关闭按钮自定义声音
     //setSoundEffectsEnabled(false)
     //按钮声音播放
@@ -324,6 +325,7 @@ open class K1Widget : K0Widget {
 
     private var onClickes: MutableList<() -> Unit>? = mutableListOf<() -> Unit>()
     var hasClick = false//判断是否已经添加了点击事情。
+
     //fixme 自定义点击事件，可以添加多个点击事情。互不影响,isMul是否允许添加多个点击事件。默认不允许
     //isMul 是否允许添加多个点击事件，ture允许。false默认不允许。
     open fun onClick(isMul: Boolean = false, onClick: () -> Unit) {
@@ -406,7 +408,7 @@ open class K1Widget : K0Widget {
                             }
                         }
                     } catch (e: Exception) {
-                        KLoggerUtils.e("K1Widget.kt点击事件异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+                        KLoggerUtils.e("K1Widget.kt点击事件异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
                     }
                 }
                 hasClick = true
@@ -445,6 +447,7 @@ open class K1Widget : K0Widget {
     }
 
     private var onFocusChangeList: MutableList<((v: View, hasFocus: Boolean) -> Unit)?>? = mutableListOf<((v: View, hasFocus: Boolean) -> Unit)?>()
+
     //fixme 重写聚焦事件,会覆盖之前的聚焦事件
     open fun onFocusChange(callbak: ((v: View, hasFocus: Boolean) -> Unit)? = null) {
         if (onFocusChangeList == null) {
@@ -540,6 +543,7 @@ open class K1Widget : K0Widget {
     var pointDownTime: Long = 0//手指按下时间
     var pointUpTime: Long = 0//手指离开时时间
     var pointSubTime: Long = 0//手指按下到手指离开之间的时间差。
+
     //记录手指按下的点。
     var pointDownX: Float = 0f
     var pointDownY: Float = 0f
@@ -645,6 +649,7 @@ open class K1Widget : K0Widget {
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
     open var drawBehind: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+
     //fixme 自定义画布()，先画，会显示在后面,交给调用者去实现
     open var drawFront: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
@@ -658,6 +663,7 @@ open class K1Widget : K0Widget {
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
     open var drawFirst: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+
     //fixme 自定义画布()，先画，会显示在后面,交给调用者去实现
     open var drawLast: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
@@ -727,6 +733,7 @@ open class K1Widget : K0Widget {
 
 
     var mPaint: Paint? = KBaseView.getPaint()
+
     //画布重置
     fun resetPaint(): Paint {
         if (mPaint == null) {
@@ -795,7 +802,7 @@ open class K1Widget : K0Widget {
         try {
             super.dispatchDraw(canvas)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+            KLoggerUtils.e("自定义View dispatchDraw异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 
@@ -803,15 +810,15 @@ open class K1Widget : K0Widget {
         try {
             super.onMeasure(widthSpec, heightSpec)
         } catch (e: java.lang.Exception) {
-            KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+            KLoggerUtils.e("自定义View onMeasure异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 
     override fun draw(canvas: Canvas?) {
+        if (isOnDestroy || width <= 0 || height <= 0 || canvas == null) {
+            return
+        }
         try {
-            if (width <= 0 || height <= 0 || canvas == null) {
-                return
-            }
             canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)//画布清除
             //fixme 这里系统传下来的canvas可能每次都是实例化的哦。
             mCamera?.save()//fixme 保存相机初始的状态
@@ -840,7 +847,7 @@ open class K1Widget : K0Widget {
             } catch (e: Exception) {
                 //防止异常。
                 e.printStackTrace()
-                KLoggerUtils.e("原生 super.draw 异常：\t" + e.message,isLogEnable = true)
+                KLoggerUtils.e("原生 super.draw 异常：\t" + e.message, isLogEnable = true)
             }
             canvas?.apply {
                 mCanvas = canvas
@@ -883,7 +890,7 @@ open class K1Widget : K0Widget {
             mCamera?.restore()//fixme 恢复相机的状态；防止异常
         } catch (e: Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("自定义View draw 异常：\t" + KCatchException.getExceptionMsg(e),isLogEnable = true)
+            KLoggerUtils.e("自定义View draw 异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 
@@ -992,6 +999,7 @@ open class K1Widget : K0Widget {
     var waterDuration = 550L//水波纹时间
     private var waterPaint: Paint? = null
     private var objectAnimatorWaterRipple: ObjectAnimator? = null
+
     //自定义水波纹效果(效果杠杠的，系统的效果感觉不好看，所以自定义)
     fun waterRipple() {
         if (isWaterRipple && waterColor != Color.TRANSPARENT)
@@ -1024,6 +1032,7 @@ open class K1Widget : K0Widget {
     //记录布局加载完成的时间。防止短时间内重复调用。
     private var onGlobalLayoutFinishTime = 0L
     private var onGlobalLayoutListeneres: ArrayList<ViewTreeObserver.OnGlobalLayoutListener>? = null
+
     /**
      * fixme 控件加载完成的时候调用（已经具备固定的宽和高）
      * @param callback 回调返回x，y坐标(相对父容器)及宽和高
@@ -1097,7 +1106,14 @@ open class K1Widget : K0Widget {
         return intArray
     }
 
+    //fixme 销毁回调
+    var destroy: (() -> Unit?)? = null
+    fun destroy(destroy: (() -> Unit)? = null) {
+        this.destroy = destroy
+    }
+
     var isOnDestroy: Boolean = false//fixme 判断是否销毁了。
+
     //fixme 销毁
     open fun onDestroy() {
         try {
@@ -1155,8 +1171,14 @@ open class K1Widget : K0Widget {
             releaseMediaPlayer()//fixme 释放掉自己的音频（静态的音频是全局的，不会自动销毁，要自己手动去释放。）
             onDetachedFromWindow()
             destroyDrawingCache()
+            //fixme 销毁回调
+            destroy?.let {
+                it()
+            }
+            destroy = null
         } catch (e: Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("onDestroy()销毁异常：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
     }
 }

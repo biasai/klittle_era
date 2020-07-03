@@ -329,6 +329,9 @@ open class K1RadiusWebView : K0JsBridgeWebView {
                             phase = 0f
                         }
                     }
+                    if ((phase+it.dashSpeed)>=Float.MAX_VALUE){
+                        phase=0f
+                    }
                     phase += it.dashSpeed
                     invalidate()
                 }

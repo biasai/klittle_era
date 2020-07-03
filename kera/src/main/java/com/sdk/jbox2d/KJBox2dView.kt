@@ -8,13 +8,59 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KView
-import org.jbox2d.collision.AABB
-import org.jbox2d.collision.CircleDef
-import org.jbox2d.common.Vec2
-import org.jbox2d.dynamics.Body
-import org.jbox2d.dynamics.BodyDef
-import org.jbox2d.dynamics.World
 
+//                fixme 简单调用案例：
+//                kJBox2dView {
+//                    var circleBody: KCircleBody? = null//fixme 圆形刚体
+//                    var circleBody2: KCircleBody? = null//fixme 圆形刚体
+//                    var polygonBox: KPolygonBody? = null//fixme 多边形（矩形）刚体
+//
+//                    world {
+//                        //fixme 碰撞盒子边界：createWorld()之前调用
+//                        aabb {
+//                            //fixme 当刚体position中心坐标到达边界时，刚体就会禁止不动。（左上右下，四个面，只要到达边界就会禁止，物理引擎将失效）会被冻结并停止模拟
+//                            lowerBound.set(0f, 0f);//fixme 最小边界（上边界，以左上角为起点[0,0]）
+//                            upperBound.set(1000.0f, 10000.0f);//fixme 最大边界（下边界，即右下角）
+//                        }
+//                        //fixme 重力向量：createWorld()之前调用
+//                        gravity {
+//                            set(0.0f, 100.0f)
+//                        }
+//                        createWorld()//fixme 创建世界(比不可少，必须手动创建)
+//                        //fixme 创建刚体：createWorld()之后调用
+//                        body {
+//                            //fixme 创建圆形刚体
+//                            circleBody = createCircleBody(kpx.x(100f), 0f, kpx.x(50f), density = 100000f, friction = 0.8f, restitution = 1f)?.apply {
+//                                color = Color.RED
+//                                style = Paint.Style.STROKE
+//                                strokeWidth = kpx.x(2f)
+//                                dashWidth = kpx.x(15f)
+//                                dashGap = kpx.x(10f)
+//                                dashSpeed = kpx.x(2f)
+//                            }
+//                            circleBody2 = createCircleBody(kpx.x(300F), 0F, kpx.x(50f), density = 100f, friction = 110.8f, restitution = 0.9f)//fixme 创建圆形刚体
+//                            polygonBox = createPolygonBox(kpx.x(100f), kpx.x(800f), kpx.x(500f), kpx.x(100f), density = 0f)?.apply {
+//                                color = Color.BLUE
+//                            }
+//                        }
+//                    }
+//                    draw { canvas, paint ->
+//                        //fixme 绘制圆形刚体
+//                        circleBody?.drawCircle(canvas, paint)
+//                        circleBody2?.drawCircle(canvas, paint)
+//                        //fixme 绘制矩形刚体
+//                        polygonBox?.drawRect(canvas, paint)
+//                    }
+//                    //fixme 销毁
+//                    destroy {
+//                        circleBody = null
+//                        circleBody2=null
+//                        polygonBox=null
+//                    }
+//                }.lparams {
+//                    width = matchParent
+//                    height = matchParent
+//                }
 
 /**
  * fixme JBox2d物理引擎（官网下载地址：https://sourceforge.net/projects/jbox2d/）;http://www.jbox2d.org/
@@ -36,78 +82,43 @@ open class KJBox2dView : KView {
         //去除按钮原有阴影
         clearButonShadow()
         //fixme 初始化创建碰撞世界.
-        world { }
     }
 
     override fun draw(canvas: Canvas?) {
-        try {
-            super.draw(canvas)
-            world?.let {
-                it?.step(timeStep, iterations) //fixme 开始物理模拟,必须实时调用,不然没有效果
-                invalidate()//fixme 不停的绘制
+        if (!isOnDestroy) {
+            try {
+                super.draw(canvas)
+                world?.let {
+                    it?.world?.let {
+                        it?.step(timeStep, iterations) //fixme 开始物理模拟,必须实时调用,不然没有效果
+                        invalidate()//fixme 不停的绘制
+                    }
+                }
+            } catch (e: Exception) {
+                KLoggerUtils.e("Jbox2d异常:\t" + KCatchException.getExceptionMsg(e), true)
             }
-        } catch (e: Exception) {
-            KLoggerUtils.e("Jbox2d异常:\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 
     var timeStep = 1f / 60f //模拟的的频率
-    var iterations = 30//迭代越大，模拟约精确，但性能越低
-    var world: World? = null//fixme 世界
-    fun world(block: World.() -> Unit): KJBox2dView {
+    var iterations = 15//迭代越大，模拟约精确，但性能越低
+    var world: KWorld? = null//fixme 世界
+    fun world(block: KWorld.() -> Unit): KJBox2dView {
         if (world == null) {
-            if (aabb == null) {
-                aabb { }
-            }
-            //重力向量
-            val gravity = Vec2(0.0f, 200.0f)
-            //是否节省性能,当没有碰撞时休眠
-            val doSleep = true
-            world = World(aabb, gravity, doSleep);
+            world = KWorld();
         }
         world?.let {
             block(it)
         }
+        postInvalidate()//界面刷新
         return this
     }
 
-    var aabb: AABB? = null//fixme 可以理解为世界的边界盒子
-    fun aabb(block: AABB.() -> Unit): KJBox2dView {
-        if (aabb == null) {
-            aabb = AABB()
-            aabb?.let {
-                //fixme 边界值，注意这里使用的是现实世界的单位
-                it.lowerBound.set(-100.0f, -100.0f);//fixme 最小边界（下边界）
-                it.upperBound.set(1000.0f, 1000.0f);//fixme 最大边界（上边界）
-            }
-        }
-        aabb?.let {
-            block(it)
-        }
-        return this
-    }
-
-    /**
-     * fixme 创建圆形刚体(物体)
-     * @param x 圆心坐标位置
-     * @param y
-     * @param radius 半径
-     */
-    open fun createCircleBody(x: Float, y: Float, radius: Float): Body? {
-        if (world == null) {
-            world { }
-        }
-        var circleDef = CircleDef()
-        circleDef.density = 7f//fixme 密度,如果为0；在世界world里面就是静止不动的。
-        circleDef.friction = 0.8f//摩擦系数
-        circleDef.radius = radius//半径
-        circleDef.restitution = 0.3f//能量损失率
-        var bodyDef = BodyDef()
-        bodyDef.position.set(x, y)//fixme 设置位置,是刚体的中心坐标位置.
-        var body = world?.createBody(bodyDef)//在世界创建刚体
-        body?.createShape(circleDef)//指定刚体形状
-        body?.setMassFromShapes() //从附加的形状计算质量属性，最后执行，必不可少
-        return body
+    //fixme 销毁
+    override fun onDestroy() {
+        super.onDestroy()
+        world?.destroy()
+        world = null
     }
 
 }
