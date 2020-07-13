@@ -162,7 +162,8 @@ object KNotificationUtils {
         notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         val pendingIntent = PendingIntent.getActivity(getContext(), 0, notificationIntent, 0)//PendingIntent.FLAG_CANCEL_CURRENT
         builder.setContentIntent(pendingIntent)
-
+        //builder.setFullScreenIntent(pendingIntent,true)//fixme 网上说的是悬挂式通知，测试发现没有用。直接跳转到了目标Activity。亲测无效。
+        //var notifyTag = notificationId.toString() + "jpush";//由于同一条消息  id 一样  ，有针对悬挂式通知打了一个tag；
         var notification = builder.build()
         notification.defaults = Notification.DEFAULT_SOUND;// 设置为默认的声音
         if (isClear) {
@@ -171,6 +172,7 @@ object KNotificationUtils {
             notification.flags = Notification.FLAG_NO_CLEAR//fixme 用户无法清除,系统也清理不掉，需要自己手动去清理。用户体验不好，建议不要用。
 
         }
+        //manager.notify(notifyTag,notificationId, notification)
         manager.notify(notificationId, notification)
     }
 
