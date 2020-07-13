@@ -706,37 +706,7 @@ object KPermissionUtils {
         }
         return null
     }
-
-    //消息提示
-    fun Snackbarmake(activity: Activity? = getActivity(), info: String) {
-        getContent(activity)?.let {
-            val snackbar = Snackbar.make(it, info, Snackbar.LENGTH_LONG)
-                    .setAction(getString(R.string.ksetting)) {
-                        //立即设置
-//                        val packageURI = Uri.parse("package:" + activity!!.getPackageName())
-//                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
-//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                        activity.startActivity(intent)//跳转权限设置界面。基本上通用。小米是肯定行的。android6.0基本都可以。
-                        KIntentUtils.goPermissionsSetting(activity)//fixme 跳转权限设置界面
-                    }
-            val snackView = snackbar.view
-            //int textSize= (int) (UtilProportion.getInstance(this).adapterInt(24) * UtilProportion.getInstance(this).getTextProportion()/ UtilProportion.getInstance(this).getDensity());
-            snackView.setBackgroundColor(Color.parseColor("#61A465"))//浅绿色背景
-            //snackView.setBackgroundResource(R.drawable.shape_drawable_snackbar);
-            val snackbar_text = snackView.findViewById<View>(R.id.snackbar_text) as TextView
-            snackbar_text.setTextColor(Color.parseColor("#ffffff"))//设置通知文本的颜色，白色
-            snackbar_text?.textSize = kpx.textSizeX(30, false)
-            //snackbar_text.setTextSize(textSize);
-            val snackbar_action = snackView.findViewById<View>(R.id.snackbar_action) as TextView
-            snackbar_action.setTextColor(Color.parseColor("#FF3B80"))//点击文本的颜色,绯红
-            snackbar_action?.textSize = kpx.textSizeX(33, false)
-            //snackbar_action.setTextSize(textSize);
-            //snackbar_action.setBackground(null);
-            snackbar_action.setBackgroundDrawable(null)
-            snackbar.show()
-        }
-    }
-
+    
     var onRequestPermissionsResult: ((isAllow: Boolean) -> Unit)? = null
 
     //权限请求成功回调，返回参数为属于什么类型的权限申请。
@@ -789,7 +759,7 @@ object KPermissionUtils {
             info = getString(R.string.perMissionTypeALL)//几个常用的基本权限。
         }
         if (info != null) {
-            Snackbarmake(activity, info)
+            Snackbarmake(info,activity)
         }
     }
 
@@ -805,5 +775,39 @@ object KPermissionUtils {
             }
         }
     }
+
+    /**
+     * fixme 消息提示(权限申请失败时，KPermissionUtils.showFailure()会调用。)
+     * @param info 提示信息
+     */
+    fun Snackbarmake(info: String,activity: Activity? = getActivity()) {
+        getContent(activity)?.let {
+            val snackbar = Snackbar.make(it, info, Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.ksetting)) {
+                        //立即设置
+//                        val packageURI = Uri.parse("package:" + activity!!.getPackageName())
+//                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageURI)
+//                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+//                        activity.startActivity(intent)//跳转权限设置界面。基本上通用。小米是肯定行的。android6.0基本都可以。
+                        KIntentUtils.goPermissionsSetting(activity)//fixme 跳转权限设置界面
+                    }
+            val snackView = snackbar.view
+            //int textSize= (int) (UtilProportion.getInstance(this).adapterInt(24) * UtilProportion.getInstance(this).getTextProportion()/ UtilProportion.getInstance(this).getDensity());
+            snackView.setBackgroundColor(Color.parseColor("#61A465"))//浅绿色背景
+            //snackView.setBackgroundResource(R.drawable.shape_drawable_snackbar);
+            val snackbar_text = snackView.findViewById<View>(R.id.snackbar_text) as TextView
+            snackbar_text.setTextColor(Color.parseColor("#ffffff"))//设置通知文本的颜色，白色
+            snackbar_text?.textSize = kpx.textSizeX(30, false)
+            //snackbar_text.setTextSize(textSize);
+            val snackbar_action = snackView.findViewById<View>(R.id.snackbar_action) as TextView
+            snackbar_action.setTextColor(Color.parseColor("#FF3B80"))//点击文本的颜色,绯红
+            snackbar_action?.textSize = kpx.textSizeX(33, false)
+            //snackbar_action.setTextSize(textSize);
+            //snackbar_action.setBackground(null);
+            snackbar_action.setBackgroundDrawable(null)
+            snackbar.show()
+        }
+    }
+
 
 }
