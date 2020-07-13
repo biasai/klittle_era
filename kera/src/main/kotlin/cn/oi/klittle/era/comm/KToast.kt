@@ -9,6 +9,7 @@ import android.widget.Toast
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KButton
 import cn.oi.klittle.era.widget.compat.KTextView
@@ -122,7 +123,7 @@ object KToast {
                     isAutoCenterVertical = true
                     autoLeftPadding = leftPadding.toFloat() / 3f
                     autoBg(R.mipmap.kera_correct1)
-                    autoBgColor=Color.WHITE
+                    autoBgColor = Color.WHITE
                 }
 
             }
@@ -172,7 +173,7 @@ object KToast {
                     isAutoCenterVertical = true
                     autoLeftPadding = leftPadding.toFloat() / 3f
                     autoBg(R.mipmap.kera_error2)
-                    autoBgColor=Color.WHITE
+                    autoBgColor = Color.WHITE
                 }
             }
         }
@@ -226,7 +227,7 @@ object KToast {
                     isAutoCenterVertical = true
                     autoLeftPadding = leftPadding.toFloat() / 3.6f
                     autoBg(R.mipmap.kera_info3)
-                    autoBgColor=Color.WHITE
+                    autoBgColor = Color.WHITE
                 }
 
             }
@@ -243,7 +244,7 @@ object KToast {
     //显示一般文本,浅黑色背景
     open fun show(text: String?, activity: Activity? = getActivity(), init: ((textView: KTextView) -> Unit)? = null): Boolean {
         var time = System.currentTimeMillis() - currentTime
-        if (time <= 1500) {
+        if (time <= time_interval) {
             return false//调用间隔小于这个1500毫秒；不显示。
         }
         var act = activity
@@ -259,22 +260,23 @@ object KToast {
                 }
             }
         } catch (e: Exception) {
-            e.printStackTrace()
+            KLoggerUtils.e("Toast异常：\t" + KCatchException.getExceptionMsg(e), true)
             return false
         }
         return true
     }
 
     var currentTime = 0L//fixme 解決短时间内重复调用，无法显示的问题。
+    var time_interval = 500L//最少间隔时间
     private fun showText(text: String?, init: ((textView: KTextView) -> Unit)? = null) {
         var time = System.currentTimeMillis() - currentTime
-        if (time <= 1500) {
+        if (time <= time_interval) {
             return
         }
         text?.let {
             if (!it.trim().equals("")) {
                 if (toast == null || (time <= 3500)) {
-                    //短时间内重复调用，必须重新实例化一个才有效(不然不好显示)。
+                    //短时间内重复调用，必须重新实例化一个才有效(不然不会显示)。
                     toast?.cancel()
                     toast?.view = null
                     toast = null
