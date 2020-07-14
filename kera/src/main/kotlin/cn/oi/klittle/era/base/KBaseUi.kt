@@ -23,6 +23,7 @@ import cn.oi.klittle.era.widget.book.view.KBookPageView
 import cn.oi.klittle.era.widget.chart.KBaseChartView
 import cn.oi.klittle.era.widget.compat.*
 import cn.oi.klittle.era.widget.drawerLayout.KDrawerLayout
+import cn.oi.klittle.era.widget.gamepad.KJoystickView
 import cn.oi.klittle.era.widget.layout.KSwipeMenuLayout
 import cn.oi.klittle.era.widget.photo.KImageView
 import cn.oi.klittle.era.widget.photo.KPhotoView
@@ -901,6 +902,15 @@ abstract class KBaseUi {
 
         inline fun ViewManager.kJBox2dView(init: (@AnkoViewDslMarker KJBox2dView).() -> Unit): KJBox2dView {
             return ankoView({ ctx: Context -> KJBox2dView(ctx) }, theme = 0) { init() }
+        }
+
+        //fixme gamepad滚珠圆盘
+        inline fun ViewManager.KJoystickView(init: (@AnkoViewDslMarker KJoystickView).() -> Unit): KJoystickView {
+            return ankoView({ ctx: Context -> KJoystickView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kJoystickView(init: (@AnkoViewDslMarker KJoystickView).() -> Unit): KJoystickView {
+            return ankoView({ ctx: Context -> KJoystickView(ctx) }, theme = 0) { init() }
         }
     }
 
