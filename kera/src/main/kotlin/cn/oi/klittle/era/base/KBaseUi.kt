@@ -209,6 +209,7 @@ abstract class KBaseUi {
 
         //fixme Activity调用案例：KBaseUi.destroyViewGroup(contentView);注意：要在主线程中调用，不然会异常。
         //fixme 释放控件（亲测有效，能够释放View下面所有的子View）
+        //fixme 在KBaseActivity里的finish()方法里，已经自动调用了。
         fun destroyViewGroup(view: View?) {
             if (view == null) {
                 return
@@ -242,6 +243,9 @@ abstract class KBaseUi {
                     } else if (view is KLineChart) {
                         //线性图表
                         view.onDestroy()
+                    } else if (view is KJoystickView) {
+                        //游戏手柄销毁
+                        view?.onDestroy()
                     } else if (view is ViewGroup) {
                         if (view is KVerticalLayout) {
                             view.onDestroy()//fixme 销毁，防止内存泄漏

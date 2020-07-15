@@ -19,6 +19,45 @@ import cn.oi.klittle.era.widget.gamepad.listener.JoystickListener
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 
+//                fixme Activity里的统一摇杆事件是重写：dispatchGenericMotionEvent(ev: MotionEvent?) 即可。
+//                fixme 使用案例
+//                kJoystickView {
+//                    setJoystickListener {
+//                        var event=it
+//                        when(event.action){
+//                            MotionEvent.ACTION_POINTER_DOWN,MotionEvent.ACTION_DOWN,MotionEvent.ACTION_MOVE->{
+//                                if (event.getX() < 0 && event.getY() == 0f) {
+//                                    //正向左
+//                                }
+//                                if (event.getX() > 0 && event.getY() == 0f) {
+//                                    //正向右
+//                                }
+//                                if (event.getX() == 0f && event.getY() < 0) {
+//                                   //正向上
+//                                }
+//                                if (event.getX() == 0f && event.getY() > 0) {
+//                                    //正向下
+//                                }
+//                                if (event.getX() > 0 && event.getY() < 0) {
+//                                    //第一限象
+//                                }
+//                                if (event.getX() < 0 && event.getY() < 0) {
+//                                    //第二限象
+//                                }
+//                                if (event.getX() < 0 && event.getY() > 0) {
+//                                    //第三限象
+//                                }
+//                                if (event.getX() > 0 && event.getY() > 0) {
+//                                    //第四限象
+//                                }
+//                            }
+//                        }
+//                    }
+//                }.lparams {
+//                    width = kpx.x(400)
+//                    height = width
+//                }
+
 /**
  * 滚珠方向键
  * 注意：底盘的宽度和高度占自身控件宽度和高度的2/3(居中),滚珠占1/3,且滚珠的滚动无法超过控件本身的宽度和高度(初始居中)
@@ -67,10 +106,30 @@ open class KJoystickView : View {
     private var mInnerRadius = 0.0
     private var mIsMotion = false
     private var mJoystickListener: JoystickListener? = null
+    private var mCallback: ((event: MotionEvent) -> Unit)? = null
 
     //设置滚珠监听事件
+    //setJoystickListener(cn.oi.klittle.era.widget.gamepad.listener.JoystickListener(){})
     fun setJoystickListener(joystickListener: JoystickListener?) {
         mJoystickListener = joystickListener
+    }
+
+    fun setJoystickListener(callback: ((event: MotionEvent) -> Unit)?) {
+        if (callback != null) {
+            this.mCallback = callback
+            setJoystickListener(cn.oi.klittle.era.widget.gamepad.listener.JoystickListener() { event ->
+                mCallback?.let {
+                    try {
+                        it(event)
+                    } catch (e: Exception) {
+                        KLoggerUtils.e("setJoystickListener()滚轮回调异常：\t" + KCatchException.getExceptionMsg(e), true)
+                    }
+                }
+            })
+        } else {
+            mJoystickListener = null
+            mCallback = null
+        }
     }
 
     private var isInitImg = false//图片是否正在初始化。
@@ -243,6 +302,34 @@ open class KJoystickView : View {
             } catch (e: Exception) {
                 e("滚珠异常：\t" + KCatchException.getExceptionMsg(e), true)
             }
+        }
+    }
+
+    //fixme 销毁
+    fun onDestroy() {
+        try {
+            mJoystickBG?.let {
+                if (!it.isRecycled) {
+                    it.recycle()
+                }
+            }
+            mJoystickBG = null
+            mJoystickRock?.let {
+                if (!it.isRecycled) {
+                    it.recycle()
+                }
+            }
+            mJoystickRock = null
+            mJoystickListener = null
+            mCallback = null
+            setOnFocusChangeListener(null)
+            setOnClickListener(null)
+            setOnLongClickListener(null)
+            setOnTouchListener(null)
+            clearAnimation()
+            clearFocus()
+        } catch (e: Exception) {
+            KLoggerUtils.e("KJoystickView销毁异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 }
