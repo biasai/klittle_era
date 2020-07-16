@@ -74,11 +74,18 @@ open class KJoystickView : View {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
-    //底盘
-    private var mJoystickBG: Bitmap? = null
+    //fixme 底盘
+    var mJoystickBG: Bitmap? = null
 
-    //滚珠
-    private var mJoystickRock: Bitmap? = null
+    //fixme 滚珠
+    var mJoystickRock: Bitmap? = null
+
+    //fixme 底盘半径(layout（）方法里会自动计算)
+    var mOuterRadius = 0.0
+
+    //fixme 滚珠半径
+    var mInnerRadius = 0.0
+
     private val mPaint: Paint = Paint()
 
     //控件的宽带
@@ -99,11 +106,6 @@ open class KJoystickView : View {
     //滚珠圆心Y
     private var mRockCenterY = 0.0
 
-    //低盘半径
-    private var mOuterRadius = 0.0
-
-    //滚珠半径
-    private var mInnerRadius = 0.0
     private var mIsMotion = false
     private var mJoystickListener: JoystickListener? = null
     private var mCallback: ((event: MotionEvent) -> Unit)? = null
@@ -131,7 +133,7 @@ open class KJoystickView : View {
             mCallback = null
         }
     }
-
+    
     private var isInitImg = false//图片是否正在初始化。
     override fun layout(left: Int, top: Int, right: Int, bottom: Int) {
         try {
