@@ -140,6 +140,7 @@ open class KBaseActivity : AppCompatActivity() {
 
     open fun isPortrait(): Boolean {
         return true//fixme 是否竖屏。默认就是竖屏。
+        //fixme false 横屏，清单也必须设置为：android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity" 不然会异常报错。
     }
 
     //fixme 是否进行切屏(横屏和竖屏的转换,只在onCreate()里面做了判断)
