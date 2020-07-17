@@ -14,9 +14,8 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import java.io.File
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Deferred
 
+//fixme 调用案例在 KOhttp里。
 open class KHttps() {
 
     companion object {
