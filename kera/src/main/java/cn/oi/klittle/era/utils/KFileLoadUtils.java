@@ -26,8 +26,8 @@ import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.base.KBaseUi;
 
-//            fixme kotlin使用案例
-//            var url="http://dl.ludashi.com/ludashi/ludashi_home.apk"//鲁大师app
+//            fixme kotlin使用案例; 下载url必须为具体的文件地址。不然无法下载；像 http://test.bwg2017.com/GlassSystem/ErpConfigManage.aspx 这样的就无法下载。
+//            var url="http://dl.ludashi.com/ludashi/ludashi_home.apk"//鲁大师app；指向具体的apk网络文件路径即可。亲测可行。
 //            KFileLoadUtils.getInstance(ctx).downLoad(url, "123.apk", object : KFileLoadUtils.RequestCallBack {
 //                override fun onStart() {
 //                    //开始下载

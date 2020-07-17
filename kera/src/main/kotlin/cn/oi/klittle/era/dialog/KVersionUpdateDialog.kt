@@ -8,18 +8,15 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.KToast
+import cn.oi.klittle.era.utils.*
 import cn.oi.klittle.era.widget.KNumberProgressBar
-import cn.oi.klittle.era.utils.KAppUtils
-import cn.oi.klittle.era.utils.KFileLoadUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
-import cn.oi.klittle.era.utils.KProportionUtils
 import org.jetbrains.anko.runOnUiThread
 import java.io.File
 import java.lang.Exception
 
 /**
  * 版本更新
- * 使用说明：VersionUpdateDialog(this).setUrl(url).setSrcFileName("app名称带后缀（如果为null或""空，会自动获取网络上的名称）.apk")
+ * 使用说明：KVersionUpdateDialog(this).setUrl(url).setSrcFileName("app名称带后缀（如果为null或""空，会自动获取网络上的名称）.apk")
  */
 open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = true) : KBaseDialog(ctx, R.layout.kera_dialog_version_update, isStatus, isTransparent) {
     //进度条
@@ -101,7 +98,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                                     KAppUtils.installation(ctx, file)
                                     numprogressbar?.setProgress(0)//进度条恢复到0
                                 }
-                                //KLoggerUtils.e("下载文件：\t"+file?.absolutePath)
+                                //KLoggerUtils.e("下载文件：\t"+file?.absolutePath+"\t大小：\t"+KStringUtils.getDataSize(file?.length()))
                             }
                         }
 

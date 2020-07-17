@@ -492,7 +492,10 @@ object KStringUtils {
         return getDataSize(data.toDouble())
     }
 
-    fun getDataSize(data: Long): String? {
+    fun getDataSize(data: Long?): String? {
+        if(data==null){
+            return "0"
+        }
         return getDataSize(data.toDouble())
     }
 
