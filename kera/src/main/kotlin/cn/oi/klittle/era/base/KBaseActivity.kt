@@ -148,20 +148,24 @@ open class KBaseActivity : AppCompatActivity() {
         return true//fixme 是否固定竖屏或横屏方向。true会固定方向。false就不会(竖屏，横屏无效)。
     }
 
+    private var orientation_time=0L
     //true 竖屏，false横屏
     @SuppressLint("SourceLockedOrientationActivity")
     open fun orientation(isPortrait: Boolean) {
-        try {
-            if (!(Build.VERSION.SDK_INT == 26 && getApplicationInfo().targetSdkVersion >= 26)) {
-                if (isPortrait) {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//竖屏
-                } else {
-                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)//横屏
+        if (System.currentTimeMillis()-orientation_time>500) {//fixme 防止短时间循环调用异常。
+            try {
+                if (!(Build.VERSION.SDK_INT == 26 && getApplicationInfo().targetSdkVersion >= 26)) {
+                    if (isPortrait) {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//竖屏
+                    } else {
+                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)//横屏
+                    }
                 }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
+        orientation_time=System.currentTimeMillis()
     }
 
     /**
