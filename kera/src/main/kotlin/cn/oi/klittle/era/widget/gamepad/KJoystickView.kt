@@ -23,47 +23,6 @@ import kotlinx.coroutines.async
 //                fixme Activity里的统一摇杆事件是重写：dispatchGenericMotionEvent(ev: MotionEvent?) 即可。
 //                fixme 使用案例
 //                kJoystickView {
-//                    setJoystickListener {
-//                        var event=it
-//                        when(event.action){
-//                            MotionEvent.ACTION_POINTER_DOWN,MotionEvent.ACTION_DOWN,MotionEvent.ACTION_MOVE->{
-//                               if (event.getX() == 0f && event.getY() == 0f) {
-//                                    //原点
-//                                }
-//                                if (event.getX() < 0 && event.getY() == 0f) {
-//                                    //正向左
-//                                }
-//                                if (event.getX() > 0 && event.getY() == 0f) {
-//                                    //正向右
-//                                }
-//                                if (event.getX() == 0f && event.getY() < 0) {
-//                                   //正向上
-//                                }
-//                                if (event.getX() == 0f && event.getY() > 0) {
-//                                    //正向下
-//                                }
-//                                if (event.getX() > 0 && event.getY() < 0) {
-//                                    //第一限象
-//                                }
-//                                if (event.getX() < 0 && event.getY() < 0) {
-//                                    //第二限象
-//                                }
-//                                if (event.getX() < 0 && event.getY() > 0) {
-//                                    //第三限象
-//                                }
-//                                if (event.getX() > 0 && event.getY() > 0) {
-//                                    //第四限象
-//                                }
-//                            }
-//                        }
-//                    }
-//                }.lparams {
-//                    width = kpx.x(400)
-//                    height = width
-//                }
-
-//                fixme orientation 方向回调；和 JoystickListener不冲突，互不影响。
-//                kJoystickView {
 //                    isVibraEnable = false//是否开启按键震动(默认是关闭的)。
 //                    orientation {
 //                        center {
@@ -151,33 +110,6 @@ open class KJoystickView : View {
     private var mRockCenterY = 0.0
 
     private var mIsMotion = false
-    private var mJoystickListener: JoystickListener? = null
-    private var mCallback: ((event: MotionEvent) -> Unit)? = null
-
-    //设置滚珠监听事件
-    //setJoystickListener(cn.oi.klittle.era.widget.gamepad.listener.JoystickListener(){})
-    fun setJoystickListener(joystickListener: JoystickListener?) {
-        mJoystickListener = joystickListener
-    }
-
-    fun setJoystickListener(callback: ((event: MotionEvent) -> Unit)?) {
-        if (callback != null) {
-            this.mCallback = callback
-            setJoystickListener(cn.oi.klittle.era.widget.gamepad.listener.JoystickListener() { event ->
-                mCallback?.let {
-                    try {
-                        it(event)
-                    } catch (e: Exception) {
-                        KLoggerUtils.e("setJoystickListener()滚轮回调异常：\t" + KCatchException.getExceptionMsg(e), true)
-                    }
-                }
-            })
-        } else {
-            mJoystickListener = null
-            mCallback = null
-        }
-    }
-
     var orientation: KOrientation? = null
 
     //fixme 滚珠事件分发，方向回调；和 JoystickListener不冲突，互不影响。
@@ -313,6 +245,172 @@ open class KJoystickView : View {
         }
     }
 
+    /**
+     * 方向回调
+     */
+    private fun orientation(X: Float, Y: Float, ACTION: Int) {
+        if (orientation == null) {
+            return
+        }
+        var isRepeat = false
+        if (ACTION == MotionEvent.ACTION_DOWN || ACTION == MotionEvent.ACTION_UP) {
+            isRepeat = true
+        }
+        orientation?.let {
+            //fixme x,y 都在（-1，0，1）范围内。
+            it.x = X
+            it.y = Y
+            it.action = ACTION
+        }
+        when (ACTION) {
+            MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
+                if (X <= orientation_offset && X >= -orientation_offset
+                        && Y <= orientation_offset && Y >= -orientation_offset) {
+                    //原点
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_center, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.center?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X > 0 && Y <= orientation_offset && Y >= -orientation_offset) {
+                    //正向右（前面）；一般都是操作向前，所以向前的判断放在第一位判断。
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_right, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.right?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X < 0
+                        && Y <= orientation_offset && Y >= -orientation_offset) {
+                    //正向左（后面）
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_left, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.left?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X <= orientation_offset && X >= -orientation_offset
+                        && Y < 0) {
+                    //正向上
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_top, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.top?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X <= orientation_offset && X >= -orientation_offset
+                        && Y > 0) {
+                    //正向下
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_bottom, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.bottom?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X > 0 && Y < 0) {
+                    //第一限象
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_one_right_top, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.one_right_top?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X < 0 && Y < 0) {
+                    //第二限象
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_two_left_top, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.two_left_top?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X < 0 && Y > 0) {
+                    //第三限象
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_three_left_bottom, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.three_left_bottom?.let {
+                        it()
+                    }
+                    return
+                }
+                if (X > 0 && Y > 0) {
+                    //第四限象
+                    orientation?.let {
+                        if (it.isSameOrientation(it.orientation_four_right_bottom, true)) {
+                            if (!isRepeat) {
+                                return
+                            }
+                        }
+                    }
+                    orientation?.four_right_bottom?.let {
+                        it()
+                    }
+                    return
+                }
+            }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                //fixme 手指离开的时候，触发原点回调。
+                orientation?.let {
+                    if (it.isSameOrientation(it.orientation_center, true)) {
+                        if (!isRepeat) {
+                            return
+                        }
+                    }
+                }
+                orientation?.center?.let {
+                    it()
+                }
+            }
+        }
+    }
+
     private var isInitImg = false//图片是否正在初始化。
     override fun layout(left: Int, top: Int, right: Int, bottom: Int) {
         try {
@@ -392,21 +490,26 @@ open class KJoystickView : View {
                         getXY(mCenterX, mCenterY, width / 2.toDouble() - mInnerRadius, rad)// mWidth / 4.toDouble() 改成-> width/2.toDouble()-mInnerRadius
                     }
                     //事件传递
-                    MotionTask().start()
+                    //MotionTask().start()
+                    motionTask(event.action)
                 }
-                MotionEvent.ACTION_MOVE -> if (Math.sqrt(Math.pow(mCenterX - x, 2.0)
-                                + Math.pow(mCenterY - y, 2.0)) < width / 2 - mInnerRadius) {//mWidth / 4 改成-> width/2-mInnerRadius
-                    mRockCenterX = x.toDouble()
-                    mRockCenterY = y.toDouble()
-                } else {
-                    val rad = getRad(mCenterX, mCenterY, x, y)
-                    getXY(mCenterX, mCenterY, width / 2.toDouble() - mInnerRadius, rad)// mWidth / 4.toDouble() 改成-> width/2.toDouble()-mInnerRadius
+                MotionEvent.ACTION_MOVE -> {
+                    if (Math.sqrt(Math.pow(mCenterX - x, 2.0)
+                                    + Math.pow(mCenterY - y, 2.0)) < width / 2 - mInnerRadius) {//mWidth / 4 改成-> width/2-mInnerRadius
+                        mRockCenterX = x.toDouble()
+                        mRockCenterY = y.toDouble()
+                    } else {
+                        val rad = getRad(mCenterX, mCenterY, x, y)
+                        getXY(mCenterX, mCenterY, width / 2.toDouble() - mInnerRadius, rad)// mWidth / 4.toDouble() 改成-> width/2.toDouble()-mInnerRadius
+                    }
+                    motionTask(event.action)
                 }
                 MotionEvent.ACTION_POINTER_UP -> return false
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     mRockCenterX = mCenterX
                     mRockCenterY = mCenterY
                     mIsMotion = false
+                    motionTask(event.action)
                 }
             }
             invalidate()
@@ -430,60 +533,40 @@ open class KJoystickView : View {
         mRockCenterY = radius * Math.sin(rad) + mCenterY
     }
 
-    var isVibraEnable=false//fixme 是否开启按键震动；默认不开启。(操作太频繁，建议还是关闭)
+    var isVibraEnable = false//fixme 是否开启按键震动；默认不开启。(操作太频繁，建议还是关闭)
 
-    private inner class MotionTask : Thread() {
-        override fun run() {
-            try {
-                if (isVibraEnable) {
-                    //震动音效
-                    KVibratorUtils.Vibrate(context as Activity, 200)
-                }
-                while (mIsMotion) {
-                    if (null != mJoystickListener || orientation != null) {
-                        var x = (mRockCenterX - mCenterX).toFloat() / (width / 2).toFloat()//(mWidth / 4) 改成 -> (width / 2)
-                        var y = (mRockCenterY - mCenterY).toFloat() / (width / 2).toFloat()//(mWidth / 4) 改成 -> (width / 2)
-                        if (x > 0.999) {
-                            x = 1f
-                        } else if (x < -0.999) {
-                            x = -1f
-                        } else if (x < 0.033 && x > -0.033) {
-                            x = 0f
-                        }
-                        if (y > 0.999) {
-                            y = 1f
-                        } else if (y < -0.999) {
-                            y = -1f
-                        } else if (y < 0.033 && y > -0.033) {
-                            y = 0f
-                        }
-                        val event = MotionEvent.obtain(
-                                SystemClock.uptimeMillis(),
-                                SystemClock.uptimeMillis(),
-                                MotionEvent.ACTION_MOVE, x, y, 0f, 0f, 0, 0f, 0f, 1, 0) //倒数第二个参数是 设备ID.设备id最好大于等于1,不用小于等于0.不灵
-                        mJoystickListener?.onJoystikMotionEvent(event)
-                        orientation(event)
-                        event.recycle()
-                        try {
-                            sleep(300)
-                        } catch (e: InterruptedException) {
-                            e.printStackTrace()
-                        }
-                    }
-                }
-                if (mJoystickListener != null || orientation != null) {
-                    //循环之外，恢复原状
-                    var event2 = MotionEvent.obtain(
-                            SystemClock.uptimeMillis(),
-                            SystemClock.uptimeMillis(),
-                            MotionEvent.ACTION_MOVE, 0f, 0f, 0f, 0f, 0, 0f, 0f, 1, 0)
-                    mJoystickListener?.onJoystikMotionEvent(event2)
-                    orientation(event2)
-                    event2.recycle()
-                }
-            } catch (e: Exception) {
-                e("滚珠事件分发异常：\t" + KCatchException.getExceptionMsg(e), true)
+    private fun motionTask(ACTION: Int) {
+        if (orientation == null) {
+            return
+        }
+        try {
+            if (isVibraEnable) {
+                //震动音效
+                KVibratorUtils.Vibrate(context as Activity, 200)
             }
+            if (mIsMotion) {
+                var x = (mRockCenterX - mCenterX).toFloat() / (width / 2).toFloat()//(mWidth / 4) 改成 -> (width / 2)
+                var y = (mRockCenterY - mCenterY).toFloat() / (width / 2).toFloat()//(mWidth / 4) 改成 -> (width / 2)
+                if (x > 0.999) {
+                    x = 1f
+                } else if (x < -0.999) {
+                    x = -1f
+                } else if (x < 0.033 && x > -0.033) {
+                    x = 0f
+                }
+                if (y > 0.999) {
+                    y = 1f
+                } else if (y < -0.999) {
+                    y = -1f
+                } else if (y < 0.033 && y > -0.033) {
+                    y = 0f
+                }
+                orientation(x, y, ACTION)
+            } else {
+                orientation(0f, 0f, ACTION)
+            }
+        } catch (e: Exception) {
+            e("滚珠事件分发异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 
@@ -502,8 +585,6 @@ open class KJoystickView : View {
                 }
             }
             mJoystickRock = null
-            mJoystickListener = null
-            mCallback = null
             orientation?.destroy()
             orientation = null
             setOnFocusChangeListener(null)

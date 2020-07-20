@@ -1,13 +1,44 @@
 package cn.oi.klittle.era.widget.gamepad.entiy
 
+import android.view.MotionEvent
+
 /**
  * 滚轮方向回调
  */
 class KOrientation {
 
     //记录当前手指的触摸点。
-    var x:Float=0F
-    var y:Float=0F
+    var x: Float = 0F
+    var y: Float = 0F
+    var action: Int = MotionEvent.ACTION_UP//手指的动作
+
+
+    val orientation_left = 0//左（后面）
+    val orientation_right = 1//右（前面）
+    val orientation_top = 2//上
+    val orientation_bottom = 3//下
+    val orientation_one_right_top = 6//右上
+    val orientation_two_left_top = 4//左上
+    val orientation_three_left_bottom = 5//左下
+    val orientation_four_right_bottom = 7//右下
+    val orientation_center = 8//中间
+
+    var orientation_current = orientation_center//fixme 记录当前方向
+
+    /**
+     * 判断方向是否一致
+     * @param orientation 方向
+     * @param isRecord 是否记录当前方向
+     */
+    fun isSameOrientation(orientation: Int, isRecord: Boolean): Boolean {
+        if (orientation == orientation_current) {
+            return true
+        }
+        if (isRecord) {
+            orientation_current = orientation//记录当前的方向
+        }
+        return false
+    }
 
     //正中间（原点）;fixme 手指离开的时候，一定会回调该方法。
     var center: (() -> Unit)? = null
