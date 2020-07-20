@@ -140,7 +140,7 @@ open class KBaseActivity : AppCompatActivity() {
 
     open fun isPortrait(): Boolean {
         return true//fixme 是否竖屏。默认就是竖屏。
-        //fixme false 横屏，清单也必须设置为：android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity" 不然会异常报错。
+        //fixme false 横屏，清单必须设置为：android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity" 不然会异常报错。
     }
 
     //fixme 是否进行切屏(横屏和竖屏的转换,只在onCreate()里面做了判断)
@@ -148,24 +148,46 @@ open class KBaseActivity : AppCompatActivity() {
         return true//fixme 是否固定竖屏或横屏方向。true会固定方向。false就不会(竖屏，横屏无效)。
     }
 
-    private var orientation_time=0L
+    private var isOritentationing = false
+
+    /**
+     * fixme 横屏设置案例：
+     * isPortrait（）返回false
+     * 清单设置：
+     * android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+     * android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity"
+     */
+
+
     //true 竖屏，false横屏
     @SuppressLint("SourceLockedOrientationActivity")
     open fun orientation(isPortrait: Boolean) {
-        if (System.currentTimeMillis()-orientation_time>500) {//fixme 防止短时间循环调用异常。
+        if (!isOritentationing) {//fixme 防止同时调用。
+            isOritentationing = true
+            //fixme 切屏，Activity清单加上如下设置，Activity生命周期不会重启。切屏时也不会报错。不然可能会报错。
+            //fixme android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             try {
+                //getRequestedOrientation()默认是 SCREEN_ORIENTATION_UNSPECIFIED；即 -1
                 if (!(Build.VERSION.SDK_INT == 26 && getApplicationInfo().targetSdkVersion >= 26)) {
                     if (isPortrait) {
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//竖屏
+                        if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)//竖屏
+                        }
                     } else {
-                        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)//横屏
+                        //fixme xmlns:tools="http://schemas.android.com/tools"
+                        //fixme 横屏，清单必须设置为：android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity" 不然会异常报错。亲测
+                        //fixme 横屏时最好在清单设置一下。
+                        if (getRequestedOrientation() != ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)//横屏
+                        }
                     }
                 }
             } catch (e: java.lang.Exception) {
+                KLoggerUtils.e("Activity切屏异常：\t" + KCatchException.getExceptionMsg(e), true)
                 e.printStackTrace()
             }
         }
-        orientation_time=System.currentTimeMillis()
+        isOritentationing = false
     }
 
     /**
