@@ -125,128 +125,9 @@ open class KJoystickView : View {
 
     //fixme 在MotionTask事件传递里会调用，与 mJoystickListener 不冲突。
     var orientation_offset = 0.31f//fixme 区域范围偏移量；0.31挺合适的。
-    private fun orientation(event: MotionEvent?) {
-        if (orientation == null) {
-            return
-        }
-        if (event != null) {
-            orientation?.let {
-                //fixme x,y 都在（-1，0，1）范围内。
-                it.x = event.x
-                it.y = event.y
-            }
-            when (event.action) {
-                MotionEvent.ACTION_POINTER_DOWN, MotionEvent.ACTION_DOWN, MotionEvent.ACTION_MOVE -> {
-                    if (event.getX() <= orientation_offset && event.getX() >= -orientation_offset
-                            && event.getY() <= orientation_offset && event.getY() >= -orientation_offset) {
-                        //原点
-                        orientation?.center?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() > 0 && event.getY() <= orientation_offset && event.getY() >= -orientation_offset) {
-                        //正向右（前面）；一般都是操作向前，所以向前的判断放在第一位判断。
-                        orientation?.right?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() < 0
-                            && event.getY() <= orientation_offset && event.getY() >= -orientation_offset) {
-                        //正向左（后面）
-                        orientation?.left?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() <= orientation_offset && event.getX() >= -orientation_offset
-                            && event.getY() < 0) {
-                        //正向上
-                        orientation?.top?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() <= orientation_offset && event.getX() >= -orientation_offset
-                            && event.getY() > 0) {
-                        //正向下
-                        orientation?.bottom?.let {
-                            it()
-                        }
-                        return
-                    }
-
-//                    if (event.getX() == 0f && event.getY() == 0f) {
-//                        //原点
-//                        orientation?.center?.let {
-//                            it()
-//                        }
-//                        return
-//                    }
-//                    if (event.getX() < 0 && event.getY() == 0f) {
-//                        //正向左
-//                        orientation?.left?.let {
-//                            it()
-//                        }
-//                        return
-//                    }
-//                    if (event.getX() > 0 && event.getY() == 0f) {
-//                        //正向右
-//                        orientation?.right?.let {
-//                            it()
-//                        }
-//                        return
-//                    }
-//                    if (event.getX() == 0f && event.getY() < 0) {
-//                        //正向上
-//                        orientation?.top?.let {
-//                            it()
-//                        }
-//                        return
-//                    }
-//                    if (event.getX() == 0f && event.getY() > 0) {
-//                        //正向下
-//                        orientation?.bottom?.let {
-//                            it()
-//                        }
-//                        return
-//                    }
-                    if (event.getX() > 0 && event.getY() < 0) {
-                        //第一限象
-                        orientation?.one_right_top?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() < 0 && event.getY() < 0) {
-                        //第二限象
-                        orientation?.two_left_top?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() < 0 && event.getY() > 0) {
-                        //第三限象
-                        orientation?.three_left_bottom?.let {
-                            it()
-                        }
-                        return
-                    }
-                    if (event.getX() > 0 && event.getY() > 0) {
-                        //第四限象
-                        orientation?.four_right_bottom?.let {
-                            it()
-                        }
-                        return
-                    }
-                }
-            }
-        }
-    }
 
     /**
-     * 方向回调
+     * fixme 方向回调;只有方向发生改变时（或者手指按下和离开时），才会回调。即：相同的方向不会重复回调。
      */
     private fun orientation(X: Float, Y: Float, ACTION: Int) {
         if (orientation == null) {
@@ -254,7 +135,7 @@ open class KJoystickView : View {
         }
         var isRepeat = false
         if (ACTION == MotionEvent.ACTION_DOWN || ACTION == MotionEvent.ACTION_UP) {
-            isRepeat = true
+            isRepeat = true//手指按下和离开时允许重复回调，防止手指离开时没有回调。
         }
         orientation?.let {
             //fixme x,y 都在（-1，0，1）范围内。

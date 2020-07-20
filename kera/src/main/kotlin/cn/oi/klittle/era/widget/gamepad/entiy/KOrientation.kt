@@ -3,7 +3,7 @@ package cn.oi.klittle.era.widget.gamepad.entiy
 import android.view.MotionEvent
 
 /**
- * 滚轮方向回调
+ * fixme 滚轮方向回调;只有方向发生改变时（或者手指按下和离开时），才会回调；即：相同的方向不会重复回调。
  */
 class KOrientation {
 
@@ -12,6 +12,29 @@ class KOrientation {
     var y: Float = 0F
     var action: Int = MotionEvent.ACTION_UP//手指的动作
 
+    //判断手指是否离开
+    fun isActionUp(): Boolean {
+        if (action == MotionEvent.ACTION_UP) {
+            return true
+        }
+        return false
+    }
+
+    //判断手指是否按下
+    fun isActionDown(): Boolean {
+        if (action == MotionEvent.ACTION_DOWN) {
+            return true
+        }
+        return false
+    }
+
+    //判断手指是否触摸移动
+    fun isActionMove(): Boolean {
+        if (action == MotionEvent.ACTION_MOVE) {
+            return true
+        }
+        return false
+    }
 
     val orientation_left = 0//左（后面）
     val orientation_right = 1//右（前面）
