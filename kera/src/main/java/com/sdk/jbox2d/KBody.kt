@@ -48,6 +48,21 @@ open class KBody {
         return body
     }
 
+    //fixme 设置刚体的位置
+    fun setBodyPosition(body: Body?, x: Float, y: Float) {
+        KBodyUtils.setBodyPosition(body, x, y)
+    }
+
+    /**
+     * fixme 刚体移动
+     * @param body 刚体
+     * @param offsetX x的偏移量
+     * @param offsetY y的偏移量
+     */
+    fun moveBodyPosition(body: Body?, offsetX: Float, offsetY: Float) {
+        KBodyUtils.moveBodyPosition(body, offsetX, offsetY)
+    }
+
     //fixme 销毁刚体
     fun destroyBody() {
         if (world != null) {

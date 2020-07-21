@@ -112,7 +112,7 @@ open class KJoystickView : View {
     private var mIsMotion = false
     var orientation: KOrientation? = null
 
-    //fixme 滚珠事件分发，方向回调；和 JoystickListener不冲突，互不影响。
+    //fixme 滚珠事件分发，方向回调；
     fun orientation(block: KOrientation.() -> Unit): KJoystickView {
         if (orientation == null) {
             orientation = KOrientation()
@@ -123,9 +123,7 @@ open class KJoystickView : View {
         return this
     }
 
-    //fixme 在MotionTask事件传递里会调用，与 mJoystickListener 不冲突。
     var orientation_offset = 0.31f//fixme 区域范围偏移量；0.31挺合适的。
-
     /**
      * fixme 方向回调;只有方向发生改变时（或者手指按下和离开时），才会回调。即：相同的方向不会重复回调。
      */

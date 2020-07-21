@@ -63,6 +63,70 @@ class KOrientation {
         return false
     }
 
+    //判断当前方向是否为左边（后面）
+    fun isLeft(): Boolean {
+        if (orientation_left == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isRight(): Boolean {
+        if (orientation_right == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isTop(): Boolean {
+        if (orientation_top == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isBottom(): Boolean {
+        if (orientation_bottom == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isOne_right_top(): Boolean {
+        if (orientation_one_right_top == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isTow_left_top(): Boolean {
+        if (orientation_two_left_top == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isThree_left_bottom(): Boolean {
+        if (orientation_three_left_bottom == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isFour(): Boolean {
+        if (orientation_four_right_bottom == orientation_current) {
+            return true
+        }
+        return false
+    }
+
+    fun isCenter(): Boolean {
+        if (orientation_center == orientation_current) {
+            return true
+        }
+        return false
+    }
+
     //正中间（原点）;fixme 手指离开的时候，一定会回调该方法。
     var center: (() -> Unit)? = null
     fun center(center: (() -> Unit)? = null) {

@@ -73,4 +73,37 @@ object KBodyUtils {
         return polygonBody
     }
 
+    //fixme 设置刚体的位置
+    fun setBodyPosition(body: Body?, x: Float, y: Float) {
+        if (body == null) {
+            return
+        }
+        var vec = body?.getPosition();
+        vec?.let {
+            it.x = x;
+            it.y = y
+        }
+        //body?.getPosition()
+        body?.setXForm(vec, 0f);
+    }
+
+    /**
+     * fixme 刚体移动
+     * @param body 刚体
+     * @param offsetX x的偏移量
+     * @param offsetY y的偏移量
+     */
+    fun moveBodyPosition(body: Body?, offsetX: Float, offsetY: Float) {
+        if (body == null) {
+            return
+        }
+        var vec = body?.getPosition();
+        vec?.let {
+            it.x += offsetX;
+            it.y += offsetY
+        }
+        //body?.getPosition()
+        body?.setXForm(vec, 0f);
+    }
+
 }
