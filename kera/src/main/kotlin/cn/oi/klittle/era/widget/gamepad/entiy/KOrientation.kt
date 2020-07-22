@@ -1,6 +1,10 @@
 package cn.oi.klittle.era.widget.gamepad.entiy
 
 import android.view.MotionEvent
+import com.sdk.jbox2d.entity.KBaseBody
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 
 /**
  * fixme 滚轮方向回调;只有方向发生改变时（或者手指按下和离开时），才会回调；即：相同的方向不会重复回调。
@@ -113,7 +117,7 @@ class KOrientation {
         return false
     }
 
-    fun isFour(): Boolean {
+    fun isFour_right_bottom(): Boolean {
         if (orientation_four_right_bottom == orientation_current) {
             return true
         }
@@ -126,6 +130,10 @@ class KOrientation {
         }
         return false
     }
+
+    /**
+     * fixme 回调函数。
+     */
 
     //正中间（原点）;fixme 手指离开的时候，一定会回调该方法。
     var center: (() -> Unit)? = null
@@ -179,6 +187,106 @@ class KOrientation {
     var four_right_bottom: (() -> Unit)? = null
     fun four_right_bottom(four_right_bottom: (() -> Unit)? = null) {
         this.four_right_bottom = four_right_bottom
+    }
+
+    /**
+     * fixme 方向移动
+     */
+    var timeMills=100L
+    var linearVelocityX=300f
+    var linearVelocityY=linearVelocityX
+    fun toCenter(baseBody:KBaseBody?){
+        baseBody?.let {
+            it?.setLinearVelocity(0f,0f)
+        }
+    }
+
+    fun toRight(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isRight()){
+                    it?.setLinearVelocity(linearVelocityX, 0.0f)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun toLeft(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isLeft()){
+                    it?.setLinearVelocity(-linearVelocityX,0f)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun toTop(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isTop()){
+                    it?.setLinearVelocity(0.0f, -linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun toBottom(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isBottom()){
+                    it?.setLinearVelocity(0.0f, linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun to_one_right_top(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isOne_right_top()){
+                    it?.setLinearVelocity(linearVelocityX,-linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun to_two_left_top(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isTow_left_top()){
+                    it?.setLinearVelocity(-linearVelocityX,-linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun to_three_left_bottom(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isThree_left_bottom()){
+                    it?.setLinearVelocity(-linearVelocityX,linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
+    }
+
+    fun to_four_right_bottom(baseBody:KBaseBody?){
+        baseBody?.let {
+            GlobalScope.async {
+                while (!isActionUp()&&isFour_right_bottom()){
+                    it?.setLinearVelocity(linearVelocityX,linearVelocityY)
+                    delay(timeMills)
+                }
+            }
+        }
     }
 
     //fixme 销毁

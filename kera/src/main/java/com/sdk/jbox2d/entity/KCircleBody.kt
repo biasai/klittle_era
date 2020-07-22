@@ -11,8 +11,8 @@ import org.jbox2d.dynamics.Body
  * 圆形刚体
  * fixme radius半径和body刚体;初始化之后，就不能在修改。修改了也没有效果。
  */
-open class KCircleBody(private var radius: Float = kpx.x(50f)) {
-    var body: Body? = null//fixme 刚体，body.position.x, body.position.y是刚体的中心坐标。
+open class KCircleBody(private var radius: Float = kpx.x(50f)):KBaseBody() {
+    //var body: Body? = null//fixme 刚体，body.position.x, body.position.y是刚体的中心坐标。
 
     //fixme 以下属性是绘图属性，可以任意修改。
     var color: Int = Color.RED//颜色

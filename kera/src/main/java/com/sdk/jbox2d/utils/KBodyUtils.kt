@@ -4,6 +4,7 @@ import com.sdk.jbox2d.entity.KCircleBody
 import com.sdk.jbox2d.entity.KPolygonBody
 import org.jbox2d.collision.CircleDef
 import org.jbox2d.collision.PolygonDef
+import org.jbox2d.common.Vec2
 import org.jbox2d.dynamics.Body
 import org.jbox2d.dynamics.BodyDef
 import org.jbox2d.dynamics.World
@@ -104,6 +105,20 @@ object KBodyUtils {
         }
         //body?.getPosition()
         body?.setXForm(vec, 0f);
+    }
+
+    /**
+     * fixme 给刚体设置速度。
+     * @param body 刚体
+     * @param vec2x x轴方向的速度（正负代表方向）
+     * @param vec2y y轴的速度
+     */
+    fun setLinearVelocity(body: Body?, vec2x: Float, vec2y: Float) {
+        body?.let {
+            var vec = Vec2(vec2x, vec2y)
+            it.wakeUp()//唤醒刚体。不然速度不会生效。
+            it.linearVelocity = vec
+        }
     }
 
 }

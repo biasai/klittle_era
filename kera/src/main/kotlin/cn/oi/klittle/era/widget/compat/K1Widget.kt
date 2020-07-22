@@ -593,12 +593,16 @@ open class K1Widget : K0Widget {
     }
 
     private var b = false
+    var mTouchX:Float=0F//fixme 记录当前触摸点坐标
+    var mTouchY:Float=0F
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         if (!isEnableTouch) {
             //禁止触摸和点击，禁止一切事件了。
             return true
         }
         event?.let {
+            mTouchX=it.x
+            mTouchY=it.y
             when (it.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
                     dispatchDown(it)

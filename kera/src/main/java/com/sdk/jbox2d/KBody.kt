@@ -63,6 +63,17 @@ open class KBody {
         KBodyUtils.moveBodyPosition(body, offsetX, offsetY)
     }
 
+
+    /**
+     * fixme 给刚体设置速度。
+     * @param body 刚体
+     * @param vec2x x轴方向的速度（正负代表方向）
+     * @param vec2y y轴的速度
+     */
+    fun setLinearVelocity(body: Body?, vec2x: Float, vec2y: Float) {
+        KBodyUtils.setLinearVelocity(body, vec2x, vec2y)
+    }
+
     //fixme 销毁刚体
     fun destroyBody() {
         if (world != null) {
