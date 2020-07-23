@@ -12,6 +12,7 @@ import android.util.Log;
 import org.jetbrains.annotations.Nullable;
 
 import cn.oi.klittle.era.base.KBaseActivity;
+import cn.oi.klittle.era.exception.KCatchException;
 import cn.oi.klittle.era.utils.KIntentUtils;
 import cn.oi.klittle.era.utils.KLoggerUtils;
 import cn.oi.klittle.era.utils.KStringUtils;
@@ -215,7 +216,7 @@ public class KNfcActivity extends KBaseActivity {
             }
         } catch (Exception e) {
             isNfcSupport = false;
-            KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(),true);
+            KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(), true);
         }
     }
 
@@ -285,9 +286,6 @@ public class KNfcActivity extends KBaseActivity {
 
     private void readFromNfc(Intent intent) {
         try {
-            if (isFastNfc()) {
-                return;//fixme 防止快速刷卡
-            }
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             if (null != tag) {
                 byte[] tagId = tag.getId();
@@ -300,12 +298,16 @@ public class KNfcActivity extends KBaseActivity {
                 //回调
                 if (nfcCardNo != null && nfcCardNo.trim().length() > 0) {
                     if (isEnableNF2C()) {
+                        if (isFastNfc()) {
+                            return;//fixme 防止快速刷卡
+                        }
                         onNfcResult(nfcCardNo);
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("NFC刷卡异常：\t" + KCatchException.getExceptionMsg(e), true);
         }
     }
 
@@ -335,7 +337,7 @@ public class KNfcActivity extends KBaseActivity {
             return String.valueOf(Long.parseLong(Integer.toHexString((r24 | r8 | l8 | l24)), 16));
         } catch (Exception e) {
             e.printStackTrace();
-            KLoggerUtils.INSTANCE.e("KNfcActivity NFC读卡异常：\t" + e.getMessage(),true);
+            KLoggerUtils.INSTANCE.e("KNfcActivity NFC读卡异常：\t" + e.getMessage(), true);
         }
         return "";
     }
@@ -363,8 +365,8 @@ public class KNfcActivity extends KBaseActivity {
         pendingIntent = null;
     }
 
-    // 两次刷卡之间的点击间隔不能少于1000毫秒（即1秒）
-    static long MIN_CLICK_DELAY_TIME_nfc = 1000;
+    // 两次刷卡之间的点击间隔不能少于350毫秒（即0.35秒）
+    static long MIN_CLICK_DELAY_TIME_nfc = 350;
     static long lastClickTime_nfc = 0;//记录最后一次刷卡时间
 
     //判断是否快速刷卡
