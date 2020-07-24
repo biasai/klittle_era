@@ -10,6 +10,8 @@ import android.widget.TextView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.exception.KCatchException
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KTextView
 import org.jetbrains.anko.*
 import kotlinx.coroutines.GlobalScope
@@ -41,7 +43,7 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
                     textView {
                         id = kpx.id("crown_txt_title")
                         textColor = Color.parseColor("#242424")
-                        textSize = kpx.textSizeX(36)
+                        textSize = kpx.textSizeX(38)
                         text = getString(R.string.ktishi)//提示
                     }.lparams {
                         leftMargin = kpx.x(24)
@@ -66,14 +68,14 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
                         isFillViewport = true
                         setVerticalScrollBarEnabled(false)
                         verticalLayout {
-                            gravity = Gravity.CENTER_VERTICAL
+                            gravity = Gravity.CENTER_HORIZONTAL
                             padding = 0
                             //内容
                             KTextView(this).apply {
                                 id = kpx.id("crown_txt_mession")
                                 textColor = Color.parseColor("#242424")
-                                textSize = kpx.textSizeX(34)
-                                gravity = Gravity.CENTER_VERTICAL
+                                textSize = kpx.textSizeX(36)
+                                //gravity = Gravity.CENTER_VERTICAL
                                 padding = 0
                             }.lparams {
                                 width = matchParent
@@ -98,7 +100,7 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
                         id = kpx.id("crown_txt_Negative")
                         //textColor = Color.parseColor("#239F93")
                         textColor = Color.parseColor("#C8C5C9")
-                        textSize = kpx.textSizeX(30)
+                        textSize = kpx.textSizeX(34)
                         leftPadding = kpx.x(24)
                         rightPadding = leftPadding
                         topPadding = kpx.x(8)
@@ -116,7 +118,7 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
                         id = kpx.id("crown_txt_Positive")
                         //textColor = Color.parseColor("#239F93")
                         textColor = Color.parseColor("#42A8E1")
-                        textSize = kpx.textSizeX(30)
+                        textSize = kpx.textSizeX(34)
                         leftPadding = kpx.x(24)
                         rightPadding = leftPadding
                         topPadding = kpx.x(8)
@@ -133,7 +135,7 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
 
                 }.lparams {
                     width = kpx.x(620)
-                    height = kpx.y(300)
+                    height = kpx.x(320)
                 }
             }
         }.view
@@ -197,40 +199,14 @@ open class KTimiAlertDialog(ctx: Context, isStatus: Boolean = true, isTransparen
     }
 
 
-    private var standardHeight = 0//正常高度。
-    private var mHeight=kpx.x(300)
-    private var maxHeight= kpx.maxScreenHeight() - kpx.statusHeight*2 - kpx.navigationBarHeight - mHeight
     override fun onShow() {
         super.onShow()
-        title?.setText(txt_title)
-        mession?.setText(txt_mession)//先设置文本，再计算高度。
-        var distanceHeight = 0//文本多出控件的高度
-        GlobalScope.async {
-            //新开线程，防止文本框没有初始化完成，宽和高没有获取得到。
-            ctx?.runOnUiThread {
-                scrollView?.apply {
-                    if (standardHeight!=null&&standardHeight <= 0) {
-                        standardHeight = height//记录一开始文本正常的高度。
-                    }
-                }
-                mession?.apply {
-                    if (standardHeight!=null&&standardHeight > 0) {
-                        distanceHeight = getTextHeight() - standardHeight//实时计算文本多出的高度。
-                    }
-                }
-                if (distanceHeight > 0 && distanceHeight > maxHeight) {
-                    distanceHeight =maxHeight
-                }
-                if (distanceHeight > 0) {
-                    container?.apply {
-                        if (distanceHeight > 0) {
-                            layoutParams.apply {
-                                height = mHeight + distanceHeight
-                                requestLayout()
-                            }
-                        }
-                    }
-                }
+        ctx?.runOnUiThread {
+            try {
+                title?.setText(txt_title)
+                mession?.setText(txt_mession)//先设置文本，再计算高度。
+            }catch (e:Exception){
+                KLoggerUtils.e("KTimiAlderDialog显示异常：\t"+KCatchException.getExceptionMsg(e),true)
             }
         }
     }

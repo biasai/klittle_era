@@ -16,6 +16,7 @@ import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
 import cn.oi.klittle.era.bluetooth.KBluetoothAdapter
 import androidx.core.app.ActivityCompat.startActivityForResult
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.utils.KAppUtils.getPackageName
 
 
@@ -380,6 +381,7 @@ object KIntentUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("NFC界面跳转异常：\t"+KCatchException.getExceptionMsg(e),true)
         }
     }
 

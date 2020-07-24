@@ -21,7 +21,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils;
 public class KRfidActivity extends KNfcActivity {
 
     /**
-     * fixme 判断是否位新版Alps PDA；依赖iodev2.jar；serialport.jar
+     * fixme 判断是否为Alps PDA(刷ID卡)；依赖iodev2.jar；serialport.jar
      */
     public Boolean isNewPdA_Alpas() {
         String name = KAppUtils.getDeviceName();
@@ -32,10 +32,36 @@ public class KRfidActivity extends KNfcActivity {
     }
 
     /**
-     * fixme 判断是否位新版: DoubleBird N60；依赖 scansV1.2_20101119.jar
+     * fixme 判断是否为新版PDA(能够识别二维码的): DoubleBird N60；依赖 scansV1.2_20101119.jar
      */
     public Boolean isNewPdA_DoubleBird() {
-        String name = KAppUtils.getDeviceBrand();
+        String name = KAppUtils.getDeviceBrand().trim();
+        if (name != null && name.equals("DoubleBird")) {
+            return true;
+        }
+        return false;
+    }
+
+    //fixme PDA类型判断，使用以下 isPDA_进行判断
+
+    /**
+     * fixme 旧版本PDA(最早的PDA)
+     * @return
+     */
+    public Boolean isPDA_AlpsPL_40L(){
+        String name = KAppUtils.getDeviceName();
+        if (name != null && name.equals("Alps PL-40L")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * fixme 新版本PDA(可以扫描二维码的)
+     * @return
+     */
+    public Boolean isPDA_DoubleBird(){
+        String name = KAppUtils.getDeviceBrand().trim();
         if (name != null && name.equals("DoubleBird")) {
             return true;
         }

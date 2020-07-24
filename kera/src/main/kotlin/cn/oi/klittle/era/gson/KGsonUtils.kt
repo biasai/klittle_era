@@ -184,7 +184,9 @@ object KGsonUtils {
                     } else {
                         // 调用getter方法获取属性值
                         m = t::class.java.getMethod("get$name")
-                        val obj = m!!.invoke(t) ?: continue
+                        if (m!=null) {
+                            val obj = m!!.invoke(t) ?: continue
+                        }
                     }
                     //Log.e("test","obj:\t"+obj);
                 } catch (e: Exception) {

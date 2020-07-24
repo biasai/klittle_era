@@ -104,6 +104,8 @@
     <string name="textCopy">文本已复制</string>
     <string name="knfc_no">该设备不支持NFC读卡功能</string>
     <string name="knf_set">请在系统设置中先启用NFC功能!</string>
+    <string name="knf_set_notStar">NFC刷卡服务开启失败，需要重新开启(先手动关闭，再开启)</string>
+    <string name="kgo_set_start">去开启</string>
 
     <string name="kgo_set">去设置</string>
 

@@ -79,6 +79,7 @@ public class KNfcActivity extends KBaseActivity {
 
     /**
      * 设备不支持NFC刷卡功能时调用,在onStart()里调用，只调用一次。
+     * fixme 设备支持NFC,但是开机启动时，NFC服务还没有开启导致的。从而异常。导致判断失误。这时需要重启NFC刷卡功能即可。
      */
     protected void onNfcNotSupport() {
     }
@@ -201,36 +202,27 @@ public class KNfcActivity extends KBaseActivity {
             //fixme 如果开了RFID扫描；NFC就不开。
             return;
         }
-        try {
-            if (mNfcAdapter == null) {
-                mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-            }
-            if (mNfcAdapter == null) {
-                //设备不支持NFC读取
-                isNfcSupport = false;
-            } else if (!mNfcAdapter.isEnabled()) {
-                //请在系统设置中先启用NFC功能！
-            } else if (pendingIntent == null) {
-                pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-                onNewIntent(getIntent());
-            }
-        } catch (Exception e) {
-            isNfcSupport = false;
-            KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(), true);
-        }
-    }
-
-    @Override
-    protected void onStart() {
-        try {
-            super.onStart();
-            if (!isNfcSupport) {
-                if (isEnableNFC()) {
-                    onNfcNotSupport();//fixme 设备不支持NFC读卡功能
+        if (mNfcAdapter == null) {
+            try {
+                if (mNfcAdapter == null) {
+                    mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
                 }
+                if (mNfcAdapter == null) {
+                    //设备不支持NFC读取
+                    isNfcSupport = false;
+                } else if (!mNfcAdapter.isEnabled()) {
+                    //请在系统设置中先启用NFC功能！
+                } else if (pendingIntent == null) {
+                    pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                    onNewIntent(getIntent());
+                }
+            } catch (Exception e) {
+                isNfcSupport = false;
+                //fixme 这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
+                KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter);
+                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(), true);
+                mNfcAdapter = null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
@@ -238,6 +230,9 @@ public class KNfcActivity extends KBaseActivity {
     protected void onResume() {
         try {
             super.onResume();
+            if (isEnableNFC()) {
+                initNfc();//fixme 防止未初始化异常，未完成。再初始化一次。
+            }
             if (isEnableNFC() && isNfcSupport) {
                 enableNfc();
                 if (!isNfcEnabled()) {
@@ -270,6 +265,16 @@ public class KNfcActivity extends KBaseActivity {
                         }
                     }.start();
                 }
+            } else {
+                try {
+                    if (!isNfcSupport) {
+                        if (isEnableNFC()) {
+                            onNfcNotSupport();//fixme 设备不支持NFC读卡功能(或者NFC刷卡失败。)
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -284,7 +289,11 @@ public class KNfcActivity extends KBaseActivity {
         }
     }
 
+    //fixme NFC刷卡读取
     private void readFromNfc(Intent intent) {
+        if (intent == null) {
+            return;
+        }
         try {
             Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
             if (null != tag) {
@@ -294,7 +303,7 @@ public class KNfcActivity extends KBaseActivity {
                 //KLoggerUtils.INSTANCE.e("STR:\t"+str);
                 // 363810877
                 String nfcCardNo = hexToDecString(str);
-                //KLoggerUtils.INSTANCE.e("nfcCardNo:\t"+nfcCardNo);
+                //KLoggerUtils.INSTANCE.e("nfcCardNo:\t"+nfcCardNo,true);
                 //回调
                 if (nfcCardNo != null && nfcCardNo.trim().length() > 0) {
                     if (isEnableNF2C()) {
@@ -303,6 +312,8 @@ public class KNfcActivity extends KBaseActivity {
                         }
                         onNfcResult(nfcCardNo);
                     }
+                } else {
+                    KLoggerUtils.INSTANCE.e("NFC刷卡为空,nfcCardNo:\t" + nfcCardNo, true);
                 }
             }
         } catch (Exception e) {

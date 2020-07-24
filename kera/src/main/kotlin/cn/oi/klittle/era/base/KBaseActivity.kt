@@ -4,7 +4,6 @@ package cn.oi.klittle.era.base
 //import kotlinx.coroutines.experimental.delay
 //import org.jetbrains.anko.custom.async
 //import kotlinx.coroutines.GlobalScope
-import android.R.attr
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
@@ -35,6 +34,7 @@ import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
+import cn.oi.klittle.era.utils.KIntentUtils.goNFCSetting
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -841,6 +841,22 @@ open class KBaseActivity : AppCompatActivity() {
         }
         return null
     }
+
+    //fixme NFC服务开启失败，重新手动启动。一般在 onNfcNotSupport（）里手动调用。
+    protected open fun toRestartNFC() {
+        if (!isFinishing) {
+            runOnUiThread {
+                showMsg(KBaseUi.getString(R.string.knf_set_notStar))?.apply {
+                    //去设置
+                    positive(getString(R.string.kgo_set_start)) {
+                        goNFCSetting()
+                    }
+                    show()
+                }
+            }
+        }
+    }
+
 
     private var kTopTimi: KTopTimiDialog? = null
 

@@ -98,6 +98,8 @@
     <string name="textCopy">Text copied</string>
     <string name="knfc_no">The device does not support NFC card reading function</string>
     <string name="knf_set">Please enable NFC function in system Settings first!</string>
+    <string name="knf_set_notStar">NFC card swiping service fails to be started, and needs to be reopened (manually closed first, then opened)</string>
+    <string name="kgo_set_start">To open it</string>
 
     <!--NFC读卡-->
     <string name="kgo_set">to set up</string>
