@@ -121,6 +121,7 @@ public class KNfcActivity extends KBaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("disableNfc()异常：\t" + KCatchException.getExceptionMsg(e), true);
         }
     }
 
@@ -137,13 +138,15 @@ public class KNfcActivity extends KBaseActivity {
                 if (pendingIntent == null) {
                     pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
                 }
-                if (pendingIntent != null) {
+                if (mNfcAdapter != null && pendingIntent != null) {
                     //fixme 这行代码是添加调度，效果是读标签的时候不会弹出候选程序，直接用本程序处理(当前Activity处理，就不会再弹系统询问框了。)
                     mNfcAdapter.enableForegroundDispatch(this, pendingIntent, FILTERS, TECHLISTS);
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+            KLoggerUtils.INSTANCE.e("KNfcActivity NFC开启异常：\t" + KCatchException.getExceptionMsg(e), true);
         }
     }
 
@@ -182,7 +185,7 @@ public class KNfcActivity extends KBaseActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            //KLoggerUtils.INSTANCE.e("NFC初始化异常：\t" + e.getMessage());
+            KLoggerUtils.INSTANCE.e("NFC初始化异常(onCreate())：\t" + KCatchException.getExceptionMsg(e), true);
         }
     }
 
@@ -214,14 +217,41 @@ public class KNfcActivity extends KBaseActivity {
                     //请在系统设置中先启用NFC功能！
                 } else if (pendingIntent == null) {
                     pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-                    onNewIntent(getIntent());
+                    if (getIntent() != null) {
+                        onNewIntent(getIntent());
+                    }
                 }
             } catch (Exception e) {
+                //fixme 如果设备支持NFC,这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
+                KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + KCatchException.getExceptionMsg(e), true);
                 isNfcSupport = false;
-                //fixme 这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
-                KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter);
-                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + e.getMessage(), true);
                 mNfcAdapter = null;
+                //fixme 再初始化一次。
+                if (mNfcAdapter == null && isEnableNFC()) {
+                    try {
+                        if (mNfcAdapter == null) {
+                            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+                        }
+                        if (mNfcAdapter == null) {
+                            //设备不支持NFC读取
+                            isNfcSupport = false;
+                        } else if (!mNfcAdapter.isEnabled()) {
+                            //请在系统设置中先启用NFC功能！
+                        } else if (pendingIntent == null) {
+                            pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                            if (getIntent() != null) {
+                                onNewIntent(getIntent());
+                            }
+                        }
+                    } catch (Exception e2) {
+                        //fixme 如果设备支持NFC,这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
+                        KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+                        KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常2：\t" + KCatchException.getExceptionMsg(e2), true);
+                        isNfcSupport = false;
+                        mNfcAdapter = null;
+                    }
+                }
             }
         }
     }
