@@ -210,42 +210,54 @@ public class KNfcActivity extends KBaseActivity {
                 } else if (!mNfcAdapter.isEnabled()) {
                     //请在系统设置中先启用NFC功能！
                 } else if (pendingIntent == null) {
+                    try {
+                        pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+                        if (getIntent() != null) {
+                            onNewIntent(getIntent());
+                        }
+                    } catch (Exception e) {
+                        KLoggerUtils.INSTANCE.e("异常1：\tmNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+                        KLoggerUtils.INSTANCE.e("KNfcActivity NFC pendingIntent异常1：\t" + KCatchException.getExceptionMsg(e), true);
+                        isNfcSupport = false;
+                        mNfcAdapter = null;
+                        reInit();
+                    }
+                }
+            } catch (Exception e) {
+                //fixme 如果设备支持NFC,这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
+                KLoggerUtils.INSTANCE.e("异常2：\tmNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常2：\t" + KCatchException.getExceptionMsg(e), true);
+                isNfcSupport = false;
+                mNfcAdapter = null;
+                reInit();
+            }
+        }
+    }
+
+    private void reInit() {
+        //fixme 再初始化一次。
+        if (mNfcAdapter == null && isEnableNFC()) {
+            try {
+                if (mNfcAdapter == null) {
+                    mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+                }
+                if (mNfcAdapter == null) {
+                    //设备不支持NFC读取
+                    isNfcSupport = false;
+                } else if (!mNfcAdapter.isEnabled()) {
+                    //请在系统设置中先启用NFC功能！
+                } else if (pendingIntent == null) {
                     pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
                     if (getIntent() != null) {
                         onNewIntent(getIntent());
                     }
                 }
-            } catch (Exception e) {
+            } catch (Exception e2) {
                 //fixme 如果设备支持NFC,这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
-                KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
-                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常：\t" + KCatchException.getExceptionMsg(e), true);
+                KLoggerUtils.INSTANCE.e("异常3:\tmNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
+                KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常3：\t" + KCatchException.getExceptionMsg(e2), true);
                 isNfcSupport = false;
                 mNfcAdapter = null;
-                //fixme 再初始化一次。
-                if (mNfcAdapter == null && isEnableNFC()) {
-                    try {
-                        if (mNfcAdapter == null) {
-                            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
-                        }
-                        if (mNfcAdapter == null) {
-                            //设备不支持NFC读取
-                            isNfcSupport = false;
-                        } else if (!mNfcAdapter.isEnabled()) {
-                            //请在系统设置中先启用NFC功能！
-                        } else if (pendingIntent == null) {
-                            pendingIntent = PendingIntent.getActivity(this, 0, new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
-                            if (getIntent() != null) {
-                                onNewIntent(getIntent());
-                            }
-                        }
-                    } catch (Exception e2) {
-                        //fixme 如果设备支持NFC,这种异常，一般都是开机启动时，NFC服务还没有开启导致的。
-                        KLoggerUtils.INSTANCE.e("mNfcAdapter:\t" + mNfcAdapter + "\tisNfcSupport:\t" + isNfcSupport + "\tpendingIntent:\t" + pendingIntent, true);
-                        KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常2：\t" + KCatchException.getExceptionMsg(e2), true);
-                        isNfcSupport = false;
-                        mNfcAdapter = null;
-                    }
-                }
             }
         }
     }
