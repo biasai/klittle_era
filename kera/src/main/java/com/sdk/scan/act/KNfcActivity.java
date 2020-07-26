@@ -220,7 +220,7 @@ public class KNfcActivity extends KBaseActivity {
                         KLoggerUtils.INSTANCE.e("KNfcActivity NFC pendingIntent异常1：\t" + KCatchException.getExceptionMsg(e), true);
                         isNfcSupport = false;
                         mNfcAdapter = null;
-                        reInit();
+                        reInitNfc();
                     }
                 }
             } catch (Exception e) {
@@ -229,12 +229,13 @@ public class KNfcActivity extends KBaseActivity {
                 KLoggerUtils.INSTANCE.e("KNfcActivity NFC初始化异常2：\t" + KCatchException.getExceptionMsg(e), true);
                 isNfcSupport = false;
                 mNfcAdapter = null;
-                reInit();
+                reInitNfc();
             }
         }
     }
 
-    private void reInit() {
+    //重新初始化nfc配置
+    private void reInitNfc() {
         //fixme 再初始化一次。
         if (mNfcAdapter == null && isEnableNFC()) {
             try {
