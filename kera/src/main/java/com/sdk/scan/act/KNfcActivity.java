@@ -45,7 +45,7 @@ import cn.oi.klittle.era.utils.KStringUtils;
 //        KToast.showError(getString(R.string.knfc_no), this)
 //    }
 
-//fixme toRestartNFC()重启NFC(用户手动重启)，方法在KBaseActivity
+//fixme toRestartNFC()重启NFC(用户手动重启)，方法在KBaseActivity里。
 
 /**
  * 子类直接重写 onNfcResult()方法，直接获取IC卡的读取结果即可。
