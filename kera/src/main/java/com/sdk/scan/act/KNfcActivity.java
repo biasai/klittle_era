@@ -174,7 +174,12 @@ public class KNfcActivity extends KBaseActivity {
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        try {
+            super.onCreate(savedInstanceState);
+        } catch (Exception e) {
+            e.printStackTrace();
+            KLoggerUtils.INSTANCE.e("NFC onCreate()异常：\t" + KCatchException.getExceptionMsg(e), true);
+        }
     }
 
     //处理NFC触发(fixme nfc读卡会调用这个方法)
@@ -252,7 +257,7 @@ public class KNfcActivity extends KBaseActivity {
             try {
                 //fixme 之前放在onCreate()里，会发生异常：java.lang.IllegalStateException: Foreground dispatch can only be enabled when your activity is resumed
                 //fixme 所以放在onResume()里。比较好。
-                if (isEnableNFC()&&mNfcAdapter==null) {
+                if (isEnableNFC() && mNfcAdapter == null) {
                     initNfc();
                     if (isNfcSupport) {
                         enableNfc();
