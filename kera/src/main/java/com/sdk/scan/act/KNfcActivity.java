@@ -45,6 +45,8 @@ import cn.oi.klittle.era.utils.KStringUtils;
 //        KToast.showError(getString(R.string.knfc_no), this)
 //    }
 
+//fixme toRestartNFC()重启NFC(用户手动重启)，方法在KBaseActivityl
+
 /**
  * 子类直接重写 onNfcResult()方法，直接获取IC卡的读取结果即可。
  * fixme 启动模式最好设置成 android:launchMode="singleTask" 防止刷卡时多次重复跳转
