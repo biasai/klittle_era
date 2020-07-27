@@ -14,6 +14,7 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.View
 import android.view.ViewTreeObserver
@@ -818,6 +819,39 @@ open class KBaseActivity : AppCompatActivity() {
         KUiHelper.goActivityForResult(intent, sharedElement, nowActivity, requestCode)
     }
 
+    /**
+     * fixme 获取当前进程Id(是当前调用者所在的进程)
+     * fixme 作为普通方法，不要作为静态方法
+     */
+    fun getPid(): Int {
+        return android.os.Process.myPid()
+    }
+
+    //fixme 获取开机以来的毫秒数。（即从开机到现在的时间差。）;
+    fun getSystemCloeckElapsedRealtime_ms(): Long {
+        return SystemClock.elapsedRealtime()//fixme 亲测，是毫秒数。
+    }
+
+    //fixme 获取开机以来到现在的时间差（秒）。
+    fun getSystemCloeckElapsedRealtime_seconds(): Long {
+        return getSystemCloeckElapsedRealtime_ms() / 1000
+    }
+
+    //fixme 获取开机以来到现在的时间差（分钟）。
+    fun getSystemCloeckElapsedRealtime_minutes(): Double {
+        return getSystemCloeckElapsedRealtime_seconds() / 60.0
+    }
+
+    //fixme 获取开机以来到现在的时间差（小时）。
+    fun getSystemCloeckElapsedRealtime_hours(): Double {
+        return getSystemCloeckElapsedRealtime_minutes() / 60.0
+    }
+
+    //fixme 获取开机以来到现在的时间差（天数）。
+    fun getSystemCloeckElapsedRealtime_day(): Double {
+        return getSystemCloeckElapsedRealtime_hours() / 24.0
+    }
+
     private var kTimi: KTimiAlertDialog? = null
 
     /**
@@ -1074,13 +1108,6 @@ open class KBaseActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * fixme 获取当前进程Id(是当前调用者所在的进程)
-     * fixme 作为普通方法，不要作为静态方法
-     */
-    fun getPid(): Int {
-        return android.os.Process.myPid()
-    }
 
     /**
      * fixme 父容器设置获取焦点；解决edit文本输入框软键盘自动弹窗的问题。

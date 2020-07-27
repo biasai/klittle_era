@@ -588,7 +588,7 @@ object KIntentUtils {
                     intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                     isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
                     activity.startActivity(intent)
-                    android.os.Process.killProcess(android.os.Process.myPid());//fixme 殺進程，不然重啟無效果。
+                    android.os.Process.killProcess(android.os.Process.myPid());//fixme 殺進程，不然重啟無效果。（杀进程之后，重启亲测有效。）
                 }
             }
         } catch (e: java.lang.Exception) {
