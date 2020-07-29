@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="cn.oi.klittle.era">
-    <!-- 网络 -->
+    <!-- fixme 网络：android 9.0及以上默认都是https; android:usesCleartextTraffic="true"兼容http请求。-->
     <application android:usesCleartextTraffic="true">
         <!-- 图片预览,还是使用透明主题背景比较好 -->
         <activity
