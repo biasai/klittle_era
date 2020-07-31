@@ -11,6 +11,8 @@ import cn.oi.klittle.era.widget.compat.KView
 
 //                fixme 简单调用案例：
 //                kJBox2dView {
+//                    timeStep = 1f / 60f //模拟的的频率（1f / 60f 代表刷新频率为60帧每秒）
+//                    iterations = 10//迭代越大，模拟越精确，但性能越低（正常15左右即可）
 //                    var circleBody: KCircleBody? = null//fixme 圆形刚体
 //                    var circleBody2: KCircleBody? = null//fixme 圆形刚体
 //                    var polygonBox: KPolygonBody? = null//fixme 多边形（矩形）刚体
@@ -100,8 +102,8 @@ open class KJBox2dView : KView {
         }
     }
 
-    var timeStep = 1f / 60f //模拟的的频率
-    var iterations = 15//迭代越大，模拟约精确，但性能越低
+    var timeStep = 1f / 60f //模拟的的频率（1f / 60f 代表刷新频率为60帧每秒）
+    var iterations = 15//迭代越大，模拟越精确，但性能越低（正常15左右即可）
     var world: KWorld? = null//fixme 世界
     fun world(block: KWorld.() -> Unit): KJBox2dView {
         if (world == null) {
