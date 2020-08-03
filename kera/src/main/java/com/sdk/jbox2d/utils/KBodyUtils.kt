@@ -21,9 +21,9 @@ object KBodyUtils {
      * @param x 圆心坐标位置
      * @param y
      * @param radius 半径
-     * @param density 密度,如果为0；在世界world里面就是静止不动的。
-     * @param friction 摩擦系数
-     * @param restitution 归还能量率（即：碰撞之后，剩余能量率；0剩余能量为0;1剩余能量为百分百，即没有损耗）
+     * @param density 密度,如果为0；在世界world里面就是静止不动的。fixme 密度
+     * @param friction 摩擦系数 fixme 摩擦力
+     * @param restitution 归还能量率（即：碰撞之后，剩余能量率；0剩余能量为0;1剩余能量为百分百，即没有损耗）fixme 弹力
      */
     open fun createCircleBody(world: World?, x: Float, y: Float, radius: Float, density: Float = 7f, friction: Float = 0.8f, restitution: Float = 0.3f): KCircleBody? {
         if (world == null) {
@@ -55,7 +55,7 @@ object KBodyUtils {
      * @param world 世界
      * @param x 中心坐标位置
      * @param y
-     * @param width 宽度(以x中心坐标，左右宽度都为width)
+     * @param width 宽度(以x中心坐标，fixme 左右宽度都为width;即实际长度就是两倍width的宽度。)
      * @param height 高度(以y中心坐标，上下高度都为height)
      * @param density 密度,如果为0；在世界world里面就是静止不动的。
      * @param friction 摩擦系数

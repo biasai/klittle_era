@@ -12,7 +12,7 @@ import org.jbox2d.dynamics.World
  * 圆形刚体
  * fixme radius半径和body刚体;初始化之后，就不能在修改。修改了也没有效果。
  */
-open class KCircleBody(private var radius: Float = kpx.x(50f)):KBaseBody() {
+open class KCircleBody(private var radius: Float = kpx.x(50f)) : KBaseBody() {
     //var body: Body? = null//fixme 刚体，body.position.x, body.position.y是刚体的中心坐标。
 
     //fixme 以下属性是绘图属性，可以任意修改。
@@ -25,9 +25,14 @@ open class KCircleBody(private var radius: Float = kpx.x(50f)):KBaseBody() {
     var style: Paint.Style = Paint.Style.FILL_AND_STROKE//类型
 
     //fixme 绘制圆形
-    fun drawCircle(canvas: Canvas?, paint: Paint?) {
+    fun draw(canvas: Canvas?, paint: Paint?) {
         if (canvas == null || paint == null) {
             return
+        }
+        drawBitmap(canvas,paint)?.let {
+            if (it){
+                return //fixme 优先绘制位图
+            }
         }
         body?.let {
             if (color != Color.TRANSPARENT && radius > 0) {
@@ -46,10 +51,17 @@ open class KCircleBody(private var radius: Float = kpx.x(50f)):KBaseBody() {
                     }
                     dashPathEffect = null
                 }
+                if (it.angle!=0f){
+                    canvas.save()
+                    canvas.rotate(Math.toDegrees(it.angle.toDouble()).toFloat(),it.position.x,it.position.y)//fixme 旋转角度。
+                }
                 if (style == Paint.Style.FILL) {
                     canvas?.drawCircle(it.position.x, it.position.y, radius, paint)
                 } else {
                     canvas?.drawCircle(it.position.x, it.position.y, radius - strokeWidth, paint)
+                }
+                if (it.angle!=0f){
+                    canvas.restore()
                 }
                 paint?.setPathEffect(null)
             }
