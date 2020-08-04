@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.DashPathEffect
 import android.graphics.Paint
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.utils.KLoggerUtils
 import org.jbox2d.dynamics.Body
 import org.jbox2d.dynamics.World
 
@@ -29,8 +30,8 @@ open class KCircleBody(private var radius: Float = kpx.x(50f)) : KBaseBody() {
         if (canvas == null || paint == null) {
             return
         }
-        drawBitmap(canvas,paint)?.let {
-            if (it){
+        drawBitmap(canvas, paint)?.let {
+            if (it) {
                 return //fixme 优先绘制位图
             }
         }
@@ -38,7 +39,6 @@ open class KCircleBody(private var radius: Float = kpx.x(50f)) : KBaseBody() {
             if (color != Color.TRANSPARENT && radius > 0) {
                 paint?.color = color
                 paint?.style = style
-                paint?.strokeWidth = strokeWidth
                 //虚线
                 if (dashWidth > 0 && dashGap > 0 && style != Paint.Style.FILL) {
                     var dashPathEffect: DashPathEffect? = DashPathEffect(floatArrayOf(dashWidth, dashGap), phase)
@@ -51,16 +51,19 @@ open class KCircleBody(private var radius: Float = kpx.x(50f)) : KBaseBody() {
                     }
                     dashPathEffect = null
                 }
-                if (it.angle!=0f){
+                if (it.angle != 0f) {
                     canvas.save()
-                    canvas.rotate(Math.toDegrees(it.angle.toDouble()).toFloat(),it.position.x,it.position.y)//fixme 旋转角度。
+                    canvas.rotate(Math.toDegrees(it.angle.toDouble()).toFloat(), it.position.x, it.position.y)//fixme 旋转角度。
                 }
-                if (style == Paint.Style.FILL) {
+                //KLoggerUtils.e("radius:\t"+radius+"\tstrokeWidth:\t"+strokeWidth,true)
+                if (style == Paint.Style.FILL || strokeWidth <= 0) {
+                    paint?.strokeWidth = 0f
                     canvas?.drawCircle(it.position.x, it.position.y, radius, paint)
                 } else {
+                    paint?.strokeWidth = strokeWidth
                     canvas?.drawCircle(it.position.x, it.position.y, radius - strokeWidth, paint)
                 }
-                if (it.angle!=0f){
+                if (it.angle != 0f) {
                     canvas.restore()
                 }
                 paint?.setPathEffect(null)

@@ -46,6 +46,7 @@ import cn.oi.klittle.era.widget.compat.KView
 //                            }
 //                        }
 //                    }
+//                    setBorderBody()//fixme 创建边界刚体（将整个控件四四方方围起来）
 //                    draw { canvas, paint ->
 //                        //fixme 绘制圆形刚体
 //                        circleBody?.drawCircle(canvas, paint)
@@ -114,6 +115,27 @@ open class KJBox2dView : KView {
         }
         postInvalidate()//界面刷新
         return this
+    }
+
+
+    /**
+     * fixme 创建边界刚体。（将整个控件四四方方围起来）
+     * @param leftOffset 左边偏移量
+     * @param topOffset 上方偏移量
+     * @param rightOffset 右边偏移量
+     * @param bottomOffset 底部偏移量
+     */
+    fun setBorderBody(leftOffset: Float = 0F, topOffset: Float = 0F, rightOffset: Float = 0F, bottomOffset: Float = 0F) {
+        world {
+            body {
+                addOnGlobalLayoutListener { x, y, width, height ->
+                    var leftBody = createPolygonBox(0f - 1f - leftOffset, height / 2f, 1f, height / 2f, density = 0f)
+                    var topBody = createPolygonBox(width / 2f, 0f - 1f - topOffset, width / 2f, 1f, density = 0f)
+                    var rightBody = createPolygonBox(width.toFloat() + 1f + rightOffset, height / 2f, 1f, height / 2f, density = 0f)
+                    var bottomBody = createPolygonBox(width / 2f, height.toFloat() + 1f + bottomOffset, width / 2f, 1f, density = 0f)
+                }
+            }
+        }
     }
 
     //fixme 销毁

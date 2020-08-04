@@ -56,6 +56,7 @@ open class KBaseBody() {
                         canvas.save()
                         canvas.rotate(Math.toDegrees(angle.toDouble()).toFloat(),body.position.x,body.position.y)//fixme 旋转角度。
                     }
+                    //KLoggerUtils.e("it.width:\t"+it.width+"\tit.height:\t"+it.height,true)
                     canvas.drawBitmap(it, Rect(0, 0, it.width, it.height), RectF(body.position.x - it.width / 2, body.position.y - it.height / 2, body.position.x + it.width / 2, body.position.y + it.height / 2), paint)
                     if (angle!=0f){
                         canvas.restore()
