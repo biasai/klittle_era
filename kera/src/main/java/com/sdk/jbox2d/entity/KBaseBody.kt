@@ -15,27 +15,37 @@ open class KBaseBody() {
     var body: Body? = null//fixme 刚体，body.position.x, body.position.y是刚体的中心坐标。
     var world: World? = null
     var bitmap: Bitmap? = null
+    var overrideWidth:Int=0//fixme 记录位图的宽度和高度。(保证位图尺寸的正确行。)
+    var overrideHeight:Int=0
     var isRecycledBitmap = true//是否销毁问题。默认销毁；在 destroy（）方法里。
 
     fun getBitmapFromAssets(path: String, overrideWidth: Int, overrideHeight: Int) {
+        this.overrideWidth=overrideWidth
+        this.overrideHeight=overrideHeight
         GlobalScope.async {
             bitmap = KGlideUtils.getBitmapFromAssets(path, overrideWidth, overrideHeight, 1f, true)
         }
     }
 
     fun getBitmapFromResouce(resID: Int, overrideWidth: Int, overrideHeight: Int) {
+        this.overrideWidth=overrideWidth
+        this.overrideHeight=overrideHeight
         GlobalScope.async {
             bitmap = KGlideUtils.getBitmapFromResouce(resID, overrideWidth, overrideHeight, 1f, true)
         }
     }
 
     fun getBitmapFromPath(path: String, overrideWidth: Int, overrideHeight: Int) {
+        this.overrideWidth=overrideWidth
+        this.overrideHeight=overrideHeight
         GlobalScope.async {
             bitmap = KGlideUtils.getBitmapFromPath(path, overrideWidth, overrideHeight, 1f, true)
         }
     }
 
     fun getBitmapFromUrl(url: String, overrideWidth: Int, overrideHeight: Int) {
+        this.overrideWidth=overrideWidth
+        this.overrideHeight=overrideHeight
         GlobalScope.async {
             bitmap = KGlideUtils.getBitmapFromUrl(url, overrideWidth, overrideHeight, null, null, true)
         }
@@ -57,7 +67,13 @@ open class KBaseBody() {
                         canvas.rotate(Math.toDegrees(angle.toDouble()).toFloat(),body.position.x,body.position.y)//fixme 旋转角度。
                     }
                     //KLoggerUtils.e("it.width:\t"+it.width+"\tit.height:\t"+it.height,true)
-                    canvas.drawBitmap(it, Rect(0, 0, it.width, it.height), RectF(body.position.x - it.width / 2, body.position.y - it.height / 2, body.position.x + it.width / 2, body.position.y + it.height / 2), paint)
+                    if (overrideWidth<=0){
+                        overrideWidth=it.width
+                    }
+                    if (overrideHeight<=0){
+                        overrideHeight=it.height
+                    }
+                    canvas.drawBitmap(it, Rect(0, 0, it.width, it.height), RectF(body.position.x - overrideWidth / 2, body.position.y - overrideHeight / 2, body.position.x + overrideWidth / 2, body.position.y + overrideHeight / 2), paint)
                     if (angle!=0f){
                         canvas.restore()
                     }
