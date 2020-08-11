@@ -20,6 +20,11 @@ import cn.oi.klittle.era.comm.kpx
  * @param topDashGap 上边框 虚线之间的间隙
  * @param rightDashGap 右边框 虚线之间的间隙
  * @param bottomDashGap 底部边框 虚线之间的间隙
+ *
+ * @param left_top_corner 左上角圆角
+ * @param left_bottom_corner 左下角圆角
+ * @param right_top_corner 右上角圆角
+ * @param right_bottom_corner 右下角圆角
  */
 data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
                          var dashWidth: Float = 0F, var dashGap: Float = 0F,
@@ -37,7 +42,11 @@ data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: In
                          var rightStrokeHorizontalColors: IntArray? = null, var rightStrokeVerticalColors: IntArray? = null,
                          var bottomStrokeWidth: Float? = null, var bottomStrokeColor: Int? = null,
                          var bottomDashWidth: Float? = null, var bottomDashGap: Float? = null,
-                         var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null) {
+                         var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null,
+                         var left_top_corner: Float = 0F,
+                         var left_bottom_corner: Float = 0F,
+                         var right_top_corner: Float = 0F,
+                         var right_bottom_corner: Float = 0F) {
 
     //fixme 所有
 

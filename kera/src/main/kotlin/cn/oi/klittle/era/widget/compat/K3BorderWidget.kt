@@ -172,14 +172,47 @@ open class K3BorderWidget : K3AStateView {
         super.draw2Last(canvas, paint)
         currentBorder?.let {
             if (it.strokeWidth > 0) {
+                var left_top_corner = it.left_top_corner//左上角
+                var left_bottom_corner = it.left_bottom_corner//左下角
+                var right_top_corner = it.right_top_corner//右上角
+                var right_bottom_corner = it.right_bottom_corner//右下角
                 //绘制左边的边框
                 if (it.isDrawLeft) {
                     initBorderPaint(resetPaint(paint), it, 1)
                     var startX = scrollX + paint.strokeWidth / 2
-                    var startY = scrollY.toFloat()
+                    var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
-                    var endY = startY + h.toFloat()
-                    canvas.drawLine(startX, startY, endX, endY, paint)
+                    var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
+                    if (left_top_corner <= 0 && left_bottom_corner <= 0) {
+                        canvas.drawLine(startX, startY, endX, endY, paint)
+                    } else {
+                        //左上角圆角
+                        var path = Path()
+                        var starX0 = startX + (startX + w.toFloat()) / 2 * (left_top_corner / 90f)
+                        var starY0 = startY
+                        var controllX = startX
+                        var controllY = startY
+                        var endX0 = startX
+                        var endY0 = startY + (startY + h.toFloat()) / 2 * (left_top_corner / 90f)
+                        path.moveTo(starX0, starY0)
+                        path.quadTo(controllX, controllY, endX0, endY0)
+                        canvas.drawPath(path, paint)
+                        if (left_bottom_corner <= 0) {
+                            canvas.drawLine(endX0, endY0, endX, endY, paint)
+                        } else {
+                            //左下角圆角
+                            var endY1 = endY - (startY + h.toFloat()) / 2 * (left_bottom_corner / 90f)
+                            canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            var path2 = Path()
+                            path2.moveTo(endX, endY1)
+                            var controllX = endX
+                            var controllY = endY
+                            var endX2 = startX + (startX + w.toFloat()) / 2 * (left_bottom_corner / 90f)
+                            var endY2 = endY
+                            path2.quadTo(controllX, controllY, endX2, endY2)
+                            canvas.drawPath(path2, paint)
+                        }
+                    }
                 }
                 //绘制上边的边框
                 if (it.isDrawTop) {
@@ -188,16 +221,53 @@ open class K3BorderWidget : K3AStateView {
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
-                    canvas.drawLine(startX, startY, endX, endY, paint)
+                    if (left_top_corner <= 0&&right_top_corner<=0) {
+                        canvas.drawLine(startX, startY, endX, endY, paint)
+                    } else {
+                        var starX0 = startX + (startX + w.toFloat()) / 2 * (left_top_corner / 90f)
+                        var starY0 = startY
+                        var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
+                        var endX0=startX - (startX + w.toFloat()) / 2 * (right_top_corner / 90f)
+                        canvas.drawLine(starX0, starY0, endX0, endY, paint)
+                    }
                 }
                 //绘制右边的边框
                 if (it.isDrawRight) {
                     initBorderPaint(resetPaint(paint), it, 3)
                     var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
-                    var startY = scrollY.toFloat()
+                    var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
-                    var endY = startY + h.toFloat()
-                    canvas.drawLine(startX, startY, endX, endY, paint)
+                    var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
+                    if (right_top_corner <= 0 && right_bottom_corner <= 0) {
+                        canvas.drawLine(startX, startY, endX, endY, paint)
+                    } else {
+                        //右上角圆角
+                        var path = Path()
+                        var starX0 = startX - (startX + w.toFloat()) / 2 * (right_top_corner / 90f)
+                        var starY0 = startY
+                        var controllX = startX
+                        var controllY = startY
+                        var endX0 = startX
+                        var endY0 = startY + (startY + h.toFloat()) / 2 * (right_top_corner / 90f)
+                        path.moveTo(starX0, starY0)
+                        path.quadTo(controllX, controllY, endX0, endY0)
+                        canvas.drawPath(path, paint)
+                        if (left_bottom_corner <= 0) {
+                            canvas.drawLine(endX0, endY0, endX, endY, paint)
+                        } else {
+                            //右下角圆角
+                            var endY1 = endY - (startY + h.toFloat()) / 2 * (right_bottom_corner / 90f)
+                            canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            var path2 = Path()
+                            path2.moveTo(endX, endY1)
+                            var controllX = endX
+                            var controllY = endY
+                            var endX2 = endX - (startX) / 2 * (right_bottom_corner / 90f)
+                            var endY2 = endY
+                            path2.quadTo(controllX, controllY, endX2, endY2)
+                            canvas.drawPath(path2, paint)
+                        }
+                    }
                 }
                 //绘制底部的边框
                 if (it.isDrawBottom) {
@@ -206,7 +276,14 @@ open class K3BorderWidget : K3AStateView {
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
-                    canvas.drawLine(startX, startY, endX, endY, paint)
+                    if (left_bottom_corner <= 0&&right_bottom_corner<=0) {
+                        canvas.drawLine(startX, startY, endX, endY, paint)
+                    } else {
+                        var starX0 = startX + (startX + w.toFloat()) / 2 * (left_top_corner / 90f)
+                        var starY0 = startY
+                        var endX2 = endX - (endX) / 2 * (right_bottom_corner / 90f)
+                        canvas.drawLine(starX0, starY0, endX2, endY, paint)
+                    }
                 }
             }
         }
