@@ -22,7 +22,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param bottomDashGap 底部边框 虚线之间的间隙
  *
  * @param all_corner 所有圆角(0~90度)
- * @param left_top_corner 左上角圆角
+ * @param left_top_corner 左上角圆角,fixme 优先级比all_corner高。
  * @param left_bottom_corner 左下角圆角
  * @param right_top_corner 右上角圆角
  * @param right_bottom_corner 右下角圆角

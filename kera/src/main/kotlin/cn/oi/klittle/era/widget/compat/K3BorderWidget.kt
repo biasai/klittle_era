@@ -182,11 +182,17 @@ open class K3BorderWidget : K3AStateView {
                     if (it<0&&all_corner>=0){
                         left_top_corner=all_corner
                     }
+                    if (left_top_corner>90f){
+                        left_top_corner=90f
+                    }
                 }
                 var left_bottom_corner = it.left_bottom_corner//左下角
                 left_bottom_corner?.let {
                     if (it<0&&all_corner>=0){
                         left_bottom_corner=all_corner
+                    }
+                    if (left_bottom_corner>90f){
+                        left_bottom_corner=90f
                     }
                 }
                 var right_top_corner = it.right_top_corner//右上角
@@ -194,11 +200,17 @@ open class K3BorderWidget : K3AStateView {
                     if (it<0&&all_corner>=0){
                         right_top_corner=all_corner
                     }
+                    if (right_top_corner>90f){
+                        right_top_corner=90f
+                    }
                 }
                 var right_bottom_corner = it.right_bottom_corner//右下角
                 right_bottom_corner?.let {
                     if (it<0&&all_corner>=0){
                         right_bottom_corner=all_corner
+                    }
+                    if (right_bottom_corner>90f){
+                        right_bottom_corner=90f
                     }
                 }
                 //绘制左边的边框
