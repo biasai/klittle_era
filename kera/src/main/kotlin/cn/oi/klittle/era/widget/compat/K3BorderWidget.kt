@@ -276,7 +276,7 @@ open class K3BorderWidget : K3AStateView {
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
                         canvas.drawPath(path, paint)
-                        if (left_bottom_corner <= 0) {
+                        if (right_bottom_corner <= 0) {
                             canvas.drawLine(endX0, endY0, endX, endY, paint)
                         } else {
                             //右下角圆角
@@ -303,7 +303,7 @@ open class K3BorderWidget : K3AStateView {
                     if (left_bottom_corner <= 0&&right_bottom_corner<=0) {
                         canvas.drawLine(startX, startY, endX, endY, paint)
                     } else {
-                        var starX0 = startX + dW / 2 * (left_top_corner / 90f)
+                        var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
                         var starY0 = startY
                         var endX2 = endX - dW/ 2 * (right_bottom_corner / 90f)
                         canvas.drawLine(starX0, starY0, endX2, endY, paint)
