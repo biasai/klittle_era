@@ -7,8 +7,10 @@ import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.https.ko.KHttps
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.view.KProgressCircleView
 import io.reactivex.Observable
 import io.reactivex.Observer
@@ -32,11 +34,12 @@ import org.jetbrains.anko.space
  */
 open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent: Boolean = false, var https: KHttps? = null) : KBaseDialog(ctx, isStatus = isStatus, isTransparent = isTransparent) {
 
+    public var progressView: KProgressCircleView? = null
     override fun onCreateView(context: Context): View? {
         return context.UI {
             verticalLayout {
                 gravity = Gravity.CENTER
-                var progressView = KProgressCircleView(this.context)
+                progressView = KProgressCircleView(this.context)
                 addView(progressView)
                 space { }.lparams {
                     width = 0
@@ -191,8 +194,10 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
             disposable = null
             showTime = null
             timeOutCallback = null
+            progressView=null
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("网络弹窗销毁异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 

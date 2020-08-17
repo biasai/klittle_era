@@ -181,7 +181,7 @@ open class KHttps() {
                                             }
                                         }
                                     }
-                                    if (progressbar == null) {
+                                    if (progressbar == null && activity != null) {
                                         progressbar = KProgressDialog(activity!!, https = this@KHttps)
                                         if (isSharingDialog) {
                                             progressbar2 = progressbar
@@ -194,10 +194,11 @@ open class KHttps() {
                                         dismissProgressbar2()//fixme 防止網絡請求已經結束了，網絡進度條還未關閉。
                                     }
                                 }
+                                //KLoggerUtils.e("网络弹窗是否显示：\t"+progressbar?.isShow(),true)
                             }
                         } catch (e: Exception) {
                             //这里异常了不会影响回调进度。服务器（域名错误）异常时，会回调onFailure()
-                            //KLoggerUtils.e("网络弹框实例化异常：\t" + e.message+"\t"+progressbar+"\t"+activity)
+                            KLoggerUtils.e("网络弹框实例化异常：\t" + e.message + "\t" + progressbar + "\t" + activity, true)
                         }
                     }
                 }
@@ -207,10 +208,15 @@ open class KHttps() {
 
     private var isDismissProgressbar: Boolean = false//fixme 是否已經關閉了進度條。因為進度條是在主線程中進行。所以有可能還沒等網絡條初始化完成，網絡請求就結束了。
     private fun dismissProgressbar2() {
+        //KLoggerUtils.e("网络弹窗关闭", true)
         isDismissProgressbar = true
         progressbar?.let {
-            it.dismiss()//关闭弹窗
-            it.onDestroy()//销毁
+            try {
+                it.dismiss()//关闭弹窗
+                it.onDestroy()//销毁
+            }catch (e:Exception){
+                KLoggerUtils.e("网络弹窗关闭异常：\t"+KCatchException.getExceptionMsg(e),true)
+            }
         }
         progressbar = null
     }
@@ -398,6 +404,7 @@ open class KHttps() {
             https = null
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("网络请求finish（)回调异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 

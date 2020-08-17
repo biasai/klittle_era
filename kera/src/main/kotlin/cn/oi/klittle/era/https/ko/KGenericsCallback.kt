@@ -1,5 +1,6 @@
 package cn.oi.klittle.era.https.ko
 
+import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.https.KHttp
 import cn.oi.klittle.era.utils.KCacheUtils
 import cn.oi.klittle.era.utils.KLoggerUtils
@@ -29,6 +30,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             https?.requestCallback?.start?.let {
                 it()
             }
+            //KLoggerUtils.e("https?.isShowLoad:\t"+https?.isShowLoad,true)
             //fixme 显示进度条
             https?.isShowLoad?.let {
                 if (it) {
@@ -37,6 +39,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("onStart（)回调异常：\t"+KCatchException.getExceptionMsg(e),true)
         }
     }
 
@@ -99,6 +102,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("onSuccess（)回调异常：\t"+KCatchException.getExceptionMsg(e),true)
         }
         //最后执行
         onFinish()
@@ -163,6 +167,7 @@ abstract class KGenericsCallback(var https: KHttps? = null) {
             }
         } catch (e: Exception) {
             e.printStackTrace()
+            KLoggerUtils.e("onFailure（)回调异常：\t"+KCatchException.getExceptionMsg(e),true)
         }
         //最后执行
         onFinish()

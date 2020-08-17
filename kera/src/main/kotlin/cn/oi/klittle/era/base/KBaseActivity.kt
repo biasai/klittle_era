@@ -36,6 +36,7 @@ import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.https.ko.KHttps
 import cn.oi.klittle.era.utils.*
 import cn.oi.klittle.era.utils.KIntentUtils.goNFCSetting
+import cn.oi.klittle.era.view.KProgressCircleView
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -254,6 +255,7 @@ open class KBaseActivity : AppCompatActivity() {
                 kpx.removeAllKey()//fixme 清除所有键值，防止图片加载不出来。
                 KHttps.progressbar2Count = 0//fixme 网络进度条计算清0
                 //super.onCreate(savedInstanceState)
+                KProgressCircleView.initProgressDstBitmap(null)//fixme 初始化网络进度条图片
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
