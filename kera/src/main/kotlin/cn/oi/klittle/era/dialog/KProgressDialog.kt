@@ -1,6 +1,7 @@
 package cn.oi.klittle.era.dialog
 
 import android.content.Context
+import android.graphics.Color
 import android.view.Gravity
 import android.view.View
 import cn.oi.klittle.era.R
@@ -17,14 +18,11 @@ import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import org.jetbrains.anko.UI
-import org.jetbrains.anko.runOnUiThread
-import org.jetbrains.anko.verticalLayout
 import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
-import org.jetbrains.anko.space
+import org.jetbrains.anko.*
 
 //fixme timeOutCallback新增超时事件回调。
 

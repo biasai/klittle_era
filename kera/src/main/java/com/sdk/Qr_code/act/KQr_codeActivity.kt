@@ -42,6 +42,11 @@ import org.jetbrains.anko.*
  */
 open class KQr_codeActivity : Qr_codeActivity() {
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setNavigationBarColor(Color.BLACK)
+    }
+
     /**
      * fixme 重新布局
      */

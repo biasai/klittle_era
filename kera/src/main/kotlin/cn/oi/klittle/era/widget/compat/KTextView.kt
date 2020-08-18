@@ -45,6 +45,12 @@ import org.jetbrains.anko.*
 //fixme setHtml() 显示html网页文本内容
 //fixme setText(edit?.text) 文本输入框能显示的；TextView也能显示。一般的emoji表情，@😒😓👯💂👸👷特殊文本都能显示。;QQ上的表情一般都不是字符而是图标。所以无法显示。
 //fixme setAutoLinkMask(Linkify.ALL) 能够自动识别电话号码(点击会自动跳转到系统打电话界面)，邮件。url
+
+//fixme isDeleteLine()中间添加删除线
+//fixme isUnderLine()底部添加横线
+//fixme isBold()加粗
+//fixme isItalic()斜体
+//fixme isInt=true 是否为整型
 open class KTextView : KAutoSplitTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
@@ -79,7 +85,7 @@ open class KTextView : KAutoSplitTextView {
     }
 
     //fixme 能够自动识别电话号码(点击会自动跳转到系统打电话界面)，邮件。url
-    fun setAutoLinkMask(){
+    fun setAutoLinkMask() {
         setAutoLinkMask(Linkify.ALL)
     }
 
@@ -125,6 +131,7 @@ open class KTextView : KAutoSplitTextView {
 
     private var textLength = 0
     private var textNum = 0
+
     //获取文本能够滑动的宽度(多行不太靠谱，但一行可以准确计算出来)
     fun getTextScrollWidth(): Int {
         if (textNum != text.toString().length || textLength == 0) {
@@ -393,7 +400,7 @@ open class KTextView : KAutoSplitTextView {
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    KLoggerUtils.e("KTextView 文本框数值异常：\t" + e.message,isLogEnable = true)
+                    KLoggerUtils.e("KTextView 文本框数值异常：\t" + e.message, isLogEnable = true)
                 }
             }
             inputText = null
@@ -500,6 +507,7 @@ open class KTextView : KAutoSplitTextView {
     }
 
     private var mMoreLine = 1
+
     /**
      * fixme 更多（显示不全时）显示三个点...  单行，多行都有效。且只对KTextView有效，文本输入框KEditText无效
      * lines 显示的最大行数。
@@ -615,6 +623,7 @@ open class KTextView : KAutoSplitTextView {
     }
 
     var isMarquee = false//是否跑马灯效果。可以手动设置哦。
+
     /**
      * 设置文本跑马灯效果（聚焦时才有效果，且文本长度大于控件长度才有效果），1是一次，-1是无限循环。
      * 跑马灯循环完一次之后，会停顿一秒。再跑。

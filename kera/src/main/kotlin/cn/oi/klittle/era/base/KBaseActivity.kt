@@ -55,6 +55,10 @@ import org.jetbrains.anko.contentView
 
 //fixme isDestroyViewGroup()是否销毁视图（子类可以重写）；默认自动销毁。在finish()里。
 
+//fixme android 10的底部小横条在全面屏设置里面，可以设置是否显示。
+//fixme android 10 底部横条的颜色，会根据setNavigationBarColor（）底部导航栏颜色和布局背景色自动调节（一般为白色或黑色）
+//fixme 如果背景色是透明色（如果没有设置背景色，默认就是透明色），横线颜色也是透明的。会看不见。但是横条的白色背景仍然存在。（目前还没有找到控制小横条颜色的方法 2020.08.18）
+
 /**
  * Created by 彭治铭 on 2018/6/24.
  * fixme 注意Frament和Activity的状态栏和导航栏样式是一致的，引用的是同一个Window

@@ -65,15 +65,7 @@ open class KProgressCircleView : View {
     private fun mInit() {
         if (dst == null || dst!!.isRecycled) {
             initProgressDstBitmap() {
-                try {
-                    postInvalidate()
-                    context?.runOnUiThread {
-                        invalidate()
-                    }
-                    postInvalidate()
-                } catch (e: Exception) {
-                    KLoggerUtils.e("网络进度条图片获取异常2：\t" + KCatchException.getExceptionMsg(e), true)
-                }
+                postInvalidate()//fixme 画布刷新
             }
         }
     }
