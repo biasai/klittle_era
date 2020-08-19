@@ -69,7 +69,8 @@
     <string name="kchoose">please select a</string>
     <string name="kexitInfo">Don\'t order any more. I\'m leaving</string>
     <string name="kexitInfo2">Press again to exit!</string>
-
+    <string name="kpeleaseInput">Please enter the</string>
+    <string name="kinputNotBig">Case insensitive</string>
     <!--Toast提示语句-->
     <string name="kprint_success">Print success</string>
     <string name="kprint_fail">Printing failed</string>

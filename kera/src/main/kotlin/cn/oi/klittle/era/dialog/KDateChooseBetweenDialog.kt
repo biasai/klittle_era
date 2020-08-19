@@ -18,9 +18,10 @@ import cn.oi.klittle.era.view.KRollerView
  * Created by 彭治铭 on 2018/6/3.
  */
 //使用说明
-//            DateChooseBetweenDialog(this, DateChoose(), DateChoose()).setCallBack { dateChooseStart, dateChooseEnd ->
-//                Log.e("test", "回调\t开始日期:\t" + dateChooseStart.toString() + "\t结束日期:\t" + dateChooseEnd.toString())
-//            }.end()//选择结束日期
+//                                var dateBetween=KDateChooseBetweenDialog(ctx, KDateChooseEntity(), KDateChooseEntity()).setCallBack { dateChooseStart, dateChooseEnd ->
+//                                    KLoggerUtils.e("回调\t开始日期:\t" + dateChooseStart.toString() + "\t结束日期:\t" + dateChooseEnd.toString())
+//                                }.end()//选择结束日期;dateBetween.star()选中开始日期
+//                                dateBetween.show()
 open class KDateChooseBetweenDialog(ctx: Context, var dateChooseStart: KDateChooseEntity = KDateChooseEntity(), var dateChooseEnd: KDateChooseEntity = KDateChooseEntity(), isStatus: Boolean = true, isTransparent: Boolean = true) : KBaseDialog(ctx, R.layout.kera_dialog_date_choose_between,isStatus,isTransparent) {
     val yyyy: KRollerView? by lazy { findViewById<KRollerView>(R.id.crown_roller_yyyy) }
     val MM: KRollerView? by lazy { findViewById<KRollerView>(R.id.crown_roller_MM) }
@@ -69,7 +70,10 @@ open class KDateChooseBetweenDialog(ctx: Context, var dateChooseStart: KDateChoo
 
     init {
         if (ctx is Activity){
-            KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            //KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            findViewById<View>(R.id.crown_date2_parent)?.let {
+                KProportionUtils.getInstance().adapterAllView(ctx, it, false, false)
+            }
         }
         dialog?.window?.setWindowAnimations(R.style.kera_window_bottom)//动画
         //取消

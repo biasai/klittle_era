@@ -17,8 +17,8 @@ import cn.oi.klittle.era.view.KRollerView
  * Created by 彭治铭 on 2018/6/3.
  */
 //使用说明
-//var dateChoose = DateChoose()
-//val dateChooseDialog:DateChooseDialog by lazy { DateChooseDialog(this, dateChoose).setCallBack { dateChoose = it }}
+//var dateChoose = KDateChooseEntity()
+//val dateChooseDialog: KDateChooseDialog by lazy { KDateChooseDialog(ctx, dateChoose).setCallBack { dateChoose = it } }
 //dateChooseDialog.show()
 /**
  * @param ctx: Context
@@ -33,7 +33,10 @@ open class KDateChooseDialog(ctx: Context, var dateChoose: KDateChooseEntity = K
 
     init {
         if (ctx is Activity) {
-            KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            //KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            findViewById<View>(R.id.crown_date_parent)?.let {
+                KProportionUtils.getInstance().adapterAllView(ctx, it, false, false)
+            }
         }
         dialog?.window?.setWindowAnimations(R.style.kera_window_bottom)//动画
         //取消

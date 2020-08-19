@@ -40,7 +40,10 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
 
     init {
         if (ctx is Activity) {
-            KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            //KProportionUtils.getInstance().adapterWindow(ctx, dialog?.window)//适配
+            findViewById<View>(R.id.crown_douwn_parent)?.let {
+                KProportionUtils.getInstance().adapterAllView(ctx, it, false, false)
+            }
         }
         //取消
         findViewById<View>(R.id.crown_txt_cancel)?.setOnClickListener {

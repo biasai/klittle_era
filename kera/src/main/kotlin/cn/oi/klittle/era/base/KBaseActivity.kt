@@ -30,6 +30,7 @@ import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.dialog.KProgressDialog
 import cn.oi.klittle.era.dialog.KTimiAlertDialog
+import cn.oi.klittle.era.dialog.KTimiDialog
 import cn.oi.klittle.era.dialog.KTopTimiDialog
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.helper.KUiHelper
@@ -858,17 +859,18 @@ open class KBaseActivity : AppCompatActivity() {
         return getSystemCloeckElapsedRealtime_hours() / 24.0
     }
 
-    private var kTimi: KTimiAlertDialog? = null
+    private var kTimi: KTimiDialog? = null
+    private var kTimi2: KTimiAlertDialog? = null
 
     /**
-     * 显示弹窗信息
+     * 显示弹窗信息;只有一个确认按钮
      */
-    open fun showMsg(mession: String?): KTimiAlertDialog? {
+    open fun showMsg(mession: String?): KTimiDialog? {
         try {
             if (!isOnPause && !isFinishing && mession != null && mession?.trim().length > 0) {
                 //判断界面是否暂停；防止页面跳转或已经消失了，调用。
                 if (kTimi == null) {
-                    kTimi = KTimiAlertDialog(this)
+                    kTimi = KTimiDialog(this)
                 }
                 kTimi?.apply {
                     mession(mession?.trim())
@@ -881,6 +883,29 @@ open class KBaseActivity : AppCompatActivity() {
         }
         return null
     }
+
+    /**
+     * 显示信息，有标题，确认和取消两个按钮
+     */
+    open fun showMsg2(mession: String?): KTimiAlertDialog? {
+        try {
+            if (!isOnPause && !isFinishing && mession != null && mession?.trim().length > 0) {
+                //判断界面是否暂停；防止页面跳转或已经消失了，调用。
+                if (kTimi2 == null) {
+                    kTimi2 = KTimiAlertDialog(this)
+                }
+                kTimi2?.apply {
+                    mession(mession?.trim())
+                    show()
+                }
+                return kTimi2
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
 
     //fixme NFC服务开启失败，重新手动启动。一般在 onNfcNotSupport（）里手动调用。
     protected open fun toRestartNFC() {
@@ -1050,6 +1075,9 @@ open class KBaseActivity : AppCompatActivity() {
                 kTimi?.dismiss()
                 kTimi?.onDestroy()
                 kTimi = null
+                kTimi2?.dismiss()
+                kTimi2?.onDestroy()
+                kTimi2 = null
                 kTopTimi?.dismiss()
                 kTopTimi?.onDestroy()
                 kTopTimi = null

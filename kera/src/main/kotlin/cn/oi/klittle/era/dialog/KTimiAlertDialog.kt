@@ -18,6 +18,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 
+//fixme 有标题，有确定和取消两个按钮。
+
 //        val alert: KTimiAlertDialog by lazy { KTimiAlertDialog(this) }
 //        alert.title("温馨提示").mession("是否确认退出？").positive("确定") {
 //            KToast.showSuccess("点击确定")
