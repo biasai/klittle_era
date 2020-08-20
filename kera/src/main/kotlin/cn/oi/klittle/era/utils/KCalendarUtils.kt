@@ -223,6 +223,7 @@ object KCalendarUtils {
     }
 
     private val week = KStringUtils.getStringArray(R.array.KWeek)
+
     /**
      * 获取时间--星期
      *
@@ -326,10 +327,12 @@ object KCalendarUtils {
 
 
     /**
-     * 获取年龄
+     * fixme 获取年龄
+     * @param birth 出生日期
+     * @param cal 当前对比日期。
      */
-    fun getAge(birth: Calendar): Int {
-        val cal = Calendar.getInstance()
+    fun getAge(birth: Calendar, cal: Calendar = Calendar.getInstance()): Int {
+        //val cal = Calendar.getInstance()
         // 当前时间
         val yearNow = cal.get(Calendar.YEAR)
         val monthNow = cal.get(Calendar.MONTH) + 1// 注意此处，如果不加1的话计算结果是错误的
@@ -353,12 +356,23 @@ object KCalendarUtils {
     }
 
     /**
-     * 获取年龄
+     * fixme 获取年龄（以当前时间作为对比）；亲测很准。
      * @param birthTime 出生时间
      * @param format 时间格式
      */
     fun getAge(birthTime: String, format: String = "yyyy-MM-dd"): Int {
         return getAge(getCalendar(birthTime, format))
+    }
+
+    /**
+     * fixme 获取年龄(以今年的8.31号作为标准)；亲测很准。
+     * @param birthTime 出生时间
+     * @param format 时间格式
+     */
+    fun getSchoolAge(birthTime: String, format: String = "yyyy-MM-dd"): Int {
+        var yyyy= getYear()
+        var time=yyyy.toString()+"-08-31"
+        return getAge(getCalendar(birthTime, format),getCalendar(time, "yyyy-MM-dd"))
     }
 
     //fixme 星做是按阳历算的。
