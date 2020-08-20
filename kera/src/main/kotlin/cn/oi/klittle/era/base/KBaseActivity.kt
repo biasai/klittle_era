@@ -28,10 +28,7 @@ import cn.oi.klittle.era.activity.photo.entity.KLocalMedia
 import cn.oi.klittle.era.activity.photo.manager.KPictureSelector
 import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.dialog.KProgressDialog
-import cn.oi.klittle.era.dialog.KTimiAlertDialog
-import cn.oi.klittle.era.dialog.KTimiDialog
-import cn.oi.klittle.era.dialog.KTopTimiDialog
+import cn.oi.klittle.era.dialog.*
 import cn.oi.klittle.era.exception.KCatchException
 import cn.oi.klittle.era.helper.KUiHelper
 import cn.oi.klittle.era.https.ko.KHttps
@@ -907,22 +904,6 @@ open class KBaseActivity : AppCompatActivity() {
     }
 
 
-    //fixme NFC服务开启失败，重新手动启动。一般在 onNfcNotSupport（）里手动调用。
-    protected open fun toRestartNFC() {
-        if (!isFinishing) {
-            runOnUiThread {
-                showMsg(KBaseUi.getString(R.string.knf_set_notStar))?.apply {
-                    //去设置
-                    positive(getString(R.string.kgo_set_start)) {
-                        goNFCSetting()
-                    }
-                    show()
-                }
-            }
-        }
-    }
-
-
     private var kTopTimi: KTopTimiDialog? = null
 
     /**
@@ -940,6 +921,32 @@ open class KBaseActivity : AppCompatActivity() {
                     show()
                 }
                 return kTopTimi
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private var kInputDialog: KInputDialog? = null
+
+    /**
+     *@param mession 文本框内容
+     * @param callBack 文本框回调内容
+     */
+    open fun showInputMsg(mession: String? = kInputDialog?.txt_mession, callBack: ((text: String) -> Unit)? = null): KInputDialog? {
+        try {
+            if (!isOnPause && !isFinishing) {
+                //判断界面是否暂停；防止页面跳转或已经消失了，调用。
+                if (kInputDialog == null) {
+                    kInputDialog = KInputDialog(this)
+                }
+                kInputDialog?.apply {
+                    mession(mession)
+                    bardodeCallback(callBack)
+                    show()
+                }
+                return kInputDialog
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -976,6 +983,21 @@ open class KBaseActivity : AppCompatActivity() {
      */
     open fun shutProgressbar() {
         kprogressbar?.dismiss()
+    }
+
+    //fixme NFC服务开启失败，重新手动启动。一般在 onNfcNotSupport（）里手动调用。
+    protected open fun toRestartNFC() {
+        if (!isFinishing) {
+            runOnUiThread {
+                showMsg(KBaseUi.getString(R.string.knf_set_notStar))?.apply {
+                    //去设置
+                    positive(getString(R.string.kgo_set_start)) {
+                        goNFCSetting()
+                    }
+                    show()
+                }
+            }
+        }
     }
 
 
@@ -1081,6 +1103,9 @@ open class KBaseActivity : AppCompatActivity() {
                 kTopTimi?.dismiss()
                 kTopTimi?.onDestroy()
                 kTopTimi = null
+                kInputDialog?.dismiss()
+                kInputDialog?.onDestroy()
+                kInputDialog = null
                 kprogressbar?.dismiss()
                 kprogressbar?.onDestroy()
                 kprogressbar = null

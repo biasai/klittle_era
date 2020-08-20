@@ -11,7 +11,10 @@ import android.widget.TextView
 import cn.oi.klittle.era.R
 import cn.oi.klittle.era.base.KBaseDialog
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.exception.KCatchException
+import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.widget.compat.KEditText
+import cn.oi.klittle.era.widget.compat.KTextView
 import org.jetbrains.anko.*
 import java.lang.Exception
 
@@ -61,6 +64,7 @@ open class KInputDialog(
                     verticalLayout {
                         gravity = Gravity.CENTER
                         bardodeEditText = KEditText(this).apply {
+                            id = kpx.id("crown_edt_mession")
                             textColor = Color.parseColor("#242424")
                             textSize = kpx.textSizeX(36)
                             singleLine = true
@@ -138,6 +142,14 @@ open class KInputDialog(
         return this
     }
 
+    //信息文本
+    var txt_mession: String? = ""
+    val mession: KTextView? by lazy { findViewById<KTextView>(kpx.id("crown_edt_mession")) }
+    open fun mession(mession: String? = null): KInputDialog {
+        txt_mession = mession
+        return this
+    }
+
     val negative: TextView? by lazy { findViewById<TextView>(kpx.id("crown_txt_Negative")) }
 
     //左边，取消按钮
@@ -208,8 +220,9 @@ open class KInputDialog(
             bardodeEditText?.addDone {
                 bardodeEditText?.let {
                     var adress = it.text.toString().trim()
-                    if (adress.length > 0) {
+                    if (adress.length > 0 && !adress.equals(txt_mession)) {
                         bardodeCallback?.let {
+                            txt_mession = adress
                             it(adress)//回调
                         }
                     }
@@ -220,8 +233,9 @@ open class KInputDialog(
             positive?.setOnClickListener {
                 bardodeEditText?.let {
                     var adress = it.text.toString().trim()
-                    if (adress.length > 0) {
+                    if (adress.length > 0 && !adress.equals(txt_mession)) {
                         bardodeCallback?.let {
+                            txt_mession = adress
                             it(adress)//回调
                         }
                     }
@@ -243,7 +257,14 @@ open class KInputDialog(
 
     override fun onShow() {
         super.onShow()
-        title?.setText(txt_title)
+        ctx?.runOnUiThread {
+            try {
+                title?.setText(txt_title)
+                mession?.setText(txt_mession)//先设置文本，再计算高度。
+            } catch (e: Exception) {
+                KLoggerUtils.e("KTimiAlderDialog显示异常：\t" + KCatchException.getExceptionMsg(e), true)
+            }
+        }
         if (bardodeEditText?.text.toString().length > 0) {
             positive?.textColor = Color.parseColor("#42A8E1")
             positive?.isEnabled = true
