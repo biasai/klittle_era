@@ -144,6 +144,7 @@ open class KBaseActivity : AppCompatActivity() {
 
     open fun isPortrait(): Boolean {
         return true//fixme 是否竖屏。默认就是竖屏。
+        //fixme  xmlns:tools="http://schemas.android.com/tools" ;在manifest根节点设置。最顶层。
         //fixme false 横屏，清单必须设置为：android:screenOrientation="landscape"  tools:ignore="LockedOrientationActivity" 不然会异常报错。
     }
 
