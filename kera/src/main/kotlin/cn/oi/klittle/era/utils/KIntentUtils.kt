@@ -569,30 +569,36 @@ object KIntentUtils {
 
     private var restTime = "KGOREST_TIME"//记录重启时间
     fun goRest(activity: Activity?) {
-        try {
-            if (activity != null && !activity.isFinishing) {
-                var isGoRest = true
-                KCacheUtils.getCache().getAsObject(restTime)?.let {
-                    if (it is Long) {
-                        //KLoggerUtils.e("重启时间2：\t"+(System.currentTimeMillis() - it))
-                        if ((System.currentTimeMillis() - it) < 1500) {//两次重启间隔时间不能少于1.5秒。手动操作最快一般都在1051。比一秒大。
-                            isGoRest = false
-                            return//fixme 防止应用异常无限重启卡死。
+        activity?.let {
+            if (!it.isFinishing){
+                //fixme 重启最好在主线程中进行。效果最好。不会出现其他问题。
+                it.runOnUiThread {
+                    try {
+                        if (activity != null && !activity.isFinishing) {
+                            var isGoRest = true
+                            KCacheUtils.getCache().getAsObject(restTime)?.let {
+                                if (it is Long) {
+                                    //KLoggerUtils.e("重启时间2：\t"+(System.currentTimeMillis() - it))
+                                    if ((System.currentTimeMillis() - it) < 1500) {//两次重启间隔时间不能少于1.5秒。手动操作最快一般都在1051。比一秒大。
+                                        isGoRest = false//fixme 防止应用异常无限重启卡死。
+                                    }
+                                }
+                            }
+                            //KLoggerUtils.e("是否重启：\t"+isGoRest)
+                            if (isGoRest) {
+                                KCacheUtils.getCache().put(restTime, System.currentTimeMillis())//fixme 保存当前重启的时间。
+                                var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
+                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                                isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
+                                activity.startActivity(intent)
+                                android.os.Process.killProcess(android.os.Process.myPid());//fixme 殺進程，不然重啟無效果。（杀进程之后，重启亲测有效。）
+                            }
                         }
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
                     }
                 }
-                //KLoggerUtils.e("是否重启：\t"+isGoRest)
-                if (isGoRest) {
-                    KCacheUtils.getCache().put(restTime, System.currentTimeMillis())//fixme 保存当前重启的时间。
-                    var intent = activity.getPackageManager().getLaunchIntentForPackage(activity.getPackageName())
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                    isGoRest = true//fixme 重启标志；在KBaseActivity里的onCreate()方法里，判断充值。
-                    activity.startActivity(intent)
-                    android.os.Process.killProcess(android.os.Process.myPid());//fixme 殺進程，不然重啟無效果。（杀进程之后，重启亲测有效。）
-                }
             }
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
         }
     }
 
