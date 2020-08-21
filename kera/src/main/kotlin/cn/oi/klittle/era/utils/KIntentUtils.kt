@@ -572,6 +572,7 @@ object KIntentUtils {
         activity?.let {
             if (!it.isFinishing){
                 //fixme 重启最好在主线程中进行。效果最好。不会出现其他问题。
+                //fixme 主线程中重启，NFC刷卡才会正常。子线程中不行，刷卡可能依然无效。所以最好在主线程中进行重启。
                 it.runOnUiThread {
                     try {
                         if (activity != null && !activity.isFinishing) {
@@ -596,6 +597,7 @@ object KIntentUtils {
                         }
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
+                        KLoggerUtils.e("App重启异常：\t"+KCatchException.getExceptionMsg(e),true)
                     }
                 }
             }
