@@ -22,7 +22,27 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.Deferred
 
-//            fixme 使用案例
+//                fixme 简单使用案例
+//                KToolbar(this, getActivity())?.apply {
+//                    //标题栏背景色
+//                    contentView?.apply {
+//                        backgroundColor = Color.parseColor("#0078D7")
+//                    }
+//                    //左边返回文本（默认样式自带一个白色的返回图标）
+//                    leftTextView?.apply {
+//                    }
+//                    titleTextView?.apply {
+//                        text = KBaseUi.getString(R.string.kringtone)//铃声
+//                        textColor = Color.WHITE
+//                        textSize = kpx.textSizeX(32)
+//                        gravity = Gravity.CENTER
+//                    }
+//                    rightTextView?.apply {
+//                        setText(null)
+//                    }
+//                }
+
+//        fixme 完整使用案例
 //        setStatusBarColor(Color.parseColor("#186FB5"))//状态栏颜色
 //        var kToolbar: KToolbar? = null
 //        verticalLayout {
@@ -130,7 +150,7 @@ open class KToolbar {
 
         //标题栏字体大小
         fun getTextSize(): Float {
-            return kpx.textSizeY(32,false)
+            return kpx.textSizeY(32, false)
         }
 
         //获取标题栏默认字体颜色
@@ -162,14 +182,19 @@ open class KToolbar {
 
     //与左边或右边的间距
     open var toolbarOffset = getOffset()
+
     //标题栏高度
     open var toolbarHeight = getHeight()
+
     //标题栏，字体大小
     open var toolbarTextSize = getTextSize()
+
     //默认字体颜色
     open var toolbarTextColor = getTextColor()
+
     //阴影线高度
     open var toolbarShadowHeight = getShadowHeight()
+
     //阴影线颜色
     open var toolbarShadowColor = getShadowColor()
 
@@ -231,7 +256,7 @@ open class KToolbar {
                     //fixme 在此最外层控件，必须是线性布局，其他布局会报错。
                     contentView = KVerticalLayout(this).apply {
                         padding = 0
-                        backgroundColor=Color.parseColor("#0078D7")//浅蓝色。
+                        backgroundColor = Color.parseColor("#0078D7")//浅蓝色。
 //                        inner {
 //                            radius {
 //                                bgHorizontalColors(Color.parseColor("#0078D7"), Color.parseColor("#1A86DB"))//fixme 默认背景颜色,这个颜色会覆盖 backgroundColor 背景色。
@@ -279,7 +304,7 @@ open class KToolbar {
                                 textSize = toolbarTextSize
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER
-                                isRecycleAutoBg=false
+                                isRecycleAutoBg = false
                             }.lparams {
                                 width = wrapContent
                                 height = wrapContent
@@ -292,7 +317,7 @@ open class KToolbar {
                                 textSize = toolbarTextSize
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER
-                                isRecycleAutoBg=false
+                                isRecycleAutoBg = false
                             }.lparams {
                                 width = wrapContent
                                 height = wrapContent
@@ -308,7 +333,7 @@ open class KToolbar {
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER or Gravity.RIGHT
                                 rightPadding = toolbarOffset
-                                isRecycleAutoBg=false
+                                isRecycleAutoBg = false
                             }.lparams {
                                 centerVertically()
                                 alignParentRight()
@@ -322,7 +347,7 @@ open class KToolbar {
                                 setTextColor(toolbarTextColor)
                                 gravity = Gravity.CENTER or Gravity.RIGHT
                                 rightPadding = toolbarOffset
-                                isRecycleAutoBg=false
+                                isRecycleAutoBg = false
                             }.lparams {
                                 centerVertically()
                                 leftOf(kpx.id("txt_right"))
