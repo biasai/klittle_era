@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
@@ -14,6 +15,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
+import org.jetbrains.anko.runOnUiThread
 
 //           fixme 带有悬浮置顶的Item;使用案例：
 //            KBaseUi.apply {
@@ -198,6 +200,8 @@ import kotlinx.coroutines.delay
 //                            krecyclerView {  }
 //                        }
 
+//fixme addOnItemTouchListener()内部RecyclerView添加触摸事件
+//fixme setSecondaryHeight()设置内部RcyclerView的具体高度。
 open class KRecyclerView : RecyclerView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
@@ -300,6 +304,7 @@ open class KRecyclerView : RecyclerView {
 
     /**
      * fixme 显示垂直滑动条(没有效果，必须通过xml布局加载设置android:scrollbars="vertical"才会有滑动条，以下代码没有效果。)
+     * fixme 请使用：kRecyclerViewBar(ctx,this)，这个有滑动条。
      */
     fun setVerticalScrollBarEnabled() {
         setVerticalScrollBarEnabled(true);
@@ -523,11 +528,70 @@ open class KRecyclerView : RecyclerView {
         addLoadMore()
     }
 
+    private var onItemTouchListener: OnItemTouchListener? = null
+
+    /**
+     * fixme 添加滑动触摸事件；针对内部RecyclerView；
+     * fixme 防止二级RecyclerView滑动无效。
+     */
+    fun addOnItemTouchListener() {
+        onItemTouchListener?.let {
+            removeOnItemTouchListener(it)
+        }
+        if (onItemTouchListener == null) {
+            onItemTouchListener = object : RecyclerView.OnItemTouchListener {
+                override fun onTouchEvent(p0: RecyclerView, p1: MotionEvent) {
+                }
+
+                override fun onInterceptTouchEvent(recyclerView: RecyclerView, p1: MotionEvent): Boolean {
+                    recyclerView.parent.requestDisallowInterceptTouchEvent(true)
+                    return false
+                }
+
+                override fun onRequestDisallowInterceptTouchEvent(p0: Boolean) {
+                }
+            }
+        }
+        onItemTouchListener?.let {
+            addOnItemTouchListener(it)
+        }
+    }
+
+    /**
+     * fixme 设置高度；主要争对内部RecyclerView;防止数据过大。视图无限实例化。导致内存溢出报错。
+     * fixme 二级适配器高度最好固定。因为内部适配器的布局不会重复利用。会无限重新实例化。
+     * @param isWrapConent 高度是否自适应
+     * @param height 具体的高度。isWrapConent=false才有效。
+     */
+    fun setSecondaryHeight(isWrapConent: Boolean, height: Int) {
+        context?.let {
+            it.runOnUiThread {
+                try {
+                    layoutParams?.let {
+                        if (isWrapConent) {
+                            it.height = ViewGroup.LayoutParams.WRAP_CONTENT
+                        } else {
+                            it.height = height
+                        }
+                        requestLayout()//重新布局，width或height属性改变时才有效。内部会自动判断的。
+                    }
+                } catch (e: java.lang.Exception) {
+                    KLoggerUtils.e("RecyclerView高度异常：\t" + KCatchException.getExceptionMsg(e), true)
+                }
+            }
+        }
+
+    }
+
     /**
      * fixme 销毁,最后记得主动置空
      */
     open fun onDestroy() {
         try {
+            onItemTouchListener?.let {
+                removeOnItemTouchListener(it)
+            }
+            onItemTouchListener = null
             adapter = null
             removeAllViews()
         } catch (e: Exception) {
