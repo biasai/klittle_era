@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import cn.oi.klittle.era.base.KBaseCallBack;
 import cn.oi.klittle.era.base.KBaseUi;
 import cn.oi.klittle.era.exception.KCatchException;
 
@@ -89,7 +90,7 @@ public class KFileUtils {
     /**
      * 根据文件路径，获取文件名（包括文件后缀）
      *
-     * @param path  fixme file.name或file.absolutePath都可以。亲测有效。 文件名或文件的完整路径都可以。
+     * @param path fixme file.name或file.absolutePath都可以。亲测有效。 文件名或文件的完整路径都可以。
      * @return
      */
     public String getFileName(String path) {
@@ -370,7 +371,7 @@ public class KFileUtils {
                 if (containSuffix(file.getName(), suffix)) {
                     isSuccess = file.delete();//fixme 删除文件，成功删除，会返回true。
                     //KLoggerUtils.INSTANCE.e("文件删除：\t"+b);
-                    if (isSuccess){
+                    if (isSuccess) {
                         KPictureUtils.INSTANCE.updateFileFromDatabase_del(file.getAbsolutePath(), KBaseUi.Companion.getActivity());//fixme 文件删除通知
                     }
                 }
@@ -384,7 +385,7 @@ public class KFileUtils {
                         if (containSuffix(delfile.getName(), suffix)) {
                             isSuccess = delfile.delete();//fixme 删除文件，会返回true。
                             //KLoggerUtils.INSTANCE.e("文件删除2：\t"+b);
-                            if (isSuccess){
+                            if (isSuccess) {
                                 KPictureUtils.INSTANCE.updateFileFromDatabase_del(delfile.getAbsolutePath(), KBaseUi.Companion.getActivity());//fixme 文件删除通知
                             }
                         }
@@ -473,6 +474,31 @@ public class KFileUtils {
             KLoggerUtils.INSTANCE.e("test", "文件复制异常:\t" + e.getMessage());
         }
         return destFile;
+    }
+
+
+    /**
+     * 复制assets文件到指定目录
+     *
+     * @param assetsPath assets里的文件目录
+     * @param filePath   要复制到文件目录。是目录（只要路径。不需要文件名）;fixme 已经做了处理，是否包含文件名都能识别。
+     * @param callBack   回调
+     */
+    public void copyFileFromAssets(final String assetsPath, final String filePath, final KBaseCallBack<File> callBack) {
+        KAssetsUtils.getInstance().copyFileFromAssets(assetsPath, filePath, callBack);
+    }
+
+    /**
+     * 复制assets文件到指定目录
+     *
+     * @param assetsPath assets 里的文件。如("文件夹/文件名.后缀")
+     * @param path       指定路径 如：context.getApplicationContext().getFilesDir().getAbsolutePath();
+     * @param fileName   文件名(包括后缀名)；可以为空。如果会空，会自动获取文件名。
+     * @param callBack   回调，返回文件
+     * @return
+     */
+    public void copyFileFromAssets(final String assetsPath, final String path, final String fileName, final KBaseCallBack<File> callBack) {
+        KAssetsUtils.getInstance().copyFileFromAssets(assetsPath, path, fileName, callBack);
     }
 
     /**

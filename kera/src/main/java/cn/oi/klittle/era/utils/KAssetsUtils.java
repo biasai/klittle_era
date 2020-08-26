@@ -327,7 +327,15 @@ public class KAssetsUtils {
                         //文件名为空，主动获取文件名(包括后缀)
                         name = KFileUtils.getInstance().getFileName(assetsPath);
                     }
-                    File fs = new File(path, name);
+                    File fs =null;
+                    if (path!=null){
+                        if (path.contains(name)){
+                            fs = new File(path);
+                        }
+                    }
+                    if (fs==null){
+                        fs = new File(path, name);
+                    }
                     if (!fs.exists()) {//判断文件是否存在，不存在则创建
                         File dirs = new File(path);
                         if (!dirs.exists()) {
@@ -353,7 +361,7 @@ public class KAssetsUtils {
                         callBack.onResult(fs);
                     }
                 } catch (Exception e) {
-                    KLoggerUtils.INSTANCE.e("test", "assets文件复制错误:\t" + e.getMessage());
+                    KLoggerUtils.INSTANCE.e("assets文件复制错误:\t" + e.getMessage(), true);
                 }
             }
         }.start();

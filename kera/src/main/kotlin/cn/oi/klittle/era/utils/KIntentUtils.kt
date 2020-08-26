@@ -2,7 +2,6 @@ package cn.oi.klittle.era.utils
 
 import android.app.Activity
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothDevice
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -14,10 +13,12 @@ import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import cn.oi.klittle.era.base.KBaseActivityManager
 import cn.oi.klittle.era.base.KBaseApplication
-import cn.oi.klittle.era.bluetooth.KBluetoothAdapter
-import androidx.core.app.ActivityCompat.startActivityForResult
+import androidx.core.content.FileProvider
+import cn.oi.klittle.era.R
+import cn.oi.klittle.era.base.KBaseUi
+import cn.oi.klittle.era.comm.KToast
 import cn.oi.klittle.era.exception.KCatchException
-import cn.oi.klittle.era.utils.KAppUtils.getPackageName
+import java.io.File
 
 
 object KIntentUtils {
@@ -381,7 +382,7 @@ object KIntentUtils {
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-            KLoggerUtils.e("NFC界面跳转异常：\t"+KCatchException.getExceptionMsg(e),true)
+            KLoggerUtils.e("NFC界面跳转异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 
@@ -560,6 +561,62 @@ object KIntentUtils {
         }
     }
 
+    /**
+     * fixme 通过第三方软件，打开文件。如excel表格文件等。
+     * @param filePath 文件的完整地址，包括后缀名
+     */
+    fun goOpenFile(activity: Activity? = getActivity(), filePath: String?) {
+        if (filePath == null) {
+            KToast.showError(KBaseUi.getString(R.string.fileNotEmpty))//文件不能为空
+            return
+        } else {
+            goOpenFile(activity, File(filePath))
+        }
+    }
+
+    /**
+     * fixme 通过第三方软件，打开文件。如excel表格文件等。
+     * @param file 要打开的文件
+     */
+    fun goOpenFile(activity: Activity? = getActivity(), file: File?) {
+        if (file == null) {
+            KToast.showError(KBaseUi.getString(R.string.fileNotEmpty))//文件不能为空
+            return
+        }
+        try {
+            if (activity != null && !activity.isFinishing) {
+                if (file.length() <= 0) {
+                    KToast.showError(KBaseUi.getString(R.string.fileLength0))//文件不存在
+                    return
+                }
+                val intent = Intent("android.intent.action.VIEW")
+                intent.addCategory("android.intent.category.DEFAULT")
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)//防止报错
+                var fileUri: Uri? = null
+                if (Build.VERSION.SDK_INT >= 23) {//7.0及以上版本(版本号24),为了兼容6.0(版本号23)，防止6.0也可能会有这个问题。
+                    //getPackageName()和${applicationId}显示的都是当前应用的包名。无论是在library还是moudle中，都是一样的。都显示的是当前应用moudle的。与类库无关。请放心使用。
+                    fileUri = FileProvider.getUriForFile(activity, activity.packageName + ".kera.provider", //与android:authorities="${applicationId}.provider"对应上
+                            file)
+                } else {
+                    fileUri = Uri.fromFile(file)
+                }
+                var filePath = file.absolutePath.toLowerCase().trim()//文件路径全部转小写,方便文件后缀对比。
+                if (filePath.contains(".docx") || filePath.contains(".doc")) {
+                    intent.setDataAndType(fileUri, "application/msword");
+                } else if (filePath.contains(".xlsx") || filePath.contains(".xls")) {
+                    intent.setDataAndType(fileUri, "application/vnd.ms-excel");
+                } else {
+                    intent.setDataAndType(fileUri, "text/plain");
+                }
+                activity.startActivity(intent)
+            }
+        } catch (e: java.lang.Exception) {
+            //没有安装第三方的软件会提示
+            KToast.showError(KBaseUi.getString(R.string.fileNotExe))//没有找到打开该文件的应用程序
+            e.printStackTrace()
+        }
+    }
+
     var isGoRest: Boolean = false//fixme 判断是否为手动重启
 
     //fixme App重启
@@ -570,7 +627,7 @@ object KIntentUtils {
     private var restTime = "KGOREST_TIME"//记录重启时间
     fun goRest(activity: Activity?) {
         activity?.let {
-            if (!it.isFinishing){
+            if (!it.isFinishing) {
                 //fixme 重启最好在主线程中进行。效果最好。不会出现其他问题。
                 //fixme 主线程中重启，NFC刷卡才会正常。子线程中不行，刷卡可能依然无效。所以最好在主线程中进行重启。
                 it.runOnUiThread {
@@ -597,7 +654,7 @@ object KIntentUtils {
                         }
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
-                        KLoggerUtils.e("App重启异常：\t"+KCatchException.getExceptionMsg(e),true)
+                        KLoggerUtils.e("App重启异常：\t" + KCatchException.getExceptionMsg(e), true)
                     }
                 }
             }

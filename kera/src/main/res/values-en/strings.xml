@@ -127,6 +127,9 @@
     <string name="kapkFailr2">Download failed, please download again!</string>
     <string name="kloadMore">Being loaded...</string>
     <string name="kloadMoreComplete">No more data。</string>
+    <string name="fileNotEmpty">The file cannot be empty</string>
+    <string name="fileLength0">File does not exist</string>
+    <string name="fileNotExe">No application to open this file was found</string>
     <!--下拉刷新，上拉加载更多-->
     <string name="kxiangjijiaojuan">CameraRoll</string>
     <string name="kpreview">preview</string>

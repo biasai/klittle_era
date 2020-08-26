@@ -283,4 +283,23 @@ public object KPathManagerUtils {
         return getFileLoadDownPath()
     }
 
+    //fixme 12.获取SD卡下的路径，只有SD卡上的文件，第三方才能打开。本应用下的路径无法打开。
+    open fun getSdLoadDownPath(): String {
+        try {
+            var context = KBaseApplication.getInstance()
+            var path: String = Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/down" //fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
+            var file: File? = File(path)
+            //KLoggerUtils.e("下载文件路径是否存在：\t"+file?.exists())
+            if (file != null && !file.exists()) {
+                file?.mkdirs() //fixme 目录不存在，则创建目录。
+            }
+            file = null;
+            return path
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            KLoggerUtils.e("KPathManagerUtils->getApkLoadDownPath()下载文件目录创建失败：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
+        }
+        return getFileLoadDownPath()
+    }
+
 }

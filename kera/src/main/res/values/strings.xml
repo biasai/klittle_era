@@ -139,6 +139,9 @@
     <string name="kxiangjijiaojuan">相机胶卷</string>
     <string name="kpreview">预览</string>
     <string name="kchoose_photo">请选择</string>
+    <string name="fileNotEmpty">文件不能为空</string>
+    <string name="fileLength0">文件不存在</string>
+    <string name="fileNotExe">没有找到打开该文件的应用程序</string>
     <!--下拉刷新，上拉加载更多-->
     <string name="kcomplete">已完成</string>
     <string name="kcamera">拍摄</string>
