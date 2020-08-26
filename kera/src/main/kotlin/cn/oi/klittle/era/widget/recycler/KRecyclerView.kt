@@ -202,6 +202,7 @@ import org.jetbrains.anko.runOnUiThread
 
 //fixme addOnItemTouchListener()内部RecyclerView添加触摸事件
 //fixme setSecondaryHeight()设置内部RcyclerView的具体高度。
+//fixme 适配器数据个数发生改变时，最好及时调用一下notifyDataSetChanged()；不然就会报数据下标异常问题。
 open class KRecyclerView : RecyclerView {
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
