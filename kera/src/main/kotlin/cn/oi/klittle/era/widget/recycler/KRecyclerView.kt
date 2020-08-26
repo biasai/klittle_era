@@ -261,13 +261,18 @@ open class KRecyclerView : RecyclerView {
 
     }
 
+
     //fixme scrollToPosition(position)滑动到指定位置，具备滑动效果（必须在主线程调用才有效）；亲测有效
     //fixme 该下标位置并不会滑动置顶，只会出现在当前可见区域。
     override fun scrollToPosition(position: Int) {
         //fixme 必须在主线程调用才有效
         context?.runOnUiThread {
             try {
-                super.scrollToPosition(position)
+                adapter?.let {
+                    if (position >= 0 && position < it.itemCount) {
+                        super.scrollToPosition(position)
+                    }
+                }
             } catch (e: java.lang.Exception) {
                 KLoggerUtils.e("KRecyclerView scrollToPosition()异常：\t" + KCatchException.getExceptionMsg(e), true)
             }
