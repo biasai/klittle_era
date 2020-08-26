@@ -221,6 +221,7 @@ open class KRecyclerView : RecyclerView {
             return
         }
         try {
+            //scrollToPosition(0)//fixme 具备滑动效果（必须在主线程调用才有效）
             scrollToPositionWithOffset(0)//fixme 滑动置顶，没有滑动效果。基本都是有效的。
             GlobalScope.async {
                 try {
@@ -254,6 +255,8 @@ open class KRecyclerView : RecyclerView {
             e.printStackTrace()
         }
     }
+
+    //fixme scrollToPosition(position)滑动到指定位置，具备滑动效果（必须在主线程调用才有效）
 
     /**
      * fixme 滑动到指定下标位置(亲测有效,但是不具体滑动效果)
