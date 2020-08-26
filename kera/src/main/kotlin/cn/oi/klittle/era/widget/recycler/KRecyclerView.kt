@@ -559,7 +559,7 @@ open class KRecyclerView : RecyclerView {
 
     /**
      * fixme 设置高度；主要争对内部RecyclerView;防止数据过大。视图无限实例化。导致内存溢出报错。
-     * fixme 二级适配器高度最好固定。因为内部适配器的布局不会重复利用。会无限重新实例化。
+     * fixme 二级适配器高度最好固定。因为内部适配器的布局不会重复利用。会无限重新实例化。高度固定了就不会了，高度固定了布局就会重复利用。
      * @param isWrapConent 高度是否自适应
      * @param height 具体的高度。isWrapConent=false才有效。
      */
