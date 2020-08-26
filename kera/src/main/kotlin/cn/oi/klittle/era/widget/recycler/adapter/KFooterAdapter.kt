@@ -17,7 +17,10 @@ import org.jetbrains.anko.*
 //                    //1.2.0-alpha04版本，将MergeAdapter重命名为ConcatAdapter。
 //                    //组合适配器，适配器的显示顺序就是concatAdater.addAdapter（）的顺序。
 //                    var concatAdater = ConcatAdapter()
-//                    concatAdater.addAdapter(KContentAdapter(data))
+//                    var contentAdapter=KContentAdapter(data)
+//                    //fixme 刷新的使用，一定要调用具体的适配器进行刷新 contentAdapter?.notifyDataSetChanged()
+//                    //fixme concatAdater?.notifyDataSetChanged() 是没有刷新效果的。组合适配器刷新要制定具体的适配器。
+//                    concatAdater.addAdapter(contentAdapter)
 //                    concatAdater.addAdapter(KFooterAdapter())
 //                    adapter = concatAdater
 

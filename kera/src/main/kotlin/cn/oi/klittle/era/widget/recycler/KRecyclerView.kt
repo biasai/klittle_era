@@ -126,10 +126,11 @@ import org.jetbrains.anko.runOnUiThread
 //                            canvas.drawLine(0f, startY, width.toFloat(), startY, paint)//画底部线
 //                        }
 //
-//                        //加载更多
+//                        //fixme 加载更多
 //                        addLoadMore {
+//                             //fixme isLoadMoreComplete是否加载更多完成；false 没完成，可以继续加载更多；true 加载完成（没有更多数据了,不会再回调加载更多。）
 //                            //KLoggerUtils.e("加载更多：\t")
-//                            isLoadMore = true//正在加载更多
+//                            isLoadMore = true//fixme 正在加载更多
 //                            async {
 //                                delay(500)//延迟
 //                                //模拟数据加载
@@ -137,8 +138,8 @@ import org.jetbrains.anko.runOnUiThread
 //                                    mData.add(i.toString())
 //                                }
 //                                runOnUiThread {
-//                                    adapter?.notifyDataSetChanged()//刷新
-//                                    isLoadMore = false//加载更多完成
+//                                    adapter?.notifyDataSetChanged()//fixme 刷新,如果是组合适配器ConcatAdapter；一定要调用内部具体的适配器进行刷新才有效。
+//                                    isLoadMore = false//fixme 加载更多完成
 //                                    if (mData.size >= 150 && adapter is KRecyclerAdapter) {
 //                                        isLoadMoreComplete = true//加载更多完成
 //                                        (adapter as KRecyclerAdapter).isLoadMoreComplete = true//没有更多数据了。
@@ -146,7 +147,6 @@ import org.jetbrains.anko.runOnUiThread
 //                                }
 //                            }
 //                        }
-//
 //                    }
 //                    //下拉刷新监听
 //                    setOnRefreshListener {

@@ -2,6 +2,7 @@ package cn.oi.klittle.era.widget.recycler
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 //MoreOnScrollListener 实现里面的loadMore()加载更多方法即可。
 
@@ -14,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 //                list.add(i.toString())
 //            }
 //            runOnUiThread {
-//                this@apply.adapter?.notifyDataSetChanged()//刷新
+//                this@apply.adapter?.notifyDataSetChanged()//fixme 刷新,如果是组合适配器ConcatAdapter；一定要调用内部具体的适配器进行刷新才有效。
 //            }
 //        }
 //    }
@@ -56,12 +57,13 @@ abstract class KMoreOnScrollListener : RecyclerView.OnScrollListener {
     // RecyclerView.SCROLL_STATE_IDLE=0闲置，没有滑动。结束滚动。
     override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
         super.onScrollStateChanged(recyclerView, newState)
-        //Log.e("test", "onScrollStateChanged()\tnewState:\t$newState")
+        //KLoggerUtils.e("onScrollStateChanged()\tnewState:\t$newState")
         if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
             isDragging = true
         }
+        //KLoggerUtils.e("lastVisibleItemPostion:\t" + lastVisibleItemPostion + "\t" + linearLayoutManager.itemCount)
         if (isPull && isDragging && newState == RecyclerView.SCROLL_STATE_IDLE && lastVisibleItemPostion + 1 == linearLayoutManager.itemCount) {
-            //Log.e("test", "滑动到底部")
+            //KLoggerUtils.e("滑动到底部")
             loadMore()
         }
         if (newState == RecyclerView.SCROLL_STATE_IDLE) {
