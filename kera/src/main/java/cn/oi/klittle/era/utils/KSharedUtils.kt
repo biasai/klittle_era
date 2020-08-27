@@ -26,10 +26,12 @@ import cn.oi.klittle.era.comm.KToast
 object KSharedUtils {
 
     //分享弹窗标题，通过方法获取（有利于中英文实时切换）
-    fun getDialogTitle():String{
-        return  KBaseUi.getString(R.string.kdialogTitle)// "独乐乐不如众乐乐"//分享弹窗的标题
+    fun getDialogTitle(): String {
+        return KBaseUi.getString(R.string.kdialogTitle)// "独乐乐不如众乐乐"//分享弹窗的标题
     }
+
     var packageQQ = "com.tencent.mobileqq"//QQ
+    var packageQQ_Lite = "com.tencent.qqlite"//QQ极速版
     var packageWX = "com.tencent.mm"//微信
     var packageWB = "com.sina.weibo"//新浪微博
 
@@ -53,14 +55,17 @@ object KSharedUtils {
     /**
      * 分享功能【多个选择会弹出系统选择框，如果只有一个则不会弹出，直接跳转该应用，如ComponentName】
      *
-     * @param activity 上下文
      * @param msgTitle 分享主题【空间里的主题，就普通分享一个好友，是没有显示的。】
      * @param msgText  消息内容
      * @param imgPath  图片路径，不分享图片则传null
      * @param Package  fixme 分享应用包名。 通过包名指定具体的目标应用(亲测可以直接分享到QQ和微信)。可以为空（分享所有）
      * @param dialogTitle    弹框标题(即分享弹出框的标题)
+     * @param activity
      */
-    fun sharedMsg(activity: Activity, msgTitle: String, msgText: String, imgPath: String? = null, Package: String? = null, dialogTitle: String = getDialogTitle()) {
+    fun sharedMsg(msgTitle: String, msgText: String, imgPath: String? = null, Package: String? = null, dialogTitle: String = getDialogTitle(), activity: Activity? = KBaseUi.getActivity()) {
+        if (activity == null) {
+            return
+        }
         try {
             val intent = Intent(Intent.ACTION_SEND)
             if (Package != null && Package.trim { it <= ' ' } != "") {
@@ -106,18 +111,28 @@ object KSharedUtils {
     }
 
     /**
-     * QQ文本分享
+     * QQ文本分享；亲测有效。
      * @param callback fixme 回调，判断是否安装了该应用;true 表示安装了该应用，能够分享；false 没有安装该应用，不能分享
      */
-    fun sharedMsgQQ(activity: Activity, msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), callback: ((b: Boolean) -> Unit)? = null) {
+    fun sharedMsgQQ(msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), activity: Activity? = KBaseUi.getActivity(), callback: ((b: Boolean) -> Unit)? = null) {
+        if (activity == null) {
+            return
+        }
         if (checkPackage(packageQQ)) {
+            //正常QQ
             callback?.let { it(true) }
-            sharedMsg(activity, msgTitle, msgText, imgPath, packageQQ, dialogTitle)
+            sharedMsg(msgTitle, msgText, imgPath, packageQQ, dialogTitle, activity)
         } else {
-            if (callback != null) {
-                callback(false)
+            //QQ极速版
+            if (checkPackage(packageQQ_Lite)) {
+                callback?.let { it(true) }
+                sharedMsg(msgTitle, msgText, imgPath, packageQQ_Lite, dialogTitle, activity)
             } else {
-                KToast.showInfo(KBaseUi.getString(R.string.kinstallqq))//请先安装QQ
+                if (callback != null) {
+                    callback(false)
+                } else {
+                    KToast.showInfo(KBaseUi.getString(R.string.kinstallqq))//请先安装QQ
+                }
             }
         }
     }
@@ -126,10 +141,13 @@ object KSharedUtils {
     /**
      * 微信文本分享
      */
-    fun sharedMsgWX(activity: Activity, msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), callback: ((b: Boolean) -> Unit)? = null) {
+    fun sharedMsgWX(msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), activity: Activity? = KBaseUi.getActivity(), callback: ((b: Boolean) -> Unit)? = null) {
+        if (activity == null) {
+            return
+        }
         if (checkPackage(packageWX)) {
             callback?.let { it(true) }
-            sharedMsg(activity, msgTitle, msgText, imgPath, packageWX, dialogTitle)
+            sharedMsg(msgTitle, msgText, imgPath, packageWX, dialogTitle, activity)
         } else {
             if (callback != null) {
                 callback(false)
@@ -142,10 +160,13 @@ object KSharedUtils {
     /**
      * 新浪微博文本分享
      */
-    fun sharedMsgWB(activity: Activity, msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), callback: ((b: Boolean) -> Unit)? = null) {
+    fun sharedMsgWB(msgTitle: String, msgText: String, imgPath: String? = null, dialogTitle: String = getDialogTitle(), activity: Activity? = KBaseUi.getActivity(), callback: ((b: Boolean) -> Unit)? = null) {
+        if (activity == null) {
+            return
+        }
         if (checkPackage(packageWB)) {
             callback?.let { it(true) }
-            sharedMsg(activity, msgTitle, msgText, imgPath, packageWB, dialogTitle)
+            sharedMsg(msgTitle, msgText, imgPath, packageWB, dialogTitle, activity)
         } else {
             if (callback != null) {
                 callback(false)
@@ -162,23 +183,28 @@ object KSharedUtils {
      * @param smstext  短信分享内容
      * @return
      */
-    fun sharedSendSms(activity: Activity, smstext: String): Boolean? {
+    fun sharedSendSms(smstext: String, activity: Activity? = KBaseUi.getActivity()) {
+        if (activity == null) {
+            return
+        }
         val smsToUri = Uri.parse("smsto:")
         val mIntent = Intent(Intent.ACTION_SENDTO, smsToUri)
         mIntent.putExtra("sms_body", smstext)
-        activity.startActivity(mIntent)
-        return null
+        activity?.startActivity(mIntent)
     }
 
     /**
      * 邮件分享
      *
-     * @param activity
      * @param title    邮件的标题
      * @param text     邮件的内容
+     * @param activity
      * @return
      */
-    fun sharedSendMail(activity: Activity, title: String, text: String) {
+    fun sharedSendMail(title: String, text: String, activity: Activity? = KBaseUi.getActivity()) {
+        if (activity == null) {
+            return
+        }
         // 调用系统发邮件
         val emailIntent = Intent(Intent.ACTION_SEND)
         // 设置文本格式
@@ -189,11 +215,15 @@ object KSharedUtils {
         emailIntent.putExtra(Intent.EXTRA_SUBJECT, title)
         // 设置邮件文本内容
         emailIntent.putExtra(Intent.EXTRA_TEXT, text)
-        activity.startActivity(Intent.createChooser(emailIntent, "Choose Email Client"))
+        activity?.startActivity(Intent.createChooser(emailIntent, "Choose Email Client"))
     }
 
     // 調用系統方法分享文件
-    fun shareFile(context: Context, file: File?, dialogTitle: String = KBaseUi.getString(R.string.ksharefile)) {//"分享文件"
+    fun shareFile(file: File?, dialogTitle: String = KBaseUi.getString(R.string.ksharefile), activity: Activity? = KBaseUi.getActivity()) {//"分享文件"
+        if (activity == null) {
+            return
+        }
+        var context = activity
         if (null != file && file.exists()) {
             val share = Intent(Intent.ACTION_SEND)
 

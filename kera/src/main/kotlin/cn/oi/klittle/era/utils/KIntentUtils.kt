@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract
+import android.provider.MediaStore
 import android.provider.Settings
 import android.view.inputmethod.InputMethodManager
 import cn.oi.klittle.era.base.KBaseActivityManager
@@ -576,7 +577,8 @@ object KIntentUtils {
 
     /**
      * fixme 通过第三方软件，打开文件。如excel表格文件等。
-     * @param file 要打开的文件
+     * @param file 要打开的文件；亲测 KPathManagerUtils路径里的文件都能打开。
+     * fixme 文件不管是在SD卡上，还是在私有目录上。都能打开; 如果打不开，说明文件本身已损坏。
      */
     fun goOpenFile(activity: Activity? = getActivity(), file: File?) {
         if (file == null) {
@@ -587,6 +589,11 @@ object KIntentUtils {
             if (activity != null && !activity.isFinishing) {
                 if (file.length() <= 0) {
                     KToast.showError(KBaseUi.getString(R.string.fileLength0))//文件不存在
+                    return
+                }
+                var fileSuffix = KFileUtils.getInstance().getFileSuffix(file, true).toLowerCase().trim();//文获取件名后缀，全部转小写,
+                if (fileSuffix.equals(".apk")) {
+                    KAppUtils.installation(activity, file)//fixme apk安装。
                     return
                 }
                 val intent = Intent("android.intent.action.VIEW")
@@ -600,20 +607,34 @@ object KIntentUtils {
                 } else {
                     fileUri = Uri.fromFile(file)
                 }
-                var filePath = file.absolutePath.toLowerCase().trim()//文件路径全部转小写,方便文件后缀对比。
-                if (filePath.contains(".docx") || filePath.contains(".doc")) {
+                //application/msword 文档
+                //application/vnd.ms-excel 表格
+                //参考地址：https://blog.csdn.net/u010229714/article/details/74530611/
+                if (fileSuffix.contains(".docx") || fileSuffix.contains(".doc")) {
                     intent.setDataAndType(fileUri, "application/msword");
-                } else if (filePath.contains(".xlsx") || filePath.contains(".xls")) {
+                } else if (fileSuffix.contains(".xlsx") || fileSuffix.contains(".xls")) {
+                    //KLoggerUtils.e(".xlsx表格")
                     intent.setDataAndType(fileUri, "application/vnd.ms-excel");
+                } else if (fileSuffix.contains(".ppt")) {
+                    intent.setDataAndType(fileUri, "application/vnd.ms-powerpoint");
+                } else if (fileSuffix.contains(".pdf")) {
+                    intent.setDataAndType(fileUri, "application/pdf");
+                } else if (fileSuffix.contains(".png") || fileSuffix.contains(".jpg") || fileSuffix.contains(".3gp") || fileSuffix.contains(".psd")) {
+                    intent.setDataAndType(fileUri, "image/*");
+                } else if (fileSuffix.contains(".html") || fileSuffix.contains(".htm") || fileSuffix.contains(".jsp") || fileSuffix.contains(".aspx")) {
+                    intent.setDataAndType(fileUri, "text/html");
                 } else {
                     intent.setDataAndType(fileUri, "text/plain");
                 }
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                intent.addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION)
                 activity.startActivity(intent)
             }
         } catch (e: java.lang.Exception) {
             //没有安装第三方的软件会提示
             KToast.showError(KBaseUi.getString(R.string.fileNotExe))//没有找到打开该文件的应用程序
             e.printStackTrace()
+            KLoggerUtils.e("调用第三方打开文件异常：\t" + KCatchException.getExceptionMsg(e), true)
         }
     }
 

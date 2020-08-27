@@ -267,7 +267,7 @@ public object KPathManagerUtils {
     //fixme 11.获取本应用，apk安装包下载路径
     open fun getApkLoadDownPath(): String {
         try {
-            //之前apk下载目录就已经使用了 down；就不改了。就接着使用。兼容之前 目录。不要变了。
+            //fixme 之前apk下载目录就已经使用了 down；就不改了。就接着使用。兼容之前 目录。不要变了。
             var path: String = getFileLoadDownPath() + "/down" //fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
             var file: File? = File(path)
             //KLoggerUtils.e("下载文件路径是否存在：\t"+file?.exists())
@@ -283,11 +283,12 @@ public object KPathManagerUtils {
         return getFileLoadDownPath()
     }
 
-    //fixme 12.获取SD卡下的路径，只有SD卡上的文件，第三方才能打开。本应用下的路径无法打开。
+    //fixme 12.获取SD卡下的路径。自己在SD卡上创建的一个下载目录。
     open fun getSdLoadDownPath(): String {
         try {
             var context = KBaseApplication.getInstance()
-            var path: String = Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/down" //fixme 统一下载路径; 与 KCacheUtils缓存目录不是同一个目录；互不影响。
+            //fixme 注意这里需要SD卡访问权限哦，不然访问失败的。
+            var path: String = Environment.getExternalStorageDirectory().absolutePath + "/" + context.packageName + "/down"
             var file: File? = File(path)
             //KLoggerUtils.e("下载文件路径是否存在：\t"+file?.exists())
             if (file != null && !file.exists()) {
@@ -299,7 +300,7 @@ public object KPathManagerUtils {
             e.printStackTrace()
             KLoggerUtils.e("KPathManagerUtils->getApkLoadDownPath()下载文件目录创建失败：\t" + KCatchException.getExceptionMsg(e), isLogEnable = true)
         }
-        return getFileLoadDownPath()
+        return getFileLoadDownPath()//fixme SD卡路径获取失败，就使用本应用的缓存目前。不需求访问权限。
     }
 
 }

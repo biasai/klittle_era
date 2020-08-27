@@ -65,7 +65,7 @@ open class KVersionUpdateDialog(ctx: Context, isStatus: Boolean = true, isTransp
                 isLoading()
                 url?.let {
                     //fixme 默认为apk下载。
-                    KFileLoadUtils.getInstance(true).downLoad(ctx, url, srcFileName, object : KFileLoadUtils.RequestCallBack {
+                    KFileLoadUtils.getInstance(true).downLoad(ctx, url, null,srcFileName, object : KFileLoadUtils.RequestCallBack {
                         override fun onStart() {
                             //开始下载
                         }

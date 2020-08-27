@@ -28,7 +28,7 @@ import cn.oi.klittle.era.base.KBaseUi;
 
 //            fixme kotlin使用案例; 下载url必须为具体的文件地址。不然无法下载；像 http://test.bwg2017.com/GlassSystem/ErpConfigManage.aspx 这样的就无法下载。
 //            var url="http://dl.ludashi.com/ludashi/ludashi_home.apk"//鲁大师app；指向具体的apk网络文件路径即可。亲测可行。
-//            KFileLoadUtils.getInstance(ctx).downLoad(url, "123.apk", object : KFileLoadUtils.RequestCallBack {
+//            KFileLoadUtils.getInstance(ctx).downLoad(url, null,"123.apk", object : KFileLoadUtils.RequestCallBack {
 //                override fun onStart() {
 //                    //开始下载
 //                    KLoggerUtils.e("开始下载")
@@ -205,14 +205,15 @@ public class KFileLoadUtils {
 
 
     /**
-     * 下载(下载速度杠杠的。)
+     * fixme 下载(下载速度杠杠的。)
      *
      * @param context         上下文
      * @param uri             下载链接
-     * @param srcFileName     文件名，包括后缀。如果为null或""空，会自动获取网络上的名称。
+     * @param downDir         文件下载路径，可以为空，如果为空。会使用默认下载目录 cacheDir
+     * @param srcFileName     文件名，包括后缀。可以为空，如果为null或""空，会自动获取网络上的名称。
      * @param requestCallBack 回调函数
      */
-    public void downLoad(Context context, final String uri, final String srcFileName, RequestCallBack requestCallBack) {
+    public void downLoad(Context context, final String uri, final String downDir, final String srcFileName, RequestCallBack requestCallBack) {
         if (context == null || uri == null) {
             return;
         }
@@ -226,13 +227,20 @@ public class KFileLoadUtils {
         threadPoolExecutor.execute(new Runnable() {
             @Override
             public void run() {
-                downLoad2(context, uri, srcFileName, requestCallBack, 0);
+                downLoad2(context, uri, downDir, srcFileName, requestCallBack, 0);
             }
         });
     }
 
-
-    private void downLoad2(Context context, final String uri, final String srcFileName, RequestCallBack requestCallBack, int downCount) {
+    /**
+     * @param context
+     * @param uri
+     * @param downDir         文件下载路径，可以为空，如果为空。会使用默认下载目录 cacheDir
+     * @param srcFileName     文件名，包括后缀。可以为空，如果为null或""空，会自动获取网络上的名称。
+     * @param requestCallBack
+     * @param downCount
+     */
+    private void downLoad2(Context context, final String uri, final String downDir, final String srcFileName, RequestCallBack requestCallBack, int downCount) {
         try {
             //fixme 修复低版本，如5.0；不识别反斜杠\;需要转换成斜杠才有效，亲测有效。
             String uri2 = uri.replace("\\", "/");
@@ -252,7 +260,11 @@ public class KFileLoadUtils {
             if (!fileName.contains(".")) {
                 fileName = fileName + ".apk";//fixme 没有后缀，也默认作为app安装包处理。防止文件名为空。
             }
-            fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
+            if (downDir != null && downDir.trim().length() > 0) {
+                fileName = downDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
+            } else {
+                fileName = cacheDir + "/" + fileName;//文件完整名称，包括路径和文件名后缀
+            }
             final File file = new File(fileName);
             //file.getName()//fixme 文件名(包含.后缀)
             //KLoggerUtils.INSTANCE.e("fileName:\t"+fileName+"\t"+file.getName());
@@ -314,7 +326,7 @@ public class KFileLoadUtils {
                 //KLoggerUtils.INSTANCE.e("进来了");
                 conn.disconnect();//断开链接
                 downCount++;
-                downLoad2(context, uri, srcFileName, requestCallBack, downCount);//fixme 文件大小获取错误，重新获取，亲测有效。
+                downLoad2(context, uri, downDir, srcFileName, requestCallBack, downCount);//fixme 文件大小获取错误，重新获取，亲测有效。
                 return;
             }
             //判断文件是否存在，以及大小是否相当。避免重复下载。

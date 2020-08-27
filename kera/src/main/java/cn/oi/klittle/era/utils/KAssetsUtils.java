@@ -36,7 +36,9 @@ import java.util.Map;
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.base.KBaseApplication;
 import cn.oi.klittle.era.base.KBaseCallBack;
+import cn.oi.klittle.era.base.KBaseUi;
 import cn.oi.klittle.era.comm.kpx;
+import cn.oi.klittle.era.exception.KCatchException;
 
 
 /**
@@ -317,31 +319,53 @@ public class KAssetsUtils {
      * @return
      */
     public void copyFileFromAssets(final String assetsPath, final String path, final String fileName, final KBaseCallBack<File> callBack) {
+        if (assetsPath == null) {
+            return;
+        }
         new Thread() {
             @Override
             public void run() {
                 super.run();
+                File fs = null;
                 try {
                     String name = fileName;
                     if (fileName == null) {
                         //文件名为空，主动获取文件名(包括后缀)
                         name = KFileUtils.getInstance().getFileName(assetsPath);
                     }
-                    File fs =null;
-                    if (path!=null){
-                        if (path.contains(name)){
+                    boolean pathHasSuffix = false;//fixme 判断路径是否包含文件完整名。
+                    if (path != null) {
+                        String suffix = KFileUtils.getInstance().getFileSuffix(assetsPath, true);
+                        if (path.contains(suffix)) {//判断路径是否包文件名。
                             fs = new File(path);
+                            pathHasSuffix = true;
                         }
                     }
-                    if (fs==null){
+                    if (fs == null) {
                         fs = new File(path, name);
                     }
-                    if (!fs.exists()) {//判断文件是否存在，不存在则创建
-                        File dirs = new File(path);
-                        if (!dirs.exists()) {
-                            dirs.mkdirs();//防止目录步存在所以创建
+//                    File target = new File(getAssetsPath(assetsPath));//fixme assets下来文件，无法直接读取，即无法判断大小。
+//                    KLoggerUtils.INSTANCE.e("文件大小：\t"+target.length());
+//                    if (fs.exists() && target.length() != fs.length()) {//fixme 无法直接读取assets目录下的文件大小。
+//                        fs.delete();//不一样，就删除
+//                    }
+//                    target = null;
+                    if (fs.exists() && fs.length() <= 1024) {//文件小于100B,就当错误文件处理删除掉。
+                        //一个普通excel表格的大小是 34630
+                        fs.delete();//fixme 如果文件太小就删除掉(防止文件错误)
+                    }
+                    if (!fs.exists() || fs.length() <= 10) {//判断文件是否存在，不存在则创建
+                        if (!path.equals(fs.getAbsolutePath()) && !pathHasSuffix) {//这里的判断是防止path就是文件的完整路径。防止完整路径被创建成目录。
+                            File dirs = new File(path);
+                            //dirs.isDirectory() 判断是否为目录，前提是该目录必须存在。不存在也会返回false
+                            if (!dirs.exists()) {
+                                dirs.mkdirs();//防止目录不存在所以创建
+                            }
+                            dirs = null;
                         }
-                        dirs = null;
+                        if (!fs.exists()) {
+                            fs.createNewFile();
+                        }
                         InputStream myInput;
                         OutputStream myOutput = new FileOutputStream(fs);
                         myInput = am.open(assetsPath);
@@ -356,12 +380,20 @@ public class KAssetsUtils {
                         myOutput.close();
                         myOutput = null;
                         myInput = null;
+                        KPictureUtils.INSTANCE.updateFileFromDatabase_add(fs, KBaseUi.Companion.getActivity());//fixme 通知系统。更新该文件目录。（只对SD卡上的目录有效。）
                     }
                     if (callBack != null) {
                         callBack.onResult(fs);
                     }
                 } catch (Exception e) {
-                    KLoggerUtils.INSTANCE.e("assets文件复制错误:\t" + e.getMessage(), true);
+                    try {
+                        if (fs != null && fs.exists()) {
+                            fs.delete();
+                            fs = null;
+                        }
+                    } catch (Exception e1) {
+                    }
+                    KLoggerUtils.INSTANCE.e("assets文件复制错误:\t" + KCatchException.getExceptionMsg(e), true);
                 }
             }
         }.start();

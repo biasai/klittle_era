@@ -88,6 +88,33 @@ public class KFileUtils {
     }
 
     /**
+     * fixme 获取文件名后缀;亲测有效。
+     *
+     * @param filePath 文件完整路径地址（包括文件后缀名）
+     * @param hasPoint 文件后缀是否包含小数点；true .xlsx ; false xlsx
+     * @return
+     */
+    public String getFileSuffix(String filePath, Boolean hasPoint) {
+        try {
+            if (hasPoint) {
+                return filePath.substring(filePath.lastIndexOf("."));
+            } else {
+                return filePath.substring(filePath.lastIndexOf(".") + 1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public String getFileSuffix(File file, Boolean hasPoint) {
+        if (file != null) {
+            return getFileSuffix(file.getAbsolutePath(), hasPoint);
+        }
+        return null;
+    }
+
+    /**
      * 根据文件路径，获取文件名（包括文件后缀）
      *
      * @param path fixme file.name或file.absolutePath都可以。亲测有效。 文件名或文件的完整路径都可以。
@@ -426,13 +453,20 @@ public class KFileUtils {
     /**
      * 復制文件
      *
-     * @param target  复制对象
-     * @param dirPath 要复制到的文件目录。（只要目录。不需要文件名。会自动获取原文件名）
+     * @param target   复制对象
+     * @param filePath 要复制到的文件目录。（只要目录。不需要文件名。会自动获取原文件名）; 有文件名也可以。fixme 有无文件名都可以。亲测可行。
      * @return
      */
-    public File copyFile(File target, String dirPath) {
+    public File copyFile(File target, String filePath) {
+        if (target == null) {
+            return null;
+        }
         //file.getName()获取文件名，是包含后缀的。
-        return copyFile(target, dirPath, target.getName());
+        String suffixe = getFileSuffix(target, true).toLowerCase().trim();
+        if (filePath.toLowerCase().trim().contains(suffixe)) {
+            return copyFile(target, filePath, null);//fixme filePath包含文件名
+        }
+        return copyFile(target, filePath, target.getName());//fixme filePath没有文件名
     }
 
     /**
@@ -449,11 +483,24 @@ public class KFileUtils {
             dirFile.mkdirs();//创建目录。
         }
         dirFile = null;
-        File destFile = new File(path + "/" + name);////不要使用双反斜杠"\\"【可能不识别】,最好使用斜杠"/"
+        File destFile = null;
+        if (name == null) {
+            String suffixe = getFileSuffix(target, true).toLowerCase().trim();
+            if (path.toLowerCase().trim().contains(suffixe)) {
+                destFile = new File(path);
+            }
+        }
+        if (destFile == null) {
+            if (name != null) {
+                destFile = new File(path + "/" + name);
+            } else {
+                destFile = new File(path + "/" + target.getName());//fixme getName()包括文件名后缀
+            }
+        }
         try {
             if (destFile.exists()) {
-                if (target.length() == destFile.length() && target.getName().equals(destFile.getName())) {
-                    return destFile;//完全一样，就返回
+                if (target.length() == destFile.length()) {
+                    return destFile;//大小一样（说明文件已存在，且是完整的），就返回
                 } else {
                     destFile.delete();//不一样，就删除
                 }
@@ -476,12 +523,27 @@ public class KFileUtils {
         return destFile;
     }
 
+//    fixme 复制assets文件到指定目录调用案例：
+
+//                            KPermissionUtils.requestPermissionsStorage {
+//                            //SD卡权限申请
+//                            if (it) {
+//                                var assetsPath = "201912任务清单 (9).xlsx"
+//                                var filePath = KPathManagerUtils.getSdLoadDownPath()
+//                                KFileUtils.getInstance().copyFileFromAssets(assetsPath, filePath, KBaseCallBack {
+//                                    KLoggerUtils.e("文件：\t"+it.length()+"\t"+it.absoluteFile+"\t后缀：\t"+KFileUtils.getInstance().getFileSuffix(it,true)+"\t"+KFileUtils.getInstance().getFileSuffix(it,false))
+//                                    KIntentUtils.goOpenFile(file = it)//fixme 打开文件
+//                                })
+//                            } else {
+//                                KPermissionUtils.showFailure()
+//                            }
+//                        }
 
     /**
      * 复制assets文件到指定目录
      *
-     * @param assetsPath assets里的文件目录
-     * @param filePath   要复制到文件目录。是目录（只要路径。不需要文件名）;fixme 已经做了处理，是否包含文件名都能识别。
+     * @param assetsPath assets里的文件，文件的具体路径。包含文件后缀名。
+     * @param filePath   要复制到文件目录。是目录（只要路径。不需要文件名）;fixme 已经做了处理，是否包含文件名都能识别；没有文件名时会自动读取assetsPath里的文件名。
      * @param callBack   回调
      */
     public void copyFileFromAssets(final String assetsPath, final String filePath, final KBaseCallBack<File> callBack) {
