@@ -15,28 +15,54 @@ import org.jetbrains.anko.*
 //import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.sdk27.coroutines.onClick
 
-//        //数据
-//        var list = mutableListOf<String>()
-//                            list.add("1")//fixme 记得添加数据，不然不会显示哦。
-//                            list.add("2")
-//                            list.add("3")
-//        var sp = KSpinnerPop(this, list)
-//        //创建recyclerView内部item视图,参数为下标position
-//            sp?.onCreateView(popWidth = kpx.screenWidth()) {
-//                context.UI {
-//                    verticalLayout {
-//                        backgroundColor = Color.WHITE
-//                        KSelectorUtils.selectorRippleDrawable(this, Color.WHITE, Color.parseColor("#EFF3F6"))
-//                        //要设置具体的宽度kpx.screenWidth();不要使用wrapContent和matchParent
-//                        var layoutParams = ViewGroup.LayoutParams(kpx.screenWidth(), kpx.x(100))
-//                        setLayoutParams(layoutParams)
-//                    }
-//                }.view //注意最好手动配置item的宽度和高度。
-//            }
-//        //视图刷新[业务逻辑都在这处理]，返回 视图itemView和下标postion
-//        sp.onBindView { itemView, position -> }
-//        //显示
-//        sp.showAsDropDown(this@apply,50,-50)
+//                        fixme 调用案例：
+//                        //数据
+//                        var list = mutableListOf<String>()
+//                        list.add("1")//fixme 记得添加数据，不然不会显示哦。
+//                        list.add("2")
+//                        list.add("3")
+//                        var sp = KSpinnerPop(ctx, list)
+//                        //创建recyclerView内部item视图,参数为下标position
+//                        sp?.onCreateView(popWidth = kpx.screenWidth()) {
+//                            context.UI {
+//                                verticalLayout {
+//                                    backgroundColor = Color.WHITE
+//                                    //要设置具体的宽度kpx.screenWidth();不要使用wrapContent和matchParent
+//                                    var layoutParams = ViewGroup.LayoutParams(kpx.screenWidth(), kpx.x(100))
+//                                    setLayoutParams(layoutParams)
+//                                    gravity = Gravity.CENTER
+//                                    KBaseUi.apply {
+//                                        ktextView {
+//                                            id = kpx.id("pop_txt")
+//                                            gravity = Gravity.CENTER
+//                                            textSize = kpx.textSizeX(30f)
+//                                            textColor = Color.BLACK
+//                                            KSelectorUtils.selectorRippleDrawable(this, Color.WHITE, Color.parseColor("#EFF3F6"))
+//                                        }.lparams {
+//                                            width = matchParent
+//                                            height = kpx.x(99)
+//                                        }
+//                                    }
+//                                    view {
+//                                        backgroundColor=Color.LTGRAY//分界线
+//                                    }.lparams {
+//                                        width= matchParent
+//                                        height=kpx.x(1)
+//                                    }
+//                                }
+//                            }.view //注意最好手动配置item的宽度和高度。
+//                        }
+//                        //视图刷新[业务逻辑都在这处理]，返回 视图itemView和下标postion
+//                        sp.onBindView { itemView, position ->
+//                            itemView?.findViewById<KTextView>(kpx.id("pop_txt"))?.apply {
+//                                setText("" + position)
+//                                onClick {
+//                                    sp?.dismiss()//关闭
+//                                }
+//                            }
+//                        }
+//                        //显示
+//                        sp.showAsDropDown(this@button, 50, -20)
 
 //fixme 以下视图，根据需求可随意扩展。上下左右，四个容器只要不为空，就都会显示出来。centerView在四个容器的中间。
 //fixme 记得手动配置各个容器的宽和高。默认都是wrapContent，如果没有内容。就等于是空，是不会显示出来的。
@@ -80,7 +106,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
      * @param isNeverScroll 设置RecyclerView滑动到边缘时无效果模式
      * @param itemView 视图
      */
-    open fun onCreateView(popWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT, popHeight: Int = ViewGroup.LayoutParams.WRAP_CONTENT, isNeverScroll:Boolean=true,itemView: (positon: Int) -> View) {
+    open fun onCreateView(popWidth: Int = ViewGroup.LayoutParams.MATCH_PARENT, popHeight: Int = ViewGroup.LayoutParams.WRAP_CONTENT, isNeverScroll: Boolean = true, itemView: (positon: Int) -> View) {
         var view = context.UI {
             verticalLayout {
                 var layoutParams = ViewGroup.LayoutParams(wrapContent, matchParent)
@@ -92,7 +118,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
 //                    height = wrapContent
 //                }
 //                addView(containerView)
-                containerView=relativeLayout {  }.lparams {
+                containerView = relativeLayout { }.lparams {
                     width = wrapContent
                     height = wrapContent
                 }
@@ -113,7 +139,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
 //                            bottomOf(kpx.id("spinnerPop_topView"))
 //                        }
 //                        addView(leftView)
-                        leftView=relativeLayout {
+                        leftView = relativeLayout {
                             id = kpx.id("spinnerPop_leftView")
                         }.lparams {
                             width = wrapContent
@@ -134,7 +160,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
 //                            }
 //                        }
 //                        addView(topView)
-                        topView=relativeLayout {
+                        topView = relativeLayout {
                             id = kpx.id("spinnerPop_topView")
                         }.lparams {
                             width = wrapContent
@@ -148,18 +174,18 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
                         //中间容器，recyclerView容器
 //                        centerView = RelativeLayout(context)
 //                        addView(centerView)
-                        centerView=relativeLayout {  }
+                        centerView = relativeLayout { }
                         centerView?.apply {
                             id = kpx.id("spinnerPop_centerView")
                             frameLayout {
                                 var layoutParams = ViewGroup.LayoutParams(wrapContent, wrapContent)
                                 setLayoutParams(layoutParams)
                                 KBaseUi.apply {
-                                    recyclerView=krecyclerView {
+                                    recyclerView = krecyclerView {
                                         setLinearLayoutManager(true)
                                         adapter = MyAdapter(this@KSpinnerPop, itemView)
 
-                                        if (isNeverScroll){
+                                        if (isNeverScroll) {
                                             setOverScrollMode(OVER_SCROLL_NEVER);//设置滑动到边缘时无效果模式
                                             setVerticalScrollBarEnabled(false);//滚动条隐藏
                                         }
@@ -196,7 +222,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
 //                            }
 //                        }
 //                        addView(bottomView)
-                        bottomView=relativeLayout {
+                        bottomView = relativeLayout {
                             id = kpx.id("spinnerPop_bottomView")
                         }.lparams {
                             width = wrapContent
@@ -221,7 +247,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
 //                            }
 //                        }
 //                        addView(rightView)
-                        rightView=relativeLayout {
+                        rightView = relativeLayout {
                             id = kpx.id("spinnerPop_rightView")
                         }.lparams {
                             width = wrapContent
@@ -252,6 +278,7 @@ open class KSpinnerPop(var context: Context, var list: MutableList<*>, var style
     }
 
     var onBindView: ((itemView: View, position: Int) -> Unit)? = null
+
     //fixme 刷新视图，数据展示+业务逻辑+点击事件 都在这里处理 [需要自动手动实现]
     open fun onBindView(onBindView: (itemView: View, position: Int) -> Unit) {
         this.onBindView = onBindView
