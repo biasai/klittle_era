@@ -350,11 +350,11 @@ public class KAssetsUtils {
 //                        fs.delete();//不一样，就删除
 //                    }
 //                    target = null;
-                    if (fs.exists() && fs.length() <= 1024) {//文件小于100B,就当错误文件处理删除掉。
+                    if (fs.exists() && fs.length() <= 1024) {//文件小于1KB,就当错误文件处理删除掉。
                         //一个普通excel表格的大小是 34630
                         fs.delete();//fixme 如果文件太小就删除掉(防止文件错误)
                     }
-                    if (!fs.exists() || fs.length() <= 10) {//判断文件是否存在，不存在则创建
+                    if (!fs.exists() ) {//判断文件是否存在，不存在则创建
                         if (!path.equals(fs.getAbsolutePath()) && !pathHasSuffix) {//这里的判断是防止path就是文件的完整路径。防止完整路径被创建成目录。
                             File dirs = new File(path);
                             //dirs.isDirectory() 判断是否为目录，前提是该目录必须存在。不存在也会返回false
@@ -364,7 +364,7 @@ public class KAssetsUtils {
                             dirs = null;
                         }
                         if (!fs.exists()) {
-                            fs.createNewFile();
+                            fs.createNewFile();//创建文件
                         }
                         InputStream myInput;
                         OutputStream myOutput = new FileOutputStream(fs);
