@@ -18,6 +18,8 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //                    rightStrokeVerticalColors(Color.RED, Color.CYAN)//右边边框垂直渐变色
 //                    bottomDashWidth = kpx.x(15f)//底部边框虚线
 //                    bottomDashGap = kpx.x(10f)
+//                    all_corner=0f//所有圆角的角度（0~90）
+//                    right_bottom_corner=45f//边框右下角角度
 //                }
 //                border_press {
 //                    isDrawLeft = false//是否绘制左边边框
@@ -33,7 +35,7 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //            }
 
 /**
- * fixme 绘制上下左右的边框；不支持圆角。
+ * fixme 绘制上下左右的边框；现在各个角已经支持圆角。
  */
 open class K3BorderWidget : K3AStateView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
