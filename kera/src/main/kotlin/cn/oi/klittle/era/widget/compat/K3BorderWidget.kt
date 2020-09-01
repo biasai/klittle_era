@@ -19,7 +19,7 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //                    bottomDashWidth = kpx.x(15f)//底部边框虚线
 //                    bottomDashGap = kpx.x(10f)
 //                    all_corner=0f//所有圆角的角度（0~90）
-//                    right_bottom_corner=45f//边框右下角角度
+//                    right_bottom_corner=45f//边框右下角角度;fixme border支持圆角，但不支持背景颜色color;背景颜色需要使用backgroundColor或者radius里的bg_color
 //                }
 //                border_press {
 //                    isDrawLeft = false//是否绘制左边边框
@@ -174,45 +174,45 @@ open class K3BorderWidget : K3AStateView {
         super.draw2Last(canvas, paint)
         currentBorder?.let {
             if (it.strokeWidth > 0) {
-                var dW=w
-                if (dW>h){
-                    dW=h//以短边为基准
+                var dW = w
+                if (dW > h) {
+                    dW = h//以短边为基准
                 }
-                var all_corner=it.all_corner
+                var all_corner = it.all_corner
                 var left_top_corner = it.left_top_corner//左上角
                 left_top_corner?.let {
-                    if (it<0&&all_corner>=0){
-                        left_top_corner=all_corner
+                    if (it < 0 && all_corner >= 0) {
+                        left_top_corner = all_corner
                     }
-                    if (left_top_corner>90f){
-                        left_top_corner=90f
+                    if (left_top_corner > 90f) {
+                        left_top_corner = 90f
                     }
                 }
                 var left_bottom_corner = it.left_bottom_corner//左下角
                 left_bottom_corner?.let {
-                    if (it<0&&all_corner>=0){
-                        left_bottom_corner=all_corner
+                    if (it < 0 && all_corner >= 0) {
+                        left_bottom_corner = all_corner
                     }
-                    if (left_bottom_corner>90f){
-                        left_bottom_corner=90f
+                    if (left_bottom_corner > 90f) {
+                        left_bottom_corner = 90f
                     }
                 }
                 var right_top_corner = it.right_top_corner//右上角
                 right_top_corner?.let {
-                    if (it<0&&all_corner>=0){
-                        right_top_corner=all_corner
+                    if (it < 0 && all_corner >= 0) {
+                        right_top_corner = all_corner
                     }
-                    if (right_top_corner>90f){
-                        right_top_corner=90f
+                    if (right_top_corner > 90f) {
+                        right_top_corner = 90f
                     }
                 }
                 var right_bottom_corner = it.right_bottom_corner//右下角
                 right_bottom_corner?.let {
-                    if (it<0&&all_corner>=0){
-                        right_bottom_corner=all_corner
+                    if (it < 0 && all_corner >= 0) {
+                        right_bottom_corner = all_corner
                     }
-                    if (right_bottom_corner>90f){
-                        right_bottom_corner=90f
+                    if (right_bottom_corner > 90f) {
+                        right_bottom_corner = 90f
                     }
                 }
                 //绘制左边的边框
@@ -260,18 +260,20 @@ open class K3BorderWidget : K3AStateView {
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
-                    if (left_top_corner <= 0&&right_top_corner<=0) {
+                    if (left_top_corner <= 0 && right_top_corner <= 0) {
                         canvas.drawLine(startX, startY, endX, endY, paint)
                     } else {
                         var starX0 = startX + dW / 2 * (left_top_corner / 90f)
                         var starY0 = startY
-                        var endX0=endX - dW / 2 * (right_top_corner / 90f)
+                        var endX0 = endX - dW / 2 * (right_top_corner / 90f)
                         canvas.drawLine(starX0, starY0, endX0, endY, paint)
                     }
                 }
                 //绘制右边的边框
                 if (it.isDrawRight) {
-                    initBorderPaint(resetPaint(paint), it, 3)
+                    if (it.isDrawRight) {
+                        initBorderPaint(resetPaint(paint), it, 3)
+                    }
                     var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
@@ -304,6 +306,7 @@ open class K3BorderWidget : K3AStateView {
                             var endY2 = endY
                             path2.quadTo(controllX, controllY, endX2, endY2)
                             canvas.drawPath(path2, paint)
+                            path2.quadTo(controllX, controllY, endX2, endY2)
                         }
                     }
                 }
@@ -314,12 +317,12 @@ open class K3BorderWidget : K3AStateView {
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
-                    if (left_bottom_corner <= 0&&right_bottom_corner<=0) {
+                    if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
                         canvas.drawLine(startX, startY, endX, endY, paint)
                     } else {
                         var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
                         var starY0 = startY
-                        var endX2 = endX - dW/ 2 * (right_bottom_corner / 90f)
+                        var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
                         canvas.drawLine(starX0, starY0, endX2, endY, paint)
                     }
                 }
