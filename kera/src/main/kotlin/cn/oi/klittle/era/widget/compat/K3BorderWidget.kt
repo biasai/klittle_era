@@ -11,15 +11,17 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
 //                border {
-//                    strokeWidth = kpx.x(10f) //所有边框的宽度
+//                    strokeWidth = kpx.x(10f) //所有边框的宽度；fixme 各个边框大小最好都一致；效果比较好。
 //                    leftStrokeWidth = strokeWidth / 2//左边边框的宽度
 //                    bottomStrokeWidth = kpx.x(2f)//底部边框的宽度
 //                    leftStrokeColor = Color.BLUE//左边边框的颜色
 //                    rightStrokeVerticalColors(Color.RED, Color.CYAN)//右边边框垂直渐变色
 //                    bottomDashWidth = kpx.x(15f)//底部边框虚线
 //                    bottomDashGap = kpx.x(10f)
-//                    all_corner=0f//所有圆角的角度（0~90）
-//                    right_bottom_corner=45f//边框右下角角度;fixme border支持圆角，但不支持背景颜色color;背景颜色需要使用backgroundColor或者radius里的bg_color
+//                    all_corner=0f//所有圆角的角度（0~90）//fixme 就使用 all_corner；不要改成all_radius了；保留各自的个性。
+//                    right_bottom_corner=45f//边框右下角角度;fixme border支持圆角
+//                    //bg_color=Color.GREEN//fixme 支持背景色；具备切割效果；会像radius一样；自动去除边框以外的区域。只显示边框以内的。
+//                    bgHorizontalColors(Color.RED,Color.CYAN)
 //                }
 //                border_press {
 //                    isDrawLeft = false//是否绘制左边边框
@@ -152,6 +154,8 @@ open class K3BorderWidget : K3AStateView {
             if (dashWidth > 0 && dashGap > 0) {
                 var dashPathEffect = DashPathEffect(floatArrayOf(dashWidth, dashGap), 0f)
                 paint.setPathEffect(dashPathEffect)
+            } else {
+                paint.setPathEffect(null)
             }
             //边框颜色渐变，渐变颜色优先等级大于正常颜色。
             var linearGradient: LinearGradient? = null
@@ -163,17 +167,93 @@ open class K3BorderWidget : K3AStateView {
                 //fixme 垂直渐变
                 linearGradient = LinearGradient(0f, 0f + scrollY, 0f, 0f + scrollY + h.toFloat(), strokeVerticalColors, null, Shader.TileMode.CLAMP)
             }
+            paint.setShader(null)
             linearGradient?.let {
                 paint.setShader(linearGradient)
             }
         }
     }
 
+    private var borderPath: Path? = null
+    private var linePath: Path? = null
+
     //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
     override fun draw2Last(canvas: Canvas, paint: Paint) {
         super.draw2Last(canvas, paint)
         currentBorder?.let {
-            if (it.strokeWidth > 0) {
+            if (true || it.strokeWidth > 0) {
+                //画背景
+                var isDrawColor = false//是否画背景色
+                if (it.bg_color != Color.TRANSPARENT) {
+                    paint.color = it.bg_color
+                    isDrawColor = true
+                }
+                var left = 0f + scrollX + centerX - w / 2.0f
+                var top = 0f + scrollY + centerY - h / 2.0f//fixme 2.0f必须设置成浮点型，不然可能会有0.5的偏差。
+                //KLoggerUtils.e("scrollY:\t"+scrollY+"\tcenterY:\t"+centerY+"\th / 2:\t"+(h / 2.0f)+"\th:\t"+h)
+                var right = w + left
+                var bottom = h + top
+                //KLoggerUtils.e("left:\t"+left+"\ttop:\t"+top+"\tright:\t"+right+"\tbottom:\t"+bottom)
+                if (it.bgVerticalColors != null) {
+                    var shader: LinearGradient? = null
+                    if (!it.isBgGradient) {
+                        //垂直不渐变
+                        if (it.bgVerticalColors!!.size == 1) {
+                            //fixme 颜色渐变数组必须大于等于2
+                            var bgVerticalColors = IntArray(2)
+                            bgVerticalColors[0] = it.bgVerticalColors!![0]
+                            bgVerticalColors[1] = it.bgVerticalColors!![0]
+                            shader = getNotLinearGradient(top, bottom, bgVerticalColors!!, true, scrollY)
+                        } else {
+                            shader = getNotLinearGradient(top, bottom, it.bgVerticalColors!!, true, scrollY)
+                        }
+                    }
+                    //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)
+                    if (shader == null) {
+                        if (it.bgVerticalColors!!.size == 1) {
+                            var bgVerticalColors = IntArray(2)
+                            bgVerticalColors[0] = it.bgVerticalColors!![0]
+                            bgVerticalColors[1] = it.bgVerticalColors!![0]
+                            shader = LinearGradient(0f, top, 0f, bottom, bgVerticalColors, null, Shader.TileMode.MIRROR)
+                        } else {
+                            shader = LinearGradient(0f, top, 0f, bottom, it.bgVerticalColors, null, Shader.TileMode.MIRROR)
+                        }
+                    }
+                    paint.setShader(shader)
+                    isDrawColor = true
+                } else if (it.bgHorizontalColors != null) {
+                    var shader: LinearGradient? = null
+                    if (!it.isBgGradient) {
+                        //水平不渐变
+                        if (it.bgHorizontalColors!!.size == 1) {
+                            var bgHorizontalColors = IntArray(2)
+                            bgHorizontalColors[0] = it.bgHorizontalColors!![0]
+                            bgHorizontalColors[1] = it.bgHorizontalColors!![0]
+                            shader = getNotLinearGradient(left, right, bgHorizontalColors!!, false, scrollY)
+                        } else {
+                            shader = getNotLinearGradient(left, right, it.bgHorizontalColors!!, false, scrollY)
+                        }
+                    }
+                    //水平渐变
+                    if (shader == null) {
+                        if (it.bgHorizontalColors!!.size == 1) {
+                            var bgHorizontalColors = IntArray(2)
+                            bgHorizontalColors[0] = it.bgHorizontalColors!![0]
+                            bgHorizontalColors[1] = it.bgHorizontalColors!![0]
+                            shader = LinearGradient(left, 0f, right, 0f, bgHorizontalColors, null, Shader.TileMode.MIRROR)
+                        } else {
+                            shader = LinearGradient(left, 0f, right, 0f, it.bgHorizontalColors, null, Shader.TileMode.MIRROR)
+                        }
+                    }
+                    paint.setShader(shader)
+                    isDrawColor = true
+                }
+                if (isDrawColor) {
+                    //fixme 画背景
+                    var rectF = RectF(left, top, right, bottom)
+                    canvas.drawRect(rectF, paint)
+                }
+
                 var dW = w
                 if (dW > h) {
                     dW = h//以短边为基准
@@ -215,15 +295,32 @@ open class K3BorderWidget : K3AStateView {
                         right_bottom_corner = 90f
                     }
                 }
+                if (borderPath == null) {
+                    borderPath = Path()
+                }
+                if (linePath == null) {
+                    linePath = Path()
+                }
+                borderPath?.reset()
+                linePath?.reset()
                 //绘制左边的边框
-                if (it.isDrawLeft) {
+                if (true || it.isDrawLeft) {
                     initBorderPaint(resetPaint(paint), it, 1)
                     var startX = scrollX + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
                     var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
                     if (left_top_corner <= 0 && left_bottom_corner <= 0) {
-                        canvas.drawLine(startX, startY, endX, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(endX, endY)
+                        linePath?.lineTo(startX, startY)
+                        if (it.isDrawLeft) {
+                            canvas.drawPath(linePath, paint)//fixme pathEffect虚线只对Path有效果；对drawLine（）没有效果。
+                            //canvas.drawLine(startX, startY, endX, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.moveTo(endX, endY)
+                        borderPath?.lineTo(startX, startY)
                     } else {
                         //左上角圆角
                         var path = Path()
@@ -235,13 +332,30 @@ open class K3BorderWidget : K3AStateView {
                         var endY0 = startY + dW / 2 * (left_top_corner / 90f)
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
-                        canvas.drawPath(path, paint)
+                        if (it.isDrawLeft) {
+                            canvas.drawPath(path, paint)
+                        }
                         if (left_bottom_corner <= 0) {
-                            canvas.drawLine(endX0, endY0, endX, endY, paint)
+                            linePath?.reset()
+                            linePath?.moveTo(endX0, endY0)
+                            linePath?.lineTo(endX, endY)
+                            if (it.isDrawLeft) {
+                                canvas.drawPath(linePath, paint)
+                                //canvas.drawLine(endX0, endY0, endX, endY, paint)
+                            }
+                            //fixme
+                            borderPath?.moveTo(endX, endY)
+                            borderPath?.lineTo(endX0, endY0)
                         } else {
                             //左下角圆角
                             var endY1 = endY - dW / 2 * (left_bottom_corner / 90f)
-                            canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            linePath?.reset()
+                            linePath?.moveTo(endX0, endY0)
+                            linePath?.lineTo(endX, endY1)
+                            if (it.isDrawLeft) {
+                                canvas.drawPath(linePath, paint)
+                                //canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            }
                             var path2 = Path()
                             path2.moveTo(endX, endY1)
                             var controllX = endX
@@ -249,37 +363,70 @@ open class K3BorderWidget : K3AStateView {
                             var endX2 = startX + dW / 2 * (left_bottom_corner / 90f)
                             var endY2 = endY
                             path2.quadTo(controllX, controllY, endX2, endY2)
-                            canvas.drawPath(path2, paint)
+                            if (it.isDrawLeft) {
+                                canvas.drawPath(path2, paint)
+                            }
+                            //fixme
+                            borderPath?.moveTo(endX2, endY2)
+                            borderPath?.quadTo(controllX, controllY, endX, endY1)
                         }
+                        //fixme
+                        borderPath?.lineTo(endX0, endY0)
+                        borderPath?.quadTo(controllX, controllY, starX0, starY0)
                     }
                 }
                 //绘制上边的边框
-                if (it.isDrawTop) {
+                if (true || it.isDrawTop) {
                     initBorderPaint(resetPaint(paint), it, 2)
                     var startX = scrollX.toFloat()
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
                     if (left_top_corner <= 0 && right_top_corner <= 0) {
-                        canvas.drawLine(startX, startY, endX, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(startX, startY)
+                        linePath?.lineTo(endX, endY)
+                        if (it.isDrawTop) {
+                            canvas.drawPath(linePath, paint)
+                            //canvas.drawLine(startX, startY, endX, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(startX, startY)
+                        borderPath?.lineTo(endX, endY)
                     } else {
                         var starX0 = startX + dW / 2 * (left_top_corner / 90f)
                         var starY0 = startY
                         var endX0 = endX - dW / 2 * (right_top_corner / 90f)
-                        canvas.drawLine(starX0, starY0, endX0, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(starX0, starY0)
+                        linePath?.lineTo(endX0, endY)
+                        if (it.isDrawTop) {
+                            canvas.drawPath(linePath, paint)
+                            //canvas.drawLine(starX0, starY0, endX0, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(starX0, starY0)
+                        borderPath?.lineTo(endX0, endY)
                     }
                 }
                 //绘制右边的边框
-                if (it.isDrawRight) {
-                    if (it.isDrawRight) {
-                        initBorderPaint(resetPaint(paint), it, 3)
-                    }
+                if (true || it.isDrawRight) {
+                    initBorderPaint(resetPaint(paint), it, 3)
                     var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
                     var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
                     if (right_top_corner <= 0 && right_bottom_corner <= 0) {
-                        canvas.drawLine(startX, startY, endX, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(startX, startY)
+                        linePath?.lineTo(endX, endY)
+                        if (it.isDrawRight) {
+                            canvas.drawPath(linePath, paint)
+                            //canvas.drawLine(startX, startY, endX, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(startX, startY)
+                        borderPath?.lineTo(endX, endY)
                     } else {
                         //右上角圆角
                         var path = Path()
@@ -291,13 +438,36 @@ open class K3BorderWidget : K3AStateView {
                         var endY0 = startY + dW / 2 * (right_top_corner / 90f)
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
-                        canvas.drawPath(path, paint)
+                        if (it.isDrawRight) {
+                            canvas.drawPath(path, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(starX0, starY0)
+                        borderPath?.quadTo(controllX, controllY, endX0, endY0)
                         if (right_bottom_corner <= 0) {
-                            canvas.drawLine(endX0, endY0, endX, endY, paint)
+                            linePath?.reset()
+                            linePath?.moveTo(endX0, endY0)
+                            linePath?.lineTo(endX, endY)
+                            if (it.isDrawRight) {
+                                canvas.drawPath(linePath, paint)
+                                //canvas.drawLine(endX0, endY0, endX, endY, paint)
+                            }
+                            //fixme
+                            borderPath?.lineTo(endX0, endY0)
+                            borderPath?.lineTo(endX, endY)
                         } else {
                             //右下角圆角
                             var endY1 = endY - dW / 2 * (right_bottom_corner / 90f)
-                            canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            linePath?.reset()
+                            linePath?.moveTo(endX0, endY0)
+                            linePath?.lineTo(endX, endY1)
+                            if (it.isDrawRight) {
+                                canvas.drawPath(linePath, paint)
+                                //canvas.drawLine(endX0, endY0, endX, endY1, paint)
+                            }
+                            //fixme
+                            borderPath?.lineTo(endX0, endY0)
+                            borderPath?.lineTo(endX, endY1)
                             var path2 = Path()
                             path2.moveTo(endX, endY1)
                             var controllX = endX
@@ -305,27 +475,60 @@ open class K3BorderWidget : K3AStateView {
                             var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
                             var endY2 = endY
                             path2.quadTo(controllX, controllY, endX2, endY2)
-                            canvas.drawPath(path2, paint)
-                            path2.quadTo(controllX, controllY, endX2, endY2)
+                            if (it.isDrawRight) {
+                                canvas.drawPath(path2, paint)
+                            }
+                            //fixme
+                            borderPath?.lineTo(endX, endY1)
+                            borderPath?.quadTo(controllX, controllY, endX2, endY2)
                         }
                     }
                 }
                 //绘制底部的边框
-                if (it.isDrawBottom) {
+                if (true || it.isDrawBottom) {
                     initBorderPaint(resetPaint(paint), it, 4)
                     var startX = scrollX.toFloat()
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
                     var endX = startX + w.toFloat()
                     var endY = startY
                     if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
-                        canvas.drawLine(startX, startY, endX, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(startX, startY)
+                        linePath?.lineTo(endX, endY)
+                        if (it.isDrawBottom) {
+                            canvas.drawPath(linePath, paint)
+                            //canvas.drawLine(startX, startY, endX, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(startX, startY)
+                        borderPath?.lineTo(endX, endY)
                     } else {
                         var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
                         var starY0 = startY
                         var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
-                        canvas.drawLine(starX0, starY0, endX2, endY, paint)
+                        linePath?.reset()
+                        linePath?.moveTo(starX0, starY0)
+                        linePath?.lineTo(endX2, endY)
+                        if (it.isDrawBottom) {
+                            canvas.drawPath(linePath, paint)
+                            //canvas.drawLine(starX0, starY0, endX2, endY, paint)
+                        }
+                        //fixme
+                        borderPath?.lineTo(starX0, starY0)
+                        borderPath?.lineTo(endX2, endY)
                     }
                 }
+                //fixme 只显示边框以内的区域；边框以外的不显示。
+                paint.setPathEffect(null)
+                paint.setShader(null)
+                paint.style = Paint.Style.FILL_AND_STROKE
+                paint.color = Color.GREEN
+                borderPath?.close()
+                paint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.CLEAR))
+                borderPath?.setFillType(Path.FillType.INVERSE_WINDING)//反转
+                canvas.drawPath(borderPath, paint)
+                borderPath?.setFillType(Path.FillType.WINDING)//恢复正常
+                paint.setXfermode(null)
             }
         }
     }
@@ -460,6 +663,10 @@ open class K3BorderWidget : K3AStateView {
         border_focuse = null
         border_selected = null
         border_enable = null
+        borderPath?.reset()
+        borderPath = null
+        linePath?.reset()
+        linePath = null
     }
 
 }

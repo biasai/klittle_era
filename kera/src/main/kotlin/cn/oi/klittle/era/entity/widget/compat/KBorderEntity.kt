@@ -26,6 +26,11 @@ import cn.oi.klittle.era.comm.kpx
  * @param left_bottom_corner 左下角圆角
  * @param right_top_corner 右上角圆角
  * @param right_bottom_corner 右下角圆角
+ *
+ * @param bg_color 矩形画布背景颜色，不能为透明，不然什么也看不见（包括阴影），也就是说画布必须有一个背景色
+ * @param bgHorizontalColors 背景颜色水平渐变
+ * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）
+ * @param isBgGradient 背景色是否渐变,默认是
  */
 data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
                          var dashWidth: Float = 0F, var dashGap: Float = 0F,
@@ -48,7 +53,10 @@ data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: In
                          var left_top_corner: Float = -1F,
                          var left_bottom_corner: Float = -1F,
                          var right_top_corner: Float = -1F,
-                         var right_bottom_corner: Float = -1F) {
+                         var right_bottom_corner: Float = -1F,
+                         var bg_color: Int = Color.TRANSPARENT,
+                         var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null,
+                         var isBgGradient: Boolean = true) {
 
     //fixme 所有
 
@@ -251,6 +259,43 @@ data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: In
                 for (i in 0..color.size - 1) {
                     this[i] = Color.parseColor(color[i])
                 }
+            }
+        }
+    }
+
+    open fun bgHorizontalColors(vararg color: Int) {
+        bgVerticalColors = null//fixme 垂直渐变和水平渐变不能同时存在，只能存在一个
+        bgHorizontalColors = color
+    }
+
+    open fun bgHorizontalColors(vararg color: String) {
+        bgVerticalColors = null
+        bgHorizontalColors = IntArray(color.size)
+        bgHorizontalColors?.apply {
+            if (color.size > 0) {
+                for (i in 0..color.size - 1) {
+                    this[i] = Color.parseColor(color[i])
+                }
+            }
+        }
+
+    }
+
+    open fun bgVerticalColors(vararg color: Int) {
+        bgHorizontalColors = null
+        bgVerticalColors = color
+    }
+
+    open fun bgVerticalColors(vararg color: String) {
+        bgHorizontalColors = null
+        bgVerticalColors = IntArray(color.size)
+        bgVerticalColors?.apply {
+            if (color.size > 1) {
+                for (i in 0..color.size - 1) {
+                    this[i] = Color.parseColor(color[i])
+                }
+            } else {
+                this[0] = Color.parseColor(color[0])
             }
         }
     }
