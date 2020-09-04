@@ -10,26 +10,26 @@ import cn.oi.klittle.era.entity.widget.compat.KDiamondEntity
 //            调用案例
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
-//                border {
-//                    strokeWidth = kpx.x(10f) //所有边框的宽度；
-//                    leftStrokeWidth = strokeWidth / 2//左边边框的宽度 fixme 各个边框大小颜色都可以独自设置。
-//                    bottomStrokeWidth = kpx.x(2f)//底部边框的宽度
-//                    leftStrokeColor = Color.BLUE//左边边框的颜色
-//                    rightStrokeVerticalColors(Color.RED, Color.CYAN)//右边边框垂直渐变色
-//                    bottomDashWidth = kpx.x(15f)//底部边框虚线
-//                    bottomDashGap = kpx.x(10f)
-//                    all_radius=0f//所有圆角的角度（0~90）//fixme 角度统一使用radius
-//                    right_bottom=45f//边框右下角角度;fixme border支持圆角
-//                    //bg_color=Color.GREEN//fixme 支持背景色；具备切割效果；会像radius一样；自动去除边框以外的区域。只显示边框以内的。
-//                    bgHorizontalColors(Color.RED,Color.CYAN)
-//                }
-//                border_press {
-//                    isDrawLeft = false//是否绘制左边边框
-//                    isDrawTop = false//时候绘制顶部边框
-//                    strokeHorizontalColors(Color.RED, Color.CYAN, Color.GRAY)//边框水平渐变颜色
-//                    dashGap = kpx.x(30f)
-//                    dashWidth = kpx.x(50f)
-//                }
+//                    diamond {
+//                        strokeWidth = kpx.x(3f) //所有边框的宽度
+//                        leftTopStrokeColor = Color.BLUE//左上边边框的颜色
+//                        leftTopStrokeVerticalColors(Color.RED, Color.BLUE, Color.GREEN)
+//                        rightBottomStrokeVerticalColors(Color.BLUE, Color.GREEN)//右下边边框垂直渐变色
+//                        leftBottomDashWidth = kpx.x(8f)//左下边框虚线
+//                        leftBottomDashGap = kpx.x(8f)
+//                        //all_radius = 45f//所有圆角的角度（0~90）
+//                        top_radius=90f
+//                        strokeColor = Color.RED
+//                        bgHorizontalColors(Color.TRANSPARENT, Color.CYAN)
+//                        //isBgGradient=false
+//                    }
+//                    diamond_press {
+//                        isDrawLeft_top = false//是否绘制左边边框
+//                        isDrawLeft_Bottom=false
+//                        isDrawRight_top=false
+//                        isDrawRight_bottom=false
+//                        strokeHorizontalColors(Color.RED, Color.CYAN, Color.GRAY)
+//                    }
 //            }.lparams {
 //                topMargin = kpx.x(50)
 //                width = kpx.x(300)
