@@ -21,11 +21,11 @@ import cn.oi.klittle.era.comm.kpx
  * @param rightDashGap 右边框 虚线之间的间隙
  * @param bottomDashGap 底部边框 虚线之间的间隙
  *
- * @param all_corner 所有圆角(0~90度)
- * @param left_top_corner 左上角圆角,fixme 优先级比all_corner高。
- * @param left_bottom_corner 左下角圆角
- * @param right_top_corner 右上角圆角
- * @param right_bottom_corner 右下角圆角
+ * @param all_radius 所有圆角的角度(0~90度)
+ * @param left_top 左上角圆角,fixme 优先级比all_radius高。
+ * @param left_bottom 左下角圆角
+ * @param right_top 右上角圆角
+ * @param right_bottom 右下角圆角
  *
  * @param bg_color 矩形画布背景颜色，不能为透明，不然什么也看不见（包括阴影），也就是说画布必须有一个背景色
  * @param bgHorizontalColors 背景颜色水平渐变
@@ -49,11 +49,11 @@ data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: In
                          var bottomStrokeWidth: Float? = null, var bottomStrokeColor: Int? = null,
                          var bottomDashWidth: Float? = null, var bottomDashGap: Float? = null,
                          var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null,
-                         var all_corner: Float = -1F,
-                         var left_top_corner: Float = -1F,
-                         var left_bottom_corner: Float = -1F,
-                         var right_top_corner: Float = -1F,
-                         var right_bottom_corner: Float = -1F,
+                         var all_radius: Float = -1F,
+                         var left_top: Float = -1F,
+                         var left_bottom: Float = -1F,
+                         var right_top: Float = -1F,
+                         var right_bottom: Float = -1F,
                          var bg_color: Int = Color.TRANSPARENT,
                          var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null,
                          var isBgGradient: Boolean = true) {

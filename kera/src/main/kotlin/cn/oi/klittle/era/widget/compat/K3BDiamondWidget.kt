@@ -5,8 +5,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import cn.oi.klittle.era.comm.kpx
-import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
+import cn.oi.klittle.era.entity.widget.compat.KDiamondEntity
 
 //            调用案例
 //            KView(this).apply {
@@ -38,9 +37,9 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //            }
 
 /**
- * fixme 绘制上下左右的边框；现在各个角已经支持圆角。
+ * fixme 菱形
  */
-open class K3BorderWidget : K3BDiamondWidget {
+open class K3BDiamondWidget : K3AStateView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -56,7 +55,7 @@ open class K3BorderWidget : K3BDiamondWidget {
     }
 
     //初始化画笔
-    private fun initBorderPaint(paint: Paint, border: KBorderEntity, oritaton: Int = 0) {
+    private fun initBorderPaint(paint: Paint, border: KDiamondEntity, oritaton: Int = 0) {
         //paint.strokeCap = Paint.Cap.BUTT
         //paint.strokeJoin = Paint.Join.ROUND
         paint.strokeCap = Paint.Cap.ROUND//fixme 加个圆帽效果好一点，亲测。
@@ -68,87 +67,87 @@ open class K3BorderWidget : K3BDiamondWidget {
             var strokeColor = it.strokeColor
             var strokeHorizontalColors = it.strokeHorizontalColors
             var strokeVerticalColors = it.strokeVerticalColors
-            //左
+            //左上角
             if (oritaton == 1) {
-                it.leftDashWidth?.let {
+                it.leftTopDashWidth?.let {
                     dashWidth = it
                 }
-                it.leftDashGap?.let {
+                it.leftTopDashGap?.let {
                     dashGap = it
                 }
-                it.leftStrokeWidth?.let {
+                it.leftTopStrokeWidth?.let {
                     strokeWidth = it
                 }
-                it.leftStrokeColor?.let {
+                it.leftTopStrokeColor?.let {
                     strokeColor = it
                 }
-                it.leftStrokeHorizontalColors?.let {
+                it.leftTopStrokeHorizontalColors?.let {
                     strokeHorizontalColors = it
                 }
-                it.leftStrokeVerticalColors?.let {
+                it.leftTopStrokeVerticalColors?.let {
                     strokeVerticalColors = it
                 }
             }
-            //上
+            //右上角
             if (oritaton == 2) {
-                it.topDashWidth?.let {
+                it.rightTopDashWidth?.let {
                     dashWidth = it
                 }
-                it.topDashGap?.let {
+                it.rightTopDashGap?.let {
                     dashGap = it
                 }
-                it.topStrokeWidth?.let {
+                it.rightTopStrokeWidth?.let {
                     strokeWidth = it
                 }
-                it.topStrokeColor?.let {
+                it.rightTopStrokeColor?.let {
                     strokeColor = it
                 }
-                it.topStrokeHorizontalColors?.let {
+                it.rightTopStrokeHorizontalColors?.let {
                     strokeHorizontalColors = it
                 }
-                it.topStrokeVerticalColors?.let {
+                it.rightTopStrokeVerticalColors?.let {
                     strokeVerticalColors = it
                 }
             }
-            //右
+            //右下角
             if (oritaton == 3) {
-                it.rightDashWidth?.let {
+                it.rightBottomDashWidth?.let {
                     dashWidth = it
                 }
-                it.rightDashGap?.let {
+                it.rightBottomDashGap?.let {
                     dashGap = it
                 }
-                it.rightStrokeWidth?.let {
+                it.rightBottomStrokeWidth?.let {
                     strokeWidth = it
                 }
-                it.rightStrokeColor?.let {
+                it.rightBottomStrokeColor?.let {
                     strokeColor = it
                 }
-                it.rightStrokeHorizontalColors?.let {
+                it.rightBottomStrokeHorizontalColors?.let {
                     strokeHorizontalColors = it
                 }
-                it.rightStrokeVerticalColors?.let {
+                it.rightBottomStrokeVerticalColors?.let {
                     strokeVerticalColors = it
                 }
             }
-            //下
+            //左下角
             if (oritaton == 4) {
-                it.bottomDashWidth?.let {
+                it.leftBottomDashWidth?.let {
                     dashWidth = it
                 }
-                it.bottomDashGap?.let {
+                it.leftBottomDashGap?.let {
                     dashGap = it
                 }
-                it.bottomStrokeWidth?.let {
+                it.leftBottomStrokeWidth?.let {
                     strokeWidth = it
                 }
-                it.bottomStrokeColor?.let {
+                it.leftBottomStrokeColor?.let {
                     strokeColor = it
                 }
-                it.bottomStrokeHorizontalColors?.let {
+                it.leftBottomStrokeHorizontalColors?.let {
                     strokeHorizontalColors = it
                 }
-                it.bottomStrokeVerticalColors?.let {
+                it.leftBottomStrokeVerticalColors?.let {
                     strokeVerticalColors = it
                 }
             }
@@ -185,7 +184,7 @@ open class K3BorderWidget : K3BDiamondWidget {
     //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
     override fun draw2Last(canvas: Canvas, paint: Paint) {
         super.draw2Last(canvas, paint)
-        currentBorder?.let {
+        currentDiamond?.let {
             if (true || it.strokeWidth > 0) {
                 //画背景
                 var isDrawColor = false//是否画背景色
@@ -264,40 +263,40 @@ open class K3BorderWidget : K3BDiamondWidget {
                     dW = h//以短边为基准
                 }
                 var all_corner = it.all_radius
-                var left_top_corner = it.left_top//左上角
-                left_top_corner?.let {
+                var top_radius = it.top_radius//顶部圆角
+                top_radius?.let {
                     if (it < 0 && all_corner >= 0) {
-                        left_top_corner = all_corner
+                        top_radius = all_corner
                     }
-                    if (left_top_corner > 90f) {
-                        left_top_corner = 90f
+                    if (top_radius > 90f) {
+                        top_radius = 90f
                     }
                 }
-                var left_bottom_corner = it.left_bottom//左下角
-                left_bottom_corner?.let {
+                var left_radius = it.left_radius//左边圆角
+                left_radius?.let {
                     if (it < 0 && all_corner >= 0) {
-                        left_bottom_corner = all_corner
+                        left_radius = all_corner
                     }
-                    if (left_bottom_corner > 90f) {
-                        left_bottom_corner = 90f
+                    if (left_radius > 90f) {
+                        left_radius = 90f
                     }
                 }
-                var right_top_corner = it.right_top//右上角
-                right_top_corner?.let {
+                var right_radius = it.right_radius//右边圆角
+                right_radius?.let {
                     if (it < 0 && all_corner >= 0) {
-                        right_top_corner = all_corner
+                        right_radius = all_corner
                     }
-                    if (right_top_corner > 90f) {
-                        right_top_corner = 90f
+                    if (right_radius > 90f) {
+                        right_radius = 90f
                     }
                 }
-                var right_bottom_corner = it.right_bottom//右下角
-                right_bottom_corner?.let {
+                var bottom_radius = it.bottom_radius//低部圆角
+                bottom_radius?.let {
                     if (it < 0 && all_corner >= 0) {
-                        right_bottom_corner = all_corner
+                        bottom_radius = all_corner
                     }
-                    if (right_bottom_corner > 90f) {
-                        right_bottom_corner = 90f
+                    if (bottom_radius > 90f) {
+                        bottom_radius = 90f
                     }
                 }
                 if (borderPath == null) {
@@ -308,22 +307,22 @@ open class K3BorderWidget : K3BDiamondWidget {
                 }
                 borderPath?.reset()
                 linePath?.reset()
-                //绘制左边的边框
-                if (true || it.isDrawLeft) {
+                //绘制左上角边框
+                if (true || it.isDrawLeft_top) {
                     initBorderPaint(resetPaint(paint), it, 1)
                     var startX = scrollX + paint.strokeWidth / 2
-                    var startY = scrollY.toFloat() + paint.strokeWidth / 2
-                    var endX = startX
-                    var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
+                    var startY = scrollY.toFloat() + h / 2
+                    var endX = startX + w / 2
+                    var endY = scrollY.toFloat() + paint.strokeWidth / 2
                     var startX_border = scrollX.toFloat()
-                    var startY_border = scrollY.toFloat()
-                    var endX_border = startX_border
-                    var endY_border = scrollY.toFloat() + h.toFloat()
-                    if (left_top_corner <= 0 && left_bottom_corner <= 0) {
+                    var startY_border = scrollY.toFloat() + h / 2
+                    var endX_border = startX_border + w / 2
+                    var endY_border = scrollY.toFloat()
+                    if (top_radius <= 0 && left_radius <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(endX, endY)
                         linePath?.lineTo(startX, startY)
-                        if (it.isDrawLeft) {
+                        if (it.isDrawLeft_top) {
                             canvas.drawPath(linePath, paint)//fixme pathEffect虚线只对Path有效果；对drawLine（）没有效果。
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
@@ -331,28 +330,28 @@ open class K3BorderWidget : K3BDiamondWidget {
                         borderPath?.moveTo(endX_border, endY_border)
                         borderPath?.lineTo(startX_border, startY_border)
                     } else {
-                        //左上角圆角
+                        //顶部圆角
                         var path = Path()
-                        var starX0 = startX + dW / 2 * (left_top_corner / 90f)
+                        var starX0 = startX + dW / 2 * (top_radius / 90f)
                         var starY0 = startY
-                        var starX0_border = startX_border + dW / 2 * (left_top_corner / 90f)
+                        var starX0_border = startX_border + dW / 2 * (top_radius / 90f)
                         var starY0_border = startY_border
                         var controllX = startX
                         var controllY = startY
                         var endX0 = startX
-                        var endY0 = startY + dW / 2 * (left_top_corner / 90f)
+                        var endY0 = startY + dW / 2 * (top_radius / 90f)
                         var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (left_top_corner / 90f)
+                        var endY0_border = startY_border + dW / 2 * (top_radius / 90f)
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
-                        if (it.isDrawLeft) {
+                        if (it.isDrawLeft_top) {
                             canvas.drawPath(path, paint)
                         }
-                        if (left_bottom_corner <= 0) {
+                        if (left_radius <= 0) {
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
                             linePath?.lineTo(endX, endY)
-                            if (it.isDrawLeft) {
+                            if (it.isDrawLeft_top) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY, paint)
                             }
@@ -360,13 +359,13 @@ open class K3BorderWidget : K3BDiamondWidget {
                             borderPath?.moveTo(endX_border, endY_border)
                             borderPath?.lineTo(endX0_border, endY0_border)
                         } else {
-                            //左下角圆角
-                            var endY1 = endY - dW / 2 * (left_bottom_corner / 90f)
-                            var endY1_border = endY_border - dW / 2 * (left_bottom_corner / 90f)
+                            //左边圆角
+                            var endY1 = endY - dW / 2 * (left_radius / 90f)
+                            var endY1_border = endY_border - dW / 2 * (left_radius / 90f)
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
                             linePath?.lineTo(endX, endY1)
-                            if (it.isDrawLeft) {
+                            if (it.isDrawLeft_top) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY1, paint)
                             }
@@ -374,12 +373,12 @@ open class K3BorderWidget : K3BDiamondWidget {
                             path2.moveTo(endX, endY1)
                             var controllX = endX
                             var controllY = endY
-                            var endX2 = startX + dW / 2 * (left_bottom_corner / 90f)
+                            var endX2 = startX + dW / 2 * (left_radius / 90f)
                             var endY2 = endY
-                            var endX2_border = startX_border + dW / 2 * (left_bottom_corner / 90f)
+                            var endX2_border = startX_border + dW / 2 * (left_radius / 90f)
                             var endY2_border = endY_border
                             path2.quadTo(controllX, controllY, endX2, endY2)
-                            if (it.isDrawLeft) {
+                            if (it.isDrawLeft_top) {
                                 canvas.drawPath(path2, paint)
                             }
                             //fixme
@@ -391,22 +390,22 @@ open class K3BorderWidget : K3BDiamondWidget {
                         borderPath?.quadTo(controllX, controllY, starX0_border, starY0_border)
                     }
                 }
-                //绘制上边的边框
-                if (true || it.isDrawTop) {
+                //绘制右上边的边框
+                if (true || it.isDrawRight_top) {
                     initBorderPaint(resetPaint(paint), it, 2)
-                    var startX = scrollX.toFloat()// + paint.strokeWidth / 2
+                    var startX = scrollX.toFloat() + w / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
-                    var endX = scrollX.toFloat() + w.toFloat()// - paint.strokeWidth / 2
-                    var endY = startY
-                    var startX_border = scrollX.toFloat()
+                    var endX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
+                    var endY = scrollY.toFloat() + h / 2
+                    var startX_border = scrollX.toFloat() + w / 2
                     var startY_border = scrollY.toFloat()
                     var endX_border = scrollX.toFloat() + w.toFloat()
-                    var endY_border = startY_border
-                    if (left_top_corner <= 0 && right_top_corner <= 0) {
+                    var endY_border = scrollY.toFloat() + h / 2
+                    if (top_radius <= 0 && right_radius <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
                         linePath?.lineTo(endX, endY)
-                        if (it.isDrawTop) {
+                        if (it.isDrawRight_top) {
                             canvas.drawPath(linePath, paint)
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
@@ -414,16 +413,16 @@ open class K3BorderWidget : K3BDiamondWidget {
                         borderPath?.lineTo(startX_border, startY_border)
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
-                        var starX0 = startX + dW / 2 * (left_top_corner / 90f)
+                        var starX0 = startX + dW / 2 * (top_radius / 90f)
                         var starY0 = startY
-                        var endX0 = endX - dW / 2 * (right_top_corner / 90f)
-                        var starX0_border = startX_border + dW / 2 * (left_top_corner / 90f)
+                        var endX0 = endX - dW / 2 * (right_radius / 90f)
+                        var starX0_border = startX_border + dW / 2 * (top_radius / 90f)
                         var starY0_border = startY_border
-                        var endX0_border = endX_border - dW / 2 * (right_top_corner / 90f)
+                        var endX0_border = endX_border - dW / 2 * (right_radius / 90f)
                         linePath?.reset()
                         linePath?.moveTo(starX0, starY0)
                         linePath?.lineTo(endX0, endY)
-                        if (it.isDrawTop) {
+                        if (it.isDrawRight_top) {
                             canvas.drawPath(linePath, paint)
                             //canvas.drawLine(starX0, starY0, endX0, endY, paint)
                         }
@@ -432,22 +431,22 @@ open class K3BorderWidget : K3BDiamondWidget {
                         borderPath?.lineTo(endX0_border, endY_border)
                     }
                 }
-                //绘制右边的边框
-                if (true || it.isDrawRight) {
+                //绘制右下角边框
+                if (true || it.isDrawRight_bottom) {
                     initBorderPaint(resetPaint(paint), it, 3)
                     var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
-                    var startY = scrollY.toFloat() + paint.strokeWidth / 2
-                    var endX = startX
+                    var startY = scrollY.toFloat() + h / 2
+                    var endX = scrollX.toFloat() + w / 2
                     var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
                     var startX_border = scrollX.toFloat() + w.toFloat()
-                    var startY_border = scrollY.toFloat()
-                    var endX_border = startX_border
+                    var startY_border = scrollY.toFloat() + h / 2
+                    var endX_border = scrollX.toFloat() + w / 2
                     var endY_border = scrollY.toFloat() + h.toFloat()
-                    if (right_top_corner <= 0 && right_bottom_corner <= 0) {
+                    if (right_radius <= 0 && bottom_radius <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
                         linePath?.lineTo(endX, endY)
-                        if (it.isDrawRight) {
+                        if (it.isDrawRight_bottom) {
                             canvas.drawPath(linePath, paint)
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
@@ -457,29 +456,29 @@ open class K3BorderWidget : K3BDiamondWidget {
                     } else {
                         //右上角圆角
                         var path = Path()
-                        var starX0 = startX - dW / 2 * (right_top_corner / 90f)
+                        var starX0 = startX - dW / 2 * (right_radius / 90f)
                         var starY0 = startY
-                        var starX0_border = startX_border - dW / 2 * (right_top_corner / 90f)
+                        var starX0_border = startX_border - dW / 2 * (right_radius / 90f)
                         var starY0_border = startY_border
                         var controllX = startX
                         var controllY = startY
                         var endX0 = startX
-                        var endY0 = startY + dW / 2 * (right_top_corner / 90f)
+                        var endY0 = startY + dW / 2 * (right_radius / 90f)
                         var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (right_top_corner / 90f)
+                        var endY0_border = startY_border + dW / 2 * (right_radius / 90f)
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
-                        if (it.isDrawRight) {
+                        if (it.isDrawRight_bottom) {
                             canvas.drawPath(path, paint)
                         }
                         //fixme
                         borderPath?.lineTo(starX0_border, starY0_border)
                         borderPath?.quadTo(controllX, controllY, endX0_border, endY0_border)
-                        if (right_bottom_corner <= 0) {
+                        if (bottom_radius <= 0) {
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
                             linePath?.lineTo(endX, endY)
-                            if (it.isDrawRight) {
+                            if (it.isDrawRight_bottom) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY, paint)
                             }
@@ -488,12 +487,12 @@ open class K3BorderWidget : K3BDiamondWidget {
                             borderPath?.lineTo(endX_border, endY_border)
                         } else {
                             //右下角圆角
-                            var endY1 = endY - dW / 2 * (right_bottom_corner / 90f)
-                            var endY1_border = endY_border - dW / 2 * (right_bottom_corner / 90f)
+                            var endY1 = endY - dW / 2 * (bottom_radius / 90f)
+                            var endY1_border = endY_border - dW / 2 * (bottom_radius / 90f)
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
                             linePath?.lineTo(endX, endY1)
-                            if (it.isDrawRight) {
+                            if (it.isDrawRight_bottom) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY1, paint)
                             }
@@ -504,12 +503,12 @@ open class K3BorderWidget : K3BDiamondWidget {
                             path2.moveTo(endX, endY1)
                             var controllX = endX
                             var controllY = endY
-                            var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
+                            var endX2 = endX - dW / 2 * (bottom_radius / 90f)
                             var endY2 = endY
-                            var endX2_border = endX_border - dW / 2 * (right_bottom_corner / 90f)
+                            var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
                             var endY2_border = endY_border
                             path2.quadTo(controllX, controllY, endX2, endY2)
-                            if (it.isDrawRight) {
+                            if (it.isDrawRight_bottom) {
                                 canvas.drawPath(path2, paint)
                             }
                             //fixme
@@ -518,22 +517,22 @@ open class K3BorderWidget : K3BDiamondWidget {
                         }
                     }
                 }
-                //绘制底部的边框
-                if (true || it.isDrawBottom) {
+                //绘制左下角边框
+                if (true || it.isDrawLeft_Bottom) {
                     initBorderPaint(resetPaint(paint), it, 4)
-                    var startX = scrollX.toFloat() + paint.strokeWidth / 2
+                    var startX = scrollX.toFloat() + w / 2
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
-                    var endX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
-                    var endY = startY
-                    var startX_border = scrollX.toFloat()
+                    var endX = scrollX.toFloat() + paint.strokeWidth / 2
+                    var endY = scrollY.toFloat() + h / 2
+                    var startX_border = scrollX.toFloat() + w / 2
                     var startY_border = scrollY.toFloat() + h
-                    var endX_border = startX_border + w.toFloat()
-                    var endY_border = startY_border
-                    if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
+                    var endX_border = scrollX.toFloat()
+                    var endY_border = scrollY.toFloat() + h / 2
+                    if (left_radius <= 0 && bottom_radius <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
                         linePath?.lineTo(endX, endY)
-                        if (it.isDrawBottom) {
+                        if (it.isDrawLeft_Bottom) {
                             canvas.drawPath(linePath, paint)
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
@@ -541,16 +540,16 @@ open class K3BorderWidget : K3BDiamondWidget {
                         borderPath?.lineTo(startX_border, startY_border)
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
-                        var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
+                        var starX0 = startX + dW / 2 * (left_radius / 90f)
                         var starY0 = startY
-                        var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
-                        var starX0_border = startX_border + dW / 2 * (left_bottom_corner / 90f)
+                        var endX2 = endX - dW / 2 * (bottom_radius / 90f)
+                        var starX0_border = startX_border + dW / 2 * (left_radius / 90f)
                         var starY0_border = startY_border
-                        var endX2_border = endX_border - dW / 2 * (right_bottom_corner / 90f)
+                        var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
                         linePath?.reset()
                         linePath?.moveTo(starX0, starY0)
                         linePath?.lineTo(endX2, endY)
-                        if (it.isDrawBottom) {
+                        if (it.isDrawLeft_Bottom) {
                             canvas.drawPath(linePath, paint)
                             //canvas.drawLine(starX0, starY0, endX2, endY, paint)
                         }
@@ -576,83 +575,83 @@ open class K3BorderWidget : K3BDiamondWidget {
         }
     }
 
-    fun getBorderEntity(): KBorderEntity {
-        if (border == null) {
-            border = KBorderEntity()
+    private fun getDiamondEntity(): KDiamondEntity {
+        if (diamond == null) {
+            diamond = KDiamondEntity()
         }
-        return border!!
+        return diamond!!
     }
 
-    var currentBorder: KBorderEntity? = null//当前边框
+    private var currentDiamond: KDiamondEntity? = null//当前边框
 
-    var border: KBorderEntity? = null//正常
-    fun border(block: KBorderEntity.() -> Unit): K3BorderWidget {
+    var diamond: KDiamondEntity? = null//正常
+    fun diamond(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
         clearButonShadow()//自定义圆角，就去除按钮默认的圆角阴影。不然效果不好。
-        block(getBorderEntity())
+        block(getDiamondEntity())
         invalidate()
         return this
     }
 
-    var border_enable: KBorderEntity? = null//不可用
-    fun border_enable(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_enable == null) {
-            border_enable = getBorderEntity().copy()
+    var diamond_enable: KDiamondEntity? = null//不可用
+    fun diamond_enable(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+        if (diamond_enable == null) {
+            diamond_enable = getDiamondEntity().copy()
         }
-        block(border_enable!!)
+        block(diamond_enable!!)
         invalidate()
         return this
     }
 
-    var border_press: KBorderEntity? = null//按下
-    fun border_press(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_press == null) {
-            border_press = getBorderEntity().copy()
+    var diamond_press: KDiamondEntity? = null//按下
+    fun diamond_press(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+        if (diamond_press == null) {
+            diamond_press = getDiamondEntity().copy()
         }
-        block(border_press!!)
+        block(diamond_press!!)
         invalidate()
         return this
     }
 
-    var border_focuse: KBorderEntity? = null//聚焦
-    fun border_focuse(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_focuse == null) {
-            border_focuse = getBorderEntity().copy()
+    var diamond_focuse: KDiamondEntity? = null//聚焦
+    fun diamond_focuse(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+        if (diamond_focuse == null) {
+            diamond_focuse = getDiamondEntity().copy()
         }
-        block(border_focuse!!)
+        block(diamond_focuse!!)
         invalidate()
         return this
     }
 
-    var border_hove: KBorderEntity? = null//悬浮
-    fun border_hove(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_hove == null) {
-            border_hove = getBorderEntity().copy()
+    var diamond_hove: KDiamondEntity? = null//悬浮
+    fun diamond_hove(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+        if (diamond_hove == null) {
+            diamond_hove = getDiamondEntity().copy()
         }
-        block(border_hove!!)
+        block(diamond_hove!!)
         invalidate()
         return this
     }
 
-    var border_selected: KBorderEntity? = null//选中
-    fun border_selected(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_selected == null) {
-            border_selected = getBorderEntity().copy()
+    var diamond_selected: KDiamondEntity? = null//选中
+    fun diamond_selected(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+        if (diamond_selected == null) {
+            diamond_selected = getDiamondEntity().copy()
         }
-        block(border_selected!!)
+        block(diamond_selected!!)
         invalidate()
         return this
     }
 
     private fun normal() {
-        currentBorder = border
+        currentDiamond = diamond
     }
 
     //状态：聚焦
     override fun changedFocused() {
         super.changedFocused()
         normal()
-        border_focuse?.let {
-            currentBorder = it
+        diamond_focuse?.let {
+            currentDiamond = it
         }
     }
 
@@ -660,8 +659,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     override fun changedHovered() {
         super.changedHovered()
         normal()
-        border_hove?.let {
-            currentBorder = it
+        diamond_hove?.let {
+            currentDiamond = it
         }
     }
 
@@ -669,8 +668,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     override fun changedSelected() {
         super.changedSelected()
         normal()
-        border_selected?.let {
-            currentBorder = it
+        diamond_selected?.let {
+            currentDiamond = it
         }
     }
 
@@ -678,8 +677,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     override fun changedEnabled() {
         super.changedEnabled()
         normal()
-        border_enable?.let {
-            currentBorder = it
+        diamond_enable?.let {
+            currentDiamond = it
         }
     }
 
@@ -687,8 +686,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     override fun changedPressed() {
         super.changedPressed()
         normal()
-        border_press?.let {
-            currentBorder = it
+        diamond_press?.let {
+            currentDiamond = it
         }
     }
 
@@ -700,12 +699,12 @@ open class K3BorderWidget : K3BDiamondWidget {
 
     override fun onDestroy() {
         super.onDestroy()
-        border = null
-        border_press = null
-        border_hove = null
-        border_focuse = null
-        border_selected = null
-        border_enable = null
+        diamond = null
+        diamond_press = null
+        diamond_hove = null
+        diamond_focuse = null
+        diamond_selected = null
+        diamond_enable = null
         borderPath?.reset()
         borderPath = null
         linePath?.reset()
