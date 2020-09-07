@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.entity.widget.compat.KDiamondEntity
 
+//fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成正方形了。
+
 //            调用案例
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
@@ -180,10 +182,8 @@ open class K3BDiamondWidget : K3AStateView {
 
     private var borderPath: Path? = null
     private var linePath: Path? = null
-
-    //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
-    override fun draw2Last(canvas: Canvas, paint: Paint) {
-        super.draw2Last(canvas, paint)
+    override fun draw2Front(canvas: Canvas, paint: Paint) {
+        super.draw2Front(canvas, paint)
         currentDiamond?.let {
             if (true || it.strokeWidth > 0) {
                 //画背景
@@ -257,7 +257,15 @@ open class K3BDiamondWidget : K3AStateView {
                     var rectF = RectF(left, top, right, bottom)
                     canvas.drawRect(rectF, paint)
                 }
+            }
+        }
+    }
 
+    //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
+    override fun draw2Last(canvas: Canvas, paint: Paint) {
+        super.draw2Last(canvas, paint)
+        currentDiamond?.let {
+            if (true || it.strokeWidth > 0) {
                 var dW = w
                 if (dW > h) {
                     dW = h//以短边为基准
@@ -313,81 +321,63 @@ open class K3BDiamondWidget : K3AStateView {
                     var startX = scrollX + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + h / 2
                     var endX = startX + w / 2
-                    var endY = scrollY.toFloat() + paint.strokeWidth / 2
+                    var endY = scrollY.toFloat() //+ paint.strokeWidth / 2
                     var startX_border = scrollX.toFloat()
                     var startY_border = scrollY.toFloat() + h / 2
                     var endX_border = startX_border + w / 2
                     var endY_border = scrollY.toFloat()
                     if (top_radius <= 0 && left_radius <= 0) {
                         linePath?.reset()
-                        linePath?.moveTo(endX, endY)
-                        linePath?.lineTo(startX, startY)
+                        linePath?.moveTo(startX, startY)
+                        linePath?.lineTo(endX, endY)
                         if (it.isDrawLeft_top) {
                             canvas.drawPath(linePath, paint)//fixme pathEffect虚线只对Path有效果；对drawLine（）没有效果。
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
                         //fixme
-                        borderPath?.moveTo(endX_border, endY_border)
-                        borderPath?.lineTo(startX_border, startY_border)
+                        borderPath?.moveTo(startX_border, startY_border)
+                        borderPath?.lineTo(endX_border, endY_border)
                     } else {
-                        //顶部圆角
-                        var path = Path()
-                        var starX0 = startX + dW / 2 * (top_radius / 90f)
-                        var starY0 = startY
-                        var starX0_border = startX_border + dW / 2 * (top_radius / 90f)
-                        var starY0_border = startY_border
-                        var controllX = startX
-                        var controllY = startY
-                        var endX0 = startX
-                        var endY0 = startY + dW / 2 * (top_radius / 90f)
-                        var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (top_radius / 90f)
-                        path.moveTo(starX0, starY0)
-                        path.quadTo(controllX, controllY, endX0, endY0)
-                        if (it.isDrawLeft_top) {
-                            canvas.drawPath(path, paint)
+                        //fixme 顶部圆角
+                        var startX2 = startX
+                        var startY2 = startY
+                        var startX2_border = startX_border
+                        var startY2_border = startY_border
+//                        if (left_radius > 0) {
+//                            var subW = dW / 2 * (left_radius / 90f)
+//                            startX2 = startX + subW
+//                            startY2 = startY - subW
+//                        }
+                        var endX2 = endX
+                        var endY2 = endY
+                        var endX2_border = endX_border
+                        var endY2_border = endY_border
+                        if (top_radius > 0) {
+                            var subW = dW / 2 * (top_radius / 90f)
+                            endX2 = endX - subW
+                            endY2 = endY + subW
+                            endX2_border = endX_border - subW
+                            endY2_border = endY_border + subW
                         }
-                        if (left_radius <= 0) {
-                            linePath?.reset()
-                            linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY)
-                            if (it.isDrawLeft_top) {
-                                canvas.drawPath(linePath, paint)
-                                //canvas.drawLine(endX0, endY0, endX, endY, paint)
-                            }
-                            //fixme
-                            borderPath?.moveTo(endX_border, endY_border)
-                            borderPath?.lineTo(endX0_border, endY0_border)
-                        } else {
-                            //左边圆角
-                            var endY1 = endY - dW / 2 * (left_radius / 90f)
-                            var endY1_border = endY_border - dW / 2 * (left_radius / 90f)
-                            linePath?.reset()
-                            linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY1)
-                            if (it.isDrawLeft_top) {
-                                canvas.drawPath(linePath, paint)
-                                //canvas.drawLine(endX0, endY0, endX, endY1, paint)
-                            }
-                            var path2 = Path()
-                            path2.moveTo(endX, endY1)
-                            var controllX = endX
-                            var controllY = endY
-                            var endX2 = startX + dW / 2 * (left_radius / 90f)
-                            var endY2 = endY
-                            var endX2_border = startX_border + dW / 2 * (left_radius / 90f)
-                            var endY2_border = endY_border
-                            path2.quadTo(controllX, controllY, endX2, endY2)
-                            if (it.isDrawLeft_top) {
-                                canvas.drawPath(path2, paint)
-                            }
-                            //fixme
-                            borderPath?.moveTo(endX2_border, endY2_border)
-                            borderPath?.quadTo(controllX, controllY, endX_border, endY1_border)
-                        }
+                        linePath?.reset()
+                        linePath?.moveTo(startX2, startY2)
+                        linePath?.lineTo(endX2, endY2)
                         //fixme
-                        borderPath?.lineTo(endX0_border, endY0_border)
-                        borderPath?.quadTo(controllX, controllY, starX0_border, starY0_border)
+                        borderPath?.moveTo(startX2_border, startY2_border)
+                        borderPath?.lineTo(endX2_border, endY2_border)
+//                        if (top_radius > 0) {
+//                            var controllX = startX2
+//                            var controllY = startY2
+//                            var subW = dW / 2 * (top_radius / 90f)
+//                            var endX3 = endX + subW
+//                            var endY3 = endY + subW
+//                            linePath?.quadTo(controllX, controllY, endX3, endY3)
+//                            //fixme
+//                            borderPath?.quadTo(controllX, controllY, endX3, endY3)
+//                        }
+                        if (it.isDrawLeft_top) {
+                            canvas.drawPath(linePath, paint)
+                        }
                     }
                 }
                 //绘制右上边的边框
@@ -401,7 +391,7 @@ open class K3BDiamondWidget : K3AStateView {
                     var startY_border = scrollY.toFloat()
                     var endX_border = scrollX.toFloat() + w.toFloat()
                     var endY_border = scrollY.toFloat() + h / 2
-                    if (top_radius <= 0 && right_radius <= 0) {
+                    if (true||top_radius <= 0 && right_radius <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
                         linePath?.lineTo(endX, endY)
@@ -413,22 +403,40 @@ open class K3BDiamondWidget : K3AStateView {
                         borderPath?.lineTo(startX_border, startY_border)
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
-                        var starX0 = startX + dW / 2 * (top_radius / 90f)
-                        var starY0 = startY
-                        var endX0 = endX - dW / 2 * (right_radius / 90f)
-                        var starX0_border = startX_border + dW / 2 * (top_radius / 90f)
-                        var starY0_border = startY_border
-                        var endX0_border = endX_border - dW / 2 * (right_radius / 90f)
-                        linePath?.reset()
-                        linePath?.moveTo(starX0, starY0)
-                        linePath?.lineTo(endX0, endY)
-                        if (it.isDrawRight_top) {
-                            canvas.drawPath(linePath, paint)
-                            //canvas.drawLine(starX0, starY0, endX0, endY, paint)
+                        //fixme 右边圆角
+                        var startX2 = startX
+                        var startY2 = startY
+                        if (top_radius > 0) {
+                            var subW = dW / 2 * (top_radius / 90f)
+                            startX2 = startX + subW
+                            startY2 = startY + subW
                         }
+                        var endX2 = endX
+                        var endY2 = endY
+                        if (right_radius > 0) {
+                            var subW = dW / 2 * (right_radius / 90f)
+                            endX2 = endX - subW
+                            endY2 = endY - subW
+                        }
+                        linePath?.reset()
+                        linePath?.moveTo(startX2, startY2)
+                        linePath?.lineTo(endX2, endY2)
                         //fixme
-                        borderPath?.lineTo(starX0_border, starY0_border)
-                        borderPath?.lineTo(endX0_border, endY_border)
+                        borderPath?.moveTo(startX2, startY2)
+                        borderPath?.lineTo(endX2, endY2)
+                        if (right_radius > 0) {
+                            var controllX = startX2
+                            var controllY = startY2
+                            var subW = dW / 2 * (top_radius / 90f)
+                            var endX3 = endX - subW
+                            var endY3 = endY + subW
+                            linePath?.quadTo(controllX, controllY, endX3, endY3)
+                            //fixme
+                            borderPath?.quadTo(controllX, controllY, endX3, endY3)
+                        }
+                        if (it.isDrawLeft_top) {
+                            canvas.drawPath(linePath, paint)
+                        }
                     }
                 }
                 //绘制右下角边框
@@ -455,66 +463,66 @@ open class K3BDiamondWidget : K3AStateView {
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
                         //右上角圆角
-                        var path = Path()
-                        var starX0 = startX - dW / 2 * (right_radius / 90f)
-                        var starY0 = startY
-                        var starX0_border = startX_border - dW / 2 * (right_radius / 90f)
-                        var starY0_border = startY_border
-                        var controllX = startX
-                        var controllY = startY
-                        var endX0 = startX
-                        var endY0 = startY + dW / 2 * (right_radius / 90f)
-                        var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (right_radius / 90f)
-                        path.moveTo(starX0, starY0)
-                        path.quadTo(controllX, controllY, endX0, endY0)
-                        if (it.isDrawRight_bottom) {
-                            canvas.drawPath(path, paint)
-                        }
-                        //fixme
-                        borderPath?.lineTo(starX0_border, starY0_border)
-                        borderPath?.quadTo(controllX, controllY, endX0_border, endY0_border)
-                        if (bottom_radius <= 0) {
-                            linePath?.reset()
-                            linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY)
-                            if (it.isDrawRight_bottom) {
-                                canvas.drawPath(linePath, paint)
-                                //canvas.drawLine(endX0, endY0, endX, endY, paint)
-                            }
-                            //fixme
-                            borderPath?.lineTo(endX0_border, endY0_border)
-                            borderPath?.lineTo(endX_border, endY_border)
-                        } else {
-                            //右下角圆角
-                            var endY1 = endY - dW / 2 * (bottom_radius / 90f)
-                            var endY1_border = endY_border - dW / 2 * (bottom_radius / 90f)
-                            linePath?.reset()
-                            linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY1)
-                            if (it.isDrawRight_bottom) {
-                                canvas.drawPath(linePath, paint)
-                                //canvas.drawLine(endX0, endY0, endX, endY1, paint)
-                            }
-                            //fixme
-                            borderPath?.lineTo(endX0_border, endY0_border)
-                            borderPath?.lineTo(endX_border, endY1_border)
-                            var path2 = Path()
-                            path2.moveTo(endX, endY1)
-                            var controllX = endX
-                            var controllY = endY
-                            var endX2 = endX - dW / 2 * (bottom_radius / 90f)
-                            var endY2 = endY
-                            var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
-                            var endY2_border = endY_border
-                            path2.quadTo(controllX, controllY, endX2, endY2)
-                            if (it.isDrawRight_bottom) {
-                                canvas.drawPath(path2, paint)
-                            }
-                            //fixme
-                            borderPath?.lineTo(endX_border, endY1_border)
-                            borderPath?.quadTo(controllX, controllY, endX2_border, endY2_border)
-                        }
+//                        var path = Path()
+//                        var starX0 = startX - dW / 2 * (right_radius / 90f)
+//                        var starY0 = startY
+//                        var starX0_border = startX_border - dW / 2 * (right_radius / 90f)
+//                        var starY0_border = startY_border
+//                        var controllX = startX
+//                        var controllY = startY
+//                        var endX0 = startX
+//                        var endY0 = startY + dW / 2 * (right_radius / 90f)
+//                        var endX0_border = startX_border
+//                        var endY0_border = startY_border + dW / 2 * (right_radius / 90f)
+//                        path.moveTo(starX0, starY0)
+//                        path.quadTo(controllX, controllY, endX0, endY0)
+//                        if (it.isDrawRight_bottom) {
+//                            canvas.drawPath(path, paint)
+//                        }
+//                        //fixme
+//                        borderPath?.lineTo(starX0_border, starY0_border)
+//                        borderPath?.quadTo(controllX, controllY, endX0_border, endY0_border)
+//                        if (bottom_radius <= 0) {
+//                            linePath?.reset()
+//                            linePath?.moveTo(endX0, endY0)
+//                            linePath?.lineTo(endX, endY)
+//                            if (it.isDrawRight_bottom) {
+//                                canvas.drawPath(linePath, paint)
+//                                //canvas.drawLine(endX0, endY0, endX, endY, paint)
+//                            }
+//                            //fixme
+//                            borderPath?.lineTo(endX0_border, endY0_border)
+//                            borderPath?.lineTo(endX_border, endY_border)
+//                        } else {
+//                            //右下角圆角
+//                            var endY1 = endY - dW / 2 * (bottom_radius / 90f)
+//                            var endY1_border = endY_border - dW / 2 * (bottom_radius / 90f)
+//                            linePath?.reset()
+//                            linePath?.moveTo(endX0, endY0)
+//                            linePath?.lineTo(endX, endY1)
+//                            if (it.isDrawRight_bottom) {
+//                                canvas.drawPath(linePath, paint)
+//                                //canvas.drawLine(endX0, endY0, endX, endY1, paint)
+//                            }
+//                            //fixme
+//                            borderPath?.lineTo(endX0_border, endY0_border)
+//                            borderPath?.lineTo(endX_border, endY1_border)
+//                            var path2 = Path()
+//                            path2.moveTo(endX, endY1)
+//                            var controllX = endX
+//                            var controllY = endY
+//                            var endX2 = endX - dW / 2 * (bottom_radius / 90f)
+//                            var endY2 = endY
+//                            var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
+//                            var endY2_border = endY_border
+//                            path2.quadTo(controllX, controllY, endX2, endY2)
+//                            if (it.isDrawRight_bottom) {
+//                                canvas.drawPath(path2, paint)
+//                            }
+//                            //fixme
+//                            borderPath?.lineTo(endX_border, endY1_border)
+//                            borderPath?.quadTo(controllX, controllY, endX2_border, endY2_border)
+//                        }
                     }
                 }
                 //绘制左下角边框
@@ -540,28 +548,27 @@ open class K3BDiamondWidget : K3AStateView {
                         borderPath?.lineTo(startX_border, startY_border)
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
-                        var starX0 = startX + dW / 2 * (left_radius / 90f)
-                        var starY0 = startY
-                        var endX2 = endX - dW / 2 * (bottom_radius / 90f)
-                        var starX0_border = startX_border + dW / 2 * (left_radius / 90f)
-                        var starY0_border = startY_border
-                        var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
-                        linePath?.reset()
-                        linePath?.moveTo(starX0, starY0)
-                        linePath?.lineTo(endX2, endY)
-                        if (it.isDrawLeft_Bottom) {
-                            canvas.drawPath(linePath, paint)
-                            //canvas.drawLine(starX0, starY0, endX2, endY, paint)
-                        }
-                        //fixme
-                        borderPath?.lineTo(starX0_border, starY0_border)
-                        borderPath?.lineTo(endX2_border, endY_border)
+//                        var starX0 = startX + dW / 2 * (left_radius / 90f)
+//                        var starY0 = startY
+//                        var endX2 = endX - dW / 2 * (bottom_radius / 90f)
+//                        var starX0_border = startX_border + dW / 2 * (left_radius / 90f)
+//                        var starY0_border = startY_border
+//                        var endX2_border = endX_border - dW / 2 * (bottom_radius / 90f)
+//                        linePath?.reset()
+//                        linePath?.moveTo(starX0, starY0)
+//                        linePath?.lineTo(endX2, endY)
+//                        if (it.isDrawLeft_Bottom) {
+//                            canvas.drawPath(linePath, paint)
+//                            //canvas.drawLine(starX0, starY0, endX2, endY, paint)
+//                        }
+//                        //fixme
+//                        borderPath?.lineTo(starX0_border, starY0_border)
+//                        borderPath?.lineTo(endX2_border, endY_border)
                     }
                 }
                 //fixme 只显示边框以内的区域；边框以外的不显示。
                 paint.strokeWidth = 0F
                 paint.style = Paint.Style.FILL//fixme 解决边框切割问题。
-                //paint.style = Paint.Style.FILL_AND_STROKE
                 paint.setPathEffect(null)
                 paint.setShader(null)
                 paint.color = Color.WHITE

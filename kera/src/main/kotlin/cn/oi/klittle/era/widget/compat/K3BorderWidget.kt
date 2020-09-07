@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 
+//fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成菱形了。
+
 //            调用案例
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
@@ -182,9 +184,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     private var borderPath: Path? = null
     private var linePath: Path? = null
 
-    //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
-    override fun draw2Last(canvas: Canvas, paint: Paint) {
-        super.draw2Last(canvas, paint)
+    override fun draw2Front(canvas: Canvas, paint: Paint) {
+        super.draw2Front(canvas, paint)
         currentBorder?.let {
             if (true || it.strokeWidth > 0) {
                 //画背景
@@ -258,7 +259,15 @@ open class K3BorderWidget : K3BDiamondWidget {
                     var rectF = RectF(left, top, right, bottom)
                     canvas.drawRect(rectF, paint)
                 }
+            }
+        }
+    }
 
+    //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
+    override fun draw2Last(canvas: Canvas, paint: Paint) {
+        super.draw2Last(canvas, paint)
+        currentBorder?.let {
+            if (true || it.strokeWidth > 0) {
                 var dW = w
                 if (dW > h) {
                     dW = h//以短边为基准
