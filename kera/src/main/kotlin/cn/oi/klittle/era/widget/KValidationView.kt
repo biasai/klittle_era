@@ -49,19 +49,19 @@ import cn.oi.klittle.era.widget.compat.KTextView
 /**
  * fixme 验证码
  */
-class KValidationView : KTextView {
+open class KValidationView : KTextView {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
-        init()
+        minit()
     }
 
     constructor(context: Context) : super(context) {
-        init()
+        minit()
     }
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {
-        init()
+        minit()
     }
 
     //手机文本框
@@ -82,7 +82,7 @@ class KValidationView : KTextView {
     }
 
     //初始化
-    private fun init() {
+    open fun minit() {
         onClick {
             editText?.let {
                 var phone = it.text.toString().trim()
@@ -100,7 +100,7 @@ class KValidationView : KTextView {
     }
 
     //fixme 验证码接口调用成功后，手动调用。开始计时
-    fun success() {
+    open fun success() {
         isEnabled = false//一旦禁止，点击事件也会无效。
         KTimerUtils.refreshUI(context as Activity, 60, 1000) {
             if (it >= 60L) {

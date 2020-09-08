@@ -4,8 +4,8 @@ import android.graphics.Color
 import cn.oi.klittle.era.comm.kpx
 
 /**
- * fixme 菱形
- * @param strokeWidth 边框宽度(所有)
+ * fixme 菱形；各个边框的大小必须一致的，不能独自设置；各个边框的颜色可以独自设置。
+ * @param strokeWidth 边框宽度(所有);fixme 菱形的所有边框都必须一致；要想独自设置各个边框的大小，就到border{}属性里去设置。
  * @param strokeColor 边框颜色(所有)
  * @param dashWidth 虚线长度(所有)
  * @param dashGap 虚线之间的间隙(所有)
@@ -24,7 +24,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param leftBottomDashGap 左下角边框 虚线之间的间隙
  *
  * @param all_radius 所有圆角的角度(0~90度)
- * @param top_radius 顶部圆角角度,fixme 优先级比all_radius高。
+ * @param top_radius 顶部圆角角度,fixme 优先级比all_radius高。各个圆角都可以独自设置
  * @param right_radius 右边圆角角度
  * @param bottom_radius 低部圆角
  * @param left_radius 左边圆角
@@ -39,16 +39,16 @@ data class KDiamondEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: I
                           var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
                           var isDrawLeft_top: Boolean = true, var isDrawRight_top: Boolean = true,
                           var isDrawRight_bottom: Boolean = true, var isDrawLeft_Bottom: Boolean = true,
-                          var leftTopStrokeWidth: Float? = null, var leftTopStrokeColor: Int? = null,
+                          var leftTopStrokeColor: Int? = null,
                           var leftTopDashWidth: Float? = null, var leftTopDashGap: Float? = null,
                           var leftTopStrokeHorizontalColors: IntArray? = null, var leftTopStrokeVerticalColors: IntArray? = null,
-                          var rightTopStrokeWidth: Float? = null, var rightTopStrokeColor: Int? = null,
+                          var rightTopStrokeColor: Int? = null,
                           var rightTopDashWidth: Float? = null, var rightTopDashGap: Float? = null,
                           var rightTopStrokeHorizontalColors: IntArray? = null, var rightTopStrokeVerticalColors: IntArray? = null,
-                          var rightBottomStrokeWidth: Float? = null, var rightBottomStrokeColor: Int? = null,
+                          var rightBottomStrokeColor: Int? = null,
                           var rightBottomDashWidth: Float? = null, var rightBottomDashGap: Float? = null,
                           var rightBottomStrokeHorizontalColors: IntArray? = null, var rightBottomStrokeVerticalColors: IntArray? = null,
-                          var leftBottomStrokeWidth: Float? = null, var leftBottomStrokeColor: Int? = null,
+                          var leftBottomStrokeColor: Int? = null,
                           var leftBottomDashWidth: Float? = null, var leftBottomDashGap: Float? = null,
                           var leftBottomStrokeHorizontalColors: IntArray? = null, var leftBottomStrokeVerticalColors: IntArray? = null,
                           var all_radius: Float = -1F,

@@ -899,6 +899,19 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
         }
 
+        //FIXME 双箭头控件
+        inline fun ViewManager.KDoubleArrowView(init: (@AnkoViewDslMarker KDoubleArrowView).() -> Unit): KDoubleArrowView {
+            return ankoView({ ctx: Context -> KDoubleArrowView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kdoubleArrowView(init: (@AnkoViewDslMarker KDoubleArrowView).() -> Unit): KDoubleArrowView {
+            return ankoView({ ctx: Context -> KDoubleArrowView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kDoubleArrowView(init: (@AnkoViewDslMarker KDoubleArrowView).() -> Unit): KDoubleArrowView {
+            return ankoView({ ctx: Context -> KDoubleArrowView(ctx) }, theme = 0) { init() }
+        }
+
         //fixme JBox2d物理引擎
         inline fun ViewManager.KJBox2dView(init: (@AnkoViewDslMarker KJBox2dView).() -> Unit): KJBox2dView {
             return ankoView({ ctx: Context -> KJBox2dView(ctx) }, theme = 0) { init() }
