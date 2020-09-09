@@ -151,9 +151,9 @@ open class K3AStateView : K2GestureWidget {
         }
     }
 
-    override fun draw2First(canvas: Canvas, paint: Paint) {
+    override fun draw2Bg(canvas: Canvas, paint: Paint) {
         drawState(this)
-        super.draw2First(canvas, paint)
+        super.draw2Bg(canvas, paint)
     }
 
     var changedPressed: (() -> Unit)? = null

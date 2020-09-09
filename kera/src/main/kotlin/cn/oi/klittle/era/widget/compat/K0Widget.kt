@@ -17,6 +17,7 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.utils.KAssetsUtils
 //import android.support.v7.widget.AppCompatTextView
 import androidx.appcompat.widget.AppCompatTextView
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 /**
  * 0：初始和静态方法。fixme 改成继承TextView；不要继承Button(问题老多了。)
@@ -50,6 +51,7 @@ open class K0Widget : AppCompatTextView {
     private var isGone = false//判断是否执行过
     private var isAlways = false//fixme 是否每次加载完毕都回调；true每次都回调，false只回调一次。
     var onGlobalLayoutListener: ViewTreeObserver.OnGlobalLayoutListener? = null
+
     //fixme invalidate()重新和重新布局时，都会回调。
     fun onGlobalLayoutListener(isAlways: Boolean = false, gone: (() -> Unit)? = null) {
         mGone(isAlways, gone)
@@ -135,6 +137,10 @@ open class K0Widget : AppCompatTextView {
          */
         fun getNotLinearGradient(start: Float, end: Float, srcColors: IntArray, isVertical: Boolean, scrollY: Int = 0): LinearGradient? {
             var length = (end - start).toInt()
+            if (length <= 0) {
+                KLoggerUtils.e("渐变颜色数组:getNotLinearGradient(K0Widget.kt:140):\t" + length, true)
+                return null
+            }
             var colors = IntArray(length)
             var size = srcColors.size
             var max = length / size

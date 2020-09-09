@@ -732,6 +732,7 @@ open class K4AutoBgView : K3DragMotionEventWidget {
                     }
                     var bitmap = autoBg!!
                     if (!bitmap.isRecycled) {
+                        isDrawBall = false//fixme 有位图，就不画转动的小圆点了。
                         if (isFill) {
                             if (rotation != 0f) {
                                 var l = centerX

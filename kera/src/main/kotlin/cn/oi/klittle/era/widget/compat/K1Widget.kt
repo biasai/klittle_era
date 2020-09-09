@@ -593,16 +593,16 @@ open class K1Widget : K0Widget {
     }
 
     private var b = false
-    var mTouchX:Float=0F//fixme 记录当前触摸点坐标
-    var mTouchY:Float=0F
+    var mTouchX: Float = 0F//fixme 记录当前触摸点坐标
+    var mTouchY: Float = 0F
     override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
         if (!isEnableTouch) {
             //禁止触摸和点击，禁止一切事件了。
             return true
         }
         event?.let {
-            mTouchX=it.x
-            mTouchY=it.y
+            mTouchX = it.x
+            mTouchY = it.y
             when (it.action and MotionEvent.ACTION_MASK) {
                 MotionEvent.ACTION_DOWN -> {
                     dispatchDown(it)
@@ -666,10 +666,17 @@ open class K1Widget : K0Widget {
     }
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
+    open var drawBg: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+
+    //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
     open var drawFirst: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
     //fixme 自定义画布()，先画，会显示在后面,交给调用者去实现
     open var drawLast: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+
+    open fun drawBg(drawBg: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
+        this.drawBg = drawBg
+    }
 
     open fun drawFirst(drawFirst: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
         this.drawFirst = drawFirst
@@ -706,6 +713,9 @@ open class K1Widget : K0Widget {
     //fixme 什么都不做，交给子类去实现绘图
     //fixme 之所以会有这个方法。是为了保证自定义的 draw和onDraw的执行顺序。始终是在最后。
     protected open fun draw2(canvas: Canvas, paint: Paint) {}
+
+    //fixme 自定义画布()，先画，会显示在后面,交给子类去实现;这个用来绘制背景的。最先绘制，比draw2First（）还有先绘制。
+    protected open fun draw2Bg(canvas: Canvas, paint: Paint) {}
 
     //水平进度(范围 0F~ 100F),从左往右
     var horizontalProgress = 0f
@@ -830,13 +840,17 @@ open class K1Widget : K0Widget {
                 canvas?.drawFilter = PaintFlagsDrawFilter(0, Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG)//fixme 画布抗锯齿效果，亲测有效，比画笔paint设置抗锯齿效果还要好。杠杠的。
                 mCanvas = canvas
                 //调用者实现
+                draw2Bg(this, resetPaint())//绘制背景，在最底层。
+                drawBg?.let {
+                    it(this, resetPaint())
+                }
+                mCanvas = canvas//fixme 为了保证mCanvas是最新的，所以每次都赋值。
+                //子类实现，最先画。显示在最下面
+                draw2First(this, resetPaint())
                 drawFirst?.let {
                     it(this, resetPaint())
                 }
                 mCanvas = canvas
-                //子类实现，最先画。显示在最下面
-                draw2First(this, resetPaint())
-                mCanvas = canvas//fixme 为了保证mCanvas是最新的，所以每次都赋值。
                 //子类实现
                 draw2Front(this, resetPaint())
                 mCanvas = canvas

@@ -51,6 +51,9 @@ import org.jetbrains.anko.*
 //fixme isBold()加粗
 //fixme isItalic()斜体
 //fixme isInt=true 是否为整型
+
+//fixme topPadding=kpx.x(100)//fixme 内补丁，对文本 gravity = Gravity.CENTER 居中也有效果。亲测。文本区域整体会下移。
+//fixme bottomPadding=topPadding 对居中就没有影响了，因为文本区域上下都整体移动了。内补丁会影响整个文本区域。
 open class KTextView : KAutoSplitTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

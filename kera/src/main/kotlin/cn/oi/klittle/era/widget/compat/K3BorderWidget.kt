@@ -184,8 +184,8 @@ open class K3BorderWidget : K3BDiamondWidget {
     private var borderPath: Path? = null
     private var linePath: Path? = null
 
-    override fun draw2Front(canvas: Canvas, paint: Paint) {
-        super.draw2Front(canvas, paint)
+    override fun draw2Bg(canvas: Canvas, paint: Paint) {
+        super.draw2Bg(canvas, paint)
         currentBorder?.let {
             if (true || it.strokeWidth > 0) {
                 //画背景

@@ -130,6 +130,7 @@ open class K7RadiusWidget : K6TriangleWidget {
     }
 
     var currentRadius: KRadiusEntity? = null
+
     //fixme 画背景
     fun drawBg(canvas: Canvas, paint: Paint, view: View) {
         view?.apply {
@@ -266,8 +267,8 @@ open class K7RadiusWidget : K6TriangleWidget {
         }
     }
 
-    override fun draw2First(canvas: Canvas, paint: Paint) {
-        super.draw2First(canvas, paint)
+    override fun draw2Bg(canvas: Canvas, paint: Paint) {
+        super.draw2Bg(canvas, paint)
         //画背景
         drawBg(canvas, paint, this)
     }
@@ -287,6 +288,7 @@ open class K7RadiusWidget : K6TriangleWidget {
 
     private var kradius: KRadiusUtils? = KRadiusUtils()
     private var radius_phase: Float = 0F
+
     //画边框，圆角
     fun drawRadius(canvas: Canvas, model: KRadiusEntity, view: View) {
         view?.apply {
@@ -298,11 +300,11 @@ open class K7RadiusWidget : K6TriangleWidget {
                     w = view.width
                     h = view.height
                     view?.layoutParams?.let {
-                        if (w<it.width){
-                            w=it.width
+                        if (w < it.width) {
+                            w = it.width
                         }
-                        if (h<it.height){
-                            h=it.height
+                        if (h < it.height) {
+                            h = it.height
                         }
                     }
                     if (it.width > 0) {
@@ -313,7 +315,7 @@ open class K7RadiusWidget : K6TriangleWidget {
                         h = it.height
                         y = (centerY - h / 2)//居中对齐
                     }
-                    isDST_IN=true//fixme 取下面的交集
+                    isDST_IN = true//fixme 取下面的交集
                     all_radius = 0f
                     left_top = it.left_top
                     left_bottom = it.left_bottom
@@ -442,7 +444,7 @@ open class K7RadiusWidget : K6TriangleWidget {
         kradius = null
         currentRadius = null
         xfermodePaint = null
-        radius_enable=null
+        radius_enable = null
     }
 
 }

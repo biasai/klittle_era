@@ -10,10 +10,23 @@ import cn.oi.klittle.era.comm.kpx
  * @param dashGap 虚线之间的间隙(所有)
  * @param strokeHorizontalColors 边框水平渐变颜色数组值【均匀渐变】，(所有)
  * @param strokeVerticalColors 边框垂直渐变颜色数组值【均匀】,会覆盖水平渐变。优先级比水平高(所有)
+ * @param isGradient 颜色色是否渐变,默认是
+ * @param isROUND 线条是否为圆角线帽
+ * @param isHorizontal 是否为水平线；true水平线，false垂直线。
+ * @param arrowLength 箭头的长度。
+ * @param isDrawMain fixme 是否绘制中间的主干线（连接两个箭头之间的线条）
+ * @param isDrawLeftArrow 是否绘制左边（水平）的箭头，垂直就是上面。
+ * @param isDrawRightArrow 是否绘制右边（水平）箭头，垂直就是下边。
+ * @param isArrowDash fixme 箭头是否也为虚线。
  */
 data class KDoubleArrowEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
                               var dashWidth: Float = 0F, var dashGap: Float = 0F,
-                              var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null) {
+                              var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
+                              var isGradient: Boolean = true, var isROUND: Boolean = true, var isHorizontal: Boolean = true,
+                              var arrowLength: Float = kpx.x(20f),
+                              var isDrawMain: Boolean = true,
+                              var isDrawLeftArrow: Boolean = true, var isDrawRightArrow: Boolean = true,
+                              var isArrowDash: Boolean = true) {
     //fixme 所有
     open fun strokeHorizontalColors(vararg color: Int) {
         strokeVerticalColors = null
