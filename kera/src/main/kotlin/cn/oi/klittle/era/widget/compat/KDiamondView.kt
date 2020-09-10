@@ -6,12 +6,11 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.entity.widget.compat.KDiamondEntity
-import cn.oi.klittle.era.utils.KLoggerUtils
 
 //fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成正方形了。
 
 //            调用案例
-//            KView(this).apply {
+//            kDiamondView {
 //                backgroundColor(Color.GREEN)
 //                    diamond {
 //                        strokeWidth = kpx.x(3f) //所有边框的宽度,边框大小都是一样的。各个边框不能单独设置。要但是设置边框。请使用border{}
@@ -49,7 +48,7 @@ import cn.oi.klittle.era.utils.KLoggerUtils
 /**
  * fixme 菱形
  */
-open class K3BDiamondWidget : K3AStateView {
+open class KDiamondView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -352,7 +351,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var startY2_border = startY_border
                         if (left_radius > 0) {
                             var subW = dW / 4 * (left_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             startX2 = startX + subW
                             startY2 = startY - subH
                             startX2_border = startX2
@@ -364,7 +363,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var endY2_border = endY_border
                         if (top_radius > 0) {
                             var subW = dW / 4 * (top_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             endX2 = endX - subW
                             endY2 = endY + subH
                             endX2_border = endX2
@@ -380,7 +379,7 @@ open class K3BDiamondWidget : K3AStateView {
                             var controllX = endX
                             var controllY = endY
                             var subW = dW / 4 * (top_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             var endX3 = endX + subW
                             var endY3 = endY + subH
                             linePath?.quadTo(controllX, controllY, endX3, endY3)
@@ -421,7 +420,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var startY2_border = startY_border
                         if (top_radius > 0) {
                             var subW = dW / 4 * (top_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             startX2 = startX + subW
                             startY2 = startY + subH
                             startX2_border = startX2
@@ -433,7 +432,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var endY2_border = endY_border
                         if (right_radius > 0) {
                             var subW = dW / 4 * (right_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             endX2 = endX - subW
                             endY2 = endY - subH
                             endX2_border = endX2
@@ -449,7 +448,7 @@ open class K3BDiamondWidget : K3AStateView {
                             var controllX = endX
                             var controllY = endY
                             var subW = dW / 4 * (right_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             var endX3 = endX - subW
                             var endY3 = endY + subH
                             linePath?.quadTo(controllX, controllY, endX3, endY3)
@@ -490,7 +489,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var startY2_border = startY_border
                         if (right_radius > 0) {
                             var subW = dW / 4 * (right_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             startX2 = startX - subW
                             startY2 = startY + subH
                             startX2_border = startX2
@@ -502,7 +501,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var endY2_border = endY_border
                         if (bottom_radius > 0) {
                             var subW = dW / 4 * (bottom_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             endX2 = endX + subW
                             endY2 = endY - subH
                             endX2_border = endX2
@@ -518,7 +517,7 @@ open class K3BDiamondWidget : K3AStateView {
                             var controllX = endX
                             var controllY = endY
                             var subW = dW / 4 * (bottom_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             var endX3 = endX - subW
                             var endY3 = endY - subH
                             linePath?.quadTo(controllX, controllY, endX3, endY3)
@@ -559,7 +558,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var startY2_border = startY_border
                         if (bottom_radius > 0) {
                             var subW = dW / 4 * (bottom_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             startX2 = startX - subW
                             startY2 = startY - subH
                             startX2_border = startX2
@@ -571,7 +570,7 @@ open class K3BDiamondWidget : K3AStateView {
                         var endY2_border = endY_border
                         if (left_radius > 0) {
                             var subW = dW / 4 * (left_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             endX2 = endX + subW
                             endY2 = endY + subH
                             endX2_border = endX2
@@ -587,7 +586,7 @@ open class K3BDiamondWidget : K3AStateView {
                             var controllX = endX
                             var controllY = endY
                             var subW = dW / 4 * (left_radius / 90f)
-                            var subH=subW*(h.toFloat()/w.toFloat())
+                            var subH = subW * (h.toFloat() / w.toFloat())
                             var endX3 = endX + subW
                             var endY3 = endY - subH
                             linePath?.quadTo(controllX, controllY, endX3, endY3)
@@ -624,7 +623,7 @@ open class K3BDiamondWidget : K3AStateView {
     private var currentDiamond: KDiamondEntity? = null//当前边框
 
     private var diamond: KDiamondEntity? = null//正常
-    fun diamond(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond(block: KDiamondEntity.() -> Unit): KDiamondView {
         clearButonShadow()//自定义圆角，就去除按钮默认的圆角阴影。不然效果不好。
         block(getDiamondEntity())
         invalidate()
@@ -632,7 +631,7 @@ open class K3BDiamondWidget : K3AStateView {
     }
 
     var diamond_enable: KDiamondEntity? = null//不可用
-    fun diamond_enable(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond_enable(block: KDiamondEntity.() -> Unit): KDiamondView {
         if (diamond_enable == null) {
             diamond_enable = getDiamondEntity().copy()
         }
@@ -642,7 +641,7 @@ open class K3BDiamondWidget : K3AStateView {
     }
 
     var diamond_press: KDiamondEntity? = null//按下
-    fun diamond_press(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond_press(block: KDiamondEntity.() -> Unit): KDiamondView {
         if (diamond_press == null) {
             diamond_press = getDiamondEntity().copy()
         }
@@ -652,7 +651,7 @@ open class K3BDiamondWidget : K3AStateView {
     }
 
     var diamond_focuse: KDiamondEntity? = null//聚焦
-    fun diamond_focuse(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond_focuse(block: KDiamondEntity.() -> Unit): KDiamondView {
         if (diamond_focuse == null) {
             diamond_focuse = getDiamondEntity().copy()
         }
@@ -662,7 +661,7 @@ open class K3BDiamondWidget : K3AStateView {
     }
 
     var diamond_hove: KDiamondEntity? = null//悬浮
-    fun diamond_hove(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond_hove(block: KDiamondEntity.() -> Unit): KDiamondView {
         if (diamond_hove == null) {
             diamond_hove = getDiamondEntity().copy()
         }
@@ -672,7 +671,7 @@ open class K3BDiamondWidget : K3AStateView {
     }
 
     var diamond_selected: KDiamondEntity? = null//选中
-    fun diamond_selected(block: KDiamondEntity.() -> Unit): K3BDiamondWidget {
+    fun diamond_selected(block: KDiamondEntity.() -> Unit): KDiamondView {
         if (diamond_selected == null) {
             diamond_selected = getDiamondEntity().copy()
         }
@@ -748,6 +747,7 @@ open class K3BDiamondWidget : K3AStateView {
         borderPath = null
         linePath?.reset()
         linePath = null
+        currentDiamond=null
     }
 
 }

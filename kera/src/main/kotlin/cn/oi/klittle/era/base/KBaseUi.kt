@@ -899,6 +899,32 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
         }
 
+        //FIXME 平行四边形
+        inline fun ViewManager.KParallelogramView(init: (@AnkoViewDslMarker KParallelogramView).() -> Unit): KParallelogramView {
+            return ankoView({ ctx: Context -> KParallelogramView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kParallelogramView(init: (@AnkoViewDslMarker KParallelogramView).() -> Unit): KParallelogramView {
+            return ankoView({ ctx: Context -> KParallelogramView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kparallelogramView(init: (@AnkoViewDslMarker KParallelogramView).() -> Unit): KParallelogramView {
+            return ankoView({ ctx: Context -> KParallelogramView(ctx) }, theme = 0) { init() }
+        }
+
+        //FIXME 菱形
+        inline fun ViewManager.KDiamondView(init: (@AnkoViewDslMarker KDiamondView).() -> Unit): KDiamondView {
+            return ankoView({ ctx: Context -> KDiamondView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kDiamondView(init: (@AnkoViewDslMarker KDiamondView).() -> Unit): KDiamondView {
+            return ankoView({ ctx: Context -> KDiamondView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kdiamondView(init: (@AnkoViewDslMarker KDiamondView).() -> Unit): KDiamondView {
+            return ankoView({ ctx: Context -> KDiamondView(ctx) }, theme = 0) { init() }
+        }
+
         //FIXME 双箭头控件
         inline fun ViewManager.KDoubleArrowView(init: (@AnkoViewDslMarker KDoubleArrowView).() -> Unit): KDoubleArrowView {
             return ankoView({ ctx: Context -> KDoubleArrowView(ctx) }, theme = 0) { init() }

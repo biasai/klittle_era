@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
+import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
 
 //fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成菱形了。
 
@@ -40,9 +41,9 @@ import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 //            }
 
 /**
- * fixme 绘制上下左右的边框；现在各个角已经支持圆角。
+ * fixme 平行四边形。不支持圆角。
  */
-open class K3BorderWidget : K3AStateView {
+open class KParallelogramView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -58,7 +59,7 @@ open class K3BorderWidget : K3AStateView {
     }
 
     //初始化画笔
-    private fun initBorderPaint(paint: Paint, border: KBorderEntity, oritaton: Int = 0) {
+    private fun initParallelogramPaint(paint: Paint, border: KParallelogramEntity, oritaton: Int = 0) {
         //paint.strokeCap = Paint.Cap.BUTT
         //paint.strokeJoin = Paint.Join.ROUND
         paint.strokeCap = Paint.Cap.ROUND//fixme 加个圆帽效果好一点，亲测。
@@ -186,7 +187,7 @@ open class K3BorderWidget : K3AStateView {
 
     override fun draw2Bg(canvas: Canvas, paint: Paint) {
         super.draw2Bg(canvas, paint)
-        currentBorder?.let {
+        currentParallelogram?.let {
             if (true || it.strokeWidth > 0) {
                 //画背景
                 var isDrawColor = false//是否画背景色
@@ -266,7 +267,7 @@ open class K3BorderWidget : K3AStateView {
     //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
     override fun draw2Last(canvas: Canvas, paint: Paint) {
         super.draw2Last(canvas, paint)
-        currentBorder?.let {
+        currentParallelogram?.let {
             if (true || it.strokeWidth > 0) {
                 var dW = w
                 if (dW > h) {
@@ -319,7 +320,7 @@ open class K3BorderWidget : K3AStateView {
                 linePath?.reset()
                 //绘制左边的边框
                 if (true || it.isDrawLeft) {
-                    initBorderPaint(resetPaint(paint), it, 1)
+                    initParallelogramPaint(resetPaint(paint), it, 1)
                     var startX = scrollX + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
@@ -402,7 +403,7 @@ open class K3BorderWidget : K3AStateView {
                 }
                 //绘制上边的边框
                 if (true || it.isDrawTop) {
-                    initBorderPaint(resetPaint(paint), it, 2)
+                    initParallelogramPaint(resetPaint(paint), it, 2)
                     var startX = scrollX.toFloat()// + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = scrollX.toFloat() + w.toFloat()// - paint.strokeWidth / 2
@@ -443,7 +444,7 @@ open class K3BorderWidget : K3AStateView {
                 }
                 //绘制右边的边框
                 if (true || it.isDrawRight) {
-                    initBorderPaint(resetPaint(paint), it, 3)
+                    initParallelogramPaint(resetPaint(paint), it, 3)
                     var startX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
@@ -529,7 +530,7 @@ open class K3BorderWidget : K3AStateView {
                 }
                 //绘制底部的边框
                 if (true || it.isDrawBottom) {
-                    initBorderPaint(resetPaint(paint), it, 4)
+                    initParallelogramPaint(resetPaint(paint), it, 4)
                     var startX = scrollX.toFloat() + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
                     var endX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
@@ -585,83 +586,83 @@ open class K3BorderWidget : K3AStateView {
         }
     }
 
-    private fun getBorderEntity(): KBorderEntity {
-        if (border == null) {
-            border = KBorderEntity()
+    fun getParallelogramEntity(): KParallelogramEntity {
+        if (parallelogram == null) {
+            parallelogram = KParallelogramEntity()
         }
-        return border!!
+        return parallelogram!!
     }
 
-    private var currentBorder: KBorderEntity? = null//当前边框
+    var currentParallelogram: KParallelogramEntity? = null//当前边框
 
-    var border: KBorderEntity? = null//正常
-    fun border(block: KBorderEntity.() -> Unit): K3BorderWidget {
+    var parallelogram: KParallelogramEntity? = null//正常
+    fun parallelogram(block: KParallelogramEntity.() -> Unit): KParallelogramView {
         clearButonShadow()//自定义圆角，就去除按钮默认的圆角阴影。不然效果不好。
-        block(getBorderEntity())
+        block(getParallelogramEntity())
         invalidate()
         return this
     }
 
-    var border_enable: KBorderEntity? = null//不可用
-    fun border_enable(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_enable == null) {
-            border_enable = getBorderEntity().copy()
+    var parallelogram_enable: KParallelogramEntity? = null//不可用
+    fun parallelogram_enable(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_enable == null) {
+            parallelogram_enable = getParallelogramEntity().copy()
         }
-        block(border_enable!!)
+        block(parallelogram_enable!!)
         invalidate()
         return this
     }
 
-    var border_press: KBorderEntity? = null//按下
-    fun border_press(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_press == null) {
-            border_press = getBorderEntity().copy()
+    var parallelogram_press: KParallelogramEntity? = null//按下
+    fun parallelogram_press(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_press == null) {
+            parallelogram_press = getParallelogramEntity().copy()
         }
-        block(border_press!!)
+        block(parallelogram_press!!)
         invalidate()
         return this
     }
 
-    var border_focuse: KBorderEntity? = null//聚焦
-    fun border_focuse(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_focuse == null) {
-            border_focuse = getBorderEntity().copy()
+    var parallelogram_focuse: KParallelogramEntity? = null//聚焦
+    fun parallelogram_focuse(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_focuse == null) {
+            parallelogram_focuse = getParallelogramEntity().copy()
         }
-        block(border_focuse!!)
+        block(parallelogram_focuse!!)
         invalidate()
         return this
     }
 
-    var border_hove: KBorderEntity? = null//悬浮
-    fun border_hove(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_hove == null) {
-            border_hove = getBorderEntity().copy()
+    var parallelogram_hove: KParallelogramEntity? = null//悬浮
+    fun parallelogram_hove(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_hove == null) {
+            parallelogram_hove = getParallelogramEntity().copy()
         }
-        block(border_hove!!)
+        block(parallelogram_hove!!)
         invalidate()
         return this
     }
 
-    var border_selected: KBorderEntity? = null//选中
-    fun border_selected(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_selected == null) {
-            border_selected = getBorderEntity().copy()
+    var parallelogram_selected: KParallelogramEntity? = null//选中
+    fun parallelogram_selected(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_selected == null) {
+            parallelogram_selected = getParallelogramEntity().copy()
         }
-        block(border_selected!!)
+        block(parallelogram_selected!!)
         invalidate()
         return this
     }
 
     private fun normal() {
-        currentBorder = border
+        currentParallelogram = parallelogram
     }
 
     //状态：聚焦
     override fun changedFocused() {
         super.changedFocused()
         normal()
-        border_focuse?.let {
-            currentBorder = it
+        parallelogram_focuse?.let {
+            currentParallelogram = it
         }
     }
 
@@ -669,8 +670,8 @@ open class K3BorderWidget : K3AStateView {
     override fun changedHovered() {
         super.changedHovered()
         normal()
-        border_hove?.let {
-            currentBorder = it
+        parallelogram_hove?.let {
+            currentParallelogram = it
         }
     }
 
@@ -678,8 +679,8 @@ open class K3BorderWidget : K3AStateView {
     override fun changedSelected() {
         super.changedSelected()
         normal()
-        border_selected?.let {
-            currentBorder = it
+        parallelogram_selected?.let {
+            currentParallelogram = it
         }
     }
 
@@ -687,8 +688,8 @@ open class K3BorderWidget : K3AStateView {
     override fun changedEnabled() {
         super.changedEnabled()
         normal()
-        border_enable?.let {
-            currentBorder = it
+        parallelogram_enable?.let {
+            currentParallelogram = it
         }
     }
 
@@ -696,8 +697,8 @@ open class K3BorderWidget : K3AStateView {
     override fun changedPressed() {
         super.changedPressed()
         normal()
-        border_press?.let {
-            currentBorder = it
+        parallelogram_press?.let {
+            currentParallelogram = it
         }
     }
 
@@ -709,17 +710,17 @@ open class K3BorderWidget : K3AStateView {
 
     override fun onDestroy() {
         super.onDestroy()
-        border = null
-        border_press = null
-        border_hove = null
-        border_focuse = null
-        border_selected = null
-        border_enable = null
+        parallelogram = null
+        parallelogram_press = null
+        parallelogram_hove = null
+        parallelogram_focuse = null
+        parallelogram_selected = null
+        parallelogram_enable = null
         borderPath?.reset()
         borderPath = null
         linePath?.reset()
         linePath = null
-        currentBorder=null
+        currentParallelogram = null
     }
 
 }

@@ -24,6 +24,10 @@ import cn.oi.klittle.era.entity.widget.compat.KDoubleArrowEntity
 //                        isArrowDash = false//箭头是否也为虚线。
 //                        isDrawMain=true//是否绘制主干线（连接两个箭头之间的线条）
 //                        isDrawLeftArrow=false//是否绘制左箭头（水平）
+//                        isLeftTurnDownOrLeft = false//左边箭头向下转弯（水平）；上面的箭头向左边转弯（垂直）；优先级比isLeftTurnUpOrRight高。
+//                        isLeftTurnUpOrRight = true//向上面（水平）转弯或右边（垂直）转弯；isLeftTurnDownOrLeft = false才有效。
+//                        isRightTurnDownOrLeft = true//右边箭头向下面转弯（水平）；下面箭头向左边转弯（垂直）；优先级比isRightTurnUpOrRight高
+//                        isRightTurnUpOrRight = false//右边箭头向上转弯（水平）；下面的箭头向右转弯（垂直）；isRightTurnDownOrLeft=false才有效。
 //                    }
 //                    doubleArrow_press {
 //                        strokeColor=Color.RED
@@ -97,81 +101,333 @@ open class KDoubleArrowView : KTextView {
                 var dashPathEffect = DashPathEffect(floatArrayOf(it.dashWidth, it.dashGap), 0f)
                 paint.setPathEffect(dashPathEffect)
             }
-            var mStartX = scrollX + paint.strokeWidth
-            var mStartY = scrollY + height / 2f
-            var mEndX = scrollX + width - paint.strokeWidth
-            var mEndY = scrollY + height / 2f
-            if (!it.isHorizontal) {
-                //垂直
-                mStartX = scrollX + width / 2f
-                mStartY = scrollY + paint.strokeWidth
-                mEndX = scrollX + width / 2f
-                mEndY = scrollY + height - paint.strokeWidth
-            }
-            //虚线对矩形不管用,只对矩形的边框有效，所以只能画线
-            mPath?.moveTo(mStartX, mStartY)
-            mPath?.lineTo(mEndX, mEndY)
-            if (it.isDrawMain) {
-                //fixme 主干线
-                canvas.drawPath(mPath, paint)
-            }
-            //fixme 画箭头
-            if (it.arrowLength > 0) {
-                if (it.dashGap > 0 && it.dashWidth > 0) {
-                    paint.setPathEffect(null)//fixme 箭头取消虚线。
+            if (!it.isLeftTurnDownOrLeft && !it.isLeftTurnUpOrRight && !it.isRightTurnDownOrLeft && !it.isRightTurnUpOrRight) {
+                //fixme 正常
+                var mStartX = scrollX + paint.strokeWidth
+                var mStartY = scrollY + height / 2f
+                var mEndX = scrollX + width - paint.strokeWidth
+                var mEndY = scrollY + height / 2f
+                if (!it.isHorizontal) {
+                    //垂直
+                    mStartX = scrollX + width / 2f
+                    mStartY = scrollY + paint.strokeWidth
+                    mEndX = scrollX + width / 2f
+                    mEndY = scrollY + height - paint.strokeWidth
                 }
-                if (it.isDrawLeftArrow) {
-                    if (it.isHorizontal) {
-                        //左边箭头
-                        mPath?.reset()
-                        var arrowX = mStartX + it.arrowLength
-                        var arrowY = mStartY - it.arrowLength
-                        var arrowX2 = mStartX + it.arrowLength
-                        var arrowY2 = mStartY + it.arrowLength
-                        mPath?.moveTo(arrowX, arrowY)
-                        mPath?.lineTo(mStartX, mStartY)
-                        mPath?.lineTo(arrowX2, arrowY2)
-                        canvas.drawPath(mPath, paint)
-                    } else {
-                        //上面的箭头
-                        mPath?.reset()
-                        var arrowX = mStartX - it.arrowLength
-                        var arrowY = mStartY + it.arrowLength
-                        var arrowX2 = mStartX + it.arrowLength
-                        var arrowY2 = mStartY + it.arrowLength
-                        mPath?.moveTo(arrowX, arrowY)
-                        mPath?.lineTo(mStartX, mStartY)
-                        mPath?.lineTo(arrowX2, arrowY2)
-                        canvas.drawPath(mPath, paint)
+                //虚线对矩形不管用,只对矩形的边框有效，所以只能画线
+                mPath?.moveTo(mStartX, mStartY)
+                mPath?.lineTo(mEndX, mEndY)
+                if (it.isDrawMain) {
+                    //fixme 主干线
+                    canvas.drawPath(mPath, paint)
+                }
+                //fixme 画箭头
+                if (it.arrowLength > 0) {
+                    if (!it.isArrowDash && it.dashGap > 0 && it.dashWidth > 0) {
+                        paint.setPathEffect(null)//fixme 箭头取消虚线。
+                    }
+                    if (it.isDrawLeftArrow) {
+                        if (it.isHorizontal) {
+                            //左边箭头
+                            mPath?.reset()
+                            var arrowX = mStartX + it.arrowLength
+                            var arrowY = mStartY - it.arrowLength
+                            var arrowX2 = mStartX + it.arrowLength
+                            var arrowY2 = mStartY + it.arrowLength
+                            mPath?.moveTo(arrowX, arrowY)
+                            mPath?.lineTo(mStartX, mStartY)
+                            mPath?.lineTo(arrowX2, arrowY2)
+                            canvas.drawPath(mPath, paint)
+                        } else {
+                            //上面的箭头
+                            mPath?.reset()
+                            var arrowX = mStartX - it.arrowLength
+                            var arrowY = mStartY + it.arrowLength
+                            var arrowX2 = mStartX + it.arrowLength
+                            var arrowY2 = mStartY + it.arrowLength
+                            mPath?.moveTo(arrowX, arrowY)
+                            mPath?.lineTo(mStartX, mStartY)
+                            mPath?.lineTo(arrowX2, arrowY2)
+                            canvas.drawPath(mPath, paint)
+                        }
+                    }
+                    if (it.isDrawRightArrow) {
+                        if (it.isHorizontal) {
+                            //右箭头
+                            mPath?.reset()
+                            var arrowX = mEndX - it.arrowLength
+                            var arrowY = mEndY - it.arrowLength
+                            var arrowX2 = mEndX - it.arrowLength
+                            var arrowY2 = mEndY + it.arrowLength
+                            mPath?.moveTo(arrowX, arrowY)
+                            mPath?.lineTo(mEndX, mEndY)
+                            mPath?.lineTo(arrowX2, arrowY2)
+                            canvas.drawPath(mPath, paint)
+                        } else {
+                            //底部箭头
+                            mPath?.reset()
+                            var arrowX = mEndX - it.arrowLength
+                            var arrowY = mEndY - it.arrowLength
+                            var arrowX2 = mEndX + it.arrowLength
+                            var arrowY2 = mEndY - it.arrowLength
+                            mPath?.moveTo(arrowX, arrowY)
+                            mPath?.lineTo(mEndX, mEndY)
+                            mPath?.lineTo(arrowX2, arrowY2)
+                            canvas.drawPath(mPath, paint)
+                        }
                     }
                 }
-                if (it.isDrawRightArrow) {
+            } else {
+                //fixme 转弯的箭头;画主干线
+                var mStartX = scrollX + paint.strokeWidth + it.arrowLength
+                var mStartY = scrollY + height / 2f
+                var mEndX = scrollX + width - paint.strokeWidth - it.arrowLength
+                var mEndY = scrollY + height / 2f
+                if (!it.isHorizontal) {
+                    //垂直
+                    mStartX = scrollX + width / 2f
+                    mStartY = scrollY + paint.strokeWidth + it.arrowLength
+                    mEndX = scrollX + width / 2f
+                    mEndY = scrollY + height - paint.strokeWidth - it.arrowLength
+                }
+                //虚线对矩形不管用,只对矩形的边框有效，所以只能画线
+                mPath?.moveTo(mStartX, mStartY)
+                mPath?.lineTo(mEndX, mEndY)
+                if (it.isLeftTurnDownOrLeft) {
+                    //fixme 左边箭头，向下转弯(水平)
+                    mPath?.moveTo(mStartX, mStartY)
                     if (it.isHorizontal) {
-                        //右箭头
-                        mPath?.reset()
-                        var arrowX = mEndX - it.arrowLength
-                        var arrowY = mEndY - it.arrowLength
-                        var arrowX2 = mEndX - it.arrowLength
-                        var arrowY2 = mEndY + it.arrowLength
-                        mPath?.moveTo(arrowX, arrowY)
-                        mPath?.lineTo(mEndX, mEndY)
-                        mPath?.lineTo(arrowX2, arrowY2)
-                        canvas.drawPath(mPath, paint)
+                        //水平，向下面转
+                        mStartY = scrollY + height - paint.strokeWidth
                     } else {
-                        //底部箭头
-                        mPath?.reset()
-                        var arrowX = mEndX - it.arrowLength
-                        var arrowY = mEndY - it.arrowLength
-                        var arrowX2 = mEndX + it.arrowLength
-                        var arrowY2 = mEndY - it.arrowLength
-                        mPath?.moveTo(arrowX, arrowY)
-                        mPath?.lineTo(mEndX, mEndY)
-                        mPath?.lineTo(arrowX2, arrowY2)
-                        canvas.drawPath(mPath, paint)
+                        //垂直，向左边转
+                        mStartX = scrollX + paint.strokeWidth
+                    }
+                    mPath?.lineTo(mStartX, mStartY)
+                } else if (it.isLeftTurnUpOrRight) {
+                    //fixme 左边箭头，向上转弯
+                    mPath?.moveTo(mStartX, mStartY)
+                    if (it.isHorizontal) {
+                        //水平，向上面转
+                        mStartY = scrollY + paint.strokeWidth
+                    } else {
+                        //垂直，向右边转
+                        mStartX = scrollX + width - paint.strokeWidth
+                    }
+                    mPath?.lineTo(mStartX, mStartY)
+                } else {
+                    //fixme 正常
+                    mPath?.moveTo(mStartX, mStartY)
+                    if (it.isHorizontal) {
+                        //水平
+                        mStartX = scrollX + paint.strokeWidth
+                    } else {
+                        mStartY = scrollY + paint.strokeWidth
+                    }
+                    mPath?.lineTo(mStartX, mStartY)
+                }
+                if (it.isRightTurnDownOrLeft) {
+                    //fixme 右边箭头，向下转弯
+                    mPath?.moveTo(mEndX, mEndY)
+                    if (it.isHorizontal) {
+                        //水平，向下面转
+                        mEndY = scrollY + height - paint.strokeWidth
+                    } else {
+                        //垂直，向左边转
+                        mEndX = scrollX + paint.strokeWidth
+                    }
+                    mPath?.lineTo(mEndX, mEndY)
+                } else if (it.isRightTurnUpOrRight) {
+                    //fixme 右边箭头，向上转弯
+                    mPath?.moveTo(mEndX, mEndY)
+                    if (it.isHorizontal) {
+                        //水平，向下面转
+                        mEndY = scrollY + paint.strokeWidth
+                    } else {
+                        //垂直，向左边转
+                        mEndX = scrollX + width - paint.strokeWidth
+                    }
+                    mPath?.lineTo(mEndX, mEndY)
+                } else {
+                    //fixme 正常
+                    mPath?.moveTo(mEndX, mEndY)
+                    if (it.isHorizontal) {
+                        //水平
+                        mEndX = scrollX + width - paint.strokeWidth
+                    } else {
+                        mEndY = scrollY + height - paint.strokeWidth
+                    }
+                    mPath?.lineTo(mEndX, mEndY)
+                }
+                if (it.isDrawMain) {
+                    //fixme 主干线
+                    canvas.drawPath(mPath, paint)
+                }
+                //fixme 画箭头
+                if (it.arrowLength > 0) {
+                    if (!it.isArrowDash && it.dashGap > 0 && it.dashWidth > 0) {
+                        paint.setPathEffect(null)//fixme 箭头取消虚线。
+                    }
+                    if (it.isDrawLeftArrow) {
+                        //fixme 左箭头
+                        if (it.isLeftTurnDownOrLeft) {
+                            //向下弯
+                            if (it.isHorizontal) {
+                                //向下弯
+                                mPath?.reset()
+                                var arrowX = mStartX - it.arrowLength
+                                var arrowY = mStartY - it.arrowLength
+                                var arrowX2 = mStartX + it.arrowLength
+                                var arrowY2 = mStartY - it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //向左弯
+                                mPath?.reset()
+                                var arrowX = mStartX + it.arrowLength
+                                var arrowY = mStartY - it.arrowLength
+                                var arrowX2 = mStartX + it.arrowLength
+                                var arrowY2 = mStartY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        } else if (it.isLeftTurnUpOrRight) {
+                            //向上弯
+                            if (it.isHorizontal) {
+                                //向上弯
+                                mPath?.reset()
+                                var arrowX = mStartX - it.arrowLength
+                                var arrowY = mStartY + it.arrowLength
+                                var arrowX2 = mStartX + it.arrowLength
+                                var arrowY2 = mStartY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //向右弯
+                                mPath?.reset()
+                                var arrowX = mStartX - it.arrowLength
+                                var arrowY = mStartY - it.arrowLength
+                                var arrowX2 = mStartX - it.arrowLength
+                                var arrowY2 = mStartY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        } else {
+                            //正常
+                            if (it.isHorizontal) {
+                                //左边箭头
+                                mPath?.reset()
+                                var arrowX = mStartX + it.arrowLength
+                                var arrowY = mStartY - it.arrowLength
+                                var arrowX2 = mStartX + it.arrowLength
+                                var arrowY2 = mStartY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //上面的箭头
+                                mPath?.reset()
+                                var arrowX = mStartX - it.arrowLength
+                                var arrowY = mStartY + it.arrowLength
+                                var arrowX2 = mStartX + it.arrowLength
+                                var arrowY2 = mStartY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mStartX, mStartY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        }
+                    }
+                    if (it.isDrawRightArrow) {
+                        //fixme 右箭头（水平）；下箭头（垂直）
+                        if (it.isRightTurnDownOrLeft) {
+                            //向下弯
+                            if (it.isHorizontal) {
+                                //向下弯
+                                mPath?.reset()
+                                var arrowX = mEndX - it.arrowLength
+                                var arrowY = mEndY - it.arrowLength
+                                var arrowX2 = mEndX + it.arrowLength
+                                var arrowY2 = mEndY - it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //向左弯
+                                mPath?.reset()
+                                var arrowX = mEndX + it.arrowLength
+                                var arrowY = mEndY - it.arrowLength
+                                var arrowX2 = mEndX + it.arrowLength
+                                var arrowY2 = mEndY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        } else if (it.isRightTurnUpOrRight) {
+                            //向上弯
+                            if (it.isHorizontal) {
+                                //向上弯
+                                mPath?.reset()
+                                var arrowX = mEndX - it.arrowLength
+                                var arrowY = mEndY + it.arrowLength
+                                var arrowX2 = mEndX + it.arrowLength
+                                var arrowY2 = mEndY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //向右弯
+                                mPath?.reset()
+                                var arrowX = mEndX - it.arrowLength
+                                var arrowY = mEndY - it.arrowLength
+                                var arrowX2 = mEndX - it.arrowLength
+                                var arrowY2 = mEndY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        } else {
+                            //正常
+                            if (it.isHorizontal) {
+                                //右箭头
+                                mPath?.reset()
+                                var arrowX = mEndX - it.arrowLength
+                                var arrowY = mEndY - it.arrowLength
+                                var arrowX2 = mEndX - it.arrowLength
+                                var arrowY2 = mEndY + it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            } else {
+                                //底部箭头
+                                mPath?.reset()
+                                var arrowX = mEndX - it.arrowLength
+                                var arrowY = mEndY - it.arrowLength
+                                var arrowX2 = mEndX + it.arrowLength
+                                var arrowY2 = mEndY - it.arrowLength
+                                mPath?.moveTo(arrowX, arrowY)
+                                mPath?.lineTo(mEndX, mEndY)
+                                mPath?.lineTo(arrowX2, arrowY2)
+                                canvas.drawPath(mPath, paint)
+                            }
+                        }
                     }
                 }
             }
-
         }
     }
 
@@ -306,6 +562,7 @@ open class KDoubleArrowView : KTextView {
         doubleArrow_selected = null
         doubleArrow_enable = null
         mPath = null
+        currentDoubleArrow=null
     }
 
 }

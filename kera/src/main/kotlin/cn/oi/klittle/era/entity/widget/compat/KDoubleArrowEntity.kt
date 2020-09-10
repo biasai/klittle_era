@@ -17,7 +17,11 @@ import cn.oi.klittle.era.comm.kpx
  * @param isDrawMain fixme 是否绘制中间的主干线（连接两个箭头之间的线条）
  * @param isDrawLeftArrow 是否绘制左边（水平）的箭头，垂直就是上面。
  * @param isDrawRightArrow 是否绘制右边（水平）箭头，垂直就是下边。
- * @param isArrowDash fixme 箭头是否也为虚线。
+ * @param isArrowDash fixme 箭头是否也为虚线。默认为false,不为虚线。
+ * @param isLeftTurnDownOrLeft 左边（水平）或上面（垂直）的箭头，是否向下面(水平)或左边（垂直）转弯；fixme isLeftTurnDownOrLeft （向左转）优先级比向右转 isLeftTurnUpOrRight高。
+ * @param isLeftTurnUpOrRight 左边（水平）或上面（垂直）的箭头，是否向上面(水平)或右边（垂直）转弯
+ * @param isRightTurnDownOrLeft 右边（水平）或下面（垂直）的箭头，是否向下面(水平)或左边（垂直）转弯
+ * @param isRightTurnUpOrRight 右边（水平）或下面（垂直）的箭头，是否向下面(水平)或左边（垂直）转弯
  */
 data class KDoubleArrowEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
                               var dashWidth: Float = 0F, var dashGap: Float = 0F,
@@ -26,7 +30,9 @@ data class KDoubleArrowEntity(var strokeWidth: Float = kpx.x(2f), var strokeColo
                               var arrowLength: Float = kpx.x(20f),
                               var isDrawMain: Boolean = true,
                               var isDrawLeftArrow: Boolean = true, var isDrawRightArrow: Boolean = true,
-                              var isArrowDash: Boolean = true) {
+                              var isArrowDash: Boolean = false,
+                              var isLeftTurnDownOrLeft: Boolean = false, var isLeftTurnUpOrRight: Boolean = false,
+                              var isRightTurnDownOrLeft: Boolean = false, var isRightTurnUpOrRight: Boolean = false) {
     //fixme 所有
     open fun strokeHorizontalColors(vararg color: Int) {
         strokeVerticalColors = null
