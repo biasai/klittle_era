@@ -39,6 +39,7 @@ import kotlinx.coroutines.Deferred
 //fixme bottom2()低部距离；getLocationOnScreenY（）;getLocationOnScreenX();getLocationOnScreen();获取屏幕位置。最好在onGlobalLayoutListener加载完成之后再调用。
 /**
  * 一：基本组件，集成基本功能。
+ * fixme bindView 两个View可以实现状态同步。
  */
 open class K1Widget : K0Widget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -652,27 +653,27 @@ open class K1Widget : K0Widget {
      */
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
-    open var drawBehind: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    protected open var drawBehind: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    open fun drawBehind(drawBehind: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
+        this.drawBehind = drawBehind
+    }
 
     //fixme 自定义画布()，先画，会显示在后面,交给调用者去实现
-    open var drawFront: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    protected open var drawFront: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
     open fun drawFront(drawFront: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
         this.drawFront = drawFront
     }
 
-    open fun drawBehind(drawBehind: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
-        this.drawBehind = drawBehind
-    }
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
-    open var drawBg: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    open protected var drawBg: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
     //fixme 自定义画布()，后画，会显示在前面,交给调用者去实现
-    open var drawFirst: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    open protected var drawFirst: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
     //fixme 自定义画布()，先画，会显示在后面,交给调用者去实现
-    open var drawLast: ((canvas: Canvas, paint: Paint) -> Unit)? = null
+    open protected var drawLast: ((canvas: Canvas, paint: Paint) -> Unit)? = null
 
     open fun drawBg(drawBg: ((canvas: Canvas, paint: Paint) -> Unit)? = null) {
         this.drawBg = drawBg
@@ -1175,6 +1176,7 @@ open class K1Widget : K0Widget {
             viewGroup = null
             mPaint = null
             draw = null
+            drawBg = null
             drawBehind = null
             drawFront = null
             drawFirst = null

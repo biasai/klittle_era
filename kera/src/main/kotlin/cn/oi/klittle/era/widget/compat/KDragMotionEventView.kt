@@ -10,19 +10,16 @@ import android.widget.RelativeLayout
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KDragEntity
 import cn.oi.klittle.era.utils.KCacheUtils
-import cn.oi.klittle.era.utils.KLoggerUtils
 import org.jetbrains.anko.runOnUiThread
 import org.json.JSONObject
 import java.lang.Exception
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.Deferred
 
-//            fixme 调用案例
+//            fixme 调用案例；必须在相对布局里面才行。
 //            relativeLayout {
 //                backgroundColor = Color.GREEN
-//                KView(this).apply {
+//                kDragMotionEventView {
 //                    autoBg {
 //                        url = "http://test.app.bwg2017.com//photo/201905/10863/20190528111904_0.JPEG"
 //                    }
@@ -41,6 +38,7 @@ import kotlinx.coroutines.Deferred
 //                    topMargin = leftMargin
 //                    centerInParent()
 //                }.apply {
+//                     fixme 拖动属性设置
 //                    //fixme 防止初始化的时候layoutParams为空，而无法记录之前保存的位置。所以要在.lparams之后设置setDragId()。
 //                    //fixme parentHeight传入父容器的高；父容器必须是相对布局
 //                    drag(parentHeight = kpx.maxScreenHeight()) {
@@ -75,9 +73,9 @@ import kotlinx.coroutines.Deferred
 //fixme  setDragId(dragId: String?, isSaveDrag: Boolean = true) 可以保存拖动后的位置状态。
 
 /**
- * fixme 拖动控件
+ * fixme 拖动控件;继承KTouchScaleMotionEventView触摸控件。可同时支持拖到和触摸
  */
-open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
+open class KDragMotionEventView : KTouchScaleMotionEventView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -206,7 +204,7 @@ open class K3DragMotionEventWidget : K3CTouchScaleMotionEventWidget {
      * @param parentHeight 父容器高度 fixme 最好手动传一下。为了防止忘记就不设置默认值。
      * @param parentWidth 父容器宽度 一般都是屏幕的宽度。默认参数顺序一般放在后面。
      */
-    fun drag(parentHeight: Int, parentWidth: Int = this.parentWidth, block: KDragEntity.() -> Unit): K3DragMotionEventWidget {
+    fun drag(parentHeight: Int, parentWidth: Int = this.parentWidth, block: KDragEntity.() -> Unit): KDragMotionEventView {
         this.parentWidth = parentWidth
         this.parentHeight = parentHeight
         block(getDrag())

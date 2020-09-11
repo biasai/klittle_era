@@ -87,62 +87,62 @@ open class KJBox2dView : KView {
         //fixme 初始化创建碰撞世界.
     }
 
-    override fun draw(canvas: Canvas?) {
-        if (!isOnDestroy) {
-            try {
-                super.draw(canvas)
-                world?.let {
-                    it?.world?.let {
-                        it?.step(timeStep, iterations) //fixme 开始物理模拟,必须实时调用,不然没有效果
-                        invalidate()//fixme 不停的绘制
-                    }
-                }
-            } catch (e: Exception) {
-                KLoggerUtils.e("Jbox2d异常:\t" + KCatchException.getExceptionMsg(e), true)
-            }
-        }
-    }
-
-    var timeStep = 1f / 60f //模拟的的频率（1f / 60f 代表刷新频率为60帧每秒）
-    var iterations = 15//迭代越大，模拟越精确，但性能越低（正常15左右即可）
-    var world: KWorld? = null//fixme 世界
-    fun world(block: KWorld.() -> Unit): KJBox2dView {
-        if (world == null) {
-            world = KWorld();
-        }
-        world?.let {
-            block(it)
-        }
-        postInvalidate()//界面刷新
-        return this
-    }
-
-
-    /**
-     * fixme 创建边界刚体。（将整个控件四四方方围起来）
-     * @param leftOffset 左边偏移量
-     * @param topOffset 上方偏移量
-     * @param rightOffset 右边偏移量
-     * @param bottomOffset 底部偏移量
-     */
-    fun setBorderBody(leftOffset: Float = 0F, topOffset: Float = 0F, rightOffset: Float = 0F, bottomOffset: Float = 0F) {
-        world {
-            body {
-                addOnGlobalLayoutListener { x, y, width, height ->
-                    var leftBody = createPolygonBox(0f - 1f - leftOffset, height / 2f, 1f, height / 2f, density = 0f)
-                    var topBody = createPolygonBox(width / 2f, 0f - 1f - topOffset, width / 2f, 1f, density = 0f)
-                    var rightBody = createPolygonBox(width.toFloat() + 1f + rightOffset, height / 2f, 1f, height / 2f, density = 0f)
-                    var bottomBody = createPolygonBox(width / 2f, height.toFloat() + 1f + bottomOffset, width / 2f, 1f, density = 0f)
-                }
-            }
-        }
-    }
-
-    //fixme 销毁
-    override fun onDestroy() {
-        super.onDestroy()
-        world?.destroy()
-        world = null
-    }
+//    override fun draw(canvas: Canvas?) {
+//        if (!isOnDestroy) {
+//            try {
+//                super.draw(canvas)
+//                world?.let {
+//                    it?.world?.let {
+//                        it?.step(timeStep, iterations) //fixme 开始物理模拟,必须实时调用,不然没有效果
+//                        invalidate()//fixme 不停的绘制
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                KLoggerUtils.e("Jbox2d异常:\t" + KCatchException.getExceptionMsg(e), true)
+//            }
+//        }
+//    }
+//
+//    var timeStep = 1f / 60f //模拟的的频率（1f / 60f 代表刷新频率为60帧每秒）
+//    var iterations = 15//迭代越大，模拟越精确，但性能越低（正常15左右即可）
+//    var world: KWorld? = null//fixme 世界
+//    fun world(block: KWorld.() -> Unit): KJBox2dView {
+//        if (world == null) {
+//            world = KWorld();
+//        }
+//        world?.let {
+//            block(it)
+//        }
+//        postInvalidate()//界面刷新
+//        return this
+//    }
+//
+//
+//    /**
+//     * fixme 创建边界刚体。（将整个控件四四方方围起来）
+//     * @param leftOffset 左边偏移量
+//     * @param topOffset 上方偏移量
+//     * @param rightOffset 右边偏移量
+//     * @param bottomOffset 底部偏移量
+//     */
+//    fun setBorderBody(leftOffset: Float = 0F, topOffset: Float = 0F, rightOffset: Float = 0F, bottomOffset: Float = 0F) {
+//        world {
+//            body {
+//                addOnGlobalLayoutListener { x, y, width, height ->
+//                    var leftBody = createPolygonBox(0f - 1f - leftOffset, height / 2f, 1f, height / 2f, density = 0f)
+//                    var topBody = createPolygonBox(width / 2f, 0f - 1f - topOffset, width / 2f, 1f, density = 0f)
+//                    var rightBody = createPolygonBox(width.toFloat() + 1f + rightOffset, height / 2f, 1f, height / 2f, density = 0f)
+//                    var bottomBody = createPolygonBox(width / 2f, height.toFloat() + 1f + bottomOffset, width / 2f, 1f, density = 0f)
+//                }
+//            }
+//        }
+//    }
+//
+//    //fixme 销毁
+//    override fun onDestroy() {
+//        super.onDestroy()
+//        world?.destroy()
+//        world = null
+//    }
 
 }

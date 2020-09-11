@@ -5,6 +5,8 @@ import cn.oi.klittle.era.comm.kpx
 
 /**
  * 平行四边形
+ * @param paralleLogramRadius 平行四边形变形率（0~1）。
+ * @param isRightParalleLogram 变形是否向右边变形；true向右边变形；false向左边变形。
  * @param strokeWidth 边框宽度(所有)
  * @param strokeColor 边框颜色(所有)
  * @param dashWidth 虚线长度(所有)
@@ -32,31 +34,33 @@ import cn.oi.klittle.era.comm.kpx
  * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）
  * @param isBgGradient 背景色是否渐变,默认是
  */
-data class KParallelogramEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
-                                var dashWidth: Float = 0F, var dashGap: Float = 0F,
-                                var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
-                                var isDrawLeft: Boolean = true, var isDrawTop: Boolean = true,
-                                var isDrawRight: Boolean = true, var isDrawBottom: Boolean = true,
-                                var leftStrokeWidth: Float? = null, var leftStrokeColor: Int? = null,
-                                var leftDashWidth: Float? = null, var leftDashGap: Float? = null,
-                                var leftStrokeHorizontalColors: IntArray? = null, var leftStrokeVerticalColors: IntArray? = null,
-                                var topStrokeWidth: Float? = null, var topStrokeColor: Int? = null,
-                                var topDashWidth: Float? = null, var topDashGap: Float? = null,
-                                var topStrokeHorizontalColors: IntArray? = null, var topStrokeVerticalColors: IntArray? = null,
-                                var rightStrokeWidth: Float? = null, var rightStrokeColor: Int? = null,
-                                var rightDashWidth: Float? = null, var rightDashGap: Float? = null,
-                                var rightStrokeHorizontalColors: IntArray? = null, var rightStrokeVerticalColors: IntArray? = null,
-                                var bottomStrokeWidth: Float? = null, var bottomStrokeColor: Int? = null,
-                                var bottomDashWidth: Float? = null, var bottomDashGap: Float? = null,
-                                var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null,
-                                var all_radius: Float = -1F,
-                                var left_top: Float = -1F,
-                                var left_bottom: Float = -1F,
-                                var right_top: Float = -1F,
-                                var right_bottom: Float = -1F,
-                                var bg_color: Int = Color.TRANSPARENT,
-                                var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null,
-                                var isBgGradient: Boolean = true) {
+data class KParallelogramEntity(
+        var paralleLogramRadius: Float = 0.25f, var isRightParalleLogram: Boolean = true,
+        var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
+        var dashWidth: Float = 0F, var dashGap: Float = 0F,
+        var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
+        var isDrawLeft: Boolean = true, var isDrawTop: Boolean = true,
+        var isDrawRight: Boolean = true, var isDrawBottom: Boolean = true,
+        var leftStrokeWidth: Float? = null, var leftStrokeColor: Int? = null,
+        var leftDashWidth: Float? = null, var leftDashGap: Float? = null,
+        var leftStrokeHorizontalColors: IntArray? = null, var leftStrokeVerticalColors: IntArray? = null,
+        var topStrokeWidth: Float? = null, var topStrokeColor: Int? = null,
+        var topDashWidth: Float? = null, var topDashGap: Float? = null,
+        var topStrokeHorizontalColors: IntArray? = null, var topStrokeVerticalColors: IntArray? = null,
+        var rightStrokeWidth: Float? = null, var rightStrokeColor: Int? = null,
+        var rightDashWidth: Float? = null, var rightDashGap: Float? = null,
+        var rightStrokeHorizontalColors: IntArray? = null, var rightStrokeVerticalColors: IntArray? = null,
+        var bottomStrokeWidth: Float? = null, var bottomStrokeColor: Int? = null,
+        var bottomDashWidth: Float? = null, var bottomDashGap: Float? = null,
+        var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null,
+        var all_radius: Float = -1F,
+        var left_top: Float = -1F,
+        var left_bottom: Float = -1F,
+        var right_top: Float = -1F,
+        var right_bottom: Float = -1F,
+        var bg_color: Int = Color.TRANSPARENT,
+        var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null,
+        var isBgGradient: Boolean = true) {
 
     //fixme 所有
 

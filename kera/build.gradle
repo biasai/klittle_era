@@ -187,8 +187,8 @@ dependencies {
     api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
     //鲁班压缩，github地址：https://github.com/Curzibn/Luban
     implementation 'top.zibin:Luban:1.1.8'
-    //fixme BOX2D物理引擎
-    api files('libs/jbox2d-2.0.1-library-only.jar')
+    //fixme BOX2D物理引擎；去除掉，目前没什么用(感觉效率和性能都不行)。有用时再加上。
+    //api files('libs/jbox2d-2.0.1-library-only.jar')
     //fixme 以下是扫描库
     api files('libs/scanSDK.jar')//pda扫描库；旧版
     //fixme PDA RFID读卡器(ID卡)；新版PDA,型号Alps PDA；包含了jniLibs里的libnative-lib.so和libserial_port.so

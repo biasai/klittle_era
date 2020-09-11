@@ -57,7 +57,10 @@ open class K0Widget : AppCompatTextView {
         mGone(isAlways, gone)
     }
 
-    //fixme gone布局加载完成之后调用，只调用一次。（addOnGlobalLayoutListener可能执行多次。）
+    /**
+     * fixme gone布局加载完成之后调用，只调用一次。（addOnGlobalLayoutListener可能执行多次。）
+     * @param isAlways true时刻监听布局变化，false 只监听一次布局变化
+     */
     fun mGone(isAlways: Boolean = false, gone: (() -> Unit)? = null) {
         this.isAlways = isAlways
         if (gone != null) {

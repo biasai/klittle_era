@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,7 @@ import android.widget.Scroller;
 
 import cn.oi.klittle.era.R;
 import cn.oi.klittle.era.comm.kpx;
-import cn.oi.klittle.era.utils.KLoggerUtils;
-import cn.oi.klittle.era.widget.compat.K3DragMotionEventWidget;
+import cn.oi.klittle.era.widget.compat.KDragMotionEventView;
 import cn.oi.klittle.era.widget.viewpager.KViewPager;
 
 /**
@@ -121,7 +119,7 @@ public class KBaseSlideLayout extends FrameLayout {
                 mLastInterceptY = y;
                 isActionDown2 = true;
                 KViewPager.Companion.setViewPagerMotionEventing(false);//fixme kviewpager没有滑动
-                K3DragMotionEventWidget.Companion.setDragMotionEventing(false);
+                KDragMotionEventView.Companion.setDragMotionEventing(false);
                 break;
             case MotionEvent.ACTION_MOVE:
                 if (!isActionDown2) {//fixme 防止按下事件，没有触发。
@@ -137,7 +135,7 @@ public class KBaseSlideLayout extends FrameLayout {
                 }
                 // 手指处于屏幕边缘，且横向滑动距离大于纵向滑动距离时，拦截事件
                 if (mInterceptDownX < (shadowSlidingWidth) && Math.abs(deltaX) > Math.abs(deltaY) && deltaX > 5) {
-                    if (KViewPager.Companion.isMotinEventing() || K3DragMotionEventWidget.Companion.isDrgMotinEventing()) {//fixme 防止和KViewPager滑动冲突。
+                    if (KViewPager.Companion.isMotinEventing() || KDragMotionEventView.Companion.isDrgMotinEventing()) {//fixme 防止和KViewPager滑动冲突。
                         intercept = false;//不拦截
                     } else {
                         intercept = true;//事件拦截
@@ -153,7 +151,7 @@ public class KBaseSlideLayout extends FrameLayout {
                 isActionDown2 = false;
                 mInterceptDownX = mLastInterceptX = mLastInterceptY = 0;
                 KViewPager.Companion.setViewPagerMotionEventing(false);
-                K3DragMotionEventWidget.Companion.setDragMotionEventing(false);
+                KDragMotionEventView.Companion.setDragMotionEventing(false);
                 break;
         }
         return intercept;

@@ -9,8 +9,6 @@ import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
 
-//fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成菱形了。
-
 //            调用案例
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
@@ -41,7 +39,7 @@ import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
 //            }
 
 /**
- * fixme 平行四边形。不支持圆角。
+ * fixme 平行四边形。支持圆角。
  */
 open class KParallelogramView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -264,6 +262,8 @@ open class KParallelogramView : KTextView {
         }
     }
 
+    private var paralleLogramLeng: Float = 0F
+
     //绘制边框；fixme 亲测边框的位置和圆角切割radius位置是一致的。如果位置不一致，那一定是两个控件的高度或位置不一致。
     override fun draw2Last(canvas: Canvas, paint: Paint) {
         super.draw2Last(canvas, paint)
@@ -318,6 +318,14 @@ open class KParallelogramView : KTextView {
                 }
                 borderPath?.reset()
                 linePath?.reset()
+                if (it.paralleLogramRadius < 0) {
+                    it.paralleLogramRadius = 0f
+                } else if (it.paralleLogramRadius > 1) {
+                    it.paralleLogramRadius = 1f
+                }
+                paralleLogramLeng = width * it.paralleLogramRadius
+                dW = (dW - Math.abs(paralleLogramLeng)).toInt()
+                var paraWdith = 0F//fixme 平行四边形，变形边长。
                 //绘制左边的边框
                 if (true || it.isDrawLeft) {
                     initParallelogramPaint(resetPaint(paint), it, 1)
@@ -329,6 +337,17 @@ open class KParallelogramView : KTextView {
                     var startY_border = scrollY.toFloat()
                     var endX_border = startX_border
                     var endY_border = scrollY.toFloat() + h.toFloat()
+                    if (it.isRightParalleLogram) {
+                        startX = startX + paralleLogramLeng
+                        startX_border = startX_border + paralleLogramLeng
+                    } else {
+                        endX = endX + paralleLogramLeng
+                        endX_border = endX_border + paralleLogramLeng
+                    }
+                    var a = Math.pow(paralleLogramLeng.toDouble(), 2.toDouble())
+                    var b = Math.pow(Math.abs(endY - startY).toDouble(), 2.toDouble())
+                    var c = a + b
+                    paraWdith = Math.sqrt(c).toFloat()
                     if (left_top_corner <= 0 && left_bottom_corner <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(endX, endY)
@@ -343,16 +362,23 @@ open class KParallelogramView : KTextView {
                     } else {
                         //左上角圆角
                         var path = Path()
-                        var starX0 = startX + dW / 2 * (left_top_corner / 90f)
+                        var subW = dW / 2 * (left_top_corner / 90f)
+                        var subW2 = subW * paralleLogramLeng / paraWdith
+                        var subH2 = height / paralleLogramLeng * subW2
+                        var starX0 = startX + subW
                         var starY0 = startY
-                        var starX0_border = startX_border + dW / 2 * (left_top_corner / 90f)
+                        var starX0_border = startX_border + subW
                         var starY0_border = startY_border
                         var controllX = startX
                         var controllY = startY
-                        var endX0 = startX
-                        var endY0 = startY + dW / 2 * (left_top_corner / 90f)
-                        var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (left_top_corner / 90f)
+                        var endX0 = startX - subW2
+                        var endY0 = startY + subH2
+                        var endX0_border = startX_border - subW2
+                        var endY0_border = startY_border + subH2
+                        if (!it.isRightParalleLogram) {
+                            endX0 = startX + subW2
+                            endX0_border = startX_border + subW2
+                        }
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
                         if (it.isDrawLeft) {
@@ -370,23 +396,32 @@ open class KParallelogramView : KTextView {
                             borderPath?.moveTo(endX_border, endY_border)
                             borderPath?.lineTo(endX0_border, endY0_border)
                         } else {
+                            var subW = dW / 2 * (left_bottom_corner / 90f)
+                            var subW2 = subW * paralleLogramLeng / paraWdith
+                            var subH2 = height / paralleLogramLeng * subW2
                             //左下角圆角
-                            var endY1 = endY - dW / 2 * (left_bottom_corner / 90f)
-                            var endY1_border = endY_border - dW / 2 * (left_bottom_corner / 90f)
+                            var endY1 = endY - subH2
+                            var endY1_border = endY_border - subH2
+                            var endX1 = endX + subW2
+                            var endX1_border = endX_border + subW2
+                            if (!it.isRightParalleLogram) {
+                                endX1 = endX - subW2
+                                endX1_border = endX_border - subW2
+                            }
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY1)
+                            linePath?.lineTo(endX1, endY1)
                             if (it.isDrawLeft) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY1, paint)
                             }
                             var path2 = Path()
-                            path2.moveTo(endX, endY1)
+                            path2.moveTo(endX1, endY1)
                             var controllX = endX
                             var controllY = endY
-                            var endX2 = startX + dW / 2 * (left_bottom_corner / 90f)
+                            var endX2 = endX + subW
                             var endY2 = endY
-                            var endX2_border = startX_border + dW / 2 * (left_bottom_corner / 90f)
+                            var endX2_border = endX_border + subW
                             var endY2_border = endY_border
                             path2.quadTo(controllX, controllY, endX2, endY2)
                             if (it.isDrawLeft) {
@@ -394,7 +429,7 @@ open class KParallelogramView : KTextView {
                             }
                             //fixme
                             borderPath?.moveTo(endX2_border, endY2_border)
-                            borderPath?.quadTo(controllX, controllY, endX_border, endY1_border)
+                            borderPath?.quadTo(controllX, controllY, endX1_border, endY1_border)
                         }
                         //fixme
                         borderPath?.lineTo(endX0_border, endY0_border)
@@ -412,6 +447,13 @@ open class KParallelogramView : KTextView {
                     var startY_border = scrollY.toFloat()
                     var endX_border = scrollX.toFloat() + w.toFloat()
                     var endY_border = startY_border
+                    if (it.isRightParalleLogram) {
+                        startX = startX + paralleLogramLeng
+                        startX_border = startX_border + paralleLogramLeng
+                    } else {
+                        endX = endX - paralleLogramLeng
+                        endX_border = endX_border - paralleLogramLeng
+                    }
                     if (left_top_corner <= 0 && right_top_corner <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
@@ -453,6 +495,13 @@ open class KParallelogramView : KTextView {
                     var startY_border = scrollY.toFloat()
                     var endX_border = startX_border
                     var endY_border = scrollY.toFloat() + h.toFloat()
+                    if (it.isRightParalleLogram) {
+                        endX = endX - paralleLogramLeng
+                        endX_border = endX_border - paralleLogramLeng
+                    } else {
+                        startX = startX - paralleLogramLeng
+                        startX_border = startX_border - paralleLogramLeng
+                    }
                     if (right_top_corner <= 0 && right_bottom_corner <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)
@@ -466,17 +515,24 @@ open class KParallelogramView : KTextView {
                         borderPath?.lineTo(endX_border, endY_border)
                     } else {
                         //右上角圆角
+                        var subW = dW / 2 * (right_top_corner / 90f)
+                        var subW2 = subW * paralleLogramLeng / paraWdith
+                        var subH2 = height / paralleLogramLeng * subW2
                         var path = Path()
-                        var starX0 = startX - dW / 2 * (right_top_corner / 90f)
+                        var starX0 = startX - subW
                         var starY0 = startY
-                        var starX0_border = startX_border - dW / 2 * (right_top_corner / 90f)
+                        var starX0_border = startX_border - subW
                         var starY0_border = startY_border
                         var controllX = startX
                         var controllY = startY
-                        var endX0 = startX
-                        var endY0 = startY + dW / 2 * (right_top_corner / 90f)
-                        var endX0_border = startX_border
-                        var endY0_border = startY_border + dW / 2 * (right_top_corner / 90f)
+                        var endX0 = startX - subW2
+                        var endY0 = startY + subH2
+                        var endX0_border = startX_border - subW2
+                        var endY0_border = startY_border + subH2
+                        if (!it.isRightParalleLogram) {
+                            endX0 = startX + subW2
+                            endX0_border = startX_border + subW2
+                        }
                         path.moveTo(starX0, starY0)
                         path.quadTo(controllX, controllY, endX0, endY0)
                         if (it.isDrawRight) {
@@ -498,32 +554,41 @@ open class KParallelogramView : KTextView {
                             borderPath?.lineTo(endX_border, endY_border)
                         } else {
                             //右下角圆角
-                            var endY1 = endY - dW / 2 * (right_bottom_corner / 90f)
-                            var endY1_border = endY_border - dW / 2 * (right_bottom_corner / 90f)
+                            var subW = dW / 2 * (right_bottom_corner / 90f)
+                            var subW2 = subW * paralleLogramLeng / paraWdith
+                            var subH2 = height / paralleLogramLeng * subW2
+                            var endY1 = endY - subH2
+                            var endY1_border = endY_border - subH2
+                            var endX1 = endX + subW2
+                            var endX1_border = endX_border + subW2
+                            if (!it.isRightParalleLogram) {
+                                endX1 = endX - subW2
+                                endX1_border = endX_border - subW2
+                            }
                             linePath?.reset()
                             linePath?.moveTo(endX0, endY0)
-                            linePath?.lineTo(endX, endY1)
+                            linePath?.lineTo(endX1, endY1)
                             if (it.isDrawRight) {
                                 canvas.drawPath(linePath, paint)
                                 //canvas.drawLine(endX0, endY0, endX, endY1, paint)
                             }
                             //fixme
                             borderPath?.lineTo(endX0_border, endY0_border)
-                            borderPath?.lineTo(endX_border, endY1_border)
+                            borderPath?.lineTo(endX1_border, endY1_border)
                             var path2 = Path()
-                            path2.moveTo(endX, endY1)
+                            path2.moveTo(endX1, endY1)
                             var controllX = endX
                             var controllY = endY
-                            var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
+                            var endX2 = endX - subW
                             var endY2 = endY
-                            var endX2_border = endX_border - dW / 2 * (right_bottom_corner / 90f)
+                            var endX2_border = endX_border - subW
                             var endY2_border = endY_border
                             path2.quadTo(controllX, controllY, endX2, endY2)
                             if (it.isDrawRight) {
                                 canvas.drawPath(path2, paint)
                             }
                             //fixme
-                            borderPath?.lineTo(endX_border, endY1_border)
+                            borderPath?.lineTo(endX1_border, endY1_border)
                             borderPath?.quadTo(controllX, controllY, endX2_border, endY2_border)
                         }
                     }
@@ -539,6 +604,11 @@ open class KParallelogramView : KTextView {
                     var startY_border = scrollY.toFloat() + h
                     var endX_border = startX_border + w.toFloat()
                     var endY_border = startY_border
+                    if (it.isRightParalleLogram) {
+                        startX = startX - paralleLogramLeng
+                    } else {
+                        endX = endX + paralleLogramLeng
+                    }
                     if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
                         linePath?.reset()
                         linePath?.moveTo(startX, startY)

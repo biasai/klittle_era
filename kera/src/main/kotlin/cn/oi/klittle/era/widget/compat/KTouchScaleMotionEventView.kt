@@ -10,31 +10,36 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import android.widget.RelativeLayout
-import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KTouchScaleEntity
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.window.KWindow
 import org.jetbrains.anko.alignParentLeft
 import org.jetbrains.anko.alignParentTop
 
 
 //                   fixme 调用案例
-//                    touchScale{
-//                        isTouchScaleEnable=true//是否开启缩放功能
-//                        scaleMaxWidth=1000//最大缩放宽度(高度会保持和宽度的比例)
-//                        scaleMinWidth=100//最新缩放宽度
-
+//                ktouchScaleMotionEventView {
+//                    backgroundColor(Color.YELLOW)
+//                    //fixme 触摸缩放
+//                    touchScale {
+//                        isTouchScaleEnable = true//是否开启缩放功能
+//                        scaleMaxWidth = 1000//最大缩放宽度(高度会保持和宽度的比例)
+//                        scaleMinWidth = 100//最新缩放宽度
+//
 //                        //fixme 不是对整个控件进行旋转，而是对整个画布进行旋转。是画布，不是控件
 //                        // fixme(缩放和旋转同时开启，旋转会很抖动，效果十分不好。）无法解决抖动的问题，所以目前只能对画布进行旋转。
 //                        //fixme 所以旋转和缩放最好只开一个。
 //                        isRotationEnable = true//是否开启旋转；
-//                        rotation=30f//旋转角度，isRotationEnable为true才有效。
+//                        rotation = 30f//旋转角度，isRotationEnable为true才有效。
 //                    }
+//                }.lparams {
+//                    width=kpx.x(200)
+//                    height=width
+//                }
 
 /**
- * fixme 触摸缩放控件; 单指拖动;双指缩放;
+ * fixme 触摸缩放控件; 双指缩放; 单指拖动(指的是KDragMotionEventView拖动控件);KDragMotionEventView拖动控件继承了该触摸控件。
  */
-open class K3CTouchScaleMotionEventWidget : K3BorderWidget {
+open class KTouchScaleMotionEventView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -58,7 +63,7 @@ open class K3CTouchScaleMotionEventWidget : K3BorderWidget {
         return touchScale!!
     }
 
-    fun touchScale(block: KTouchScaleEntity.() -> Unit): K3CTouchScaleMotionEventWidget {
+    fun touchScale(block: KTouchScaleEntity.() -> Unit): KTouchScaleMotionEventView {
         block(getTouchScale())
         touchScale?.let {
             mCanvasRotation = it.rotation//角度统一
@@ -254,8 +259,8 @@ open class K3CTouchScaleMotionEventWidget : K3BorderWidget {
             if (width != getLayoutWidth() || height != getLayoutHeight()) {
                 var w = width
                 var h = height
-                this@K3CTouchScaleMotionEventWidget.w = w//fixme 兼容阴影控件。
-                this@K3CTouchScaleMotionEventWidget.h = h
+                this@KTouchScaleMotionEventView.w = w//fixme 兼容阴影控件。
+                this@KTouchScaleMotionEventView.h = h
                 margin(leftMargin = leftMargin, topMargin = topMargin)
                 viewGroup?.requestLayout()
             }
@@ -359,6 +364,7 @@ open class K3CTouchScaleMotionEventWidget : K3BorderWidget {
 
     private var mLastVector: PointF? = null
     private var vector: PointF? = null
+
     /**
      * 计算两个向量之间的夹角
      *

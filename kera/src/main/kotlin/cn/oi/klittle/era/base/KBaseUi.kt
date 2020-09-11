@@ -899,6 +899,32 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KProgressCircleView2(ctx) }, theme = 0) { init() }
         }
 
+        //FIXME 触摸缩放控件; 单指拖动;双指缩放;
+        inline fun ViewManager.KTouchScaleMotionEventView(init: (@AnkoViewDslMarker KTouchScaleMotionEventView).() -> Unit): KTouchScaleMotionEventView {
+            return ankoView({ ctx: Context -> KTouchScaleMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kTouchScaleMotionEventView(init: (@AnkoViewDslMarker KTouchScaleMotionEventView).() -> Unit): KTouchScaleMotionEventView {
+            return ankoView({ ctx: Context -> KTouchScaleMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.ktouchScaleMotionEventView(init: (@AnkoViewDslMarker KTouchScaleMotionEventView).() -> Unit): KTouchScaleMotionEventView {
+            return ankoView({ ctx: Context -> KTouchScaleMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
+        //FIXME 拖动控件
+        inline fun ViewManager.KDragMotionEventView(init: (@AnkoViewDslMarker KDragMotionEventView).() -> Unit): KDragMotionEventView {
+            return ankoView({ ctx: Context -> KDragMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kDragMotionEventView(init: (@AnkoViewDslMarker KDragMotionEventView).() -> Unit): KDragMotionEventView {
+            return ankoView({ ctx: Context -> KDragMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kdragMotionEventView(init: (@AnkoViewDslMarker KDragMotionEventView).() -> Unit): KDragMotionEventView {
+            return ankoView({ ctx: Context -> KDragMotionEventView(ctx) }, theme = 0) { init() }
+        }
+
         //FIXME 平行四边形
         inline fun ViewManager.KParallelogramView(init: (@AnkoViewDslMarker KParallelogramView).() -> Unit): KParallelogramView {
             return ankoView({ ctx: Context -> KParallelogramView(ctx) }, theme = 0) { init() }

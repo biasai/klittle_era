@@ -88,7 +88,7 @@ import cn.oi.klittle.era.utils.KVibratorUtils
 
 //fixme autoBg自定义图片共有三张。分别为 autoBg，autoBg2（在autoBg的上面显示）和autoBg3（在autoBg2的上面显示）。三张自定义位图都有不同的状态的。
 
-open class K4AutoBgView : K3DragMotionEventWidget {
+open class K4AutoBgView : K3BorderWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
