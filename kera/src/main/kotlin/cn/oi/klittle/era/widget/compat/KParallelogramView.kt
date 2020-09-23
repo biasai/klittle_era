@@ -13,11 +13,12 @@ import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
 //                border {
-//                    strokeWidth = kpx.x(10f) //所有边框的宽度；
-//                    leftStrokeWidth = strokeWidth / 2//左边边框的宽度 fixme 各个边框大小颜色都可以独自设置。
-//                    bottomStrokeWidth = kpx.x(2f)//底部边框的宽度
+//                    strokeWidth = kpx.x(10f) //所有边框的宽度；fixme 各个边框大小统一设置，不能单独设置。颜色可以单独设置。
 //                    leftStrokeColor = Color.BLUE//左边边框的颜色
-//                    rightStrokeVerticalColors(Color.RED, Color.CYAN)//右边边框垂直渐变色
+//                    bottomStrokeColor = Color.BLUE
+//                    rightStrokeColor = Color.GREEN
+//                    topStrokeColor = Color.LTGRAY
+//                    rightStrokeVerticalColors(Color.RED, Color.CYAN)//右边边框垂直渐变色,优先级比 rightStrokeColor高。
 //                    bottomDashWidth = kpx.x(15f)//底部边框虚线
 //                    bottomDashGap = kpx.x(10f)
 //                    all_radius=0f//所有圆角的角度（0~90）//fixme 角度统一使用radius
@@ -77,9 +78,9 @@ open class KParallelogramView : KTextView {
                 it.leftDashGap?.let {
                     dashGap = it
                 }
-                it.leftStrokeWidth?.let {
-                    strokeWidth = it
-                }
+//                it.leftStrokeWidth?.let {
+//                    strokeWidth = it
+//                }
                 it.leftStrokeColor?.let {
                     strokeColor = it
                 }
@@ -98,9 +99,9 @@ open class KParallelogramView : KTextView {
                 it.topDashGap?.let {
                     dashGap = it
                 }
-                it.topStrokeWidth?.let {
-                    strokeWidth = it
-                }
+//                it.topStrokeWidth?.let {
+//                    strokeWidth = it
+//                }
                 it.topStrokeColor?.let {
                     strokeColor = it
                 }
@@ -119,9 +120,9 @@ open class KParallelogramView : KTextView {
                 it.rightDashGap?.let {
                     dashGap = it
                 }
-                it.rightStrokeWidth?.let {
-                    strokeWidth = it
-                }
+//                it.rightStrokeWidth?.let {
+//                    strokeWidth = it
+//                }
                 it.rightStrokeColor?.let {
                     strokeColor = it
                 }
@@ -140,9 +141,9 @@ open class KParallelogramView : KTextView {
                 it.bottomDashGap?.let {
                     dashGap = it
                 }
-                it.bottomStrokeWidth?.let {
-                    strokeWidth = it
-                }
+//                it.bottomStrokeWidth?.let {
+//                    strokeWidth = it
+//                }
                 it.bottomStrokeColor?.let {
                     strokeColor = it
                 }
@@ -324,7 +325,11 @@ open class KParallelogramView : KTextView {
                     it.paralleLogramRadius = 1f
                 }
                 paralleLogramLeng = width * it.paralleLogramRadius
-                dW = (dW - Math.abs(paralleLogramLeng)).toInt()
+                if (it.paralleLogramRadius <= 0) {
+                    paralleLogramLeng = 1f//fixme 不能为0；绘画会错乱，所以设置为1。亲测可行。
+                } else {
+                    dW = (dW - Math.abs(paralleLogramLeng)).toInt()
+                }
                 var paraWdith = 0F//fixme 平行四边形，变形边长。
                 //绘制左边的边框
                 if (true || it.isDrawLeft) {
@@ -333,10 +338,14 @@ open class KParallelogramView : KTextView {
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
                     var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
-                    var startX_border = scrollX.toFloat()
-                    var startY_border = scrollY.toFloat()
-                    var endX_border = startX_border
-                    var endY_border = scrollY.toFloat() + h.toFloat()
+//                    var startX_border = scrollX.toFloat()
+//                    var startY_border = scrollY.toFloat()
+//                    var endX_border = startX_border
+//                    var endY_border = scrollY.toFloat() + h.toFloat()
+                    var startX_border = startX
+                    var startY_border = startY
+                    var endX_border = endX
+                    var endY_border = endY
                     if (it.isRightParalleLogram) {
                         startX = startX + paralleLogramLeng
                         startX_border = startX_border + paralleLogramLeng
@@ -439,14 +448,18 @@ open class KParallelogramView : KTextView {
                 //绘制上边的边框
                 if (true || it.isDrawTop) {
                     initParallelogramPaint(resetPaint(paint), it, 2)
-                    var startX = scrollX.toFloat()// + paint.strokeWidth / 2
+                    var startX = scrollX.toFloat() + paint.strokeWidth / 2
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
-                    var endX = scrollX.toFloat() + w.toFloat()// - paint.strokeWidth / 2
+                    var endX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
                     var endY = startY
-                    var startX_border = scrollX.toFloat()
-                    var startY_border = scrollY.toFloat()
-                    var endX_border = scrollX.toFloat() + w.toFloat()
-                    var endY_border = startY_border
+//                    var startX_border = scrollX.toFloat()
+//                    var startY_border = scrollY.toFloat()
+//                    var endX_border = scrollX.toFloat() + w.toFloat()
+//                    var endY_border = startY_border
+                    var startX_border = startX
+                    var startY_border = startY
+                    var endX_border = endX
+                    var endY_border = endY
                     if (it.isRightParalleLogram) {
                         startX = startX + paralleLogramLeng
                         startX_border = startX_border + paralleLogramLeng
@@ -491,10 +504,14 @@ open class KParallelogramView : KTextView {
                     var startY = scrollY.toFloat() + paint.strokeWidth / 2
                     var endX = startX
                     var endY = scrollY.toFloat() + h.toFloat() - paint.strokeWidth / 2
-                    var startX_border = scrollX.toFloat() + w.toFloat()
-                    var startY_border = scrollY.toFloat()
-                    var endX_border = startX_border
-                    var endY_border = scrollY.toFloat() + h.toFloat()
+//                    var startX_border = scrollX.toFloat() + w.toFloat()
+//                    var startY_border = scrollY.toFloat()
+//                    var endX_border = startX_border
+//                    var endY_border = scrollY.toFloat() + h.toFloat()
+                    var startX_border = startX
+                    var startY_border = startY
+                    var endX_border = endX
+                    var endY_border = endY
                     if (it.isRightParalleLogram) {
                         endX = endX - paralleLogramLeng
                         endX_border = endX_border - paralleLogramLeng
@@ -600,14 +617,20 @@ open class KParallelogramView : KTextView {
                     var startY = scrollY.toFloat() + h - paint.strokeWidth / 2
                     var endX = scrollX.toFloat() + w.toFloat() - paint.strokeWidth / 2
                     var endY = startY
-                    var startX_border = scrollX.toFloat()
-                    var startY_border = scrollY.toFloat() + h
-                    var endX_border = startX_border + w.toFloat()
-                    var endY_border = startY_border
+//                    var startX_border = scrollX.toFloat()
+//                    var startY_border = scrollY.toFloat() + h
+//                    var endX_border = startX_border + w.toFloat()
+//                    var endY_border = startY_border
+                    var startX_border = startX
+                    var startY_border = startY
+                    var endX_border = endX
+                    var endY_border = endY
                     if (it.isRightParalleLogram) {
                         startX = startX - paralleLogramLeng
+                        startX_border = startX
                     } else {
                         endX = endX + paralleLogramLeng
+                        endX_border = endX
                     }
                     if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
                         linePath?.reset()
@@ -618,8 +641,8 @@ open class KParallelogramView : KTextView {
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
                         //fixme
-                        borderPath?.lineTo(startX_border, startY_border)
-                        borderPath?.lineTo(endX_border, endY_border)
+//                        borderPath?.lineTo(startX_border, startY_border)
+//                        borderPath?.lineTo(endX_border, endY_border)
                     } else {
                         var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
                         var starY0 = startY
@@ -635,14 +658,14 @@ open class KParallelogramView : KTextView {
                             //canvas.drawLine(starX0, starY0, endX2, endY, paint)
                         }
                         //fixme
-                        borderPath?.lineTo(starX0_border, starY0_border)
-                        borderPath?.lineTo(endX2_border, endY_border)
+//                        borderPath?.lineTo(starX0_border, starY0_border)
+//                        borderPath?.lineTo(endX2_border, endY_border)
                     }
                 }
                 //fixme 只显示边框以内的区域；边框以外的不显示。
-                paint.strokeWidth = 0F
-                paint.style = Paint.Style.FILL//fixme 解决边框切割问题。
-                //paint.style = Paint.Style.FILL_AND_STROKE
+                //paint.strokeWidth = 0F
+                //paint.style = Paint.Style.FILL//fixme 解决边框切割问题。
+                paint.style = Paint.Style.FILL_AND_STROKE//fixme 平行四边形边框大小都统一了。可以设置边框。
                 paint.setPathEffect(null)
                 paint.setShader(null)
                 paint.color = Color.WHITE

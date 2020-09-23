@@ -21,6 +21,8 @@ import cn.oi.klittle.era.comm.kpx
  * @param strokeHorizontalColors 边框水平渐变颜色数组值【均匀渐变】，[测试发现，渐变色对阴影也有效果]
  * @param strokeVerticalColors 边框垂直渐变颜色数组值【均匀】,会覆盖水平渐变。
  * @param isStrokeGradient 边框色是否渐变,默认是
+ * @param all_radius 圆角（0~90度）
+ * @param rotation 三角形旋转角度。（以三角形中心进行旋转）
  * @param dashWidth 虚线长度
  * @param dashGap 虚线之间的间隙
  * @param isdashFlow 虚线是否流动。
@@ -29,7 +31,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param textSize 文本大小，这里是画笔paint直接设置，所以，这里单位是像素px
  * @param textLeftPadding 文字左边的距离。fixme 为了了好计算，文本位置，以斜边上高的交点为基准（起点）。
  * @param textTopPadding 文字上边的距离
- * @param textRotation 文本旋转角度，以斜边上高的交点为基准进行旋转。正数，顺时针旋转。默认逆时针旋转45度。
+ * @param textRotation fixme 文本旋转角度，以斜边上高的交点为基准进行旋转。正数，顺时针旋转。默认逆时针旋转45度。
  * @param isBold 字体是否为粗体
  * @param skewX 实现斜体效果，负数表示右斜，正数左斜。一般 skewX=-0.3f 即可。
  * @param typeface 自定义字体
@@ -38,6 +40,7 @@ import cn.oi.klittle.era.comm.kpx
 data class KTriangleEntity(var x: Int = 0, var y: Int = 0, var width: Int = 0, var height: Int = 0, var subWidth: Int = 0, var subHeight: Int = 0,
                            var bg_color: Int = Color.BLUE, var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null, var isBgGradient: Boolean = true,
                            var strokeWidth: Float = 0F, var strokeColor: Int = Color.WHITE, var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null, var isStrokeGradient: Boolean = true,
+                           var all_radius: Float = 0F,var rotation:Float=0f,
                            var dashWidth: Float = 0F, var dashGap: Float = 0F,
                            var isdashFlow: Boolean = false, var dashSpeed: Float = kpx.x(1f),
                            var text: String? = null, var textSize: Float = kpx.x(30f), var textColor: Int = Color.WHITE, var textLeftPadding: Float = 0f, var textTopPadding: Float = 0f,
@@ -73,6 +76,7 @@ data class KTriangleEntity(var x: Int = 0, var y: Int = 0, var width: Int = 0, v
     }
 
     var mHypotenuse: Int = 0
+
     //fixme 获取直角三角形斜边的长度。
     fun getHypotenuse(): Int {
         if (mHypotenuse > 0) {
@@ -108,6 +112,7 @@ data class KTriangleEntity(var x: Int = 0, var y: Int = 0, var width: Int = 0, v
     }
 
     var mTriangleHeightY = 0
+
     //fixme 获取三角形斜边上高的Y坐标
     fun getTriangleHeightY(): Int {
         if (mTriangleHeightY > 0) {
@@ -121,6 +126,7 @@ data class KTriangleEntity(var x: Int = 0, var y: Int = 0, var width: Int = 0, v
     }
 
     var mTriangleHeightX = 0
+
     //fixme 获取三角形斜边上高的X坐标
     fun getTriangleHeightX(): Int {
         if (mTriangleHeightX > 0) {

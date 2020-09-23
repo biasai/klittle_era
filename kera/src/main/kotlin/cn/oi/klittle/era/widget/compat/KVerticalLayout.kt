@@ -247,7 +247,7 @@ open class KVerticalLayout : LinearLayout {
                         it(canvas, inner!!.resetPaint())
                     }
                     //画左上角的三角形
-                    inner?.drawTriangle(canvas, inner!!.resetPaint(), this)
+                    //inner?.drawTriangle(canvas, inner!!.resetPaint(), this)
                     //画水波纹
                     inner?.drawWaterRipple(canvas)
                     //画圆角

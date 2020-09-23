@@ -925,6 +925,19 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KDragMotionEventView(ctx) }, theme = 0) { init() }
         }
 
+        //FIXME 三角形
+        inline fun ViewManager.KTriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
+            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.ktriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
+            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kTriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
+            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        }
+
         //FIXME 平行四边形
         inline fun ViewManager.KParallelogramView(init: (@AnkoViewDslMarker KParallelogramView).() -> Unit): KParallelogramView {
             return ankoView({ ctx: Context -> KParallelogramView(ctx) }, theme = 0) { init() }

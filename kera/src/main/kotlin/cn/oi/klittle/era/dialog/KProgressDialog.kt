@@ -76,7 +76,12 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
         override fun onComplete() {
             showTime?.let {
                 if (System.currentTimeMillis() - it >= timeOut) {
-                    https?.cancelHttp(false)//fixme 网络连接超时，网络请求取消（回调清空）。
+                    try {
+                        https?.dismissProgressbar()//fixme 防止共享弹窗计数错误。所以还是要手动调用一次。
+                        https?.cancelHttp(false)//fixme 网络连接超时，网络请求取消（回调清空）。
+                    } catch (e: java.lang.Exception) {
+                        KLoggerUtils.e("弹窗超时关闭异常：\t" + KCatchException.getExceptionMsg(e), true)
+                    }
                     dismiss()//fixme 弹框超时关闭
                     ctx?.runOnUiThread {
                         try {
@@ -192,7 +197,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
             disposable = null
             showTime = null
             timeOutCallback = null
-            progressView=null
+            progressView = null
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             KLoggerUtils.e("网络弹窗销毁异常：\t" + KCatchException.getExceptionMsg(e), true)

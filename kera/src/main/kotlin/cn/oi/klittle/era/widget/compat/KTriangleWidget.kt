@@ -9,16 +9,24 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
 
 //                                fixme 使用案例
-//                                KView(this).apply {
+//                                ktriangleWidget {
 //                                    triangle {
-//                                        width = kpx.x(128)
-//                                        height = height
+//                                        x = kpx.x(100)//三角型左上角起点。默认是左上角（0，0）
+//                                        y = kpx.x(50)
+//                                        width = kpx.x(200)//三角形的宽度
+//                                        height = height//三角型的高度
 //                                        subWidth = kpx.x(85)//fixme 减去的宽度，用于实现矩形效果。
+//                                        subHeight=subWidth//减去的高度
+//                                        all_radius=45f//圆角
+//                                        rotation=90f//fixme 三角形旋转90度（以三角形的中心进行旋转）。（90度左上角会旋转到了右上角的位置）;180度，左上角就到右下角去了。270度就到左下角去了。
 //                                        bgHorizontalColors(Color.parseColor("#DC4E41"), Color.parseColor("#C97676"))
 //                                        text = "DEBUG"
 //                                        isBold = true
 //                                        textColor = Color.WHITE
 //                                        textSize = kpx.x(26f)
+//                                        //textLeftPadding=-kpx.x(50f)//fixme 文本左内补丁间距。正负都有效。
+//                                        textTopPadding=0f
+//                                        textRotation = -45f//fixme 文本旋转角度
 //                                        //strokeColor = textColor
 //                                        //strokeHorizontalColors(Color.parseColor("#DC4E41"),textColor,textColor,textColor, Color.parseColor("#FF8080"))
 //                                        //strokeWidth = kpx.x(1f)
@@ -72,10 +80,10 @@ import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
 //                                }
 
 /**
- * 画以左上角为基准，直角三角形。
+ * 画以左上角为基准，直角三角形。fixme 在文本背景的上面。不具备切割能力。
  * fixme 新增圆形清除功能。clearCircle()
  */
-open class K6TriangleWidget : K5LparamWidget {
+open class KTriangleWidget : KView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -86,7 +94,7 @@ open class K6TriangleWidget : K5LparamWidget {
     //按下
     var triangle_press: KTriangleEntity? = null
 
-    fun triangle_press(block: KTriangleEntity.() -> Unit): K6TriangleWidget {
+    fun triangle_press(block: KTriangleEntity.() -> Unit): KTriangleWidget {
         if (triangle_press == null) {
             triangle_press = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -98,7 +106,7 @@ open class K6TriangleWidget : K5LparamWidget {
     //鼠标悬浮
     var triangle_hover: KTriangleEntity? = null
 
-    fun triangle_hover(block: KTriangleEntity.() -> Unit): K6TriangleWidget {
+    fun triangle_hover(block: KTriangleEntity.() -> Unit): KTriangleWidget {
         if (triangle_hover == null) {
             triangle_hover = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -110,7 +118,7 @@ open class K6TriangleWidget : K5LparamWidget {
     //聚焦
     var triangle_focuse: KTriangleEntity? = null
 
-    fun triangle_focuse(block: KTriangleEntity.() -> Unit): K6TriangleWidget {
+    fun triangle_focuse(block: KTriangleEntity.() -> Unit): KTriangleWidget {
         if (triangle_focuse == null) {
             triangle_focuse = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -122,7 +130,7 @@ open class K6TriangleWidget : K5LparamWidget {
     //选中
     var triangle_selected: KTriangleEntity? = null
 
-    fun triangle_selected(block: KTriangleEntity.() -> Unit): K6TriangleWidget {
+    fun triangle_selected(block: KTriangleEntity.() -> Unit): KTriangleWidget {
         if (triangle_selected == null) {
             triangle_selected = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -141,7 +149,7 @@ open class K6TriangleWidget : K5LparamWidget {
         return triangle!!
     }
 
-    fun triangle(block: KTriangleEntity.() -> Unit): K6TriangleWidget {
+    fun triangle(block: KTriangleEntity.() -> Unit): KTriangleWidget {
         block(getmTriangle())
         getmTriangle().initMeasure()
         invalidate()
@@ -149,9 +157,15 @@ open class K6TriangleWidget : K5LparamWidget {
     }
 
 
-    //fixme 三角形，在AutoBg图片的上面。
-    override fun draw2Front(canvas: Canvas, paint: Paint) {
-        super.draw2Front(canvas, paint)
+//    //fixme 三角形，在AutoBg图片的上面。
+//    override fun draw2Front(canvas: Canvas, paint: Paint) {
+//        super.draw2Front(canvas, paint)
+//        drawTriangle(canvas, paint, this)
+//    }
+
+    //fixme 三角形，在文本背景的上面。
+    override fun draw2Behind(canvas: Canvas, paint: Paint) {
+        super.draw2Behind(canvas, paint)
         drawTriangle(canvas, paint, this)
     }
 
@@ -193,6 +207,13 @@ open class K6TriangleWidget : K5LparamWidget {
         view?.apply {
             var scrollX = view.scrollX
             var scrollY = view.scrollY
+            //fixme 旋转
+            if (triangle.rotation != 0f) {
+                canvas.save()
+                var rl = triangle.x + triangle.width.toFloat() / 2.toFloat() + scrollX
+                var rt = triangle.y + triangle.height.toFloat() / 2.toFloat() + scrollY
+                canvas.rotate(triangle.rotation, rl, rt)
+            }
             //画三角形内部
             paint.style = Paint.Style.FILL
             paint.color = triangle.bg_color
@@ -222,13 +243,19 @@ open class K6TriangleWidget : K5LparamWidget {
                 paint.setShader(shader)
             }
             var path = Path()
-            path.moveTo(triangle.x.toFloat() + triangle.subWidth + scrollX, triangle.y.toFloat() + scrollY)//左上角，顶点
-            path.lineTo(triangle.x.toFloat() + triangle.width + scrollX, triangle.y.toFloat() + scrollY)//长度
-            path.lineTo(triangle.x.toFloat() + scrollX, triangle.y.toFloat() + triangle.height + scrollY)//高度
-            path.lineTo(triangle.x.toFloat() + scrollX, triangle.y.toFloat() + triangle.subHeight + scrollY)
+            path.moveTo(triangle.x.toFloat() + triangle.subWidth + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + scrollY + triangle.strokeWidth / 2)//fixme 左上角，顶点
+            path.lineTo(triangle.x.toFloat() + triangle.width + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + scrollY + triangle.strokeWidth / 2)//长度
+            path.lineTo(triangle.x.toFloat() + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + triangle.height + scrollY + triangle.strokeWidth / 2)//高度
+            path.lineTo(triangle.x.toFloat() + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + triangle.subHeight + scrollY + triangle.strokeWidth / 2)
             path.close()
+            if (triangle.all_radius != 0f) {
+                paint?.setPathEffect(CornerPathEffect(triangle.all_radius))
+            } else {
+                paint?.setPathEffect(null)
+            }
             canvas.drawPath(path, paint)
             paint.setShader(null)
+            paint?.setPathEffect(null)
             //画边框
             if (triangle.strokeWidth > 0) {
                 //画三角形边框
@@ -263,15 +290,30 @@ open class K6TriangleWidget : K5LparamWidget {
                     paint.setShader(shader)
                 }
                 path.reset()
-                path.moveTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + triangle.subWidth + scrollX, triangle.y.toFloat() + triangle.strokeWidth / 2 + scrollY)//左上角，顶点
-                path.lineTo(triangle.x.toFloat() + triangle.width - triangle.strokeWidth + scrollX, triangle.y.toFloat() + triangle.strokeWidth / 2 + scrollY)//长度
-                path.lineTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + scrollX, triangle.y.toFloat() + triangle.height - triangle.strokeWidth + scrollY)//高度
-                path.lineTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + scrollX, triangle.y.toFloat() - triangle.strokeWidth + triangle.subHeight + scrollY)
+//                path.moveTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + triangle.subWidth + scrollX, triangle.y.toFloat() + triangle.strokeWidth / 2 + scrollY)//左上角，顶点
+//                path.lineTo(triangle.x.toFloat() + triangle.width - triangle.strokeWidth + scrollX, triangle.y.toFloat() + triangle.strokeWidth / 2 + scrollY)//长度
+//                path.lineTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + scrollX, triangle.y.toFloat() + triangle.height - triangle.strokeWidth + scrollY)//高度
+//                path.lineTo(triangle.x.toFloat() + triangle.strokeWidth / 2 + scrollX, triangle.y.toFloat() + triangle.strokeWidth / 2 + triangle.subHeight + scrollY)
+//                path.close()
+                path.moveTo(triangle.x.toFloat() + triangle.subWidth + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + scrollY + triangle.strokeWidth / 2)//fixme 左上角，顶点
+                path.lineTo(triangle.x.toFloat() + triangle.width + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + scrollY + triangle.strokeWidth / 2)//长度
+                path.lineTo(triangle.x.toFloat() + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + triangle.height + scrollY + triangle.strokeWidth / 2)//高度
+                path.lineTo(triangle.x.toFloat() + scrollX + triangle.strokeWidth / 2, triangle.y.toFloat() + triangle.subHeight + scrollY + triangle.strokeWidth / 2)
                 path.close()
+                var cornerPathEffect: CornerPathEffect? = null
+                if (triangle.all_radius != 0f) {
+                    cornerPathEffect = CornerPathEffect(triangle.all_radius)
+                }
                 //虚线
                 if (triangle.dashWidth > 0 && triangle.dashGap > 0) {
                     var dashPathEffect = DashPathEffect(floatArrayOf(triangle.dashWidth, triangle.dashGap), trianglePhase)
-                    paint.setPathEffect(dashPathEffect)
+                    if (cornerPathEffect == null) {
+                        paint?.setPathEffect(dashPathEffect)
+                    } else {
+                        paint?.setPathEffect(ComposePathEffect(dashPathEffect, cornerPathEffect))//圆角+虚线
+                    }
+                } else if (cornerPathEffect != null) {
+                    paint?.setPathEffect(cornerPathEffect)
                 }
                 canvas.drawPath(path, paint)
                 paint.setShader(null)
@@ -332,6 +374,9 @@ open class K6TriangleWidget : K5LparamWidget {
                     canvas.restore()
                 }
             }
+            if (triangle.rotation != 0f) {
+                canvas.restore()//三角形旋转恢复。
+            }
         }
     }
 
@@ -369,6 +414,7 @@ open class K6TriangleWidget : K5LparamWidget {
     }
 
     var kCirCles: MutableList<KCirCle>? = null
+
     /**
      * 清除圆，该圆的内容会被清空
      * @param cx 圆心x坐标

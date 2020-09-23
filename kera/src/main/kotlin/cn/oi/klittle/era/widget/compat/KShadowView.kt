@@ -9,10 +9,6 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.entity.widget.compat.KShadowEntity
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.utils.KRadiusUtils
-import android.graphics.Canvas.ALL_SAVE_FLAG
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-import cn.oi.klittle.era.utils.KLoggerUtils
 import org.jetbrains.anko.textColor
 
 
@@ -79,7 +75,7 @@ import org.jetbrains.anko.textColor
  * fixme 阴影圆角组件（这个圆角真实有效，能够遮挡下面，不受硬件加速和关闭影响），升级版
  * Created by 彭治铭 on 2018/7/1.
  */
-open class KShadowView : K6TriangleWidget {
+open class KShadowView : K5LparamWidget {
 
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

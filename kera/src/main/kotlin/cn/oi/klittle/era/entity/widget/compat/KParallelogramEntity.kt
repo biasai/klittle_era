@@ -7,7 +7,7 @@ import cn.oi.klittle.era.comm.kpx
  * 平行四边形
  * @param paralleLogramRadius 平行四边形变形率（0~1）。
  * @param isRightParalleLogram 变形是否向右边变形；true向右边变形；false向左边变形。
- * @param strokeWidth 边框宽度(所有)
+ * @param strokeWidth 边框宽度(所有)；fixme 边框宽度大小统一设置，各个边框大小不能单独设置。想要单独设置边框大小。请使用 border{}属性。颜色可以单独设置。
  * @param strokeColor 边框颜色(所有)
  * @param dashWidth 虚线长度(所有)
  * @param dashGap 虚线之间的间隙(所有)
@@ -41,16 +41,16 @@ data class KParallelogramEntity(
         var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
         var isDrawLeft: Boolean = true, var isDrawTop: Boolean = true,
         var isDrawRight: Boolean = true, var isDrawBottom: Boolean = true,
-        var leftStrokeWidth: Float? = null, var leftStrokeColor: Int? = null,
+        var leftStrokeColor: Int? = null,
         var leftDashWidth: Float? = null, var leftDashGap: Float? = null,
         var leftStrokeHorizontalColors: IntArray? = null, var leftStrokeVerticalColors: IntArray? = null,
-        var topStrokeWidth: Float? = null, var topStrokeColor: Int? = null,
+        var topStrokeColor: Int? = null,
         var topDashWidth: Float? = null, var topDashGap: Float? = null,
         var topStrokeHorizontalColors: IntArray? = null, var topStrokeVerticalColors: IntArray? = null,
-        var rightStrokeWidth: Float? = null, var rightStrokeColor: Int? = null,
+        var rightStrokeColor: Int? = null,
         var rightDashWidth: Float? = null, var rightDashGap: Float? = null,
         var rightStrokeHorizontalColors: IntArray? = null, var rightStrokeVerticalColors: IntArray? = null,
-        var bottomStrokeWidth: Float? = null, var bottomStrokeColor: Int? = null,
+        var bottomStrokeColor: Int? = null,
         var bottomDashWidth: Float? = null, var bottomDashGap: Float? = null,
         var bottomStrokeHorizontalColors: IntArray? = null, var bottomStrokeVerticalColors: IntArray? = null,
         var all_radius: Float = -1F,

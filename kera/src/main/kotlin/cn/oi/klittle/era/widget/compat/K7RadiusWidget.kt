@@ -7,17 +7,16 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.base.KBaseView
-import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KRadiusEntity
-import cn.oi.klittle.era.utils.KLoggerUtils
 import cn.oi.klittle.era.utils.KRadiusUtils
 
 /**
  * 七：集成圆角属性（这个圆角会遮挡住下面，是真正的圆角）,背景渐变。圆角兼容api 16 即4.1 。15及以下的版本没测试过。应该也可以。
  * fixme 兼容性没问题。能够兼容4.0的系统。比selectorDrawable的兼容性都好。亲测！
  * fixme 所以drawPath()比canvas.drawRoundRect()兼容性要好。多用路径。
+ * fixme drawXfermodeCircle()切除一个圆；drawXfermodeRect（）切除一个矩形。
  */
-open class K7RadiusWidget : K6TriangleWidget {
+open class K7RadiusWidget : K5LparamWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -377,7 +376,7 @@ open class K7RadiusWidget : K6TriangleWidget {
 //                    }
 
     /**
-     * 切除一个圆
+     * fixme 切除一个圆
      */
     fun drawXfermodeCircle(canvas: Canvas, x: Float, y: Float, radius: Float) {
         initXferModePaint()
@@ -389,7 +388,7 @@ open class K7RadiusWidget : K6TriangleWidget {
     }
 
     /**
-     * 切除一个矩形
+     * fixme 切除一个矩形
      */
     fun drawXfermodeRect(canvas: Canvas, left: Int, top: Int, right: Int, bottom: Int) {
         initXferModePaint()
