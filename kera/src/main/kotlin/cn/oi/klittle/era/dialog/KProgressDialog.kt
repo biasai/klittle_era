@@ -77,7 +77,7 @@ open class KProgressDialog(ctx: Context, isStatus: Boolean = true, isTransparent
             showTime?.let {
                 if (System.currentTimeMillis() - it >= timeOut) {
                     try {
-                        https?.dismissProgressbar()//fixme 防止共享弹窗计数错误。所以还是要手动调用一次。
+                        https?.dismissProgressbarOutTime()//fixme 防止共享弹窗计数错误。所以还是要手动调用一次。
                         https?.cancelHttp(false)//fixme 网络连接超时，网络请求取消（回调清空）。
                     } catch (e: java.lang.Exception) {
                         KLoggerUtils.e("弹窗超时关闭异常：\t" + KCatchException.getExceptionMsg(e), true)
