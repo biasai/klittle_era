@@ -253,12 +253,15 @@ open class KHttps() {
 
     //fixme 关闭进度条；连接超时的时候调用。在KProgressDialog超时关闭时调用。
     open fun dismissProgressbarOutTime() {
-        progressbar2Count = 0
-        dismissProgressbar()
-        progressbar2 = null
-        progressbar = null
-        progressbar2Count = 0//fixme 防止网络进度条计算错误不关闭。progressbar2Count是静态变量。
-
+        if (isShowLoad) {
+            if (isSharingDialog) {
+                progressbar2Count = 0
+                dismissProgressbar()
+                progressbar2 = null
+                progressbar = null
+                progressbar2Count = 0//fixme 防止网络进度条计算错误不关闭。progressbar2Count是静态变量。
+            }
+        }
     }
 
     open var isSharingDialog: Boolean = false//fixme 是否共用Dialog网络进度弹窗
