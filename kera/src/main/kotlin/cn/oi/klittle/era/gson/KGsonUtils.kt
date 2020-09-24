@@ -35,6 +35,8 @@ import kotlin.collections.HashMap
  * fixme 支持 ArrayList<> 类型（ArrayList()可以实例化）；不支持MutableList<>类型(不能直接实例化)；
  *
  * fixme 即：目前不支持 Character 和 MutableList；其他基本都支持。
+ *
+ * fixme 兼容json字段首字母大小写问题。
  */
 object KGsonUtils {
 
@@ -58,6 +60,8 @@ object KGsonUtils {
         return str
     }
 
+//    var datas: AppHttpResult<ArrayList<WareHousingInfo>?>//fixme 调用案例。
+//    datas=KGsonUtils.parseJSONToAny(json)
     /**
      * fixme JSON数据转Any对象;注意这个方法调用的时候可能不会提示哦。需要手动去敲出来。
      * @param json json数据(字符串类型)
@@ -166,14 +170,18 @@ object KGsonUtils {
                 try {
                     if (type == "boolean" || type.equals("class java.lang.Boolean")) {
                         var name2 = name
-                        if (name2.contains("Is")) {
-                            var index = name2.indexOf("Is")
-                            if (index == 0 && name2.length > 2) {
-                                name2 = name2.substring(2)
-                                name2 = name2.substring(0, 1).toUpperCase() + name2.substring(1)
-                                m = t::class.java.getMethod("is$name2")
-                                val obj = m!!.invoke(t) ?: continue
+                        try {
+                            if (name2.contains("Is")) {
+                                var index = name2.indexOf("Is")
+                                if (index == 0 && name2.length > 2) {
+                                    name2 = name2.substring(2)
+                                    name2 = name2.substring(0, 1).toUpperCase() + name2.substring(1)
+                                    m = t::class.java.getMethod("is$name2")
+                                    val obj = m!!.invoke(t) ?: continue
+                                }
                             }
+                        } catch (e: java.lang.Exception) {
+                            KLoggerUtils.e("布尔类型转json异常：\t" + KCatchException.getExceptionMsg(e))
                         }
                         //Log.e("test","name：\t"+name+"\tname2:\t"+name2)
                         if (m == null) {
@@ -184,7 +192,7 @@ object KGsonUtils {
                     } else {
                         // 调用getter方法获取属性值
                         m = t::class.java.getMethod("get$name")
-                        if (m!=null) {
+                        if (m != null) {
                             val obj = m!!.invoke(t) ?: continue
                         }
                     }
@@ -555,8 +563,14 @@ object KGsonUtils {
 //                clazz?.declaredFields?.forEach {
                 fields?.forEach {
                     var value: String? = null
-                    if (jsonObject.has(it.name)) {//判斷json數據是否存在該字段
+                    if (jsonObject.has(it.name)) {//判斷json數據是否存在該字段；默认首字母是小写的。
                         value = jsonObject.getString(it.name)//获取json数据
+                    } else {
+                        //fixme 兼容json字段首字母大小写问题。
+                        var name2 = it.name.substring(0, 1).toUpperCase() + it.name.substring(1)//属性名称【首字目进行大写】。
+                        if (jsonObject.has(name2)) {//判斷json數據是否存在該字段
+                            value = jsonObject.getString(name2)//获取json数据
+                        }
                     }
                     //Log.e("test","name:\t"+it.name+"\tvalue:\t"+value)
                     if (value != null && !value.trim().equals("") && !value.trim().equals("null")) {//fixme 去除null
@@ -565,18 +579,49 @@ object KGsonUtils {
                         var name = it.name.substring(0, 1).toUpperCase() + it.name.substring(1)//属性名称【首字目进行大写】。
                         var m: Method? = null
                         if (type == "boolean" || type.equals("class java.lang.Boolean")) {//fixme boolean是基本類型，class java.lang.Boolean是對象類型。都存在。
-                            var name2 = name
-                            if (name2.contains("Is")) {
-                                var index = name2.indexOf("Is")
-                                if (index == 0 && name2.length > 2) {
-                                    name2 = name2.substring(2)
-                                    name2 = name2.substring(0, 1).toUpperCase() + name2.substring(1)
+                            //KLoggerUtils.e("name2:\t"+name2)
+                            try {
+                                m = clazz.getMethod("set" + name, it.type)
+                            } catch (e: java.lang.Exception) {
+                                //KLoggerUtils.e("GSON布尔类型异常：\t" + KCatchException.getExceptionMsg(e))
+                                try {
+                                    var name2 = name
+                                    if (name2.contains("Is")) {
+                                        var index = name2.indexOf("Is")
+                                        if (index == 0 && name2.length > 2) {
+                                            name2 = name2.substring(2)
+                                            name2 = name2.substring(0, 1).toUpperCase() + name2.substring(1)
+                                        }
+                                    }
+                                    m = clazz.getMethod("set" + name2, it.type)
+                                } catch (e: java.lang.Exception) {
+                                    KLoggerUtils.e("GSON布尔类型异常2：\t" + KCatchException.getExceptionMsg(e))
                                 }
                             }
-                            m = clazz.getMethod("set" + name2, it.type)
+
                         }
                         if (m == null) {
-                            m = clazz.getMethod("set" + name, it.type)
+                            //isFinishedLabel 小写的is;会自动去除掉，如：setFinishedLabel（）；大写的Is就不会。如：setIsFinishedLabel（）
+                            if (name.contains("Is")) {
+                                try {
+                                    var name2 = name
+                                    if (name2.contains("Is")) {
+                                        var index = name2.indexOf("Is")
+                                        if (index == 0 && name2.length > 2) {
+                                            name2 = name2.substring(2)
+                                            name2 = name2.substring(0, 1).toUpperCase() + name2.substring(1)//fixme 去除了Is
+                                        }
+                                    }
+                                    m = clazz.getMethod("set" + name2, it.type)
+                                } catch (e: java.lang.Exception) {
+                                    //KLoggerUtils.e("JSON异常：\t" + KCatchException.getExceptionMsg(e))
+                                }
+                                if (m == null) {
+                                    m = clazz.getMethod("set" + name, it.type)
+                                }
+                            } else {
+                                m = clazz.getMethod("set" + name, it.type)
+                            }
                         }
                         //Log.e("test", "属性:\t" + it.name + "\ttype:\t" + type)
                         //Log.e("test", "属性:\t" + it.name + "\t值：\t" + value + "\t类型:\t" + it.genericType.toString() + "\ttype:\t" + type)
@@ -699,13 +744,13 @@ object KGsonUtils {
                                     }
                                 }
                             } catch (e: Exception) {
-                                KLoggerUtils.e(msg = "kGsonUtils嵌套json解析异常:\t" + e.message)
+                                KLoggerUtils.e("kGsonUtils嵌套json解析异常:\t" + KCatchException.getExceptionMsg(e), true)
                             }
                         }
                     }
                 }
             } catch (e: Exception) {
-                KLoggerUtils.e(msg = "KGsonUtils转实体类异常:\t" + e.message)
+                KLoggerUtils.e("KGsonUtils转实体类异常:\t" + KCatchException.getExceptionMsg(e), true)
             }
         }
         return t!!
