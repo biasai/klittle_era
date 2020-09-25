@@ -604,6 +604,7 @@ object KGsonUtils {
                                 //KLoggerUtils.e("GSON布尔类型异常：\t" + KCatchException.getExceptionMsg(e))
                                 try {
                                     var name2 = name
+                                    //fixme 只有 is是特殊的。has不是。has正常处理就行。
                                     if (name2.contains("Is")) {
                                         var index = name2.indexOf("Is")
                                         if (index == 0 && name2.length > 2) {
