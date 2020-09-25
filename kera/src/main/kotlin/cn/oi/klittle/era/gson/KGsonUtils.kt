@@ -563,13 +563,30 @@ object KGsonUtils {
 //                clazz?.declaredFields?.forEach {
                 fields?.forEach {
                     var value: String? = null
+                    //fixme it.name就是实体类属性名称。和属性名称一样的。是大写就是大写，是小写就是小写。
                     if (jsonObject.has(it.name)) {//判斷json數據是否存在該字段；默认首字母是小写的。
                         value = jsonObject.getString(it.name)//获取json数据
                     } else {
-                        //fixme 兼容json字段首字母大小写问题。
+                        //fixme 兼容json字段首字母大写问题。
                         var name2 = it.name.substring(0, 1).toUpperCase() + it.name.substring(1)//属性名称【首字目进行大写】。
                         if (jsonObject.has(name2)) {//判斷json數據是否存在該字段
                             value = jsonObject.getString(name2)//获取json数据
+                        } else {
+                            //fixme 兼容json字段首字母小写问题。
+                            var name3 = it.name.substring(0, 1).toLowerCase() + it.name.substring(1)//属性名称【首字目进行小写】。
+                            if (jsonObject.has(name3)) {//判斷json數據是否存在該字段
+                                value = jsonObject.getString(name3)//获取json数据
+                            } else {
+                                var name4 = it.name.toLowerCase()//fixme 全部小写
+                                if (jsonObject.has(name4)) {//判斷json數據是否存在該字段
+                                    value = jsonObject.getString(name4)//获取json数据
+                                } else {
+                                    var name5 = it.name.toUpperCase()//fixme 全部大写
+                                    if (jsonObject.has(name5)) {//判斷json數據是否存在該字段
+                                        value = jsonObject.getString(name5)//获取json数据
+                                    }
+                                }
+                            }
                         }
                     }
                     //Log.e("test","name:\t"+it.name+"\tvalue:\t"+value)
