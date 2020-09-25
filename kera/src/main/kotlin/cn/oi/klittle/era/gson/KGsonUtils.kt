@@ -597,6 +597,7 @@ object KGsonUtils {
                         var m: Method? = null
                         if (type == "boolean" || type.equals("class java.lang.Boolean")) {//fixme boolean是基本類型，class java.lang.Boolean是對象類型。都存在。
                             //KLoggerUtils.e("name2:\t"+name2)
+                            //FIXME TRUE 和 true不区分大小写，都能顺利转换成布尔类型。false和FALSE也能转布尔类型。
                             try {
                                 m = clazz.getMethod("set" + name, it.type)
                             } catch (e: java.lang.Exception) {
@@ -654,6 +655,7 @@ object KGsonUtils {
                             } else if (type.equals("class java.lang.Long")) {
                                 m?.invoke(t, value.toLong())//Long类型
                             } else if (type.equals("class java.lang.Boolean")) {
+                                //FIXME TRUE 和 true不区分大小写，都能顺利转换成布尔类型。
                                 m?.invoke(t, value.toBoolean())//布尔类型。 "true".toBoolean() 只有true能够转换为true，其他所有值都只能转换为false
                             } else if (type.equals("class java.lang.Short")) {
                                 m?.invoke(t, value.toShort())//Short类型
