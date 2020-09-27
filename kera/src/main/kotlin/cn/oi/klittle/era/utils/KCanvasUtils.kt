@@ -111,7 +111,7 @@ object KCanvasUtils {
     }
 
     /**
-     * fixme 画气泡
+     * fixme 画气泡；KAirEntry里面有调用案例。（对话框样式）
      */
     fun drawAirBubbles(canvas: Canvas?, kAirEntry: KAirEntry) {
         canvas?.apply {

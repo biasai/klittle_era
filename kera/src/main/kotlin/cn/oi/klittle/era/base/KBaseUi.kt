@@ -926,16 +926,16 @@ abstract class KBaseUi {
         }
 
         //FIXME 三角形
-        inline fun ViewManager.KTriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
-            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.KTriangleView(init: (@AnkoViewDslMarker KTriangleView).() -> Unit): KTriangleView {
+            return ankoView({ ctx: Context -> KTriangleView(ctx) }, theme = 0) { init() }
         }
 
-        inline fun ViewManager.ktriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
-            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.ktriangleView(init: (@AnkoViewDslMarker KTriangleView).() -> Unit): KTriangleView {
+            return ankoView({ ctx: Context -> KTriangleView(ctx) }, theme = 0) { init() }
         }
 
-        inline fun ViewManager.kTriangleWidget(init: (@AnkoViewDslMarker KTriangleWidget).() -> Unit): KTriangleWidget {
-            return ankoView({ ctx: Context -> KTriangleWidget(ctx) }, theme = 0) { init() }
+        inline fun ViewManager.kTriangleView(init: (@AnkoViewDslMarker KTriangleView).() -> Unit): KTriangleView {
+            return ankoView({ ctx: Context -> KTriangleView(ctx) }, theme = 0) { init() }
         }
 
         //FIXME 平行四边形
@@ -962,6 +962,19 @@ abstract class KBaseUi {
 
         inline fun ViewManager.kdiamondView(init: (@AnkoViewDslMarker KDiamondView).() -> Unit): KDiamondView {
             return ankoView({ ctx: Context -> KDiamondView(ctx) }, theme = 0) { init() }
+        }
+
+        //FIXME 五角星
+        inline fun ViewManager.KStartView(init: (@AnkoViewDslMarker KStartView).() -> Unit): KStartView {
+            return ankoView({ ctx: Context -> KStartView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kStartView(init: (@AnkoViewDslMarker KStartView).() -> Unit): KStartView {
+            return ankoView({ ctx: Context -> KStartView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kstartView(init: (@AnkoViewDslMarker KStartView).() -> Unit): KStartView {
+            return ankoView({ ctx: Context -> KStartView(ctx) }, theme = 0) { init() }
         }
 
         //FIXME 双箭头控件

@@ -9,7 +9,7 @@ import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
 
 //                                fixme 使用案例
-//                                ktriangleWidget {
+//                                ktriangleView {
 //                                    triangle {
 //                                        x = kpx.x(100)//三角型左上角起点。默认是左上角（0，0）
 //                                        y = kpx.x(50)
@@ -83,7 +83,7 @@ import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
  * 画以左上角为基准，直角三角形。fixme 在文本背景的上面。不具备切割能力。
  * fixme 新增圆形清除功能。clearCircle()
  */
-open class KTriangleWidget : KView {
+open class KTriangleView : KView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -94,7 +94,7 @@ open class KTriangleWidget : KView {
     //按下
     var triangle_press: KTriangleEntity? = null
 
-    fun triangle_press(block: KTriangleEntity.() -> Unit): KTriangleWidget {
+    fun triangle_press(block: KTriangleEntity.() -> Unit): KTriangleView {
         if (triangle_press == null) {
             triangle_press = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -106,7 +106,7 @@ open class KTriangleWidget : KView {
     //鼠标悬浮
     var triangle_hover: KTriangleEntity? = null
 
-    fun triangle_hover(block: KTriangleEntity.() -> Unit): KTriangleWidget {
+    fun triangle_hover(block: KTriangleEntity.() -> Unit): KTriangleView {
         if (triangle_hover == null) {
             triangle_hover = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -118,7 +118,7 @@ open class KTriangleWidget : KView {
     //聚焦
     var triangle_focuse: KTriangleEntity? = null
 
-    fun triangle_focuse(block: KTriangleEntity.() -> Unit): KTriangleWidget {
+    fun triangle_focuse(block: KTriangleEntity.() -> Unit): KTriangleView {
         if (triangle_focuse == null) {
             triangle_focuse = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -130,7 +130,7 @@ open class KTriangleWidget : KView {
     //选中
     var triangle_selected: KTriangleEntity? = null
 
-    fun triangle_selected(block: KTriangleEntity.() -> Unit): KTriangleWidget {
+    fun triangle_selected(block: KTriangleEntity.() -> Unit): KTriangleView {
         if (triangle_selected == null) {
             triangle_selected = getmTriangle().copy()//整个属性全部复制过来。
         }
@@ -149,7 +149,7 @@ open class KTriangleWidget : KView {
         return triangle!!
     }
 
-    fun triangle(block: KTriangleEntity.() -> Unit): KTriangleWidget {
+    fun triangle(block: KTriangleEntity.() -> Unit): KTriangleView {
         block(getmTriangle())
         getmTriangle().initMeasure()
         invalidate()
