@@ -5,7 +5,7 @@ import android.graphics.Typeface
 import cn.oi.klittle.era.comm.kpx
 
 /**
- * 五角星
+ * 六边形
  * @param bg_color 背景颜色
  * @param bgHorizontalColors 背景颜色水平渐变 fixme (从左往右，以斜边为标准，进行渐变)
  * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）fixme (从左往右，以斜边上的高为标准，进行渐变)
@@ -24,13 +24,13 @@ import cn.oi.klittle.era.comm.kpx
  * @param isPorterDuffXfermode 是否切割。
  * @param isDraw 是否绘制
  */
-data class KStartEntity(var bg_color: Int = Color.BLUE, var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null, var isBgGradient: Boolean = true,
-                        var strokeWidth: Float = 0F, var strokeColor: Int = Color.WHITE, var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null, var isStrokeGradient: Boolean = true,
-                        var all_radius: Float = 0F, var rotation:Float=0f,
-                        var dashWidth: Float = 0F, var dashGap: Float = 0F,
-                        var isdashFlow: Boolean = false, var dashSpeed: Float = kpx.x(1f),
-                        var isPorterDuffXfermode:Boolean=false,
-                        var isDraw: Boolean = true) {
+data class KHexagonEntity(var bg_color: Int = Color.BLUE, var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null, var isBgGradient: Boolean = true,
+                          var strokeWidth: Float = 0F, var strokeColor: Int = Color.WHITE, var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null, var isStrokeGradient: Boolean = true,
+                          var all_radius: Float = 0F, var rotation:Float=0f,
+                          var dashWidth: Float = 0F, var dashGap: Float = 0F,
+                          var isdashFlow: Boolean = false, var dashSpeed: Float = kpx.x(1f),
+                          var isPorterDuffXfermode:Boolean=false,
+                          var isDraw: Boolean = true) {
 
 
     open fun bgHorizontalColors(vararg color: Int) {

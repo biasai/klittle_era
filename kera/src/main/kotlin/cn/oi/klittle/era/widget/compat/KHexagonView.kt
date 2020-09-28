@@ -5,40 +5,44 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import cn.oi.klittle.era.entity.widget.compat.KStartEntity
-import cn.oi.klittle.era.utils.KLoggerUtils
+import cn.oi.klittle.era.entity.widget.compat.KHexagonEntity
 
 //                fixme 使用案例：
-//                kstartView {
-//                    backgroundColor(Color.RED)
-//                    start {
-//                        bg_color=Color.YELLOW
-//                        bgHorizontalColors(Color.BLACK,Color.WHITE)
-//                        //bgVerticalColors(Color.BLACK,Color.WHITE)
-//                        isBgGradient=false
+//                    khexagonView{
+//                        backgroundColor(Color.RED)
+//                        hexagon {
+//                            bg_color = Color.YELLOW
+//                            bgHorizontalColors(Color.BLACK, Color.WHITE)
+//                            //bgVerticalColors(Color.BLACK,Color.WHITE)
+//                            isBgGradient = false
+//                            strokeHorizontalColors(Color.WHITE, Color.BLACK)
+//                            strokeColor = Color.BLUE
+//                            strokeWidth = kpx.x(3f)
+//                        }
+//                        hexagon_press {
+////                            bg_color = Color.LTGRAY
+////                            dashWidth = kpx.x(15f)
+////                            dashGap = dashWidth
+//                            //all_radius = kpx.x(45f)
+//                            //bgVerticalColors(Color.YELLOW,Color.CYAN)
+//                            //isBgGradient=false
+//                            rotation=90f//旋转角度
+//                            isPorterDuffXfermode=true//fixme 切割时，建议不要使用圆角。不然效果不好。
+//                        }
+//                        text="S"
+//                        gravity=Gravity.CENTER
+//                        textColor=Color.RED
+//                        textSize=kpx.textSizeX(80f)
+//                    }.lparams {
+//                        width = kpx.x(300)
+//                        height = kpx.x(200)
+//                        topMargin=kpx.x(30)
 //                    }
-//                    start_press {
-//                        strokeHorizontalColors(Color.WHITE,Color.BLACK)
-//                        strokeColor=Color.BLUE
-//                        strokeWidth=kpx.x(3f)
-//                        bg_color=Color.LTGRAY
-//                        dashWidth=kpx.x(15f)
-//                        dashGap=dashWidth
-//                        all_radius=kpx.x(45f)
-//                        //bgVerticalColors(Color.YELLOW,Color.CYAN)
-//                        //isBgGradient=false
-//                        isPorterDuffXfermode=true//fixme 切割时，建议不要使用圆角。不然效果不好。
-//                    }
-//                }.lparams {
-//                    width=kpx.x(300)
-//                    height=kpx.x(200)
-//                }
 
 /**
- * fixme 五角星控件（居中绘制，短边决定了五角星的大小）;具备切割能力(isPorterDuffXfermode为true时有效)。有圆角效果时，切割效果不好。有切割时，最好不要有圆角。（切割对CornerPathEffect不支持）
- * 参考：https://blog.csdn.net/qq_15364915/article/details/75433651
+ * fixme 六边形控件（居中绘制）;具备切割能力(isPorterDuffXfermode为true时有效)。有圆角效果时，切割效果不好。有切割时，最好不要有圆角。（切割对CornerPathEffect不支持）
  */
-open class KStartView : KView {
+open class KHexagonView : KView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }
@@ -47,65 +51,65 @@ open class KStartView : KView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     //按下
-    var start_press: KStartEntity? = null
+    var hexagon_press: KHexagonEntity? = null
 
-    fun start_press(block: KStartEntity.() -> Unit): KStartView {
-        if (start_press == null) {
-            start_press = getmStart().copy()//整个属性全部复制过来。
+    fun hexagon_press(block: KHexagonEntity.() -> Unit): KHexagonView {
+        if (hexagon_press == null) {
+            hexagon_press = getmHexagon().copy()//整个属性全部复制过来。
         }
-        block(start_press!!)
+        block(hexagon_press!!)
         invalidate()
         return this
     }
 
     //鼠标悬浮
-    var start_hover: KStartEntity? = null
+    var hexagon_hover: KHexagonEntity? = null
 
-    fun start_hover(block: KStartEntity.() -> Unit): KStartView {
-        if (start_hover == null) {
-            start_hover = getmStart().copy()//整个属性全部复制过来。
+    fun hexagon_hover(block: KHexagonEntity.() -> Unit): KHexagonView {
+        if (hexagon_hover == null) {
+            hexagon_hover = getmHexagon().copy()//整个属性全部复制过来。
         }
-        block(start_hover!!)
+        block(hexagon_hover!!)
         invalidate()
         return this
     }
 
     //聚焦
-    var start_focuse: KStartEntity? = null
+    var hexagon_focuse: KHexagonEntity? = null
 
-    fun start_focuse(block: KStartEntity.() -> Unit): KStartView {
-        if (start_focuse == null) {
-            start_focuse = getmStart().copy()//整个属性全部复制过来。
+    fun hexagon_focuse(block: KHexagonEntity.() -> Unit): KHexagonView {
+        if (hexagon_focuse == null) {
+            hexagon_focuse = getmHexagon().copy()//整个属性全部复制过来。
         }
-        block(start_focuse!!)
+        block(hexagon_focuse!!)
         invalidate()
         return this
     }
 
     //选中
-    var start_selected: KStartEntity? = null
+    var hexagon_selected: KHexagonEntity? = null
 
-    fun start_selected(block: KStartEntity.() -> Unit): KStartView {
-        if (start_selected == null) {
-            start_selected = getmStart().copy()//整个属性全部复制过来。
+    fun hexagon_selected(block: KHexagonEntity.() -> Unit): KHexagonView {
+        if (hexagon_selected == null) {
+            hexagon_selected = getmHexagon().copy()//整个属性全部复制过来。
         }
-        block(start_selected!!)
+        block(hexagon_selected!!)
         invalidate()
         return this
     }
 
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
-    var start: KStartEntity? = null
+    var hexagon: KHexagonEntity? = null
 
-    fun getmStart(): KStartEntity {
-        if (start == null) {
-            start = KStartEntity()
+    fun getmHexagon(): KHexagonEntity {
+        if (hexagon == null) {
+            hexagon = KHexagonEntity()
         }
-        return start!!
+        return hexagon!!
     }
 
-    fun start(block: KStartEntity.() -> Unit): KStartView {
-        block(getmStart())
+    fun hexagon(block: KHexagonEntity.() -> Unit): KHexagonView {
+        block(getmHexagon())
         invalidate()
         return this
     }
@@ -113,35 +117,35 @@ open class KStartView : KView {
 
     override fun draw2Front(canvas: Canvas, paint: Paint) {
         super.draw2Front(canvas, paint)
-        drawStart(canvas, paint, this)
+        drawHexagon(canvas, paint, this)
     }
 
-    var startModel: KStartEntity? = null
-    private fun drawStart(canvas: Canvas, paint: Paint, view: View) {
+    private var hexagonModel: KHexagonEntity? = null
+    private fun drawHexagon(canvas: Canvas, paint: Paint, view: View) {
         view?.apply {
-            if (start != null) {
-                startModel = null
-                if (isPressed && start_press != null) {
+            if (hexagon != null) {
+                hexagonModel = null
+                if (isPressed && hexagon_press != null) {
                     //按下
-                    startModel = start_press
-                } else if (isHovered && start_hover != null) {
+                    hexagonModel = hexagon_press
+                } else if (isHovered && hexagon_hover != null) {
                     //鼠标悬浮
-                    startModel = start_hover
-                } else if (isFocused && start_focuse != null) {
+                    hexagonModel = hexagon_hover
+                } else if (isFocused && hexagon_focuse != null) {
                     //聚焦
-                    startModel = start_focuse
-                } else if (isSelected && start_selected != null) {
+                    hexagonModel = hexagon_focuse
+                } else if (isSelected && hexagon_selected != null) {
                     //选中
-                    startModel = start_selected
+                    hexagonModel = hexagon_selected
                 }
                 //正常
-                if (startModel == null) {
-                    startModel = start
+                if (hexagonModel == null) {
+                    hexagonModel = hexagon
                 }
-                startModel?.let {
+                hexagonModel?.let {
                     if (it.isDraw) {
                         paint.setShader(null)
-                        drawStart(canvas, paint, it, view)
+                        drawHexagon(canvas, paint, it, view)
                         paint.setShader(null)//防止其他地方受影响，所以渲染清空。
                     }
                 }
@@ -150,22 +154,12 @@ open class KStartView : KView {
     }
 
     //画五角星。
-    private fun drawStart(canvas: Canvas, paint: Paint, triangle: KStartEntity, view: View) {
+    private fun drawHexagon(canvas: Canvas, paint: Paint, triangle: KHexagonEntity, view: View) {
         view?.apply {
             var rw = width
             if (rw > height) {
                 rw = height
             }
-            var floats: FloatArray? = fivePoints(scrollX + width / 2f, scrollY.toFloat(), rw)
-            var d = scrollY.toFloat()
-            floats?.let {
-                if (it.size > 4) {
-                    d = it[3]
-                    d = height - d - scrollY
-                    d = d / 2 + scrollY
-                }
-            }
-            floats = fivePoints(scrollX + width / 2f, d, rw)
             var scrollX = view.scrollX
             var scrollY = view.scrollY
             //fixme 旋转
@@ -203,21 +197,45 @@ open class KStartView : KView {
                 }
                 paint.setShader(shader)
             }
-            var path = Path()
             //KLoggerUtils.e("五角星坐标：\t"+floats?.size)
-            if (floats != null) {
-                var i = 2
-                path.moveTo(floats[0], floats[1])
-                while (i < floats.size - 1) {
-                    path.lineTo(floats.get(i), floats.get(1.let { i += it; i }))
-                    i++
-                }
-                path.close()
+            var mWidth = width
+            var mHeight = height
+
+            // 计算中心点
+
+            // 计算中心点
+            var centreX = mWidth / 2f
+            var centreY = mHeight / 2f
+
+            var mLenght = mWidth / 2//fixme 六变形的边长
+            if (mWidth>mHeight){
+                mLenght = mHeight / 2
             }
+
+            val radian30 = 30 * Math.PI / 180
+            val a = (mLenght * Math.sin(radian30)).toFloat()//fixme 最左上角点X坐标
+            val b = (mLenght * Math.cos(radian30)).toFloat()//fixme 两点相邻的垂直距离。
+            val c: Float = (mHeight - 2 * b) / 2//fixme 最左上角点y坐标
+
+
+            val path = Path()
+//            path.moveTo(width.toFloat(), (height / 2).toFloat())//最右边点（以下点，顺时针去画的）
+//            path.lineTo(width - a, height - c)//最右下角点
+//            path.lineTo(width - a - mLenght, height - c)//最左下角点
+//            path.lineTo(0f, (height / 2).toFloat())//最左边点
+//            path.lineTo(a, c)//fixme 最左上角点
+//            path.lineTo(width - a, c)//最右上角点。
+            path.moveTo(centreX+a+mLenght/2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
+            path.lineTo(centreX+mLenght/2, centreY.toFloat() - b)//最右下角点
+            path.lineTo(centreX - mLenght/2, centreY.toFloat() - b)//最左下角点
+            path.lineTo(centreX - mLenght/2-a, centreY.toFloat())//最左边点
+            path.lineTo(centreX - mLenght/2, centreY.toFloat()+b)//最左上角点
+            path.lineTo(centreX+mLenght/2, centreY.toFloat()+b)//最右上角点
+            path.close()
             if (triangle.all_radius != 0f) {
                 paint?.setPathEffect(CornerPathEffect(triangle.all_radius))
             } else {
-                paint?.setPathEffect(null)
+                //paint?.setPathEffect(null)
             }
             canvas.drawPath(path, paint)
             //画边框
@@ -255,15 +273,19 @@ open class KStartView : KView {
                     paint.setShader(shader)
                 }
                 path.reset()
-                if (floats != null) {
-                    var i = 2
-                    path.moveTo(floats[0], floats[1])
-                    while (i < floats.size - 1) {
-                        path.lineTo(floats.get(i), floats.get(1.let { i += it; i }))
-                        i++
-                    }
-                    path.close()
-                }
+//                path.moveTo(width.toFloat(), (height / 2).toFloat())
+//                path.lineTo(width - a, height - c)
+//                path.lineTo(width - a - mLenght, height - c)
+//                path.lineTo(0f, (height / 2).toFloat())
+//                path.lineTo(a, c)
+//                path.lineTo(width - a, c)
+                path.moveTo(centreX+a+mLenght/2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
+                path.lineTo(centreX+mLenght/2, centreY.toFloat() - b)//最右下角点
+                path.lineTo(centreX - mLenght/2, centreY.toFloat() - b)//最左下角点
+                path.lineTo(centreX - mLenght/2-a, centreY.toFloat())//最左边点
+                path.lineTo(centreX - mLenght/2, centreY.toFloat()+b)//最左上角点
+                path.lineTo(centreX+mLenght/2, centreY.toFloat()+b)//最右上角点
+                path.close()
                 var cornerPathEffect: CornerPathEffect? = null
                 if (triangle.all_radius != 0f) {
                     cornerPathEffect = CornerPathEffect(triangle.all_radius)
@@ -317,40 +339,14 @@ open class KStartView : KView {
 
     private var startPhase: Float = 0F
 
-    /**
-     * @param xA 起始点位置A的x轴绝对位置;fixme 五角星顶点的坐标位置。
-     * @param yA 起始点位置A的y轴绝对位置
-     * @param rFive 五角星边的边长
-     */
-    open fun fivePoints(xA: Float, yA: Float, rFive: Int): FloatArray? {
-        var xB = 0f
-        var xC = 0f
-        var xD = 0f
-        var xE = 0f
-        var yB = 0f
-        var yC = 0f//fixme C和D是最低点。
-        var yD = 0f
-        var yE = 0f
-        xD = (xA - rFive * Math.sin(Math.toRadians(18.0))).toFloat()
-        xC = (xA + rFive * Math.sin(Math.toRadians(18.0))).toFloat()
-        yC = (yA + Math.cos(Math.toRadians(18.0)) * rFive).toFloat()
-        yD = yC
-        yE = (yA + Math.sqrt(Math.pow((xC - xD).toDouble(), 2.0) - Math.pow((rFive / 2).toDouble(), 2.0))).toFloat()
-        yB = yE
-        xB = xA + rFive / 2
-        xE = xA - rFive / 2
-        return floatArrayOf(xA, yA, xD, yD, xB, yB, xE, yE, xC, yC, xA, yA)
-    }
-
-
     override fun onDestroy() {
         super.onDestroy()
-        start = null
-        start_focuse = null
-        start_hover = null
-        start_press = null
-        start_selected = null
-        startModel = null
+        hexagon = null
+        hexagon_focuse = null
+        hexagon_hover = null
+        hexagon_press = null
+        hexagon_selected = null
+        hexagonModel = null
     }
 
 }

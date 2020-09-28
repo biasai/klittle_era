@@ -590,7 +590,7 @@ object KGsonUtils {
                         }
                     }
                     //Log.e("test","name:\t"+it.name+"\tvalue:\t"+value)
-                    if (value != null && !value.trim().equals("") && !value.trim().equals("null")) {//fixme 去除null
+                    if (value != null && !value.trim().equals("") && !value.toLowerCase().trim().equals("null")) {//fixme 去除null
                         var type = it.genericType.toString().trim()//属性类型
                         //KLoggerUtils.e("type:\t"+type)
                         var name = it.name.substring(0, 1).toUpperCase() + it.name.substring(1)//属性名称【首字目进行大写】。

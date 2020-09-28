@@ -106,20 +106,26 @@ open class K1Widget : K0Widget {
         }
     }
 
+    private var mBackgroundColor: Int = Color.TRANSPARENT//fixme 自己的背景色。不是系统的backgroundColor;在最底层绘制。
     open fun backgroundColor(color: String) {
-        viewGroup.apply {
-            setBackgroundColor(Color.parseColor(color))
-        }
+//        viewGroup.apply {
+//            setBackgroundColor(Color.parseColor(color))
+//        }
+        mBackgroundColor = Color.parseColor(color)
     }
 
     open fun backgroundColor(color: Int) {
-        viewGroup.apply {
-            setBackgroundColor(color)
-        }
+//        viewGroup.apply {
+//            setBackgroundColor(color)
+//        }
+        mBackgroundColor = color
     }
 
     //fixme 设置背景位图
     open fun background(resId: Int, isRGB_565: Boolean = false) {
+        if (viewGroup == null) {
+            viewGroup = this
+        }
         viewGroup.apply {
             background(getBitmapFromResource(resId, isRGB_565))
             //setBackgroundResource(resId)
@@ -835,6 +841,9 @@ open class K1Widget : K0Widget {
         }
         try {
             canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)//画布清除
+            if (mBackgroundColor != Color.TRANSPARENT) {
+                canvas?.drawColor(mBackgroundColor)//fixme 绘制自己的背景颜色。
+            }
             //fixme 这里系统传下来的canvas可能每次都是实例化的哦。
             mCamera?.save()//fixme 保存相机初始的状态
             canvas?.apply {

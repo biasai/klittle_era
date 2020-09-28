@@ -977,6 +977,19 @@ abstract class KBaseUi {
             return ankoView({ ctx: Context -> KStartView(ctx) }, theme = 0) { init() }
         }
 
+        //FIXME 六边形控件
+        inline fun ViewManager.KHexagonView(init: (@AnkoViewDslMarker KHexagonView).() -> Unit): KHexagonView {
+            return ankoView({ ctx: Context -> KHexagonView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.kHexagonView(init: (@AnkoViewDslMarker KHexagonView).() -> Unit): KHexagonView {
+            return ankoView({ ctx: Context -> KHexagonView(ctx) }, theme = 0) { init() }
+        }
+
+        inline fun ViewManager.khexagonView(init: (@AnkoViewDslMarker KHexagonView).() -> Unit): KHexagonView {
+            return ankoView({ ctx: Context -> KHexagonView(ctx) }, theme = 0) { init() }
+        }
+
         //FIXME 双箭头控件
         inline fun ViewManager.KDoubleArrowView(init: (@AnkoViewDslMarker KDoubleArrowView).() -> Unit): KDoubleArrowView {
             return ankoView({ ctx: Context -> KDoubleArrowView(ctx) }, theme = 0) { init() }

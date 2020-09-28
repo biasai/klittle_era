@@ -46,7 +46,7 @@ import cn.oi.klittle.era.entity.widget.compat.KDiamondEntity
 //            }
 
 /**
- * fixme 菱形
+ * fixme 菱形；具备切割能力。
  */
 open class KDiamondView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {

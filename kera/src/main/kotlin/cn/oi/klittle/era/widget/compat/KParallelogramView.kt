@@ -40,7 +40,7 @@ import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
 //            }
 
 /**
- * fixme 平行四边形。支持圆角。
+ * fixme 平行四边形。支持圆角。具备切割能力。
  */
 open class KParallelogramView : KTextView {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
