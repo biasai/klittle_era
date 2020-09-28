@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.entity.widget.compat.KHexagonEntity
 
 //                fixme 使用案例：
+
 //                    khexagonView{
 //                        backgroundColor(Color.RED)
 //                        hexagon {
