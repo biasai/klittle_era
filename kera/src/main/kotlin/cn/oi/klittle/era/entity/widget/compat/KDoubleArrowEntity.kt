@@ -14,6 +14,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param isROUND 线条是否为圆角线帽
  * @param isHorizontal 是否为水平线；true水平线，false垂直线。
  * @param arrowLength 箭头的长度。
+ * @param isArrowSolid fixme 箭头是否为实心。实心就画三角形箭头。
  * @param isDrawMain fixme 是否绘制中间的主干线（连接两个箭头之间的线条）
  * @param isDrawLeftArrow 是否绘制左边（水平）的箭头，垂直就是上面。
  * @param isDrawRightArrow 是否绘制右边（水平）箭头，垂直就是下边。
@@ -28,6 +29,7 @@ data class KDoubleArrowEntity(var strokeWidth: Float = kpx.x(2f), var strokeColo
                               var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
                               var isGradient: Boolean = true, var isROUND: Boolean = true, var isHorizontal: Boolean = true,
                               var arrowLength: Float = kpx.x(20f),
+                              var isArrowSolid:Boolean=false,
                               var isDrawMain: Boolean = true,
                               var isDrawLeftArrow: Boolean = true, var isDrawRightArrow: Boolean = true,
                               var isArrowDash: Boolean = false,

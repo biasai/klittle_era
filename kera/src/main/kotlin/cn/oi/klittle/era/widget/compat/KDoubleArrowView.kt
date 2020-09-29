@@ -35,6 +35,7 @@ import cn.oi.klittle.era.entity.widget.compat.KDoubleArrowEntity
 //                        dashGap = 0f//虚线
 //                        dashWidth = 0f
 //                        isDrawLeftArrow=true
+//                        isArrowSolid=true// fixme 箭头是否为实心。实心就画三角形箭头。亲测有效。
 //                    }
 
 //fixme 左右水平，双击箭头控件;最后绘制的，不会受radius切割的影响。
@@ -55,7 +56,7 @@ open class KDoubleArrowView : KTextView {
             }
             resetPaint(paint)
             //fixme 画主干线（垂直+水平居中画）
-            paint.style = Paint.Style.STROKE//虚线只对STROKE类型有效。
+            paint.style = Paint.Style.STROKE//fixme 虚线只对STROKE类型有效。
             paint.strokeWidth = it.strokeWidth
             paint.color = it.strokeColor//颜色值
             var linearGradient: LinearGradient? = null
@@ -137,7 +138,13 @@ open class KDoubleArrowView : KTextView {
                             mPath?.moveTo(arrowX, arrowY)
                             mPath?.lineTo(mStartX, mStartY)
                             mPath?.lineTo(arrowX2, arrowY2)
+                            if (it.isArrowSolid){
+                                //画实心三角形箭头
+                                mPath?.close()
+                                paint.style = Paint.Style.FILL_AND_STROKE
+                            }
                             canvas.drawPath(mPath, paint)
+                            paint.style = Paint.Style.STROKE
                         } else {
                             //上面的箭头
                             mPath?.reset()
@@ -148,7 +155,13 @@ open class KDoubleArrowView : KTextView {
                             mPath?.moveTo(arrowX, arrowY)
                             mPath?.lineTo(mStartX, mStartY)
                             mPath?.lineTo(arrowX2, arrowY2)
+                            if (it.isArrowSolid){
+                                //画实心三角形箭头
+                                mPath?.close()
+                                paint.style = Paint.Style.FILL_AND_STROKE
+                            }
                             canvas.drawPath(mPath, paint)
+                            paint.style = Paint.Style.STROKE
                         }
                     }
                     if (it.isDrawRightArrow) {
@@ -162,7 +175,13 @@ open class KDoubleArrowView : KTextView {
                             mPath?.moveTo(arrowX, arrowY)
                             mPath?.lineTo(mEndX, mEndY)
                             mPath?.lineTo(arrowX2, arrowY2)
+                            if (it.isArrowSolid){
+                                //画实心三角形箭头
+                                mPath?.close()
+                                paint.style = Paint.Style.FILL_AND_STROKE
+                            }
                             canvas.drawPath(mPath, paint)
+                            paint.style = Paint.Style.STROKE
                         } else {
                             //底部箭头
                             mPath?.reset()
@@ -173,7 +192,13 @@ open class KDoubleArrowView : KTextView {
                             mPath?.moveTo(arrowX, arrowY)
                             mPath?.lineTo(mEndX, mEndY)
                             mPath?.lineTo(arrowX2, arrowY2)
+                            if (it.isArrowSolid){
+                                //画实心三角形箭头
+                                mPath?.close()
+                                paint.style = Paint.Style.FILL_AND_STROKE
+                            }
                             canvas.drawPath(mPath, paint)
+                            paint.style = Paint.Style.STROKE
                         }
                     }
                 }
@@ -282,7 +307,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //向左弯
                                 mPath?.reset()
@@ -293,7 +324,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         } else if (it.isLeftTurnUpOrRight) {
                             //向上弯
@@ -307,7 +344,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //向右弯
                                 mPath?.reset()
@@ -318,7 +361,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         } else {
                             //正常
@@ -332,7 +381,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //上面的箭头
                                 mPath?.reset()
@@ -343,7 +398,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mStartX, mStartY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         }
                     }
@@ -361,7 +422,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //向左弯
                                 mPath?.reset()
@@ -372,7 +439,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         } else if (it.isRightTurnUpOrRight) {
                             //向上弯
@@ -386,7 +459,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //向右弯
                                 mPath?.reset()
@@ -397,7 +476,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         } else {
                             //正常
@@ -411,7 +496,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             } else {
                                 //底部箭头
                                 mPath?.reset()
@@ -422,7 +513,13 @@ open class KDoubleArrowView : KTextView {
                                 mPath?.moveTo(arrowX, arrowY)
                                 mPath?.lineTo(mEndX, mEndY)
                                 mPath?.lineTo(arrowX2, arrowY2)
+                                if (it.isArrowSolid){
+                                    //画实心三角形箭头
+                                    mPath?.close()
+                                    paint.style = Paint.Style.FILL_AND_STROKE
+                                }
                                 canvas.drawPath(mPath, paint)
+                                paint.style = Paint.Style.STROKE
                             }
                         }
                     }

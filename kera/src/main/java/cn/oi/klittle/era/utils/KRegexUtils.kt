@@ -32,7 +32,13 @@ object KRegexUtils {
      * @param mobiles
      * @return
      */
-    fun isMobileNO(mobiles: String): Boolean {
+    fun isMobileNO(mobiles: String?): Boolean {
+        if (mobiles==null){
+            return false
+        }
+        if (mobiles.trim().length<=0){
+            return false
+        }
         //        Pattern p = Pattern.compile("^(13|15|18|16|17)\\d{9}$");
         //        Matcher m = p.matcher(mobiles);
         //        return m.matches();
@@ -47,7 +53,13 @@ object KRegexUtils {
      * @param phone
      * @return
      */
-    fun isPhoneNo(phone: String): Boolean {
+    fun isPhoneNo(phone: String?): Boolean {
+        if (phone==null){
+            return false
+        }
+        if (phone.trim().length<=0){
+            return false
+        }
         val p = Pattern.compile("[0]{1}[0-9]{2,3}-[0-9]{7,8}")
         val m = p.matcher(phone)
         return m.matches()
@@ -59,7 +71,13 @@ object KRegexUtils {
      * @param email
      * @return
      */
-    fun isEmail(email: String): Boolean {
+    fun isEmail(email: String?): Boolean {
+        if (email==null){
+            return false
+        }
+        if (email.trim().length<=0){
+            return false
+        }
         val p = Pattern
                 .compile("^([a-z0-9A-Z]+[-|_|\\.]?)+[a-z0-9A-Z]@([a-z0-9A-Z]+(-[a-z0-9A-Z]+)?\\.)+[a-zA-Z]{2,}$")
         val m = p.matcher(email)
@@ -71,7 +89,13 @@ object KRegexUtils {
      *
      * @return the ip
      */
-    fun isBoolIp(ipAddress: String): Boolean {
+    fun isBoolIp(ipAddress: String?): Boolean {
+        if (ipAddress==null){
+            return false
+        }
+        if (ipAddress.trim().length<=0){
+            return false
+        }
         if (ipAddress.length < 7 || ipAddress.length > 15
                 || "" == ipAddress) {
             return false
@@ -85,7 +109,13 @@ object KRegexUtils {
     /**
      * 是否为ip
      */
-    fun isIP(str: String): Boolean {
+    fun isIP(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         val pattern = Pattern.compile("\\b((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])" +
                 "\\.((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\." +
                 "((?!\\d\\d\\d)\\d+|1\\d\\d|2[0-4]\\d|25[0-5])\\." +
@@ -96,7 +126,13 @@ object KRegexUtils {
     /**
      * 是否mac地址
      */
-    fun isMAC(str: String): Boolean {
+    fun isMAC(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         var str = str
         str = str.trim { it <= ' ' }
         if (str.length != 12) {
@@ -118,7 +154,13 @@ object KRegexUtils {
      * @param idNum
      * @return
      */
-    fun isIdCard(idNum: String): Boolean {
+    fun isIdCard(idNum: String?): Boolean {
+        if (idNum==null){
+            return false
+        }
+        if (idNum.trim().length<=0){
+            return false
+        }
         val p = Pattern
                 .compile("(\\d{14}[0-9a-zA-Z])|(\\d{17}[0-9a-zA-Z])")
         val m = p.matcher(idNum)
@@ -131,7 +173,13 @@ object KRegexUtils {
      * @param idNum
      * @return
      */
-    fun getBirth(idNum: String): String {
+    fun getBirth(idNum: String?): String {
+        if (idNum==null){
+            return ""
+        }
+        if (idNum.trim().length<=0){
+            return ""
+        }
         val birthDatePattern = Pattern
                 .compile("\\d{6}(\\d{4})(\\d{2})(\\d{2}).*")// 身份证上的前6位以及出生年月日
         // 通过Pattern获得Matcher
@@ -142,7 +190,7 @@ object KRegexUtils {
             val month = birthDateMather.group(2)
             val date = birthDateMather.group(3)
             // 输出用户的出生年月日
-            return year + "年" + month + "月" + date + "日"
+            return year + "年" + month + "月" + date + "日"//fixme 身份证就中国有，所以直接使用中文。
         }
         return ""
     }
@@ -153,7 +201,13 @@ object KRegexUtils {
      * @param url
      * @return
      */
-    fun isUrl(url: String): Boolean {
+    fun isUrl(url: String?): Boolean {
+        if (url==null){
+            return false
+        }
+        if (url.trim().length<=0){
+            return false
+        }
         try {
             //fixme 之前的正则表达式，不可靠。改成以下方法去判断。虽然简单，但是绝对能够识别。亲测可行！
             var url = url.trim()
@@ -176,7 +230,13 @@ object KRegexUtils {
      * @param length   长度
      * @return
      */
-    fun isNumber(str: String, length: Int): Boolean {
+    fun isNumber(str: String?, length: Int): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         val pattern = Pattern.compile("[0-9]*")
         if (pattern.matcher(str).matches()) {
             if (str.length == length) {
@@ -192,7 +252,13 @@ object KRegexUtils {
      * @param str 字符串
      * @return
      */
-    fun isNumber(str: String): Boolean {
+    fun isNumber(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         val pattern = Pattern.compile("[0-9]*")
         if (pattern.matcher(str).matches()) {
             return true
@@ -200,8 +266,34 @@ object KRegexUtils {
         return false
     }
 
+    /**
+     * fixme 判断字符串是否为小数类型或整数类型。即主要判断是否为小数Float类型。
+     *
+     * @param str 字符串
+     * @return
+     */
+    fun isFloatOrNumber(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
+        val pattern = Pattern.compile("-?[0-9]+.?[0-9]+")
+        if (pattern.matcher(str).matches()) {
+            return true
+        }
+        return false
+    }
+
     // 判断是否为纯字母
-    fun isLetter(str: String): Boolean {
+    fun isLetter(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         val pattern = Pattern.compile("^[A-Za-z]+")
         val isNum = pattern.matcher(str)
         return if (!isNum.matches()) {
@@ -210,7 +302,13 @@ object KRegexUtils {
     }
 
     // 判断是否为数字或（和）字母
-    fun isNumberOrLetter(str: String): Boolean {
+    fun isNumberOrLetter(str: String?): Boolean {
+        if (str==null){
+            return false
+        }
+        if (str.trim().length<=0){
+            return false
+        }
         val pattern = Pattern.compile("^[A-Za-z0-9]+")
         val isNum = pattern.matcher(str)
         return if (!isNum.matches()) {
@@ -224,7 +322,13 @@ object KRegexUtils {
      * @param cardId
      * @return
      */
-    fun isBankCard(cardId: String): Boolean {
+    fun isBankCard(cardId: String?): Boolean {
+        if (cardId==null){
+            return false
+        }
+        if (cardId.trim().length<=0){
+            return false
+        }
         val bit = getBankCardCheckCode(cardId
                 .substring(0, cardId.length - 1))
         return if (bit == 'N') {

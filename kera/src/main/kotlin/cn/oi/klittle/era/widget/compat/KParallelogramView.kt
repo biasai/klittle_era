@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 import cn.oi.klittle.era.entity.widget.compat.KParallelogramEntity
+import cn.oi.klittle.era.utils.KLoggerUtils
 
 //            调用案例
 //            KView(this).apply {
@@ -624,13 +625,13 @@ open class KParallelogramView : KTextView {
                     var startX_border = startX
                     var startY_border = startY
                     var endX_border = endX
-                    var endY_border = endY
+                    //var endY_border = endY
                     if (it.isRightParalleLogram) {
-                        startX = startX - paralleLogramLeng
-                        startX_border = startX
-                    } else {
-                        endX = endX + paralleLogramLeng
+                        endX = endX - paralleLogramLeng
                         endX_border = endX
+                    } else {
+                        startX = startX + paralleLogramLeng
+                        startX_border = startX
                     }
                     if (left_bottom_corner <= 0 && right_bottom_corner <= 0) {
                         linePath?.reset()
@@ -641,15 +642,18 @@ open class KParallelogramView : KTextView {
                             //canvas.drawLine(startX, startY, endX, endY, paint)
                         }
                         //fixme
-//                        borderPath?.lineTo(startX_border, startY_border)
-//                        borderPath?.lineTo(endX_border, endY_border)
+                        //borderPath?.lineTo(startX_border, startY_border)
+                        //borderPath?.lineTo(endX_border, endY_border)
                     } else {
+                        //var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
+                        //var starY0 = startY
                         var starX0 = startX + dW / 2 * (left_bottom_corner / 90f)
+                        //KLoggerUtils.e("startX:\t"+startX+"\t"+(dW / 2 * (left_bottom_corner / 90f))+"\tstarX0:\t"+starX0)
                         var starY0 = startY
                         var endX2 = endX - dW / 2 * (right_bottom_corner / 90f)
-                        var starX0_border = startX_border + dW / 2 * (left_bottom_corner / 90f)
-                        var starY0_border = startY_border
-                        var endX2_border = endX_border - dW / 2 * (right_bottom_corner / 90f)
+                        //var starX0_border = startX_border + dW / 2 * (left_bottom_corner / 90f)
+                        //var starY0_border = startY_border
+                        //var endX2_border = endX_border - dW / 2 * (right_bottom_corner / 90f)
                         linePath?.reset()
                         linePath?.moveTo(starX0, starY0)
                         linePath?.lineTo(endX2, endY)
