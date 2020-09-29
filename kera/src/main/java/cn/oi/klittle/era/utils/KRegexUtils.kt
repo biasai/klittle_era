@@ -266,11 +266,12 @@ object KRegexUtils {
         return false
     }
 
+    //fixme isFloatOrNumber()测试结果  123:	true	1.23	true	0123:	true	0.123:	true	.123:	false	.:	false	.0:	false	.01:	false
     /**
-     * fixme 判断字符串是否为小数类型或整数类型。即主要判断是否为小数Float类型。
+     * fixme 判断字符串是否为小数或整数。即主要判断是否为小数Float类型。亲测可行。
      *
      * @param str 字符串
-     * @return
+     * @return true 是小数或者整数；false不是。
      */
     fun isFloatOrNumber(str: String?): Boolean {
         if (str==null){
@@ -279,7 +280,8 @@ object KRegexUtils {
         if (str.trim().length<=0){
             return false
         }
-        val pattern = Pattern.compile("-?[0-9]+.?[0-9]+")
+        //val pattern = Pattern.compile("-?[0-9]+.?[0-9]+")
+        val pattern = Pattern.compile("[+-]?[0-9]+(\\.[0-9]+)?")
         if (pattern.matcher(str).matches()) {
             return true
         }
