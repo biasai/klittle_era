@@ -33,6 +33,11 @@ import cn.oi.klittle.era.utils.KCanvasUtils
 //                            dashWidth=kpx.x(15f)
 //                            dashGap=kpx.x(10f)
 //                        }
+//                        air_press {
+//                            dashWidth = 0f
+//                            dashGap = 0f
+//                            strokeHorizontalColors(Color.BLUE,Color.RED)
+//                        }
 //                        txt {
 //                            text = "Hello World！我的名字叫诺亚方舟。\n你了"
 //                        }
@@ -49,7 +54,7 @@ import cn.oi.klittle.era.utils.KCanvasUtils
 //                    }.lparams {
 //                        topMargin = kpx.x(30)
 //                        leftMargin = topMargin
-//                        width = wrapContent
+//                        width = wrapContent//fixme 文本框的宽度和高度随文本变化，自适应。
 //                        height = wrapContent
 //                    }
 
@@ -128,7 +133,7 @@ open class KAirView : KTextView {
         return this
     }
 
-
+    //fixme 气泡样式，在系统文字的下面。
     override fun draw2Front(canvas: Canvas, paint: Paint) {
         super.draw2Front(canvas, paint)
         drawAir(canvas, paint, this)

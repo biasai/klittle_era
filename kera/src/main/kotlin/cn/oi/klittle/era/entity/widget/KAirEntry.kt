@@ -4,8 +4,6 @@ import android.graphics.Color
 import cn.oi.klittle.era.comm.kpx
 /**
  * 气泡实体类
- * @param x 左上角坐标(以左上角为起点标准);fixme 即画矩形的左上角起点。
- * @param y
  * @param direction 气泡的方向
  * @param xOffset 气泡的偏移量；气泡三角，x轴偏移量，正数向右偏移，负数向左偏移
  * @param yOffset 气泡三角，y轴偏移量；正数向下偏移，负数向上偏移。
@@ -16,6 +14,9 @@ import cn.oi.klittle.era.comm.kpx
  * @param isAirBorderRadius 气泡三角的两个边的连接处是否具有圆角效果。
  * @param strokeWidth 边框的宽度
  * @param strokeColor 边框的颜色
+ * @param strokeHorizontalColors 边框水平渐变颜色数组值【均匀渐变】，[测试发现，渐变色对阴影也有效果]
+ * @param strokeVerticalColors 边框垂直渐变颜色数组值【均匀】,会覆盖水平渐变。
+ * @param isStrokeGradient 边框色是否渐变,默认是
  * @param bg_color 背景色
  * @param bgHorizontalColors 背景颜色水平渐变
  * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）
