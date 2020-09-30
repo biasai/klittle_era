@@ -1,12 +1,14 @@
 package cn.oi.klittle.era.utils
 
 import android.graphics.*
+import android.view.View
 import cn.oi.klittle.era.base.KBaseView
 import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.KAirEntry
 import cn.oi.klittle.era.entity.widget.KIsTriangle
 import cn.oi.klittle.era.entity.widget.compat.KRadiusEntity
 import cn.oi.klittle.era.entity.widget.compat.KTriangleEntity
+import cn.oi.klittle.era.widget.compat.K0Widget
 
 /**
  * 画布工具类
@@ -111,39 +113,64 @@ object KCanvasUtils {
     }
 
     /**
-     * fixme 画气泡；KAirEntry里面有调用案例。（对话框样式）
+     * fixme 画气泡；KAirView 里面有调用案例。（对话框样式）
      */
-    fun drawAirBubbles(canvas: Canvas?, kAirEntry: KAirEntry) {
+    fun drawAirBubbles(canvas: Canvas?, kAirEntry: KAirEntry, view: View) {
+        kAirEntry?.let {
+            if (!it.isDraw) {
+                return
+            }
+        }
         canvas?.apply {
             var paint = getPaint()
             paint.color = kAirEntry.bg_color
             paint.style = Paint.Style.FILL_AND_STROKE
             paint.strokeWidth = kAirEntry.strokeWidth
             //画内容
-            drawAirBubbles2(canvas, kAirEntry, paint)
+            drawAirBubbles2(canvas, kAirEntry, paint, view, false)
             if (kAirEntry.strokeWidth > 0 && kAirEntry.strokeColor != Color.TRANSPARENT) {
                 paint = getPaint()
                 paint.color = kAirEntry.strokeColor
                 paint.style = Paint.Style.STROKE
                 paint.strokeWidth = kAirEntry.strokeWidth
                 //画边框
-                drawAirBubbles2(canvas, kAirEntry, paint)
+                drawAirBubbles2(canvas, kAirEntry, paint, view, true)
             }
         }
     }
 
-    private fun drawAirBubbles2(canvas: Canvas?, kAirEntry: KAirEntry, paint: Paint) {
+    private fun drawAirBubbles2(canvas: Canvas?, kAirEntry: KAirEntry, paint: Paint, view: View, isDrawStrocke: Boolean) {
         canvas?.apply {
-            //            var paint = paint()
-//            paint.color = Color.BLACK
-//            paint.style = Paint.Style.FILL_AND_STROKE
-//            paint.strokeWidth = kAirEntry.strokeWidth
             var path = Path()
-            var rectWidth = kAirEntry.rectWidth//矩形宽度
-            var rectHeight = kAirEntry.rectHeight//矩形高度
+            //DIRECTION_LEFT,DIRECTION_TOP 没问题。
+            var rectWidth = 0
+            var rectHeight = 0
+            var x = 0
+            var y = 0
+            if (kAirEntry.direction == KAirEntry.DIRECTION_LEFT) {
+                x = (kAirEntry.airWidth + paint.strokeWidth / 2 + view.scrollX).toInt()
+                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                rectWidth = (view.width - kAirEntry.airWidth - paint.strokeWidth).toInt()//fixme 减去边框的宽度，防止边缘线被遮挡一部分。
+                rectHeight = (view.height - paint.strokeWidth).toInt()//矩形高度
+            } else if (kAirEntry.direction == KAirEntry.DIRECTION_TOP) {
+                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
+                y = (kAirEntry.airHeight + paint.strokeWidth / 2 + view.scrollY).toInt()
+                rectWidth = (view.width - paint.strokeWidth).toInt()
+                rectHeight = (view.height - paint.strokeWidth - kAirEntry.airHeight).toInt()//矩形高度
+            } else if (kAirEntry.direction == KAirEntry.DIRECTION_RIGHT) {
+                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
+                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                rectWidth = (view.width - paint.strokeWidth - kAirEntry.airWidth).toInt()
+                rectHeight = (view.height - paint.strokeWidth).toInt()//矩形高度
+            } else if (kAirEntry.direction == KAirEntry.DIRECTION_BOTTOM) {
+                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
+                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                rectWidth = (view.width - paint.strokeWidth).toInt()
+                rectHeight = (view.height - paint.strokeWidth - kAirEntry.airHeight).toInt()//矩形高度
+            }
             var leftTopPoint = Point()//左上角
-            leftTopPoint.x = kAirEntry.x
-            leftTopPoint.y = kAirEntry.y
+            leftTopPoint.x = x
+            leftTopPoint.y = y
             var rightTopPoint = Point()//右上角
             rightTopPoint.x = leftTopPoint.x + rectWidth
             rightTopPoint.y = leftTopPoint.y
@@ -155,8 +182,8 @@ object KCanvasUtils {
             rightBottomPoint.y = leftBottomPoint.y
 
             //计算气泡矩形区域的中心坐标
-            kAirEntry.centerX = (leftTopPoint.x + kAirEntry.rectWidth / 2).toFloat()
-            kAirEntry.centerY = (leftTopPoint.y + kAirEntry.rectHeight / 2).toFloat()
+            //var centerX = (leftTopPoint.x + rectWidth / 2).toFloat()
+            //var centerY = (leftTopPoint.y + rectHeight / 2).toFloat()
 
             var direction = kAirEntry.direction//气泡的方向：0左边（居中）；1上面（居中）；2右边（居中）；3下面（居中）
             //气泡偏移量（以居中为标准进行便宜。）
@@ -171,6 +198,9 @@ object KCanvasUtils {
                 var tox1 = leftTopPoint.x + rectWidth / 2 - airWidth / 2 + xOffset
                 var toy1 = leftTopPoint.y + yOffset
                 path.lineTo(tox1, toy1)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox1, toy1)
+                }
                 var tox2 = tox1 + airWidth / 2
                 var toy2 = toy1 - airHeight
                 path.lineTo(tox2, toy2)
@@ -181,6 +211,9 @@ object KCanvasUtils {
                 var tox3 = tox2 + airWidth / 2
                 var toy3 = toy1
                 path.lineTo(tox3, toy3)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox3, toy3)
+                }
             }
             path.lineTo(rightTopPoint.x.toFloat(), rightTopPoint.y.toFloat())
             if (direction == KAirEntry.DIRECTION_RIGHT) {
@@ -188,6 +221,9 @@ object KCanvasUtils {
                 var tox1 = rightTopPoint.x + xOffset
                 var toy1 = rightTopPoint.y + rectHeight / 2 - airWidth / 2 + yOffset
                 path.lineTo(tox1, toy1)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox1, toy1)
+                }
                 var tox2 = tox1 + airHeight
                 var toy2 = toy1 + airWidth / 2
                 path.lineTo(tox2, toy2)
@@ -198,6 +234,9 @@ object KCanvasUtils {
                 var tox3 = tox1
                 var toy3 = toy2 + airWidth / 2
                 path.lineTo(tox3, toy3)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox3, toy3)
+                }
             }
             path.lineTo(rightBottomPoint.x.toFloat(), rightBottomPoint.y.toFloat())
             if (direction == KAirEntry.DIRECTION_BOTTOM) {
@@ -205,6 +244,9 @@ object KCanvasUtils {
                 var tox1 = rightBottomPoint.x - rectWidth / 2 + airWidth / 2 + xOffset
                 var toy1 = rightBottomPoint.y + yOffset
                 path.lineTo(tox1, toy1)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox1, toy1)
+                }
                 var tox2 = tox1 - airWidth / 2
                 var toy2 = toy1 + airHeight
                 path.lineTo(tox2, toy2)
@@ -215,6 +257,9 @@ object KCanvasUtils {
                 var tox3 = tox2 - airWidth / 2
                 var toy3 = toy1
                 path.lineTo(tox3, toy3)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox3, toy3)
+                }
             }
             path.lineTo(leftBottomPoint.x.toFloat(), leftBottomPoint.y.toFloat())
             if (direction == KAirEntry.DIRECTION_LEFT) {
@@ -222,6 +267,9 @@ object KCanvasUtils {
                 var tox1 = leftTopPoint.x + xOffset
                 var toy1 = leftTopPoint.y + rectHeight / 2 + airWidth / 2 + yOffset
                 path.lineTo(tox1, toy1)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox1, toy1)
+                }
                 var tox2 = tox1 - airHeight
                 var toy2 = toy1 - airWidth / 2
                 path.lineTo(tox2, toy2)
@@ -232,6 +280,9 @@ object KCanvasUtils {
                 var tox3 = tox1
                 var toy3 = toy2 - airWidth / 2
                 path.lineTo(tox3, toy3)
+                if (!kAirEntry.isAirBorderRadius) {
+                    path.lineTo(tox3, toy3)
+                }
             }
             //path.lineTo(leftTopPoint.x.toFloat(), leftTopPoint.y.toFloat())//直接连接起点；可能圆角效果无效。
             path.close()//封闭；路径圆角有效果
@@ -243,14 +294,68 @@ object KCanvasUtils {
             }
             //虚线
             var dashPathEffect: DashPathEffect? = null
-            if (kAirEntry.dashWidth > 0 && kAirEntry.dashGap > 0) {
+            if (isDrawStrocke&&kAirEntry.dashWidth > 0 && kAirEntry.dashGap > 0) {
                 dashPathEffect = DashPathEffect(floatArrayOf(kAirEntry.dashWidth, kAirEntry.dashGap), 0f)
                 paint.setPathEffect(dashPathEffect)
             }
             //组合动画（保留圆角和虚线的效果）
             if (corner != null && dashPathEffect != null) {
-                var composePathEffect = ComposePathEffect(corner, dashPathEffect)
+                var composePathEffect = ComposePathEffect(dashPathEffect,corner)
                 paint.setPathEffect(composePathEffect)
+            }
+            if (isDrawStrocke) {
+                //fixme 画边框
+                if (kAirEntry.strokeVerticalColors != null) {
+                    var shader: LinearGradient? = null
+                    var colors = kAirEntry.strokeVerticalColors
+                    if (!kAirEntry.isStrokeGradient) {
+                        //垂直不渐变
+                        colors = K0Widget.getNotLinearGradientColors(height, colors!!)
+                    }
+                    //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)(从左往右，以斜边上的高为标准，进行渐变)
+                    if (shader == null) {
+                        shader = LinearGradient(view.scrollX.toFloat(), view.scrollY.toFloat(), view.scrollX.toFloat(), height.toFloat() + view.scrollY, colors, null, Shader.TileMode.MIRROR)
+                    }
+                    paint.setShader(shader)
+                } else if (kAirEntry.strokeHorizontalColors != null) {
+                    var shader: LinearGradient? = null
+                    var colors = kAirEntry.strokeHorizontalColors
+                    if (!kAirEntry.isStrokeGradient) {
+                        //水平不渐变
+                        colors = K0Widget.getNotLinearGradientColors(width, colors!!)
+                    }
+                    //水平渐变(从左往右，以斜边为标准，进行渐变)
+                    if (shader == null) {
+                        shader = LinearGradient(view.scrollX.toFloat(), view.scrollY.toFloat(), width.toFloat() + view.scrollX, view.scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
+                    }
+                    paint.setShader(shader)
+                }
+            } else {
+                if (kAirEntry.bgVerticalColors != null) {
+                    var shader: LinearGradient? = null
+                    var colors = kAirEntry.bgVerticalColors
+                    if (!kAirEntry.isBgGradient) {
+                        //垂直不渐变
+                        colors = K0Widget.getNotLinearGradientColors(height, colors!!)
+                    }
+                    //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)(从左往右，以斜边上的高为标准，进行渐变)
+                    if (shader == null) {
+                        shader = LinearGradient(view.scrollX.toFloat(), view.scrollY.toFloat(), view.scrollX.toFloat(), height.toFloat() + view.scrollY, colors, null, Shader.TileMode.MIRROR)
+                    }
+                    paint.setShader(shader)
+                } else if (kAirEntry.bgHorizontalColors != null) {
+                    var shader: LinearGradient? = null
+                    var colors = kAirEntry.bgHorizontalColors
+                    if (!kAirEntry.isBgGradient) {
+                        //水平不渐变
+                        colors = K0Widget.getNotLinearGradientColors(width, colors!!)
+                    }
+                    //水平渐变(从左往右，以斜边为标准，进行渐变)
+                    if (shader == null) {
+                        shader = LinearGradient(view.scrollX.toFloat(), view.scrollY.toFloat(), width.toFloat() + view.scrollX, view.scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
+                    }
+                    paint.setShader(shader)
+                }
             }
             //绘制路径
             drawPath(path, paint)

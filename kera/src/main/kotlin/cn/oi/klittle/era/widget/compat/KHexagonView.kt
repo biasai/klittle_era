@@ -251,7 +251,7 @@ open class KHexagonView : KView {
                 if (triangle.strokeVerticalColors != null) {
                     var shader: LinearGradient? = null
                     var colors = triangle.strokeVerticalColors
-                    if (!triangle.isBgGradient) {
+                    if (!triangle.isStrokeGradient) {
                         //垂直不渐变
                         colors = getNotLinearGradientColors(height, colors!!)
                     }
@@ -263,7 +263,7 @@ open class KHexagonView : KView {
                 } else if (triangle.strokeHorizontalColors != null) {
                     var shader: LinearGradient? = null
                     var colors = triangle.strokeHorizontalColors
-                    if (!triangle.isBgGradient) {
+                    if (!triangle.isStrokeGradient) {
                         //水平不渐变
                         colors = getNotLinearGradientColors(width, colors!!)
                     }

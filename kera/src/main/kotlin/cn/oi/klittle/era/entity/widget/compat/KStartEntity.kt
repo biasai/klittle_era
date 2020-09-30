@@ -7,8 +7,8 @@ import cn.oi.klittle.era.comm.kpx
 /**
  * 五角星
  * @param bg_color 背景颜色
- * @param bgHorizontalColors 背景颜色水平渐变 fixme (从左往右，以斜边为标准，进行渐变)
- * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）fixme (从左往右，以斜边上的高为标准，进行渐变)
+ * @param bgHorizontalColors 背景颜色水平渐变
+ * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）
  * @param isBgGradient 背景色是否渐变,默认是
  * @param strokeWidth 边框宽度
  * @param strokeColor 边框颜色
