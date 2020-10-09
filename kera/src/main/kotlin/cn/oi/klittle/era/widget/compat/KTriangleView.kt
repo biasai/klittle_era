@@ -139,6 +139,18 @@ open class KTriangleView : KView {
         return this
     }
 
+    //不可用
+    var triangle_notEnable: KTriangleEntity? = null
+
+    fun triangle_notEnable(block: KTriangleEntity.() -> Unit): KTriangleView {
+        if (triangle_notEnable == null) {
+            triangle_notEnable = getmTriangle().copy()//整个属性全部复制过来。
+        }
+        block(triangle_notEnable!!)
+        invalidate()
+        return this
+    }
+
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var triangle: KTriangleEntity? = null
 
@@ -186,6 +198,10 @@ open class KTriangleView : KView {
                 } else if (isSelected && triangle_selected != null) {
                     //选中
                     triangleModel = triangle_selected
+                }
+                if (isEnabled == false && triangle_notEnable != null) {
+                    //不可用
+                    triangleModel = triangle_notEnable
                 }
                 //正常
                 if (triangleModel == null) {
@@ -439,6 +455,7 @@ open class KTriangleView : KView {
         triangle_hover = null
         triangle_press = null
         triangle_selected = null
+        triangle_notEnable = null
         triangleModel = null
         kCirCles?.clear()
         kCirCles = null

@@ -129,13 +129,13 @@ object KStringUtils {
     fun removeBlank(text: String?): String? {
         removeEnter(text)?.let {
             it.trim()?.let {
-                return it.replace(" ", "")
+                return it.replace(" ", "").trim()
             }
         }
         return ""
     }
 
-    //去除换行符(清楚有效)
+    //去除换行符(亲测有效)
     fun removeEnter(text: String?): String? {
         return text?.replace("\r", "")?.replace("\n", "")
     }

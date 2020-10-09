@@ -177,14 +177,14 @@ open class KBaseChartView : KScrollTextView {
     }
 
     //状态不可用
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         currentXAxis = xAxis
         currentYAxis = yAxis
-        xAxis_enable?.let {
+        xAxis_notEnable?.let {
             currentXAxis = it
         }
-        yAxis_enable?.let {
+        yAxis_notEnable?.let {
             currentYAxis = it
         }
     }
@@ -197,7 +197,7 @@ open class KBaseChartView : KScrollTextView {
         xAxis_press?.let {
             currentXAxis = it
         }
-        yAxis_enable?.let {
+        yAxis_notEnable?.let {
             currentYAxis = it
         }
     }
@@ -214,13 +214,13 @@ open class KBaseChartView : KScrollTextView {
      */
 
     //不可用
-    private var xAxis_enable: KAxisEntity? = null
+    private var xAxis_notEnable: KAxisEntity? = null
 
-    fun xAxis_enable(block: KAxisEntity.() -> Unit): KBaseChartView {
-        if (xAxis_enable == null) {
-            xAxis_enable = getAxis().copy()//整个属性全部复制过来。
+    fun xAxis_notEnable(block: KAxisEntity.() -> Unit): KBaseChartView {
+        if (xAxis_notEnable == null) {
+            xAxis_notEnable = getAxis().copy()//整个属性全部复制过来。
         }
-        block(xAxis_enable!!)
+        block(xAxis_notEnable!!)
         invalidate()
         return this
     }
@@ -296,13 +296,13 @@ open class KBaseChartView : KScrollTextView {
      * fixme y轴
      */
     //不可用
-    private var yAxis_enable: KAxisEntity? = null
+    private var yAxis_notEnable: KAxisEntity? = null
 
-    fun yAxis_enable(block: KAxisEntity.() -> Unit): KBaseChartView {
-        if (yAxis_enable == null) {
-            yAxis_enable = getAxis().copy()//整个属性全部复制过来。
+    fun yAxis_notEnable(block: KAxisEntity.() -> Unit): KBaseChartView {
+        if (yAxis_notEnable == null) {
+            yAxis_notEnable = getAxis().copy()//整个属性全部复制过来。
         }
-        block(yAxis_enable!!)
+        block(yAxis_notEnable!!)
         invalidate()
         return this
     }
@@ -374,6 +374,7 @@ open class KBaseChartView : KScrollTextView {
         xAxis_hover = null
         xAxis_press = null
         xAxis_selected = null
+        xAxis_notEnable=null
         xAxis = null
         currentXAxis = null
         yAxis = null
@@ -381,6 +382,7 @@ open class KBaseChartView : KScrollTextView {
         yAxis_hover = null
         yAxis_press = null
         yAxis_selected = null
+        yAxis_notEnable=null
         yAxis = null
         currentYAxis = null
     }

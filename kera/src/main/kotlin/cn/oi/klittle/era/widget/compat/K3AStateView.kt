@@ -50,8 +50,8 @@ import android.view.ViewGroup
 //}
 
 //状态：不可用 fixme 重点说明一下；isEnabled=false 不可用状态，只是屏蔽了点击事件，其他触摸状态，如isPressed是不受影响的。影响的仅仅是点击事件的回调。
-//override fun changedEnabled() {
-//    super.changedEnabled()
+//override fun changedNotEnabled() {
+//    super.changedNotEnabled()
 //    normal()
 //    border_enable?.let {
 //        currentBorder = it
@@ -95,7 +95,7 @@ open class K3AStateView : K2GestureWidget {
 
     //fixme 优先级：按下>悬浮>聚焦>选中>常态
     //这几个状态，是用来判断和控制属性动画的。
-    protected var state_enable: Int = 0//不可用状态
+    protected var state_notEnable: Int = 0//不可用状态
     protected var state_press: Int = 1//按下状态
     protected var state_hover: Int = 2//鼠标悬浮状态
     protected var state_focuse: Int = 3//聚焦状态
@@ -107,10 +107,10 @@ open class K3AStateView : K2GestureWidget {
         view.apply {
             if (!isEnabled) {
                 //不可用状态
-                if (state_current != state_enable) {
+                if (state_current != state_notEnable) {
                     state_previous = state_current
-                    state_current = state_enable
-                    changedEnabled()
+                    state_current = state_notEnable
+                    changedNotEnabled()
                 }
             } else if (isPressed) {
                 //按下
@@ -182,14 +182,14 @@ open class K3AStateView : K2GestureWidget {
         this.changedNormal = changedNormal
     }
 
-    var changedEnabled: (() -> Unit)? = null
-    fun changedEnable(changedEnabled: (() -> Unit)) {
-        this.changedEnabled = changedEnabled
+    var changedNotEnabled: (() -> Unit)? = null
+    fun changedNotEnable(changedEnabled: (() -> Unit)) {
+        this.changedNotEnabled = changedEnabled
     }
 
     //状态改变时，不可用
-    open fun changedEnabled() {
-        changedEnabled?.let {
+    open fun changedNotEnabled() {
+        changedNotEnabled?.let {
             it()
         }
     }
@@ -236,7 +236,7 @@ open class K3AStateView : K2GestureWidget {
         changedHovered = null
         changedSelected = null
         changedNormal = null
-        changedEnabled = null
+        changedNotEnabled = null
         onSetSelected = null
     }
 

@@ -99,6 +99,18 @@ open class KHexagonView : KView {
         return this
     }
 
+    //选中
+    var hexagon_notEnable: KHexagonEntity? = null
+
+    fun hexagon_notEnable(block: KHexagonEntity.() -> Unit): KHexagonView {
+        if (hexagon_notEnable == null) {
+            hexagon_notEnable = getmHexagon().copy()//整个属性全部复制过来。
+        }
+        block(hexagon_notEnable!!)
+        invalidate()
+        return this
+    }
+
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var hexagon: KHexagonEntity? = null
 
@@ -138,6 +150,10 @@ open class KHexagonView : KView {
                 } else if (isSelected && hexagon_selected != null) {
                     //选中
                     hexagonModel = hexagon_selected
+                }
+                if (isEnabled == false && hexagon_notEnable != null) {
+                    //不可用
+                    hexagonModel = hexagon_notEnable
                 }
                 //正常
                 if (hexagonModel == null) {
@@ -182,7 +198,7 @@ open class KHexagonView : KView {
                 }
                 //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)(从左往右，以斜边上的高为标准，进行渐变)
                 if (shader == null) {
-                    shader = LinearGradient(scrollX.toFloat(),  scrollY.toFloat(), scrollX.toFloat(), height.toFloat() + scrollY, colors, null, Shader.TileMode.MIRROR)
+                    shader = LinearGradient(scrollX.toFloat(), scrollY.toFloat(), scrollX.toFloat(), height.toFloat() + scrollY, colors, null, Shader.TileMode.MIRROR)
                 }
                 paint.setShader(shader)
             } else if (triangle.bgHorizontalColors != null) {
@@ -194,7 +210,7 @@ open class KHexagonView : KView {
                 }
                 //水平渐变(从左往右，以斜边为标准，进行渐变)
                 if (shader == null) {
-                    shader = LinearGradient( scrollX.toFloat(), scrollY.toFloat(), width.toFloat() + scrollX,  scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
+                    shader = LinearGradient(scrollX.toFloat(), scrollY.toFloat(), width.toFloat() + scrollX, scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
                 }
                 paint.setShader(shader)
             }
@@ -209,7 +225,7 @@ open class KHexagonView : KView {
             var centreY = mHeight / 2f
 
             var mLenght = mWidth / 2//fixme 六变形的边长
-            if (mWidth>mHeight){
+            if (mWidth > mHeight) {
                 mLenght = mHeight / 2
             }
 
@@ -226,12 +242,12 @@ open class KHexagonView : KView {
 //            path.lineTo(0f, (height / 2).toFloat())//最左边点
 //            path.lineTo(a, c)//fixme 最左上角点
 //            path.lineTo(width - a, c)//最右上角点。
-            path.moveTo(centreX+a+mLenght/2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
-            path.lineTo(centreX+mLenght/2, centreY.toFloat() - b)//最右下角点
-            path.lineTo(centreX - mLenght/2, centreY.toFloat() - b)//最左下角点
-            path.lineTo(centreX - mLenght/2-a, centreY.toFloat())//最左边点
-            path.lineTo(centreX - mLenght/2, centreY.toFloat()+b)//最左上角点
-            path.lineTo(centreX+mLenght/2, centreY.toFloat()+b)//最右上角点
+            path.moveTo(centreX + a + mLenght / 2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
+            path.lineTo(centreX + mLenght / 2, centreY.toFloat() - b)//最右下角点
+            path.lineTo(centreX - mLenght / 2, centreY.toFloat() - b)//最左下角点
+            path.lineTo(centreX - mLenght / 2 - a, centreY.toFloat())//最左边点
+            path.lineTo(centreX - mLenght / 2, centreY.toFloat() + b)//最左上角点
+            path.lineTo(centreX + mLenght / 2, centreY.toFloat() + b)//最右上角点
             path.close()
             if (triangle.all_radius != 0f) {
                 paint?.setPathEffect(CornerPathEffect(triangle.all_radius))
@@ -257,7 +273,7 @@ open class KHexagonView : KView {
                     }
                     //垂直渐变，优先级高于水平(渐变颜色值数组必须大于等于2，不然异常)(从左往右，以斜边上的高为标准，进行渐变)
                     if (shader == null) {
-                        shader = LinearGradient(scrollX.toFloat(),  scrollY.toFloat(), scrollX.toFloat(), height.toFloat() + scrollY, colors, null, Shader.TileMode.MIRROR)
+                        shader = LinearGradient(scrollX.toFloat(), scrollY.toFloat(), scrollX.toFloat(), height.toFloat() + scrollY, colors, null, Shader.TileMode.MIRROR)
                     }
                     paint.setShader(shader)
                 } else if (triangle.strokeHorizontalColors != null) {
@@ -269,7 +285,7 @@ open class KHexagonView : KView {
                     }
                     //水平渐变(从左往右，以斜边为标准，进行渐变)
                     if (shader == null) {
-                        shader = LinearGradient( scrollX.toFloat(), scrollY.toFloat(), width.toFloat() + scrollX, scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
+                        shader = LinearGradient(scrollX.toFloat(), scrollY.toFloat(), width.toFloat() + scrollX, scrollY.toFloat(), colors, null, Shader.TileMode.MIRROR)
                     }
                     paint.setShader(shader)
                 }
@@ -280,12 +296,12 @@ open class KHexagonView : KView {
 //                path.lineTo(0f, (height / 2).toFloat())
 //                path.lineTo(a, c)
 //                path.lineTo(width - a, c)
-                path.moveTo(centreX+a+mLenght/2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
-                path.lineTo(centreX+mLenght/2, centreY.toFloat() - b)//最右下角点
-                path.lineTo(centreX - mLenght/2, centreY.toFloat() - b)//最左下角点
-                path.lineTo(centreX - mLenght/2-a, centreY.toFloat())//最左边点
-                path.lineTo(centreX - mLenght/2, centreY.toFloat()+b)//最左上角点
-                path.lineTo(centreX+mLenght/2, centreY.toFloat()+b)//最右上角点
+                path.moveTo(centreX + a + mLenght / 2, centreY.toFloat())//最右边点（以下点，顺时针去画的）
+                path.lineTo(centreX + mLenght / 2, centreY.toFloat() - b)//最右下角点
+                path.lineTo(centreX - mLenght / 2, centreY.toFloat() - b)//最左下角点
+                path.lineTo(centreX - mLenght / 2 - a, centreY.toFloat())//最左边点
+                path.lineTo(centreX - mLenght / 2, centreY.toFloat() + b)//最左上角点
+                path.lineTo(centreX + mLenght / 2, centreY.toFloat() + b)//最右上角点
                 path.close()
                 var cornerPathEffect: CornerPathEffect? = null
                 if (triangle.all_radius != 0f) {
@@ -320,7 +336,7 @@ open class KHexagonView : KView {
                     invalidate()
                 }
             }
-            if (triangle.isPorterDuffXfermode){
+            if (triangle.isPorterDuffXfermode) {
                 //fixme 切割
                 paint.style = Paint.Style.FILL_AND_STROKE
                 paint.color = Color.WHITE
@@ -347,6 +363,7 @@ open class KHexagonView : KView {
         hexagon_hover = null
         hexagon_press = null
         hexagon_selected = null
+        hexagon_notEnable=null
         hexagonModel = null
     }
 

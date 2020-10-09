@@ -477,13 +477,13 @@ class KToggleView : KView {
         }
     }
 
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         normal()
-        toggle_enable?.let {
+        toggle_notEnable?.let {
             currentToggle = it
         }
-        thumb_enable?.let {
+        thumb_notEnable?.let {
             currentThumb = it
         }
     }
@@ -526,13 +526,13 @@ class KToggleView : KView {
      */
 
     //不可用
-    private var toggle_enable: KToogleEntity? = null
+    private var toggle_notEnable: KToogleEntity? = null
 
-    fun toggle_enable(block: KToogleEntity.() -> Unit): KToggleView {
-        if (toggle_enable == null) {
-            toggle_enable = getToogleEntity().copy()//整个属性全部复制过来。
+    fun toggle_notEnable(block: KToogleEntity.() -> Unit): KToggleView {
+        if (toggle_notEnable == null) {
+            toggle_notEnable = getToogleEntity().copy()//整个属性全部复制过来。
         }
-        block(toggle_enable!!)
+        block(toggle_notEnable!!)
         invalidate()
         return this
     }
@@ -621,13 +621,13 @@ class KToggleView : KView {
      */
 
     //不可用
-    private var thumb_enable: KThumbEntity? = null
+    private var thumb_notEnable: KThumbEntity? = null
 
-    fun thumb_enable(block: KThumbEntity.() -> Unit): KToggleView {
-        if (thumb_enable == null) {
-            thumb_enable = getThumbEntity().copy()//整个属性全部复制过来。
+    fun thumb_notEnable(block: KThumbEntity.() -> Unit): KToggleView {
+        if (thumb_notEnable == null) {
+            thumb_notEnable = getThumbEntity().copy()//整个属性全部复制过来。
         }
-        block(thumb_enable!!)
+        block(thumb_notEnable!!)
         invalidate()
         return this
     }
@@ -717,14 +717,14 @@ class KToggleView : KView {
         toggle_focuse = null
         toggle_hover = null
         toggle_press = null
-        toggle_enable = null
+        toggle_notEnable = null
         toggle_selected = null
         currentToggle = null
         thumb = null
         thumb_focuse = null
         thumb_hover = null
         thumb_press = null
-        thumb_enable = null
+        thumb_notEnable = null
         thumb_selected = null
         currentThumb = null
         onChangedListener = null

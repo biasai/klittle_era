@@ -44,13 +44,13 @@ open class K5LparamWidget : K4AutoBgView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     //按下
-    var param_enable: KLparamEntity? = null
+    var param_notEnable: KLparamEntity? = null
 
-    fun param_enable(block: KLparamEntity.() -> Unit): K5LparamWidget {
-        if (param_enable == null) {
-            param_enable = getmParam().copy()//整个属性全部复制过来。
+    fun param_notEnable(block: KLparamEntity.() -> Unit): K5LparamWidget {
+        if (param_notEnable == null) {
+            param_notEnable = getmParam().copy()//整个属性全部复制过来。
         }
-        block(param_enable!!)
+        block(param_notEnable!!)
         paramView?.invalidate()
         paramView?.requestLayout()
         return this
@@ -156,8 +156,8 @@ open class K5LparamWidget : K4AutoBgView {
                     lparamModel = param_selected
                 }
                 //不可用，优先级最高
-                if (!isEnabled && param_enable != null) {
-                    lparamModel = param_enable
+                if (!isEnabled && param_notEnable != null) {
+                    lparamModel = param_notEnable
                 }
                 //KLoggerUtils.e("isPressed:\t"+isPressed+"\tisEnabled:\t"+isEnabled+"\tparam_enable:\t"+param_enable+"\tlparamModel:\t"+lparamModel)
                 //正常
@@ -539,7 +539,7 @@ open class K5LparamWidget : K4AutoBgView {
         param_hover = null
         param_selected = null
         param_press = null
-        param_enable = null
+        param_notEnable = null
         paramView = null
         lparamModel = null
     }

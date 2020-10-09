@@ -15,9 +15,21 @@ import androidx.core.app.NotificationCompat.*
 import androidx.core.app.NotificationManagerCompat
 import cn.oi.klittle.era.base.KBaseApplication
 
+//                                fixme 调用案例
+//                                KGlideUtils.getBitmapFromResouce(R.mipmap.timg, kpx.x(200), kpx.x(200),isCenterCrop=true) { key, bitmap ->
+//                                var leftLargeIcon = bitmap
+//                                KNotificationUtils.sendNotification(MainActivity2::class.java, leftLargeIcon, R.mipmap.timg2,
+//                                        notificationId = 123,
+//                                        title = "标题",
+//                                        content = "正文内容",
+//                                        ticker = "状态栏一开始提醒的信息",
+//                                        info = "提示信息，出现在正文后面")
+//                                //ticker,和 info可有可无。现在基本没有效果。
+//                            }
+
 /**
  * fixme 新版特性：现在通知栏如果有消息，应用图标就会有红色的小圆点提醒（9.0的系统会有）。(10及以上的系统没有了。)
- * fixme 悬浮窗效果；5.0及以上需要开启悬浮窗权限才会有效果；10.0系统好像已经没有悬浮窗效果了（只有系统应用才有，亲测）。
+ * fixme 悬浮窗效果；5.0及以上需要开启悬浮窗权限才会有效果；小米10.0系统悬浮窗效果了需要用户手动开启悬浮通知。（亲测，状态栏里的通知消息左滑，设置->更多设置）
  * fixme KNotificationEntity 实体类中，有调用案例。
  */
 object KNotificationUtils {

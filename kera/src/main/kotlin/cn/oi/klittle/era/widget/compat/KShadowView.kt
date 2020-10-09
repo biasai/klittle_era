@@ -174,8 +174,8 @@ open class KShadowView : K5LparamWidget {
                     shadowModel = shadow//正常
                 }
                 //不可用，优先级最高
-                if (!isEnabled && shadow_enable != null) {
-                    shadowModel = shadow_enable
+                if (!isEnabled && shadow_notEnable != null) {
+                    shadowModel = shadow_notEnable
                 }
                 //正常
                 if (shadowModel == null) {
@@ -409,13 +409,13 @@ open class KShadowView : K5LparamWidget {
     }
 
     //fixme 不可用状态
-    private var shadow_enable: KShadowEntity? = null
+    private var shadow_notEnable: KShadowEntity? = null
 
-    fun shadow_enable(block: KShadowEntity.() -> Unit): KShadowView {
-        if (shadow_enable == null) {
-            shadow_enable = shadow?.copy()//整个属性全部复制过来。
+    fun shadow_notEnable(block: KShadowEntity.() -> Unit): KShadowView {
+        if (shadow_notEnable == null) {
+            shadow_notEnable = shadow?.copy()//整个属性全部复制过来。
         }
-        block(shadow_enable!!)
+        block(shadow_notEnable!!)
         invalidate()
         requestLayout()
         return this
@@ -492,7 +492,7 @@ open class KShadowView : K5LparamWidget {
         shadow = null
         shadowModel = null
         windowKey = null
-        shadow_enable=null
+        shadow_notEnable=null
     }
 
 }

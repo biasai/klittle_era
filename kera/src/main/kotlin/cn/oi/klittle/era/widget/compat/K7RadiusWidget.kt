@@ -31,13 +31,13 @@ open class K7RadiusWidget : K5LparamWidget {
     }
 
     //fixme 不可用状态
-    var radius_enable: KRadiusEntity? = null
+    var radius_notEnable: KRadiusEntity? = null
 
-    fun radius_enable(block: KRadiusEntity.() -> Unit): K7RadiusWidget {
-        if (radius_enable == null) {
-            radius_enable = gtmRadius().copy()//整个属性全部复制过来。
+    fun radius_notEnable(block: KRadiusEntity.() -> Unit): K7RadiusWidget {
+        if (radius_notEnable == null) {
+            radius_notEnable = gtmRadius().copy()//整个属性全部复制过来。
         }
-        block(radius_enable!!)
+        block(radius_notEnable!!)
         invalidate()
         //requestLayout()
         return this
@@ -153,8 +153,8 @@ open class K7RadiusWidget : K5LparamWidget {
                     currentRadius = radius_selected
                 }
                 //不可用，优先级最高
-                if (!isEnabled && radius_enable != null) {
-                    currentRadius = radius_enable
+                if (!isEnabled && radius_notEnable != null) {
+                    currentRadius = radius_notEnable
                 }
                 //正常
                 if (currentRadius == null) {
@@ -443,7 +443,7 @@ open class K7RadiusWidget : K5LparamWidget {
         kradius = null
         currentRadius = null
         xfermodePaint = null
-        radius_enable = null
+        radius_notEnable = null
     }
 
 }

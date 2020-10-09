@@ -630,12 +630,12 @@ open class KDiamondView : KTextView {
         return this
     }
 
-    var diamond_enable: KDiamondEntity? = null//不可用
-    fun diamond_enable(block: KDiamondEntity.() -> Unit): KDiamondView {
-        if (diamond_enable == null) {
-            diamond_enable = getDiamondEntity().copy()
+    var diamond_notEnable: KDiamondEntity? = null//不可用
+    fun diamond_notEnable(block: KDiamondEntity.() -> Unit): KDiamondView {
+        if (diamond_notEnable == null) {
+            diamond_notEnable = getDiamondEntity().copy()
         }
-        block(diamond_enable!!)
+        block(diamond_notEnable!!)
         invalidate()
         return this
     }
@@ -712,10 +712,10 @@ open class KDiamondView : KTextView {
     }
 
     //状态：不可用
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         normal()
-        diamond_enable?.let {
+        diamond_notEnable?.let {
             currentDiamond = it
         }
     }
@@ -742,7 +742,7 @@ open class KDiamondView : KTextView {
         diamond_hove = null
         diamond_focuse = null
         diamond_selected = null
-        diamond_enable = null
+        diamond_notEnable = null
         borderPath?.reset()
         borderPath = null
         linePath?.reset()

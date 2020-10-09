@@ -700,12 +700,12 @@ open class KParallelogramView : KTextView {
         return this
     }
 
-    var parallelogram_enable: KParallelogramEntity? = null//不可用
-    fun parallelogram_enable(block: KParallelogramEntity.() -> Unit): KParallelogramView {
-        if (parallelogram_enable == null) {
-            parallelogram_enable = getParallelogramEntity().copy()
+    var parallelogram_notEnable: KParallelogramEntity? = null//不可用
+    fun parallelogram_notEnable(block: KParallelogramEntity.() -> Unit): KParallelogramView {
+        if (parallelogram_notEnable == null) {
+            parallelogram_notEnable = getParallelogramEntity().copy()
         }
-        block(parallelogram_enable!!)
+        block(parallelogram_notEnable!!)
         invalidate()
         return this
     }
@@ -782,10 +782,10 @@ open class KParallelogramView : KTextView {
     }
 
     //状态：不可用
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         normal()
-        parallelogram_enable?.let {
+        parallelogram_notEnable?.let {
             currentParallelogram = it
         }
     }
@@ -812,7 +812,7 @@ open class KParallelogramView : KTextView {
         parallelogram_hove = null
         parallelogram_focuse = null
         parallelogram_selected = null
-        parallelogram_enable = null
+        parallelogram_notEnable = null
         borderPath?.reset()
         borderPath = null
         linePath?.reset()

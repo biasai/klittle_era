@@ -653,17 +653,17 @@ open class KTextView : KAutoSplitTextView {
     }
 
     //不可用;这个enable一般就表示不可用
-    var txt_enable: KTextEntity? = null
+    var txt_notEnable: KTextEntity? = null
 
-    fun txt_enable(block: KTextEntity.() -> Unit): KTextView {
-        if (txt_enable == null) {
-            txt_enable = getmTxt().copy()//整个属性全部复制过来。
+    fun txt_notEnable(block: KTextEntity.() -> Unit): KTextView {
+        if (txt_notEnable == null) {
+            txt_notEnable = getmTxt().copy()//整个属性全部复制过来。
         }
-        block(txt_enable!!)
+        block(txt_notEnable!!)
         text?.trim()?.let {
             //文本获取不会为null最多为空字符串
             if (it.length <= 0) {
-                txt_enable?.text?.let {
+                txt_notEnable?.text?.let {
                     if (it.length > 0) {
                         setText2(it)//fixme 必须设置一下文本，防止部分机型没有文本显示。
                     }
@@ -835,8 +835,8 @@ open class KTextView : KAutoSplitTextView {
                 texts_model = txt_selected
             }
             //不可用，优先级最高
-            if (!isEnabled && txt_enable != null) {
-                texts_model = txt_enable
+            if (!isEnabled && txt_notEnable != null) {
+                texts_model = txt_notEnable
             }
             //正常
             if (texts_model == null) {
@@ -923,7 +923,7 @@ open class KTextView : KAutoSplitTextView {
             txt_focuse = null
             txt_hover = null
             txt_press = null
-            txt_enable = null
+            txt_notEnable = null
             txt_selected = null
             texts_model = null
             watcheres2?.clear()

@@ -211,13 +211,13 @@ open class KPathView : KView {
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
 
     //不可用
-    var path_enable: KPathEntity? = null
+    var path_notEnable: KPathEntity? = null
 
-    fun path_enable(block: KPathEntity.() -> Unit): KPathView {
-        if (path_enable == null) {
-            path_enable = getmPath().copy()//整个属性全部复制过来。
+    fun path_notEnable(block: KPathEntity.() -> Unit): KPathView {
+        if (path_notEnable == null) {
+            path_notEnable = getmPath().copy()//整个属性全部复制过来。
         }
-        block(path_enable!!)
+        block(path_notEnable!!)
         invalidate()
         return this
     }
@@ -291,9 +291,9 @@ open class KPathView : KView {
     override fun draw2First(canvas: Canvas, paint: Paint) {
         super.draw2First(canvas, paint)
         if (path != null) {
-            if (!isEnabled && path_enable != null) {
+            if (!isEnabled && path_notEnable != null) {
                 //不可用
-                modelPath = path_enable
+                modelPath = path_notEnable
             } else if (isPressed && path_press != null) {
                 //按下
                 modelPath = path_press
@@ -513,7 +513,7 @@ open class KPathView : KView {
         modelPath = null
         canvasPath2 = null
         path = null
-        path_enable = null
+        path_notEnable = null
         path_press = null
         path_focuse = null
         path_selected = null

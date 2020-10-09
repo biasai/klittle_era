@@ -850,13 +850,13 @@ open class KEditText : KMyEditText {
     }
 
     //不可用
-    var line_enable: KEditLineEntity? = null
+    var line_notEnable: KEditLineEntity? = null
 
-    fun line_enable(block: KEditLineEntity.() -> Unit): KEditText {
-        if (line_enable == null) {
-            line_enable = getmLine().copy()//整个属性全部复制过来。
+    fun line_notEnable(block: KEditLineEntity.() -> Unit): KEditText {
+        if (line_notEnable == null) {
+            line_notEnable = getmLine().copy()//整个属性全部复制过来。
         }
-        block(line_enable!!)
+        block(line_notEnable!!)
         invalidate()
         return this
     }
@@ -998,9 +998,9 @@ open class KEditText : KMyEditText {
             super.draw2(canvas, paint)
             if (line != null) {
                 var model: KEditLineEntity? = null
-                if (!isEnabled && line_enable != null) {
+                if (!isEnabled && line_notEnable != null) {
                     //不可用
-                    model = line_enable
+                    model = line_notEnable
                 } else if (isPressed && line_press != null) {
                     //按下
                     model = line_press
@@ -1133,7 +1133,7 @@ open class KEditText : KMyEditText {
         textWatcher = null
         line = null
         line_bg = null
-        line_enable = null
+        line_notEnable = null
         line_press = null
         line_focuse = null
         line_selected = null

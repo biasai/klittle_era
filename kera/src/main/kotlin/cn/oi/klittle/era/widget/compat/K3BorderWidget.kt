@@ -602,12 +602,12 @@ open class K3BorderWidget : K3AStateView {
         return this
     }
 
-    var border_enable: KBorderEntity? = null//不可用
-    fun border_enable(block: KBorderEntity.() -> Unit): K3BorderWidget {
-        if (border_enable == null) {
-            border_enable = getBorderEntity().copy()
+    var border_notEnable: KBorderEntity? = null//不可用
+    fun border_notEnable(block: KBorderEntity.() -> Unit): K3BorderWidget {
+        if (border_notEnable == null) {
+            border_notEnable = getBorderEntity().copy()
         }
-        block(border_enable!!)
+        block(border_notEnable!!)
         invalidate()
         return this
     }
@@ -684,10 +684,10 @@ open class K3BorderWidget : K3AStateView {
     }
 
     //状态：不可用
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         normal()
-        border_enable?.let {
+        border_notEnable?.let {
             currentBorder = it
         }
     }
@@ -714,7 +714,7 @@ open class K3BorderWidget : K3AStateView {
         border_hove = null
         border_focuse = null
         border_selected = null
-        border_enable = null
+        border_notEnable = null
         borderPath?.reset()
         borderPath = null
         linePath?.reset()

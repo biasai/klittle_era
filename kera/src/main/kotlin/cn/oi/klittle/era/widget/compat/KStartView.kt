@@ -94,6 +94,18 @@ open class KStartView : KView {
         return this
     }
 
+    //不可用
+    var start_notEnable: KStartEntity? = null
+
+    fun start_notEnable(block: KStartEntity.() -> Unit): KStartView {
+        if (start_notEnable == null) {
+            start_notEnable = getmStart().copy()//整个属性全部复制过来。
+        }
+        block(start_notEnable!!)
+        invalidate()
+        return this
+    }
+
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var start: KStartEntity? = null
 
@@ -133,6 +145,10 @@ open class KStartView : KView {
                 } else if (isSelected && start_selected != null) {
                     //选中
                     startModel = start_selected
+                }
+                if (isEnabled==false&&start_notEnable!=null){
+                    //不可用
+                    startModel=start_notEnable
                 }
                 //正常
                 if (startModel == null) {
@@ -350,6 +366,7 @@ open class KStartView : KView {
         start_hover = null
         start_press = null
         start_selected = null
+        start_notEnable=null
         startModel = null
     }
 

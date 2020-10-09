@@ -115,21 +115,22 @@ object KCanvasUtils {
     /**
      * fixme 画气泡；KAirView 里面有调用案例。（对话框样式）
      */
-    fun drawAirBubbles(canvas: Canvas?, kAirEntry: KAirEntry, view: View) {
+    fun drawAirBubbles(canvas: Canvas?, paint:Paint,kAirEntry: KAirEntry, view: View) {
         kAirEntry?.let {
             if (!it.isDraw) {
                 return
             }
         }
         canvas?.apply {
-            var paint = getPaint()
+            //var paint = getPaint()
             paint.color = kAirEntry.bg_color
             paint.style = Paint.Style.FILL_AND_STROKE
             paint.strokeWidth = kAirEntry.strokeWidth
             //画内容
             drawAirBubbles2(canvas, kAirEntry, paint, view, false)
             if (kAirEntry.strokeWidth > 0 && kAirEntry.strokeColor != Color.TRANSPARENT) {
-                paint = getPaint()
+                //paint = getPaint()
+                KBaseView.resetPaint(paint)
                 paint.color = kAirEntry.strokeColor
                 paint.style = Paint.Style.STROKE
                 paint.strokeWidth = kAirEntry.strokeWidth
@@ -148,23 +149,23 @@ object KCanvasUtils {
             var x = 0
             var y = 0
             if (kAirEntry.direction == KAirEntry.DIRECTION_LEFT) {
-                x = (kAirEntry.airWidth + paint.strokeWidth / 2 + view.scrollX).toInt()
-                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                x = (kAirEntry.airWidth + paint.strokeWidth + view.scrollX).toInt()
+                y = (paint.strokeWidth + view.scrollY).toInt()
                 rectWidth = (view.width - kAirEntry.airWidth - paint.strokeWidth).toInt()//fixme 减去边框的宽度，防止边缘线被遮挡一部分。
                 rectHeight = (view.height - paint.strokeWidth).toInt()//矩形高度
             } else if (kAirEntry.direction == KAirEntry.DIRECTION_TOP) {
-                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
-                y = (kAirEntry.airHeight + paint.strokeWidth / 2 + view.scrollY).toInt()
+                x = (paint.strokeWidth + view.scrollX).toInt()
+                y = (kAirEntry.airHeight + paint.strokeWidth + view.scrollY).toInt()
                 rectWidth = (view.width - paint.strokeWidth).toInt()
                 rectHeight = (view.height - paint.strokeWidth - kAirEntry.airHeight).toInt()//矩形高度
             } else if (kAirEntry.direction == KAirEntry.DIRECTION_RIGHT) {
-                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
-                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                x = (paint.strokeWidth + view.scrollX).toInt()
+                y = (paint.strokeWidth + view.scrollY).toInt()
                 rectWidth = (view.width - paint.strokeWidth - kAirEntry.airWidth).toInt()
                 rectHeight = (view.height - paint.strokeWidth).toInt()//矩形高度
             } else if (kAirEntry.direction == KAirEntry.DIRECTION_BOTTOM) {
-                x = (paint.strokeWidth / 2 + view.scrollX).toInt()
-                y = (paint.strokeWidth / 2 + view.scrollY).toInt()
+                x = (paint.strokeWidth + view.scrollX).toInt()
+                y = (paint.strokeWidth + view.scrollY).toInt()
                 rectWidth = (view.width - paint.strokeWidth).toInt()
                 rectHeight = (view.height - paint.strokeWidth - kAirEntry.airHeight).toInt()//矩形高度
             }
@@ -210,7 +211,7 @@ object KCanvasUtils {
                 }
                 var tox3 = tox2 + airWidth / 2
                 var toy3 = toy1
-                path.lineTo(tox3, toy3)
+                path.lineTo(tox3, toy3)//fixme 气泡顶点
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox3, toy3)
                 }
@@ -219,21 +220,21 @@ object KCanvasUtils {
             if (direction == KAirEntry.DIRECTION_RIGHT) {
                 //右边（居中）
                 var tox1 = rightTopPoint.x + xOffset
-                var toy1 = rightTopPoint.y + rectHeight / 2 - airWidth / 2 + yOffset
+                var toy1 = rightTopPoint.y + rectHeight / 2 - airHeight / 2 + yOffset
                 path.lineTo(tox1, toy1)
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox1, toy1)
                 }
-                var tox2 = tox1 + airHeight
-                var toy2 = toy1 + airWidth / 2
+                var tox2 = tox1 + airWidth
+                var toy2 = toy1 + airHeight / 2
                 path.lineTo(tox2, toy2)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
                     path.lineTo(tox2, toy2)
                 }
                 var tox3 = tox1
-                var toy3 = toy2 + airWidth / 2
-                path.lineTo(tox3, toy3)
+                var toy3 = toy2 + airHeight / 2
+                path.lineTo(tox3, toy3)//fixme 气泡顶点
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox3, toy3)
                 }
@@ -256,7 +257,7 @@ object KCanvasUtils {
                 }
                 var tox3 = tox2 - airWidth / 2
                 var toy3 = toy1
-                path.lineTo(tox3, toy3)
+                path.lineTo(tox3, toy3)//fixme 气泡顶点
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox3, toy3)
                 }
@@ -265,21 +266,21 @@ object KCanvasUtils {
             if (direction == KAirEntry.DIRECTION_LEFT) {
                 //左边居中
                 var tox1 = leftTopPoint.x + xOffset
-                var toy1 = leftTopPoint.y + rectHeight / 2 + airWidth / 2 + yOffset
+                var toy1 = leftTopPoint.y + rectHeight / 2 + airHeight / 2 + yOffset
                 path.lineTo(tox1, toy1)
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox1, toy1)
                 }
-                var tox2 = tox1 - airHeight
-                var toy2 = toy1 - airWidth / 2
+                var tox2 = tox1 - airWidth
+                var toy2 = toy1 - airHeight / 2
                 path.lineTo(tox2, toy2)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
                     path.lineTo(tox2, toy2)
                 }
                 var tox3 = tox1
-                var toy3 = toy2 - airWidth / 2
-                path.lineTo(tox3, toy3)
+                var toy3 = toy2 - airHeight / 2
+                path.lineTo(tox3, toy3)//fixme 气泡顶点
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox3, toy3)
                 }

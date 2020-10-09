@@ -5,9 +5,14 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
+import cn.oi.klittle.era.comm.kpx
 import cn.oi.klittle.era.entity.widget.KAirEntry
 import cn.oi.klittle.era.entity.widget.compat.KHexagonEntity
 import cn.oi.klittle.era.utils.KCanvasUtils
+import org.jetbrains.anko.bottomPadding
+import org.jetbrains.anko.leftPadding
+import org.jetbrains.anko.rightPadding
+import org.jetbrains.anko.topPadding
 
 //                fixme 使用案例（对话框样式）：
 
@@ -32,6 +37,7 @@ import cn.oi.klittle.era.utils.KCanvasUtils
 //                            //isAirBorderRadius=true//fixme 气泡三角的两个边的连接处是否具有圆角效果。,true圆角，false尖角。
 //                            dashWidth=kpx.x(15f)
 //                            dashGap=kpx.x(10f)
+//                            setAutoPaddingForAir(kpx.x(16),this)//fixme 设置文本内补丁。一般都设置为16
 //                        }
 //                        air_press {
 //                            dashWidth = 0f
@@ -46,15 +52,11 @@ import cn.oi.klittle.era.utils.KCanvasUtils
 //                        }
 //                        textColor = Color.WHITE
 //                        textSize = kpx.textSizeX(30)
-//                        gravity = Gravity.CENTER_VERTICAL
-//                        leftPadding = kpx.x(50)
-//                        rightPadding = kpx.x(25)
-//                        topPadding = kpx.x(50)
-//                        bottomPadding = kpx.x(40)
+//                        gravity = Gravity.CENTER_VERTICAL//fixme 文本居中方式
 //                    }.lparams {
 //                        topMargin = kpx.x(30)
 //                        leftMargin = topMargin
-//                        width = wrapContent//fixme 文本框的宽度和高度随文本变化，自适应。
+//                        width = wrapContent//fixme 文本框的宽度和高度随文本变化，自适应。0387037448
 //                        height = wrapContent
 //                    }
 
@@ -68,6 +70,41 @@ open class KAirView : KTextView {
 
     constructor(context: Context) : super(context) {}
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {}
+
+    /**
+     * fixme 根据气泡的方向，自动设置文本的内补丁。
+     * @param mPadding 内补丁；一般都设置为：kpx.x(16)；即8的倍数。8，16，24...比较好。
+     * @param airEnty 气泡实体类
+     */
+    open fun setAutoPaddingForAir(mPadding: Int, airEnty: KAirEntry? = air) {
+        airEnty?.apply {
+            if (direction == KAirEntry.DIRECTION_LEFT) {
+                //左
+                rightPadding = mPadding
+                leftPadding = airWidth + mPadding
+                topPadding = mPadding
+                bottomPadding = mPadding
+            } else if (direction == KAirEntry.DIRECTION_RIGHT) {
+                //右
+                leftPadding = mPadding
+                rightPadding = airWidth + mPadding
+                topPadding = mPadding
+                bottomPadding = mPadding
+            } else if (direction == KAirEntry.DIRECTION_TOP) {
+                //上
+                leftPadding = mPadding
+                rightPadding = mPadding
+                topPadding = mPadding + airHeight
+                bottomPadding = mPadding
+            } else if (direction == KAirEntry.DIRECTION_BOTTOM) {
+                //下
+                leftPadding = mPadding
+                rightPadding = mPadding
+                topPadding = mPadding
+                bottomPadding = mPadding + airHeight
+            }
+        }
+    }
 
     //按下
     var air_press: KAirEntry? = null
@@ -117,6 +154,18 @@ open class KAirView : KTextView {
         return this
     }
 
+    //不可用
+    var air_notEnable: KAirEntry? = null
+
+    fun air_notEnable(block: KAirEntry.() -> Unit): KAirView {
+        if (air_notEnable == null) {
+            air_notEnable = getMair().copy()//整个属性全部复制过来。
+        }
+        block(air_notEnable!!)
+        invalidate()
+        return this
+    }
+
     //fixme 正常状态（先写正常样式，再写其他状态的样式，因为其他状态的样式初始值是复制正常状态的样式的。）
     var air: KAirEntry? = null
 
@@ -157,6 +206,10 @@ open class KAirView : KTextView {
                     //选中
                     airModel = air_selected
                 }
+                if (isEnabled == false && air_notEnable != null) {
+                    //不可用
+                    airModel = air_notEnable
+                }
                 //正常
                 if (airModel == null) {
                     airModel = air
@@ -175,7 +228,7 @@ open class KAirView : KTextView {
     //画气泡。
     private fun drawAir(canvas: Canvas, paint: Paint, airEnty: KAirEntry, view: View) {
         view?.apply {
-            KCanvasUtils.drawAirBubbles(canvas, airEnty, this)
+            KCanvasUtils.drawAirBubbles(canvas, paint, airEnty, this)
         }
     }
 
@@ -188,6 +241,7 @@ open class KAirView : KTextView {
         air_hover = null
         air_press = null
         air_selected = null
+        air_notEnable = null
         airModel = null
     }
 

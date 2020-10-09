@@ -545,12 +545,12 @@ open class KDoubleArrowView : KTextView {
         return this
     }
 
-    var doubleArrow_enable: KDoubleArrowEntity? = null//fixme 不可用
-    fun doubleArrow_enable(block: KDoubleArrowEntity.() -> Unit): KDoubleArrowView {
-        if (doubleArrow_enable == null) {
-            doubleArrow_enable = getDoubleArrowEntity().copy()
+    var doubleArrow_notEnable: KDoubleArrowEntity? = null//fixme 不可用
+    fun doubleArrow_notEnable(block: KDoubleArrowEntity.() -> Unit): KDoubleArrowView {
+        if (doubleArrow_notEnable == null) {
+            doubleArrow_notEnable = getDoubleArrowEntity().copy()
         }
-        block(doubleArrow_enable!!)
+        block(doubleArrow_notEnable!!)
         invalidate()
         return this
     }
@@ -627,10 +627,10 @@ open class KDoubleArrowView : KTextView {
     }
 
     //状态：fixme 不可用
-    override fun changedEnabled() {
-        super.changedEnabled()
+    override fun changedNotEnabled() {
+        super.changedNotEnabled()
         normal()
-        doubleArrow_enable?.let {
+        doubleArrow_notEnable?.let {
             currentDoubleArrow = it
         }
     }
@@ -657,7 +657,7 @@ open class KDoubleArrowView : KTextView {
         doubleArrow_hove = null
         doubleArrow_focuse = null
         doubleArrow_selected = null
-        doubleArrow_enable = null
+        doubleArrow_notEnable = null
         mPath = null
         currentDoubleArrow=null
     }
