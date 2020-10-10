@@ -7,6 +7,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param direction 气泡的方向
  * @param xOffset 气泡的偏移量；气泡三角，x轴偏移量，正数向右偏移，负数向左偏移
  * @param yOffset 气泡三角，y轴偏移量；正数向下偏移，负数向上偏移。
+ * @param airOffset fixme airOffset是气泡顶点的偏移量，可以实现顶点倾斜效果。xOffset和yOffset是气泡整体的偏移量。
  * @param airWidth 气泡的宽度
  * @param airHeight 气泡的高度
  * @param all_radius 圆角（所有的圆角；包括气泡）
@@ -26,7 +27,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param isDraw 是否绘制
  * Created by 彭治铭 on 2019/4/18.
  */
-data class KAirEntry(var direction: Int = KAirEntry.DIRECTION_BOTTOM, var xOffset: Float = 0F, var yOffset: Float = 0F,
+data class KAirEntry(var direction: Int = KAirEntry.DIRECTION_BOTTOM, var xOffset: Float = 0F, var yOffset: Float = 0F,var airOffset:Float=0f,
                      var airWidth: Int = kpx.x(25), var airHeight: Int = airWidth,
                      var all_radius: Float = 0F, var isAirRadius: Boolean = true,var isAirBorderRadius: Boolean = true,
                      var strokeWidth: Float = 0F, var strokeColor: Int = Color.BLACK,

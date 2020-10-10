@@ -32,6 +32,7 @@ import org.jetbrains.anko.topPadding
 //                            airHeight = airWidth
 //                            //xOffset = 0f//fixme 气泡三角，x轴偏移量，正数向右偏移，负数向左偏移。亲测有效。
 //                            //yOffset = -kpx.x(30f)//气泡三角，y轴偏移量；正数向下偏移，负数向上偏移。
+//                            airOffset=kpx.x(0f)//fixme airOffset是气泡顶点的偏移量，可以实现顶点倾斜效果。xOffset和yOffset是气泡整体的偏移量。
 //                            all_radius =45f//圆角（所有的圆角；包括气泡）
 //                            //isAirRadius = true//气泡三角是否具备圆角,true圆角，(all_radius大于0才有效)
 //                            //isAirBorderRadius=true//fixme 气泡三角的两个边的连接处是否具有圆角效果。,true圆角，false尖角。

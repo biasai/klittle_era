@@ -115,7 +115,7 @@ object KCanvasUtils {
     /**
      * fixme 画气泡；KAirView 里面有调用案例。（对话框样式）
      */
-    fun drawAirBubbles(canvas: Canvas?, paint:Paint,kAirEntry: KAirEntry, view: View) {
+    fun drawAirBubbles(canvas: Canvas?, paint: Paint, kAirEntry: KAirEntry, view: View) {
         kAirEntry?.let {
             if (!it.isDraw) {
                 return
@@ -204,10 +204,12 @@ object KCanvasUtils {
                 }
                 var tox2 = tox1 + airWidth / 2
                 var toy2 = toy1 - airHeight
-                path.lineTo(tox2, toy2)
+                var airOffset = kAirEntry.airOffset
+                var tox22 = tox2 - airOffset
+                path.lineTo(tox22, toy2)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
-                    path.lineTo(tox2, toy2)//fixme 同一个点连接两次；就不会具备圆角效果。
+                    path.lineTo(tox22, toy2)//fixme 同一个点连接两次；就不会具备圆角效果。
                 }
                 var tox3 = tox2 + airWidth / 2
                 var toy3 = toy1
@@ -227,10 +229,12 @@ object KCanvasUtils {
                 }
                 var tox2 = tox1 + airWidth
                 var toy2 = toy1 + airHeight / 2
-                path.lineTo(tox2, toy2)
+                var airOffset = kAirEntry.airOffset
+                var toy22 = toy2 - airOffset
+                path.lineTo(tox2, toy22)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
-                    path.lineTo(tox2, toy2)
+                    path.lineTo(tox2, toy22)
                 }
                 var tox3 = tox1
                 var toy3 = toy2 + airHeight / 2
@@ -250,10 +254,12 @@ object KCanvasUtils {
                 }
                 var tox2 = tox1 - airWidth / 2
                 var toy2 = toy1 + airHeight
-                path.lineTo(tox2, toy2)
+                var airOffset = kAirEntry.airOffset
+                var tox22 = tox2 - airOffset
+                path.lineTo(tox22, toy2)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
-                    path.lineTo(tox2, toy2)
+                    path.lineTo(tox22, toy2)
                 }
                 var tox3 = tox2 - airWidth / 2
                 var toy3 = toy1
@@ -265,27 +271,37 @@ object KCanvasUtils {
             path.lineTo(leftBottomPoint.x.toFloat(), leftBottomPoint.y.toFloat())
             if (direction == KAirEntry.DIRECTION_LEFT) {
                 //左边居中
+                //fixme 气泡顶点下方的点
                 var tox1 = leftTopPoint.x + xOffset
                 var toy1 = leftTopPoint.y + rectHeight / 2 + airHeight / 2 + yOffset
+                //fixme 气泡顶点
+                var tox2 = tox1 - airWidth
+                var toy2 = toy1 - airHeight / 2
+                //fixme 气泡顶点上方的点。
+                var tox3 = tox1
+                var toy3 = toy2 - airHeight / 2
+
+                //fixme 气泡顶点下方的点
                 path.lineTo(tox1, toy1)
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox1, toy1)
                 }
-                var tox2 = tox1 - airWidth
-                var toy2 = toy1 - airHeight / 2
-                path.lineTo(tox2, toy2)
+                //fixme 气泡顶点
+                //fixme 贝塞尔曲线和CornerPathEffect圆角效果会有冲突，效果不好（亲测）。所以在此不使用曲线了。
+                var airOffset = kAirEntry.airOffset
+                var toy22 = toy2 - airOffset
+                path.lineTo(tox2, toy22)
                 if (!kAirEntry.isAirRadius) {
                     //气泡不具备圆角
-                    path.lineTo(tox2, toy2)
+                    path.lineTo(tox2, toy22)
                 }
-                var tox3 = tox1
-                var toy3 = toy2 - airHeight / 2
-                path.lineTo(tox3, toy3)//fixme 气泡顶点
+                //fixme 气泡顶点上方的点。
+                path.lineTo(tox3, toy3)
                 if (!kAirEntry.isAirBorderRadius) {
                     path.lineTo(tox3, toy3)
                 }
             }
-            //path.lineTo(leftTopPoint.x.toFloat(), leftTopPoint.y.toFloat())//直接连接起点；可能圆角效果无效。
+            //path.lineTo(leftTopPoint.x.toFloat(), leftTopPoint.y.toFloat())//直接连接起点；圆角效果无效。
             path.close()//封闭；路径圆角有效果
             //圆角
             var corner: CornerPathEffect? = null
@@ -295,13 +311,13 @@ object KCanvasUtils {
             }
             //虚线
             var dashPathEffect: DashPathEffect? = null
-            if (isDrawStrocke&&kAirEntry.dashWidth > 0 && kAirEntry.dashGap > 0) {
+            if (isDrawStrocke && kAirEntry.dashWidth > 0 && kAirEntry.dashGap > 0) {
                 dashPathEffect = DashPathEffect(floatArrayOf(kAirEntry.dashWidth, kAirEntry.dashGap), 0f)
                 paint.setPathEffect(dashPathEffect)
             }
             //组合动画（保留圆角和虚线的效果）
             if (corner != null && dashPathEffect != null) {
-                var composePathEffect = ComposePathEffect(dashPathEffect,corner)
+                var composePathEffect = ComposePathEffect(dashPathEffect, corner)
                 paint.setPathEffect(composePathEffect)
             }
             if (isDrawStrocke) {
