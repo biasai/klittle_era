@@ -64,6 +64,98 @@ import org.jetbrains.anko.sdk27.coroutines.onClick
 //                        //显示
 //                        sp.showAsDropDown(this@button, 50, -20)
 
+//                            fixme 以下是仿气泡冒出的样式。即顶部有一个小三角。
+//                            //数据
+//                            var list = mutableListOf<String>()
+//                            list.add("1")//fixme 记得添加数据，不然不会显示哦。
+//                            list.add("2")
+//                            list.add("3")
+//                            var sp = KSpinnerPop(ctx, list)
+//                            //创建recyclerView内部item视图,参数为下标position
+//                            sp?.onCreateView(popWidth = kpx.screenWidth()) {
+//                                var positon = it
+//                                context.UI {
+//                                    verticalLayout {
+//                                        backgroundColor = Color.WHITE
+//                                        //要设置具体的宽度kpx.screenWidth();不要使用wrapContent和matchParent
+//                                        var layoutParams = ViewGroup.LayoutParams(kpx.screenWidth(), kpx.x(100))
+//                                        setLayoutParams(layoutParams)
+//                                        gravity = Gravity.CENTER
+//                                        KBaseUi.apply {
+//                                            ktextView {
+//                                                if (positon == 0) {
+//                                                    radius {
+//                                                        left_top = 45f
+//                                                        right_top = left_top
+//                                                    }
+//                                                } else if (positon == list.lastIndex) {
+//                                                    radius {
+//                                                        left_bottom = 45f
+//                                                        right_bottom = left_bottom
+//                                                    }
+//                                                }
+//                                                id = kpx.id("pop_txt")
+//                                                gravity = Gravity.CENTER
+//                                                textSize = kpx.textSizeX(30f)
+//                                                textColor = Color.BLACK
+//                                                KSelectorUtils.selectorRippleDrawable(this, Color.parseColor("#EEEEEE"), Color.parseColor("#EFF3F6"))
+//                                            }.lparams {
+//                                                width = matchParent
+//                                                height = kpx.x(99)
+//                                            }
+//                                        }
+//                                        view {
+//                                            backgroundColor = Color.LTGRAY//分界线
+//                                        }.lparams {
+//                                            width = matchParent
+//                                            height = kpx.x(1)
+//                                        }
+//                                    }
+//                                }.view //注意最好手动配置item的宽度和高度。
+//                            }
+//                            //fixme sp?.topView在sp?.onCreateView（）创建之后才会有。这里在顶部创建了一个小三角气泡。
+//                            sp?.topView?.apply {
+//                                var air = cn.oi.klittle.era.widget.compat.KAirView(context)
+//                                addView(air, 0)
+//                                air.apply {
+//                                    var mHeight=kpx.x(32)
+//                                    var layoutParams = RelativeLayout.LayoutParams(kpx.screenWidth(),mHeight )
+//                                    setLayoutParams(layoutParams)
+//                                    air {
+//                                        direction = KAirEntry.DIRECTION_TOP//气泡方向在左边；默认是居中。
+//                                        bg_color = Color.parseColor("#EEEEEE")
+//                                        //bgHorizontalColors(Color.parseColor("#EEEEEE"), Color.WHITE, Color.parseColor("#EEEEEE"))
+//                                        //isBgGradient = true//背景颜色渐变
+//                                        strokeColor = Color.CYAN
+//                                        //strokeHorizontalColors(Color.BLUE,Color.RED)
+//                                        //isStrokeGradient=false//边框颜色不渐变
+//                                        //strokeWidth = kpx.x(2f)
+//                                        //fixme 注意；一定要先设置宽度和高度；然后再调用。
+//                                        airWidth = mHeight//气泡三角的宽度
+//                                        airHeight = airWidth
+//                                        //xOffset = 0f//气泡三角，x轴偏移量，正数向右偏移，负数向左偏移
+//                                        //yOffset = -kpx.x(0f)//气泡三角，y轴偏移量；正数向下偏移，负数向上偏移。
+//                                        all_radius = 45f//圆角（所有的圆角；包括气泡）
+//                                        //isAirRadius = false//气泡三角是否具备圆角,true圆角，false尖角。(all_radius大于0才有效)
+//                                        //isAirBorderRadius = false//气泡三角的两个边的连接处是否具有圆角效果。,true圆角，false尖角。
+//                                        dashWidth = kpx.x(0f)
+//                                        dashGap = kpx.x(0f)
+//                                        setAutoPaddingForAir(kpx.x(16), this)//fixme 设置文本内补丁。
+//                                    }
+//                                }
+//                            }
+//                            //视图刷新[业务逻辑都在这处理]，返回 视图itemView和下标postion
+//                            sp.onBindView { itemView, position ->
+//                                itemView?.findViewById<KTextView>(kpx.id("pop_txt"))?.apply {
+//                                    setText("" + position)
+//                                    onClick {
+//                                        sp?.dismiss()//关闭
+//                                    }
+//                                }
+//                            }
+//                            //显示
+//                            sp.showAsDropDown(this@button, 0, -kpx.x(10))
+
 //fixme 以下视图，根据需求可随意扩展。上下左右，四个容器只要不为空，就都会显示出来。centerView在四个容器的中间。
 //fixme 记得手动配置各个容器的宽和高。默认都是wrapContent，如果没有内容。就等于是空，是不会显示出来的。
 
