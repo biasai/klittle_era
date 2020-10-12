@@ -88,6 +88,12 @@ import cn.oi.klittle.era.utils.KVibratorUtils
 
 //fixme autoBg自定义图片共有三张。分别为 autoBg，autoBg2（在autoBg的上面显示）和autoBg3（在autoBg2的上面显示）。三张自定义位图都有不同的状态的。
 
+//fixme autoBg目前不支持九文件（文件名.9.png）[autoBg使用9文件任然会变形];如果要使用9文件，请使用系统的 backgroundResource=R.drawable.9文件 即可；即使用系统的背景图片加载方法即可(不会变形)。
+//fixme KAssetsUtils.getNinePatchDrawable()有获取九文件的方法。
+//fixme 9文件知识点：左上是控制拉伸。必须左和上都设置；右下是控制内容。必须右和下都设置。否则无法显示该区域的内容。
+//fixme 9文件必须设置黑点(黑边)；不然编译会报错的。
+//fixme 九文件必须放在drawable-nodpi,mipmap-nodpi等系统文件夹下才有效。放在assets里是没有伸拉效果的，切记！
+
 open class K4AutoBgView : K3BorderWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)

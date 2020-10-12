@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--selector可以指向xml也可以指向图片，注意selector最好不要指向图片，因为这个很占内存，selector尽量指向xml。-->
+    <!-- 选中的效果 -->
+    <item android:drawable="@drawable/kera_sdk_air_right_pressed" android:state_selected="true"></item>
+    <!-- 按下去的效果 -->
+    <item android:drawable="@drawable/kera_sdk_air_right_pressed" android:state_pressed="true"></item>
+    <!-- 默认 -->
+    <item android:drawable="@drawable/kera_sdk_air_right_nor"></item>
+
+</selector>

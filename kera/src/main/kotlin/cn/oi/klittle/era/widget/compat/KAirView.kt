@@ -20,7 +20,7 @@ import org.jetbrains.anko.topPadding
 //                        //backgroundColor(Color.YELLOW)
 //                        air {
 //                            direction = KAirEntry.DIRECTION_LEFT//气泡方向在左边；默认是居中。
-//                            bg_color = Color.LTGRAY
+//                            bg_color = Color.parseColor("#00CAFC")
 //                            bgHorizontalColors(Color.WHITE,Color.parseColor("#EEEEEE"),Color.WHITE,Color.parseColor("#EEEEEE"))
 //                            isBgGradient=true//背景颜色渐变
 //                            strokeColor = Color.CYAN
@@ -41,6 +41,7 @@ import org.jetbrains.anko.topPadding
 //                            setAutoPaddingForAir(kpx.x(16),this)//fixme 设置文本内补丁。一般都设置为16
 //                        }
 //                        air_press {
+//                            bg_color = Color.parseColor("#00A2CA")
 //                            dashWidth = 0f
 //                            dashGap = 0f
 //                            strokeHorizontalColors(Color.BLUE,Color.RED)
@@ -58,6 +59,36 @@ import org.jetbrains.anko.topPadding
 //                        topMargin = kpx.x(30)
 //                        leftMargin = topMargin
 //                        width = wrapContent//fixme 文本框的宽度和高度随文本变化，自适应。0387037448
+//                        height = wrapContent
+//                    }
+
+//                    fixme 以下是仿QQ对话框样式。(9文件素材来自于QQ)
+//                    kview {
+//                        //fixme 仿QQ左对话框(使用9文件)
+//                        //fixme 图片气泡三角的宽度大约为13像素；高17显示;该图片放在drawable-hdpi里。
+//                        backgroundResource = R.drawable.kera_drawable_click_on_the_selector_sdk_air_left
+//                        text = "我的名字叫诺亚方舟。哦\n你了"
+//                        leftPadding = kpx.x(24 + 13)
+//                        rightPadding = kpx.x(24)
+//                        topPadding = kpx.x(16)
+//                        bottomPadding = topPadding
+//                        gravity = Gravity.CENTER_VERTICAL
+//                    }.lparams {
+//                        width = wrapContent
+//                        height = wrapContent
+//                    }
+//                    kview {
+//                        //fixme 仿QQ右对话框（使用九文件）
+//                        //fixme 图片气泡三角的宽度大约为13像素；高17显示；该图片放在drawable-hdpi里。
+//                        backgroundResource = R.drawable.kera_drawable_click_on_the_selector_sdk_air_right
+//                        text = "我的名字叫诺亚方舟。哦"
+//                        leftPadding = kpx.x(24)
+//                        rightPadding = kpx.x(24 + 13)
+//                        topPadding = kpx.x(16)
+//                        bottomPadding = topPadding
+//                        gravity = Gravity.CENTER_VERTICAL
+//                    }.lparams {
+//                        width = wrapContent
 //                        height = wrapContent
 //                    }
 

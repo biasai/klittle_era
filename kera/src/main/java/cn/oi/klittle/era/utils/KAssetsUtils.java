@@ -897,15 +897,16 @@ public class KAssetsUtils {
     }
 
     /**
-     * 这样获取的九文件，基本不占内存
+     * 这样获取的九文件（9文件；文件名.9.png），基本不占内存
      * <p>
      * 设置九文件图片：view.setBackground(ninePatchDrawable);经查阅后才知道.9只针对background来进行拉伸。不管是九文件还是其他图片。background都是对图片拉伸到和控件同等大小。
+     * fixme 9文件必须设置黑点（黑边）；不然编译会报错的。
      *
      * @param resID drawable-nodpi文件夹下的九文件ID
      * @return NinePatchDrawable九文件，无则返回null
      */
     public NinePatchDrawable getNinePatchDrawable(int resID, boolean isRGB_565) {
-        //九文件必须放在drawable-nodpi等系统文件夹下才有效。放在assets里是没有伸拉效果的，切记！
+        //fixme 九文件必须放在drawable-nodpi,mipmap-nodpi等系统文件夹下才有效。放在assets里是没有伸拉效果的，切记！
         Bitmap bitmap = getBitmapFromAssets(null, resID, isRGB_565);
         //确认Bitmap是合法的NinePatch文件
         if (NinePatch.isNinePatchChunk(bitmap.getNinePatchChunk())) {
