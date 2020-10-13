@@ -2,15 +2,25 @@ package cn.oi.klittle.era.entity.widget.compat
 
 import android.graphics.Color
 import cn.oi.klittle.era.comm.kpx
+import cn.oi.klittle.era.entity.widget.KAirEntry
+import org.jetbrains.anko.bottomPadding
+import org.jetbrains.anko.leftPadding
+import org.jetbrains.anko.rightPadding
+import org.jetbrains.anko.topPadding
 
 /**
  * 四个边框（在控件的边缘绘制）；主要是为了实现表格效果。
+ * @param leftMargin 左外补丁，控制边框的距离
+ * @param rightMargin 右外补丁
+ * @param topMargin 上外补丁
+ * @param bottomMargin 下外补丁
  * @param strokeWidth 边框宽度(所有)
  * @param strokeColor 边框颜色(所有)
  * @param dashWidth 虚线长度(所有)
  * @param dashGap 虚线之间的间隙(所有)
  * @param strokeHorizontalColors 边框水平渐变颜色数组值【均匀渐变】，(所有)
  * @param strokeVerticalColors 边框垂直渐变颜色数组值【均匀】,会覆盖水平渐变。优先级比水平高(所有)
+ * @param isStrokeGradient 边框色是否渐变,默认是
  * @param isDrawLeft 是否绘制左边边框,默认都是true
  * @param isDrawTop 是否绘制上面的边框
  * @param isDrawRight 是否绘制右边的边框
@@ -21,7 +31,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param rightDashGap 右边框 虚线之间的间隙
  * @param bottomDashGap 底部边框 虚线之间的间隙
  *
- * @param all_radius 所有圆角的角度(0~90度)
+ * @param all_radius 所有圆角的角度(0~90度) fixme 最好不要超过45度，不然边框样式可能会错乱(即：左上角和左下角两个角度之和不要大于90度)，毕竟是通过线条路径绘制而成的。
  * @param left_top 左上角圆角,fixme 优先级比all_radius高。
  * @param left_bottom 左下角圆角
  * @param right_top 右上角圆角
@@ -29,12 +39,15 @@ import cn.oi.klittle.era.comm.kpx
  *
  * @param bg_color 矩形画布背景颜色，不能为透明，不然什么也看不见（包括阴影），也就是说画布必须有一个背景色
  * @param bgHorizontalColors 背景颜色水平渐变
- * @param bgVerticalColors 背景颜色垂直渐变（优先级比水平高）
+ * @param bgVerticalColors 背景颜色垂直渐变 fixme（优先级比水平高）
  * @param isBgGradient 背景色是否渐变,默认是
+ * @param isPorterDuffXfermode 是否切割，边框默认切割。
  */
-data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
+data class KBorderEntity(var leftMargin: Int = 0, var rightMargin: Int = 0, var topMargin: Int = 0, var bottomMargin: Int = 0,
+                         var strokeWidth: Float = kpx.x(2f), var strokeColor: Int = Color.LTGRAY,
                          var dashWidth: Float = 0F, var dashGap: Float = 0F,
                          var strokeHorizontalColors: IntArray? = null, var strokeVerticalColors: IntArray? = null,
+                         var isStrokeGradient: Boolean = true,
                          var isDrawLeft: Boolean = true, var isDrawTop: Boolean = true,
                          var isDrawRight: Boolean = true, var isDrawBottom: Boolean = true,
                          var leftStrokeWidth: Float? = null, var leftStrokeColor: Int? = null,
@@ -56,7 +69,8 @@ data class KBorderEntity(var strokeWidth: Float = kpx.x(2f), var strokeColor: In
                          var right_bottom: Float = -1F,
                          var bg_color: Int = Color.TRANSPARENT,
                          var bgHorizontalColors: IntArray? = null, var bgVerticalColors: IntArray? = null,
-                         var isBgGradient: Boolean = true) {
+                         var isBgGradient: Boolean = true,
+                         var isPorterDuffXfermode: Boolean = true) {
 
     //fixme 所有
 

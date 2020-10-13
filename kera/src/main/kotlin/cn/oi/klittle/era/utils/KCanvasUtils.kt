@@ -21,8 +21,8 @@ object KCanvasUtils {
         model.let {
             //画圆角
             kradius?.apply {
-                x = it.x
-                y = it.y
+                x = 0f
+                y = 0f
                 w = it.width
                 h = it.height
                 all_radius = 0f

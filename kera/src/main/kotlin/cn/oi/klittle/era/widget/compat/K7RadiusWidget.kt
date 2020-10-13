@@ -7,14 +7,40 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import cn.oi.klittle.era.base.KBaseView
+import cn.oi.klittle.era.entity.widget.compat.KBorderEntity
 import cn.oi.klittle.era.entity.widget.compat.KRadiusEntity
 import cn.oi.klittle.era.utils.KRadiusUtils
+import org.jetbrains.anko.bottomPadding
+import org.jetbrains.anko.leftPadding
+import org.jetbrains.anko.rightPadding
+import org.jetbrains.anko.topPadding
+
+//fixme 使用案例：
+
+//                        radius {
+//                            all_radius(60)
+//                            bg_color = Color.parseColor("#00CAFC")
+//                            bgHorizontalColors(Color.RED,Color.BLUE)
+//                            bgVerticalColors(Color.BLUE,Color.CYAN)
+//                            //strokeWidth = 0f
+//                            strokeWidth = kpx.x(3f)
+//                            strokeColor = Color.YELLOW
+//                            strokeHorizontalColors(Color.GREEN, Color.BLUE)
+//                            //leftMargin = kpx.x(100)//左外补丁，控件边框的间距；fixme radius已经做了兼容处理，能够正常切割。
+//                            //topMargin = kpx.x(100)
+//                            //rightMargin = kpx.x(50)
+//                            //bottomMargin = kpx.x(50)
+//                            setAutoPaddingForRadius(kpx.x(16),this)//fixme 根据radius的外补丁，自动设置文本内补丁。
+//                            //isPorterDuffXfermode=true//fixme 是否切割，默认是
+//                        }
 
 /**
  * 七：集成圆角属性（这个圆角会遮挡住下面，是真正的圆角）,背景渐变。圆角兼容api 16 即4.1 。15及以下的版本没测试过。应该也可以。
  * fixme 兼容性没问题。能够兼容4.0的系统。比selectorDrawable的兼容性都好。亲测！
  * fixme 所以drawPath()比canvas.drawRoundRect()兼容性要好。多用路径。
  * fixme drawXfermodeCircle()切除一个圆；drawXfermodeRect（）切除一个矩形。
+ *
+ * fixme 切割最好最稳定的还是使用radius {}最完美。解决了低版本的问题。
  */
 open class K7RadiusWidget : K5LparamWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
@@ -27,7 +53,22 @@ open class K7RadiusWidget : K5LparamWidget {
     init {
         //开启硬件加速,不然圆角没有效果
         //fixme path.setFillType(Path.FillType.INVERSE_WINDING)//反转 现在使用了这个。开不开硬件加速都无所谓了。都支持圆角了。不开硬件加速也行。
+        //fixme INVERSE_WINDING对9.0及以上系统支持很好。对7.0及以下不是很完美，还是有缺陷的。在KRadiusUtils里已经做了兼容处理。能够完美切割。
         setLayerType(View.LAYER_TYPE_HARDWARE, null)
+    }
+
+    /**
+     * fixme 根据radius的外补丁，自动设置文本的内补丁。
+     * @param mPadding 内补丁；一般都设置为：kpx.x(16)；即8的倍数。8，16，24...比较好。
+     * @param borderEnty 边框实体类
+     */
+    open fun setAutoPaddingForRadius(mPadding: Int, radiusEnty: KRadiusEntity? = this.radius) {
+        radiusEnty?.apply {
+            rightPadding = mPadding + rightMargin
+            leftPadding = mPadding + leftMargin
+            topPadding = mPadding + topMargin
+            bottomPadding = mPadding + bottomMargin
+        }
     }
 
     //fixme 不可用状态
@@ -173,11 +214,18 @@ open class K7RadiusWidget : K5LparamWidget {
                         paint.color = it.bg_color
                         isDrawColor = true
                     }
-                    var left = 0f + scrollX + centerX - w / 2.0f
-                    var top = 0f + scrollY + centerY - h / 2.0f//fixme 2.0f必须设置成浮点型，不然可能会有0.5的偏差。
+//                    var left = 0f + scrollX + centerX - w / 2.0f
+//                    var top = 0f + scrollY + centerY - h / 2.0f//fixme 2.0f必须设置成浮点型，不然可能会有0.5的偏差。
+//                    //KLoggerUtils.e("scrollY:\t"+scrollY+"\tcenterY:\t"+centerY+"\th / 2:\t"+(h / 2.0f)+"\th:\t"+h)
+//                    var right = w + left
+//                    var bottom = h + top
+
+                    var left = scrollX + paint.strokeWidth / 2 + it.leftMargin
+                    var top = scrollY.toFloat() + paint.strokeWidth / 2 + it.topMargin
                     //KLoggerUtils.e("scrollY:\t"+scrollY+"\tcenterY:\t"+centerY+"\th / 2:\t"+(h / 2.0f)+"\th:\t"+h)
-                    var right = w + left
-                    var bottom = h + top
+                    var right = scrollX.toFloat() + w.toFloat() - it.rightMargin
+                    var bottom = scrollY.toFloat() + h - it.bottomMargin
+
                     //KLoggerUtils.e("left:\t"+left+"\ttop:\t"+top+"\tright:\t"+right+"\tbottom:\t"+bottom)
                     if (it.bgVerticalColors != null) {
                         var shader: LinearGradient? = null
@@ -294,10 +342,14 @@ open class K7RadiusWidget : K5LparamWidget {
             model.let {
                 //画圆角
                 kradius?.apply {
-                    x = it.x
-                    y = it.y
+                    x = 0f
+                    y = 0f
                     w = view.width
                     h = view.height
+                    leftMargin = it.leftMargin
+                    topMargin = it.topMargin
+                    rightMargin = it.rightMargin
+                    bottomMargin = it.bottomMargin
                     view?.layoutParams?.let {
                         if (w < it.width) {
                             w = it.width
@@ -314,7 +366,7 @@ open class K7RadiusWidget : K5LparamWidget {
                         h = it.height
                         y = (centerY - h / 2)//居中对齐
                     }
-                    isDST_IN = true//fixme 取下面的交集
+                    isDST_IN = it.isPorterDuffXfermode//fixme 取下面的交集
                     all_radius = 0f
                     left_top = it.left_top
                     left_bottom = it.left_bottom
