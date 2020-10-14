@@ -16,6 +16,8 @@ import org.jetbrains.anko.topPadding
 //fixme rotation=45f 宽和高相等的情况下，整个控件整体旋转45度，就成菱形了。
 
 //            调用案例
+//            fixme 圆角切割效果最好的最完善的还是radius{};圆角切割建议使用radius{}，兼容性比较好。
+//            fixme border{}在切割方法多少还有点不足。（无边框时切割边缘很有点线条）;有边框时strokeWidth>0，效果还行。
 //            KView(this).apply {
 //                backgroundColor(Color.GREEN)
 //                border {
@@ -30,15 +32,15 @@ import org.jetbrains.anko.topPadding
 //                    right_bottom=45f//边框右下角角度;fixme border支持圆角
 //                    //bg_color=Color.GREEN//fixme 支持背景色；具备切割效果；会像radius一样；自动去除边框以外的区域。只显示边框以内的。
 //                    bgHorizontalColors(Color.RED,Color.CYAN)
-//                    //leftMargin=kpx.x(50)//左外补丁，控件边框的间距；fixme 9.0正常，在低版本会切割显示会有问题（7.0），建议使用 radius {}；radius已经做了切割兼容处理。
+//                    //leftMargin=kpx.x(50)//fixme 左外补丁，控件边框的间距；
 //                    //topMargin=kpx.x(50)
 //                    //rightMargin=kpx.x(50)
 //                    //bottomMargin=kpx.x(50)
 //                    //setAutoPaddingForBorder(kpx.x(16))//fixme 根据border的外补丁，自动设置文本内补丁。
 //                }
 //                border_press {
-//                    isDrawLeft = false//是否绘制左边边框
-//                    isDrawTop = false//时候绘制顶部边框
+//                    isDrawLeft = false//fixme 是否绘制左边边框
+//                    isDrawTop = false//fixme 时候绘制顶部边框
 //                    strokeHorizontalColors(Color.RED, Color.CYAN, Color.GRAY)//边框水平渐变颜色
 //                    dashGap = kpx.x(30f)
 //                    dashWidth = kpx.x(50f)
@@ -197,7 +199,7 @@ open class K3BorderWidget : K3AStateView {
             var bottom = scrollY.toFloat() + h - it.bottomMargin
             if (it.strokeVerticalColors != null) {
                 var shader: LinearGradient? = null
-                if (!it.isBgGradient) {
+                if (!it.isStrokeGradient) {
                     //垂直不渐变
                     if (it.strokeVerticalColors!!.size == 1) {
                         //fixme 颜色渐变数组必须大于等于2
@@ -223,7 +225,7 @@ open class K3BorderWidget : K3AStateView {
                 paint.setShader(shader)
             } else if (it.strokeHorizontalColors != null) {
                 var shader: LinearGradient? = null
-                if (!it.isBgGradient) {
+                if (!it.isStrokeGradient) {
                     //水平不渐变
                     if (it.strokeHorizontalColors!!.size == 1) {
                         var strokeHorizontalColors = IntArray(2)
@@ -863,6 +865,27 @@ open class K3BorderWidget : K3AStateView {
                 borderPath?.setFillType(Path.FillType.INVERSE_WINDING)//反转
                 canvas.drawPath(borderPath, paint)
                 borderPath?.setFillType(Path.FillType.WINDING)//恢复正常
+                //fixme 兼容低部版切割不全的问题。9.0及以上系统正常。7.0及以下系统会有问题。以下就是解决7.0的问题的。
+                var offset=kpx.x(1f)//防止边框切割对不齐。
+                if (it.strokeWidth>0){
+                    offset=0f
+                }
+                if (it.leftMargin > 0) {
+                    var rectFLeft = RectF(0f, 0f, scrollX + it.leftMargin+offset.toFloat(), h.toFloat())
+                    canvas.drawRect(rectFLeft, paint)
+                }
+                if (it.topMargin > 0) {
+                    var rectFTop = RectF(0f, 0f, w.toFloat(), scrollY + it.topMargin+offset.toFloat())
+                    canvas.drawRect(rectFTop, paint)
+                }
+                if (it.rightMargin > 0) {
+                    var rectFRight = RectF(w.toFloat() +  scrollX - it.rightMargin-offset, 0f, w.toFloat(), h.toFloat())
+                    canvas.drawRect(rectFRight, paint)
+                }
+                if (it.bottomMargin > 0) {
+                    var rectFBottom = RectF(0f, h.toFloat()  + scrollY - it.bottomMargin-offset, w.toFloat(), h.toFloat())
+                    canvas.drawRect(rectFBottom, paint)
+                }
                 paint.setXfermode(null)
             }
         }

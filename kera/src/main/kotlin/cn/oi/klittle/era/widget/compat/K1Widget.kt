@@ -714,6 +714,9 @@ open class K1Widget : K0Widget {
     //fixme 自定义画布()，最后画，会显示在最前面,交给子类去实现(一般用于实现圆角矩形)
     protected open fun draw2Last(canvas: Canvas, paint: Paint) {}
 
+    //fixme 自定义画布()，在draw2Last（）之后执行。（主要用于实现在切割矩形的上面，不被切割掉。）
+    protected open fun draw2Last2(canvas: Canvas, paint: Paint) {}
+
     //fixme 自定义画布()，先画，会显示在后面,交给子类去实现
     protected open fun draw2Front(canvas: Canvas, paint: Paint) {}
 
@@ -908,6 +911,7 @@ open class K1Widget : K0Widget {
                 mCanvas = canvas
                 //子类实现，最后画。显示在最上面
                 draw2Last(this, resetPaint())
+                draw2Last2(this, resetPaint())
                 mCanvas = canvas
                 //调用者实现
                 drawLast?.let {

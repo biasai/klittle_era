@@ -107,6 +107,13 @@ open class K4AutoBgView : K3BorderWidget {
         onClickInit()
     }
 
+    //fixme 不管了。AutoBg位图在自定义背景颜色值和阴影的上面。在文字的下面。
+    //fixme AutoBg在颜色值的上面。
+    override fun draw2Front(canvas: Canvas, paint: Paint) {
+        super.draw2Front(canvas, paint)
+        drawAuto(canvas, paint, this)//背景色，前景色，auto位图都在这里面绘制的。
+    }
+
     private var viewBitmap: Bitmap? = null//控件本身视图位图
 
     /**
@@ -177,13 +184,6 @@ open class K4AutoBgView : K3BorderWidget {
             }
             isDeal
         }
-    }
-
-    //fixme 不管了。AutoBg位图在自定义背景颜色值和阴影的上面。在文字的下面。
-    //fixme AutoBg在颜色值的上面。
-    override fun draw2Front(canvas: Canvas, paint: Paint) {
-        super.draw2Front(canvas, paint)
-        drawAuto(canvas, paint, this)
     }
 
     //fixme 加载时，默认图片.AutoBg还没加载时显示。目前只对AutoBg第一张图片有效。
@@ -713,7 +713,7 @@ open class K4AutoBgView : K3BorderWidget {
             }
             paint.color = Color.WHITE//防止受影响，所以颜色重置一下
             if (autoBgModel.isDraw) {
-                drawAutoBg_BgColor(canvas, paint, autoBgModel, view)//画背景色
+                drawAutoBg_BgColor(canvas, paint, autoBgModel, view)//fixme 画背景色
             }
             if (autoBgModel.isDraw && autoBgModel.autoBg != null && !autoBgModel.autoBg!!.isRecycled && width > 0 && height > 0) {
                 if (autoBgModel.rotation != 0f) {
@@ -919,7 +919,7 @@ open class K4AutoBgView : K3BorderWidget {
                     canvas.restore()//恢复旋转之前的状态
                 }
             }
-            drawAutoBg_FgColor(canvas, paint, autoBgModel, view)//画前景色
+            drawAutoBg_FgColor(canvas, paint, autoBgModel, view)//fixme 画前景色
         }
     }
 

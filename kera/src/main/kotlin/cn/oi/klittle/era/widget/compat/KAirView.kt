@@ -264,8 +264,6 @@ open class KAirView : KTextView {
         }
     }
 
-    private var airPhase: Float = 0F
-
     override fun onDestroy() {
         super.onDestroy()
         air = null

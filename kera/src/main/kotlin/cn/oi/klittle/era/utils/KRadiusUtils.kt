@@ -110,11 +110,11 @@ open class KRadiusUtils {
                     canvas.drawPath(path, paint)
                     path.setFillType(Path.FillType.WINDING)//恢复正常
                     //fixme 兼容低部版切割不全的问题。9.0及以上系统正常。7.0及以下系统会有问题。以下就是解决7.0的问题的。
-                    if (leftMargin > 0) {
+                    if (leftMargin > 0||x>0) {
                         var rectFLeft = RectF(0f, 0f, 0f + x + scrollX + leftMargin, h.toFloat())
                         canvas.drawRect(rectFLeft, paint)
                     }
-                    if (topMargin > 0) {
+                    if (topMargin > 0||y>0) {
                         var rectFTop = RectF(0f, 0f, w.toFloat(), 0f + y + scrollY + topMargin)
                         canvas.drawRect(rectFTop, paint)
                     }

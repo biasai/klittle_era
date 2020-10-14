@@ -31,7 +31,7 @@ import org.jetbrains.anko.topPadding
 //                            //rightMargin = kpx.x(50)
 //                            //bottomMargin = kpx.x(50)
 //                            setAutoPaddingForRadius(kpx.x(16),this)//fixme 根据radius的外补丁，自动设置文本内补丁。
-//                            //isPorterDuffXfermode=true//fixme 是否切割，默认是
+//                            //isPorterDuffXfermode=true//fixme 是否切割，默认是;(false不切割，默认优先显示下面的。)
 //                        }
 
 /**
@@ -42,7 +42,7 @@ import org.jetbrains.anko.topPadding
  *
  * fixme 切割最好最稳定的还是使用radius {}最完美。解决了低版本的问题。
  */
-open class K7RadiusWidget : K5LparamWidget {
+open class K7RadiusWidget : K6BubblesWidget {
     constructor(viewGroup: ViewGroup) : super(viewGroup.context) {
         viewGroup.addView(this)//直接添加进去,省去addView(view)
     }

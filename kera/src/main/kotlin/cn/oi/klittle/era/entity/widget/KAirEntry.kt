@@ -27,7 +27,7 @@ import cn.oi.klittle.era.comm.kpx
  * @param isDraw 是否绘制
  * Created by 彭治铭 on 2019/4/18.
  */
-data class KAirEntry(var direction: Int = KAirEntry.DIRECTION_BOTTOM, var xOffset: Float = 0F, var yOffset: Float = 0F,var airOffset:Float=0f,
+data class KAirEntry(var direction: Int = KAirEntry.DIRECTION_LEFT, var xOffset: Float = 0F, var yOffset: Float = 0F,var airOffset:Float=0f,
                      var airWidth: Int = kpx.x(25), var airHeight: Int = airWidth,
                      var all_radius: Float = 0F, var isAirRadius: Boolean = true,var isAirBorderRadius: Boolean = true,
                      var strokeWidth: Float = 0F, var strokeColor: Int = Color.BLACK,
