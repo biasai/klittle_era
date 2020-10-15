@@ -134,6 +134,7 @@ configurations.all {
 //ext.anko_version = '0.10.5'
 ext.anko_version = '0.10.8'//fixme anko与androidx适配不冲突。（亲测'0.10.8'版本的anko添加了androidx的依赖引用）
 dependencies {
+    //FIXME kera本地引用： api project(path: ':kera')
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     //集成kotlin的依赖。
     //api "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"//jre7保留在kotlin '1.2.71'版本里。
